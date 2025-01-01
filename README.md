@@ -98,8 +98,3 @@ src - main - resources - templates - 각 기능 폴더
 
 main폴더의 index는 초기 진입페이지.  main폴더의 header, footer는 모든 페이지 공통입니다.
 
-<head><header><body><html>등은 이미 header와 footer에서 정의되어 사용하시면 안됩니다.
-기본적으로 모든 기능들의 mustache는 세션으로 감싸고 그 안에서 입력해주세요.
-특히 <style>이나 <script>를 삽입하셔야 한다면 꼭 작업 페이지의 세션태그 안에서 넣어주세요.
-세션태그 밖에 넣으면 header와 충돌합니다.
-
