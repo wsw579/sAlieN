@@ -1,4 +1,4 @@
-package com.aivle.project.entity;
+package com.aivle.project.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
