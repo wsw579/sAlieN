@@ -81,7 +81,7 @@ ex) get에는 id, name, phone, email만 전달
 4. 서비스 생성
 src - main - java - com.aivle.project - service 패키지
 CRUD를 정의합니다.
-내부 클래스 명은 
+내부 메서드 명은 
 opportunitiesCreate
 opportunitiesUpdate
 와 같이 생성해주세요.
