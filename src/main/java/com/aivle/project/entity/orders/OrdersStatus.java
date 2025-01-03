@@ -1,6 +1,6 @@
 package com.aivle.project.entity.orders;
 
-public enum Orders_Status {
+public enum OrdersStatus {
     none,
     draft,
     activated,

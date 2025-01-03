@@ -33,7 +33,7 @@ public class OrdersEntity {
 
     private Float order_amount;
 
-    private Enum<Orders_Status> order_status;
+    private Enum<OrdersStatus> order_status;
 
 //    @ManyToOne -> entity생성시 해당 코드로 변경
 //    @JoinColumn(name = "contract_id", nullable = false)
