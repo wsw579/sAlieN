@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.w3c.dom.Text;
+
 
 import java.util.UUID;
 
@@ -43,7 +43,7 @@ public class ProductsEntity {
     @Column(nullable = false)
     private ProductsStatus product_condition;
 
-    private Text product_description;
+    private String product_description;
 
     private String product_family;
 }
