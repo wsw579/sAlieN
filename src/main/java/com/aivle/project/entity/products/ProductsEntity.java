@@ -1,12 +1,20 @@
 package com.aivle.project.entity.products;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.w3c.dom.Text;
 
 import java.util.UUID;
 
+@Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "products")
 public class ProductsEntity {
     @Id
     @Column(nullable = false)
@@ -23,16 +31,17 @@ public class ProductsEntity {
     private String product_name;
 
     @Column(nullable = false)
-    private float fixed_price;
+    private Float fixed_price;
 
     @Column(nullable = false)
-    private float dealer_price;
+    private Float dealer_price;
 
     @Column(nullable = false)
-    private float cost_price;
+    private Float cost_price;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Enum<ProductsStatus> product_condition;
+    private ProductsStatus product_condition;
 
     private Text product_description;
 

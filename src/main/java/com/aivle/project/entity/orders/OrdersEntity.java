@@ -27,13 +27,18 @@ public class OrdersEntity {
         }
     }
 
+    @Temporal(TemporalType.DATE)
+    @Column(nullable = false)
     private Date order_date;
 
+    @Temporal(TemporalType.DATE)
     private Date sales_date;
 
     private Float order_amount;
 
-    private Enum<OrdersStatus> order_status;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private OrdersStatus order_status;
 
 //    @ManyToOne -> entity생성시 해당 코드로 변경
 //    @JoinColumn(name = "contract_id", nullable = false)
