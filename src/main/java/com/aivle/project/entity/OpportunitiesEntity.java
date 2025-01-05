@@ -35,7 +35,7 @@ public class OpportunitiesEntity implements Serializable {
     private String opportunityInquiries;
 
     @Column(nullable = false)
-    private String opportunityDetails;
+    private String customerEmployee;
 
     @Column(nullable = false)
     private float quantity;

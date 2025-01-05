@@ -121,12 +121,12 @@
                                     <label for="opportunityStatus" class="col-sm-2 col-form-label">기회상태:</label>
                                     <div class="col-sm-10">
                                         <select class="form-control" id="opportunityStatus">
-                                            <option value="Open">Qualification</option>
-                                            <option value="Closed">Needs Analysis</option>
-                                            <option value="Pending">Proposal</option>
-                                            <option value="Pending">Negotiation</option>
-                                            <option value="Pending">Closed(won)</option>
-                                            <option value="Pending">Closed(loss)</option>
+                                            <option value="Qualification">Qualification</option>
+                                            <option value="Needs Analysis">Needs Analysis</option>
+                                            <option value="Proposal">Proposal</option>
+                                            <option value="Negotiation">Negotiation</option>
+                                            <option value="Closed(won)">Closed(won)</option>
+                                            <option value="Closed(loss)">Closed(loss)</option>
                                             <option value="Pending">Pending</option>
                                         </select>
                                     </div>
@@ -162,9 +162,9 @@
                                     </div>
                                 </div>
                                 <div class="mb-3 row">
-                                    <label for="opportunityDetails" class="col-sm-2 col-form-label">고객사 담당자:</label>
+                                    <label for="customerEmployee" class="col-sm-2 col-form-label">고객사 담당자:</label>
                                     <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="opportunityDetails" value="{{opportunityDetails}}">
+                                        <input type="text" class="form-control" id="customerEmployee" value="{{customerEmployee}}">
                                     </div>
                                 </div>
                                 <div class="mb-3 row">
@@ -277,7 +277,15 @@
 
 
     <script>
+        {{#opportunities}}
+        document.addEventListener("DOMContentLoaded", function() {
+            // Mustache 템플릿에서 서버 데이터를 가져옴
+            var opportunityStatus = "{{opportunityStatus}}";
 
+        // 폼에 데이터 채우기
+        document.getElementById("opportunityStatus").value = opportunityStatus;
+        });
+        {{/opportunities}}
     </script>
 
 

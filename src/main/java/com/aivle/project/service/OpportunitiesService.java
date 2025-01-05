@@ -24,7 +24,7 @@ public class OpportunitiesService {
         opportunitiesEntity.setRegion(dto.getRegion());
         opportunitiesEntity.setCompanySize(dto.getCompanySize());
         opportunitiesEntity.setOpportunityInquiries(dto.getOpportunityInquiries());
-        opportunitiesEntity.setOpportunityDetails(dto.getOpportunityDetails());
+        opportunitiesEntity.setCustomerEmployee(dto.getCustomerEmployee());
         opportunitiesEntity.setQuantity(dto.getQuantity());
         opportunitiesEntity.setExpectedRevenue(dto.getExpectedRevenue());
         opportunitiesEntity.setCompanyRevenue(dto.getCompanyRevenue());
@@ -51,7 +51,7 @@ public class OpportunitiesService {
         opportunitiesEntity.setRegion(dto.getRegion());
         opportunitiesEntity.setCompanySize(dto.getCompanySize());
         opportunitiesEntity.setOpportunityInquiries(dto.getOpportunityInquiries());
-        opportunitiesEntity.setOpportunityDetails(dto.getOpportunityDetails());
+        opportunitiesEntity.setCustomerEmployee(dto.getCustomerEmployee());
         opportunitiesEntity.setQuantity(dto.getQuantity());
         opportunitiesEntity.setExpectedRevenue(dto.getExpectedRevenue());
         opportunitiesEntity.setCompanyRevenue(dto.getCompanyRevenue());

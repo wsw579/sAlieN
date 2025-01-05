@@ -22,7 +22,7 @@ public class OpportunitiesDto {
     private String region;
     private int companySize;
     private String opportunityInquiries;
-    private String opportunityDetails;
+    private String customerEmployee;
     private float quantity;
     private float expectedRevenue;
     private float companyRevenue;

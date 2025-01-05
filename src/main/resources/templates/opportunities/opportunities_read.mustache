@@ -175,10 +175,11 @@
                 var status = row.querySelector("td:nth-child(6)").innerText;
                 var targetCloseDate = new Date(row.querySelector("td:nth-child(7)").innerText);
 
-                if (status !== "Closed") {
+                if (!status.startsWith("Closed")) {
                     ongoingCount++;
                 }
-                if (status === "Closed") {
+
+                if (status === "Closed(won)") {
                     closedCount++;
                 }
                 if (status === "Pending") {
