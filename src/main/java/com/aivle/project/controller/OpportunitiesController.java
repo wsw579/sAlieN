@@ -2,6 +2,7 @@ package com.aivle.project.controller;
 
 
 import com.aivle.project.dto.OpportunitiesDto;
+import com.aivle.project.entity.OpportunitiesCommentEntity;
 import com.aivle.project.entity.OpportunitiesEntity;
 import com.aivle.project.service.OpportunitiesService;
 import lombok.RequiredArgsConstructor;
@@ -38,12 +39,18 @@ public class OpportunitiesController {
     // Detail page
     @GetMapping("/opportunities/detail/{opportunityId}")
     public String opportunities(@PathVariable Long opportunityId, Model model) {
-
         OpportunitiesEntity opportunities = opportunitiesService.searchOpportunities(opportunityId);
-        model.addAttribute("opportunities", opportunities);
+        List<OpportunitiesCommentEntity> opportunitiesComments = opportunitiesService.getCommentsByOpportunityId(opportunityId);
 
+        // 디버깅을 위해 로그 출력
+        System.out.println("Opportunities: " + opportunities);
+        opportunitiesComments.forEach(comment -> System.out.println("Comment: " + comment.getContent() + ", Date: " + comment.getCommentCreatedDate()));
+
+        model.addAttribute("opportunities", opportunities);
+        model.addAttribute("opportunitiesComments", opportunitiesComments);
         return "opportunities/opportunities_detail";
     }
+
 
 
     // Create model page (초기값으로 페이지 생성)

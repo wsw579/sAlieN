@@ -129,7 +129,7 @@
             </div>
 
 
-
+            <!-- 기회 상세내용 부분 -->
             <div class="card mb-4">
                 <div class="card-header">
                     <i class="fas fa-table me-1"></i>
@@ -275,7 +275,7 @@
 
 
 
-
+            <!-- 기회 단계 부분 -->
             <div class="card mb-4">
                 <div class="card-header">
                     <i class="fas fa-table me-1"></i>
@@ -308,7 +308,7 @@
 
 
 
-
+            <!-- 기회 히스토리 부분 -->
             <div class="card mb-4">
                 <div class="card-header">
                     <i class="fas fa-table me-1"></i>
@@ -329,7 +329,7 @@
 
 
 
-
+            <!-- 댓글 부분 -->
             <div class="card mb-4">
                 <div class="card-header">
                     <i class="fas fa-table me-1"></i>
@@ -337,16 +337,21 @@
                 </div>
                 <div class="card-body">
                     <table id="opportunities_comment">
-
-
-                        {{#opportunities}}
-                            <tbody>
-
-                            </tbody>
-                        {{/opportunities}}
+                        {{#opportunitiesComments}}
+                            <tr>
+                                <td><h2>내용 : {{content}}</h2></td>
+                                <td><h2>날짜 : {{commentCreatedDate}}</h2></td>
+                            </tr>
+                        {{/opportunitiesComments}}
+                        {{^opportunitiesComments}}
+                            <tr>
+                                <td colspan="2"><h4>댓글이 없습니다.</h4></td>
+                            </tr>
+                        {{/opportunitiesComments}}
                     </table>
                 </div>
             </div>
+
 
 
 

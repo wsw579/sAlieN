@@ -1,10 +1,13 @@
 package com.aivle.project.service;
 
 import com.aivle.project.dto.OpportunitiesDto;
+import com.aivle.project.entity.OpportunitiesCommentEntity;
 import com.aivle.project.entity.OpportunitiesEntity;
+import com.aivle.project.repository.OpportunitiesCommentRepository;
 import com.aivle.project.repository.OpportunitiesRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,7 +19,7 @@ import java.util.List;
 public class OpportunitiesService {
 
     private final OpportunitiesRepository opportunitiesRepository;
-
+    private final OpportunitiesCommentRepository opportunitiesCommentRepository;
 
     // Create
     public void createOpportunities(OpportunitiesDto dto) {
@@ -81,7 +84,22 @@ public class OpportunitiesService {
 
     // Search
     public OpportunitiesEntity searchOpportunities(Long opportunityId) {
-        return opportunitiesRepository.findById(opportunityId).orElseThrow(()->new IllegalArgumentException("error"));
+        return opportunitiesRepository.findById(opportunityId)
+                .orElseThrow(()->new IllegalArgumentException("error"));
     }
+
+
+
+    @Transactional
+    public List<OpportunitiesCommentEntity> getCommentsByOpportunityId(Long opportunityId) {
+        OpportunitiesEntity opportunity = searchOpportunities(opportunityId);
+        List<OpportunitiesCommentEntity> comments = opportunitiesCommentRepository.findByOpportunity(opportunity);
+
+        // 디버깅을 위해 로그 출력
+        comments.forEach(comment -> System.out.println("Comment: " + comment.getContent()));
+
+        return comments;
+    }
+
 
 }
