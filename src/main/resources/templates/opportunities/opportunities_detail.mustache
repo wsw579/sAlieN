@@ -47,6 +47,69 @@
     }
 
 
+
+
+
+
+
+.progress-container {
+    position: relative;
+    width: 100%;
+    height: 70px; /* 높이를 조금 늘립니다 */
+    margin: 20px 0;
+}
+
+.progress-bar {
+    position: absolute;
+    top: 38%; /* 중앙 정렬 */
+    left: 10%; /* Qualification 원의 중앙에서 시작하도록 조정합니다 */
+    transform: translateY(-50%);
+    width: 0;
+    height: 10px;
+    background-color: green;
+    transition: width 0.4s ease;
+}
+
+.progress-steps {
+    display: flex;
+    justify-content: space-between;
+    position: absolute;
+    top: 50%; /* 중앙 정렬 */
+    width: 100%;
+    transform: translateY(-50%);
+}
+
+.step {
+    width: 20%;
+    text-align: center;
+    position: relative;
+    padding-top: 30px; /* 텍스트를 아래로 내리기 위해 패딩 추가 */
+}
+
+
+.step::before {
+    content: '';
+    position: absolute;
+    top: 16%; /* 원의 위치를 조정합니다 */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: white;
+    border: 2px solid green;
+    transition: background-color 0.4s ease, border-color 0.4s ease;
+}
+
+.step.active::before {
+    background-color: green;
+    border-color: green;
+}
+
+
+
+
+
 </style>
 
 
@@ -63,24 +126,6 @@
             <div class="row">
             </div>
             <div class="row">
-                <div class="col-xl-6">
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <i class="fas fa-chart-area me-1"></i>
-                            연간 계약 전환 현황
-                        </div>
-                        <div class="card-body"><canvas id="myAreaChart" width="100%" height="40"></canvas></div>
-                    </div>
-                </div>
-                <div class="col-xl-6">
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <i class="fas fa-chart-bar me-1"></i>
-                            연간 계약 전환 누적 현황
-                        </div>
-                        <div class="card-body"><canvas id="myBarChart" width="100%" height="40"></canvas></div>
-                    </div>
-                </div>
             </div>
 
 
@@ -92,35 +137,49 @@
                 </div>
                 <div class="card-body">
                     <table id="opportunities_detail">
-
+                        {{#opportunities}}
                         <div class="button-container mb-3">
-                            <button id="createButton" class="btn btn-custom-create btn-sm">
+                            <a href="/opportunities/detail/create" class="btn btn-custom-create btn-sm" id="createButton">
                                 <i class="fas fa-plus-circle"></i> 신규
-                            </button>
-                            <button id="deleteButton" class="btn btn-custom-delete btn-sm">
-                                <i class="fas fa-trash-alt"></i> 삭제
-                            </button>
+                            </a>
+
+                            {{#opportunityId}}
+                            <a href="/opportunities/detail/{{opportunityId}}/delete" class="btn btn-custom-delete btn-sm" id="deleteButton">
+                                <i class="fas fa-plus-circle"></i> 삭제
+                            </a>
+                            {{/opportunityId}}
+                            {{^opportunityId}}
+                                <a href="/opportunities" class="btn btn-custom-delete btn-sm" id="deleteButton">
+                                    <i class="fas fa-plus-circle"></i> 삭제
+                                </a>
+                            {{/opportunityId}}
+
                         </div>
 
-                        {{#opportunities}}
+                            {{#opportunityId}}
+                            <form id="opportunityForm" action="/opportunities/detail/{{opportunityId}}/update" method="POST">
+                            {{/opportunityId}}
+                            {{^opportunityId}}
+                            <form id="opportunityForm" action="/opportunities/detail/create" method="POST">
+                            {{/opportunityId}}
 
-                            <form id="opportunityForm">
+
                                 <div class="mb-3 row">
                                     <label for="createdDate" class="col-sm-2 col-form-label">생성일자:</label>
                                     <div class="col-sm-10">
-                                        <input type="date" class="form-control" id="createdDate" value="{{createdDate}}">
+                                        <input type="date" class="form-control" id="createdDate" name="createdDate" value="{{createdDate}}" required>
                                     </div>
                                 </div>
                                 <div class="mb-3 row">
                                     <label for="targetCloseDate" class="col-sm-2 col-form-label">마감기한:</label>
                                     <div class="col-sm-10">
-                                        <input type="date" class="form-control" id="targetCloseDate" value="{{targetCloseDate}}">
+                                        <input type="date" class="form-control" id="targetCloseDate" name="targetCloseDate" value="{{targetCloseDate}}" required>
                                     </div>
                                 </div>
                                 <div class="mb-3 row">
                                     <label for="opportunityStatus" class="col-sm-2 col-form-label">기회상태:</label>
                                     <div class="col-sm-10">
-                                        <select class="form-control" id="opportunityStatus">
+                                        <select class="form-control" id="opportunityStatus" name="opportunityStatus" required>
                                             <option value="Qualification">Qualification</option>
                                             <option value="Needs Analysis">Needs Analysis</option>
                                             <option value="Proposal">Proposal</option>
@@ -134,59 +193,71 @@
                                 <div class="mb-3 row">
                                     <label for="opportunityName" class="col-sm-2 col-form-label">기회 명:</label>
                                     <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="opportunityName" value="{{opportunityName}}">
+                                        <input type="text" class="form-control" id="opportunityName" name="opportunityName" value="{{opportunityName}}" required>
                                     </div>
                                 </div>
                                 <div class="mb-3 row">
                                     <label for="owner" class="col-sm-2 col-form-label">기회 담당자:</label>
                                     <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="owner" value="">
+                                        <input type="text" class="form-control" id="owner" name="owner" value="">
                                     </div>
                                 </div>
                                 <div class="mb-3 row">
                                     <label for="successRate" class="col-sm-2 col-form-label">성공률:</label>
                                     <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="successRate" value="{{successRate}}">
+                                        <input type="text" class="form-control" id="successRate" name="successRate" value="{{successRate}}" required>
                                     </div>
                                 </div>
                                 <div class="mb-3 row">
                                     <label for="companyRevenue" class="col-sm-2 col-form-label">회사 매출:</label>
                                     <div class="col-sm-10">
-                                        <input type="number" step="0.01" class="form-control" id="companyRevenue" value="{{companyRevenue}}">
+                                        <input type="number" step="0.01" class="form-control" id="companyRevenue" name="companyRevenue" value="{{companyRevenue}}" required>
                                     </div>
                                 </div>
                                 <div class="mb-3 row">
                                     <label for="region" class="col-sm-2 col-form-label">배송지역:</label>
                                     <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="region" value="{{region}}">
+                                        <input type="text" class="form-control" id="region" name="region" value="{{region}}" required>
                                     </div>
                                 </div>
                                 <div class="mb-3 row">
                                     <label for="customerEmployee" class="col-sm-2 col-form-label">고객사 담당자:</label>
                                     <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="customerEmployee" value="{{customerEmployee}}">
+                                        <input type="text" class="form-control" id="customerEmployee" name="customerEmployee" value="{{customerEmployee}}" required>
+                                    </div>
+                                </div>
+                                <div class="mb-3 row">
+                                    <label for="opportunityInquiries" class="col-sm-2 col-form-label">고객문의사항:</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control" id="opportunityInquiries" name="opportunityInquiries" value="{{opportunityInquiries}}" required>
+                                    </div>
+                                </div>
+                                <div class="mb-3 row">
+                                    <label for="opportunityNotes" class="col-sm-2 col-form-label">기회 세부내용:</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control" id="opportunityNotes" name="opportunityNotes" value="{{opportunityNotes}}" required>
                                     </div>
                                 </div>
                                 <div class="mb-3 row">
                                     <label for="product" class="col-sm-2 col-form-label">기회 제품:</label>
                                     <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="product" value="">
+                                        <input type="text" class="form-control" id="product" name="product" value="">
                                     </div>
                                 </div>
                                 <div class="mb-3 row">
                                     <label for="quantity" class="col-sm-2 col-form-label">기회 수량:</label>
                                     <div class="col-sm-10">
-                                        <input type="number" step="0.01" class="form-control" id="quantity" value="{{quantity}}">
+                                        <input type="number" step="0.01" class="form-control" id="quantity" name="quantity" value="{{quantity}}" required>
                                     </div>
                                 </div>
                                 <div class="mb-3 row">
                                     <label for="expectedRevenue" class="col-sm-2 col-form-label">기회 매출:</label>
                                     <div class="col-sm-10">
-                                        <input type="number" step="0.01" class="form-control" id="expectedRevenue" value="{{expectedRevenue}}">
+                                        <input type="number" step="0.01" class="form-control" id="expectedRevenue" name="expectedRevenue" value="{{expectedRevenue}}" required>
                                     </div>
                                 </div>
                                 <div class="d-flex justify-content-end">
-                                    <button type="submit" id="createButton" class="btn btn-custom-create btn-sm">
+                                    <button type="submit" id="updateButton" class="btn btn-custom-create btn-sm">
                                         <i class="fas fa-plus-circle"></i> 저장
                                     </button>
                                 </div>
@@ -216,9 +287,21 @@
 
                         {{#opportunities}}
                             <tbody>
+                            <div class="progress-container">
+                                <div class="progress-bar" id="progressBar"></div>
+                                <div class="progress-steps">
+                                    <div class="step" data-step="Qualification">Qualification</div>
+                                    <div class="step" data-step="Needs Analysis">Needs Analysis</div>
+                                    <div class="step" data-step="Proposal">Proposal</div>
+                                    <div class="step" data-step="Negotiation">Negotiation</div>
+                                    <div class="step" data-step="Closed">Closed</div>
+                                </div>
+                            </div>
 
                             </tbody>
                         {{/opportunities}}
+
+
                     </table>
                 </div>
             </div>
@@ -285,7 +368,90 @@
         // 폼에 데이터 채우기
         document.getElementById("opportunityStatus").value = opportunityStatus;
         });
-        {{/opportunities}}
+
+
+
+        document.addEventListener("DOMContentLoaded", function() {
+        document.getElementById("deleteButton").addEventListener("click", function(event) {
+            event.preventDefault(); // 기본 링크 동작을 막습니다.
+
+            // 사용자 확인 대화 상자 표시
+            var confirmDelete = confirm("정말 삭제하시겠습니까?");
+
+            if (confirmDelete) {
+                // 사용자가 확인을 클릭한 경우 링크를 따라 갑니다.
+                window.location.href = this.href;
+            }
+        });
+    });
+
+
+
+
+
+    document.addEventListener("DOMContentLoaded", function() {
+        var form = document.getElementById("opportunityForm");
+        var currentUrl = window.location.pathname;
+
+        // 현재 URL이 "/opportunities/detail/create"인 경우 폼 액션을 변경
+        if (currentUrl === "/opportunities/detail/create") {
+            form.action = "/opportunities/detail/create";
+        }
+
+        // 저장 버튼 클릭 시 변경사항 저장 여부 확인
+        document.getElementById("updateButton").addEventListener("click", function(event) {
+            var confirmSave = confirm("변경사항을 저장하겠습니까?");
+
+            if (!confirmSave) {
+                // 사용자가 취소를 클릭한 경우 폼 제출 중단
+                event.preventDefault();
+            }
+        });
+    });
+
+
+
+
+
+    document.addEventListener("DOMContentLoaded", function() {
+        var progressSteps = document.querySelectorAll(".step");
+        var progressBar = document.getElementById("progressBar");
+        var opportunityStatus = "{{opportunityStatus}}"; // 현재 진행상황
+
+        var steps = ["Qualification", "Needs Analysis", "Proposal", "Negotiation", "Closed"];
+        var currentIndex = -1;
+
+        // 진행상황 업데이트
+        if (opportunityStatus.startsWith("Closed")) {
+            currentIndex = steps.indexOf("Closed");
+        } else {
+            currentIndex = steps.indexOf(opportunityStatus);
+        }
+
+        if (currentIndex !== -1) {
+            var progressWidth = (currentIndex / (steps.length - 1)) * 100;
+
+            // `Closed` 단계일 경우 한스텝 줄이기
+            if (opportunityStatus.startsWith("Closed")) {
+                progressWidth -= (100 / steps.length);
+            }
+
+            progressBar.style.width = progressWidth + "%";
+
+            for (var i = 0; i <= currentIndex; i++) {
+                progressSteps[i].classList.add("active");
+            }
+        }
+    });
+
+
+
+
+
+
+
+
+    {{/opportunities}}
     </script>
 
 

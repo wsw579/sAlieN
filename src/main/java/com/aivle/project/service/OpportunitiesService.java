@@ -17,9 +17,11 @@ public class OpportunitiesService {
 
     private final OpportunitiesRepository opportunitiesRepository;
 
+
     // Create
     public void createOpportunities(OpportunitiesDto dto) {
         OpportunitiesEntity opportunitiesEntity = new OpportunitiesEntity();
+
         opportunitiesEntity.setOpportunityName(dto.getOpportunityName());
         opportunitiesEntity.setRegion(dto.getRegion());
         opportunitiesEntity.setCompanySize(dto.getCompanySize());
@@ -38,11 +40,12 @@ public class OpportunitiesService {
 
     // Read
     public List<OpportunitiesEntity> readOpportunities() {
-        return opportunitiesRepository.findAll();
+        return opportunitiesRepository.findAllByOrderByCreatedDateAndIdDesc();
     }
 
 
     // Update
+    @Transactional
     public void updateOpportunities(Long opportunityId, OpportunitiesDto dto) {
         OpportunitiesEntity opportunitiesEntity = opportunitiesRepository.findById(opportunityId)
                 .orElseThrow(() -> new IllegalArgumentException("Opportunity not found"));
@@ -67,6 +70,14 @@ public class OpportunitiesService {
     public void deleteOpportunities(Long opportunityId) {
         opportunitiesRepository.deleteById(opportunityId);
     }
+
+
+
+    public void deleteOpportunitiesByIds(List<Long> ids) {
+        opportunitiesRepository.deleteAllById(ids);
+    }
+
+
 
     // Search
     public OpportunitiesEntity searchOpportunities(Long opportunityId) {
