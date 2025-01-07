@@ -11,6 +11,7 @@ import lombok.Setter;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -65,6 +66,10 @@ public class OpportunitiesEntity implements Serializable {
 
 
     // 외래키 부분
+
+    @OneToMany(mappedBy = "opportunity", cascade = CascadeType.ALL)
+    private List<OpportunitiesCommentEntity> comments;
+
 
     //@ManyToOne
     //@JoinColumn
