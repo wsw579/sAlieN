@@ -1,0 +1,283 @@
+{{>main/header}}
+
+<style>
+    .button-container {
+        display: flex;
+        justify-content: flex-end; /* 오른쪽 정렬 */
+        gap: 10px; /* 버튼 간격 */
+    }
+    .btn-custom-create {
+        background-color: #d4edda; /* 파스텔 그린 */
+        border-color: #c3e6cb;
+        color: #155724;
+    }
+    .btn-custom-delete {
+        background-color: #f8d7da; /* 파스텔 레드 */
+        border-color: #f5c6cb;
+        color: #721c24;
+    }
+    .btn-custom-create:hover {
+        background-color: #c3e6cb; /* 약간 어두운 그린 */
+        border-color: #b1dfbb;
+    }
+    .btn-custom-delete:hover {
+        background-color: #f5c6cb; /* 약간 어두운 레드 */
+        border-color: #f1b0b7;
+    }
+    .btn-sm {
+        font-size: 0.875rem; /* 버튼 폰트 크기 감소 */
+        padding: 0.25rem 0.5rem; /* 패딩 감소 */
+    }
+
+
+    .container {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+    }
+    .col-form-label {
+        font-weight: bold;
+    }
+    .btn-primary {
+        background-color: #6c757d;
+        border: none;
+    }
+    .btn-primary:hover {
+        background-color: #5a6268;
+    }
+
+
+</style>
+
+
+
+
+
+<div id="layoutSidenav_content">
+    <main>
+        <div class="container-fluid px-4">
+            <h1 class="mt-4">Opportunities</h1>
+            <ol class="breadcrumb mb-4">
+                <li class="breadcrumb-item active">Opportunities</li>
+            </ol>
+            <!-- 상단 데이터 요약 카드 바 -->
+            <div class="row">
+                <div class="col-xl-3 col-md-6">
+                    <div class="card bg-primary text-white mb-4">
+                        <div class="card-body">진행중 기회</div>
+                        <div class="card-footer d-flex align-items-center justify-content-between">
+                            <h3 id="ongoingCount"></h3>
+                            <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="card bg-warning text-white mb-4">
+                        <div class="card-body">마감일자 초과</div>
+                        <div class="card-footer d-flex align-items-center justify-content-between">
+                            <h3 id="overdueCount"></h3>
+                            <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="card bg-success text-white mb-4">
+                        <div class="card-body">계약 전환 성공</div>
+                        <div class="card-footer d-flex align-items-center justify-content-between">
+                            <h3 id="closedCount"></h3>
+                            <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="card bg-danger text-white mb-4">
+                        <div class="card-body">기회 보류</div>
+                        <div class="card-footer d-flex align-items-center justify-content-between">
+                            <h3 id="pendingCount"></h3>
+                            <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+
+                <!-- 차트1 -->
+                <div class="col-xl-6">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-chart-area me-1"></i>
+                            연간 계약 전환 현황
+                        </div>
+                        <div class="card-body"><canvas id="opportunitiesReadChart" width="100%" height="40"></canvas></div>
+                    </div>
+                </div>
+
+                <!-- 차트2 -->
+                <div class="col-xl-6">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-chart-bar me-1"></i>
+                            연간 계약 전환 누적 현황
+                        </div>
+                        <div class="card-body"><canvas id="opportunitiesReadBar" width="100%" height="40"></canvas></div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- 기회테이블 -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-table me-1"></i>
+                    My Opportunities
+                </div>
+                <div class="card-body">
+                    <table id="datatablesSimple">
+
+                        <div class="button-container mb-3">
+                            <a href="/opportunities/detail/create" class="btn btn-custom-create btn-sm" id="createButton">
+                                <i class="fas fa-plus-circle"></i> 신규
+                            </a>
+
+                            <button class="btn btn-custom-delete btn-sm" id="deleteButton">
+                                <i class="fas fa-plus-circle"></i> 삭제
+                            </button>
+                        </div>
+
+                        <thead>
+                        <tr>
+                            <th></th>
+                            <th>ID</th>
+                            <th>생성일자</th>
+                            <th>기회명</th>
+                            <!-- <th>계정이름</th> -->
+                            <!-- <th>제품명</th> -->
+                            <th>기회매출</th>
+                            <th>상태</th>
+                            <th>마감일자</th>
+                            <th>성공률</th>
+                            <!-- <th>기회소유자</th> -->
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {{#opportunities}}
+                        <tr data-index="{{opportunityId}}">
+                            <td><input type="checkbox" class="select-row" value="{{opportunityId}}" ></td>
+                            <td>{{opportunityId}}</td>
+                            <td>{{createdDate}}</td>
+                            <td><a href="/opportunities/detail/{{opportunityId}}">{{opportunityName}}</a></td>
+                            <!-- <td>계정이름</td> -->
+                            <!-- <td>제품명</td> -->
+                            <td>{{expectedRevenue}}</td>
+                            <td>{{opportunityStatus}}</td>
+                            <td>{{targetCloseDate}}</td>
+                            <td>{{successRate}}</td>
+                            <!-- <td>기회소유자</td> -->
+
+                        </tr>
+                        {{/opportunities}}
+                        </tbody>
+
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var rows = document.querySelectorAll("#datatablesSimple tbody tr");
+            var now = new Date();
+
+            var ongoingCount = 0;
+            var overdueCount = 0;
+            var closedCount = 0;
+            var pendingCount = 0;
+
+            rows.forEach(function(row) {
+                var status = row.querySelector("td:nth-child(6)").innerText;
+                var targetCloseDate = new Date(row.querySelector("td:nth-child(7)").innerText);
+
+                if (!status.startsWith("Closed")) {
+                    ongoingCount++;
+                }
+
+                if (status === "Closed(won)") {
+                    closedCount++;
+                }
+                if (status === "Pending") {
+                    pendingCount++;
+                }
+                if (targetCloseDate < now && !status.startsWith("Closed")) {
+                    overdueCount++;
+                }
+            });
+
+            document.getElementById("ongoingCount").innerText = `${ongoingCount} 건`;
+            document.getElementById("overdueCount").innerText = `${overdueCount} 건`;
+            document.getElementById("closedCount").innerText = `${closedCount} 건`;
+            document.getElementById("pendingCount").innerText = `${pendingCount} 건`;
+        });
+
+
+
+
+
+
+
+
+    document.addEventListener("DOMContentLoaded", function() {
+        var deleteButton = document.getElementById("deleteButton");
+        if (deleteButton) {
+            deleteButton.addEventListener("click", function() {
+                var selectedCheckboxes = document.querySelectorAll(".select-row:checked");
+                var selectedIds = [];
+
+                selectedCheckboxes.forEach(function(checkbox) {
+                    var opportunityId = checkbox.value;
+                    console.log("Opportunity ID:", opportunityId); // 로그 추가
+                    selectedIds.push(opportunityId);
+                });
+
+                if (selectedIds.length > 0) {
+                    var confirmDelete = confirm("선택한 항목들을 삭제하시겠습니까?");
+
+                    if (confirmDelete) {
+                        console.log("Deleting IDs:", selectedIds); // 로그 추가
+                        fetch("/opportunities/detail/delete", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({ ids: selectedIds })
+                        }).then(response => {
+                            if (response.ok) {
+                                // 서버 응답이 성공적이면 리다이렉트 수행
+                                window.location.href = "/opportunities";
+                            } else {
+                                alert("삭제 중 오류가 발생했습니다.");
+                            }
+                        }).catch(error => {
+                            console.error("Error:", error);
+                            alert("삭제 중 오류가 발생했습니다.");
+                        });
+                    }
+                } else {
+                    alert("삭제할 항목을 선택해 주세요.");
+                }
+            });
+        }
+    });
+
+
+
+
+
+    </script>
+
+    <script src="/assets/demo/opportunities-read-chart.js"></script>
+    <script src="/assets/demo/opportunities-read-bar.js"></script>
+
+{{>main/footer}}
