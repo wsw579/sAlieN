@@ -1,0 +1,212 @@
+{{>main/header}}
+
+<style>
+    .button-container {
+        display: flex;
+        justify-content: flex-end; /* 오른쪽 정렬 */
+        gap: 10px; /* 버튼 간격 */
+    }
+    .btn-custom-create {
+        background-color: #d4edda; /* 파스텔 그린 */
+        border-color: #c3e6cb;
+        color: #155724;
+    }
+    .btn-custom-delete {
+        background-color: #f8d7da; /* 파스텔 레드 */
+        border-color: #f5c6cb;
+        color: #721c24;
+    }
+    .btn-custom-create:hover {
+        background-color: #c3e6cb; /* 약간 어두운 그린 */
+        border-color: #b1dfbb;
+    }
+    .btn-custom-delete:hover {
+        background-color: #f5c6cb; /* 약간 어두운 레드 */
+        border-color: #f1b0b7;
+    }
+    .btn-sm {
+        font-size: 0.875rem; /* 버튼 폰트 크기 감소 */
+        padding: 0.25rem 0.5rem; /* 패딩 감소 */
+    }
+
+
+    .container {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+    }
+    .col-form-label {
+        font-weight: bold;
+    }
+    .btn-primary {
+        background-color: #6c757d;
+        border: none;
+    }
+    .btn-primary:hover {
+        background-color: #5a6268;
+    }
+
+
+</style>
+
+
+
+
+
+<div id="layoutSidenav_content">
+    <main>
+        <div class="container-fluid px-4">
+            <h1 class="mt-4">Orders</h1>
+            <ol class="breadcrumb mb-4">
+                <li class="breadcrumb-item active">Orders</li>
+            </ol>
+            <div class="row">
+            </div>
+            <div class="row">
+                <div class="col-xl-6">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-chart-area me-1"></i>
+                            연간 주문 현황
+                        </div>
+                        <div class="card-body"><canvas id="myAreaChart" width="100%" height="40"></canvas></div>
+                    </div>
+                </div>
+                <div class="col-xl-6">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-chart-bar me-1"></i>
+                            연간 주문 누적 현황
+                        </div>
+                        <div class="card-body"><canvas id="myBarChart" width="100%" height="40"></canvas></div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-table me-1"></i>
+                    Orders detail
+                </div>
+                <div class="card-body">
+                    <table id="orders_detail">
+
+                        <div class="button-container mb-3">
+                            <button id="createButton" class="btn btn-custom-create btn-sm">
+                                <i class="fas fa-plus-circle"></i> 신규
+                            </button>
+                            <button id="deleteButton" class="btn btn-custom-delete btn-sm">
+                                <i class="fas fa-trash-alt"></i> 삭제
+                            </button>
+                        </div>
+
+                        {{#orders}}
+
+                            <form id="orderForm">
+                                <div class="mb-3 row">
+                                    <label for="orderDate" class="col-sm-2 col-form-label">발주일자:</label>
+                                    <div class="col-sm-10">
+                                        <input type="date" class="form-control" id="orderDate" value="{{orderDate}}">
+                                    </div>
+                                </div>
+                                <div class="mb-3 row">
+                                    <label for="salesDate" class="col-sm-2 col-form-label">매출일자:</label>
+                                    <div class="col-sm-10">
+                                        <input type="date" class="form-control" id="salesDate" value="{{salesDate}}">
+                                    </div>
+                                </div>
+                                <div class="mb-3 row">
+                                    <label for="orderStatus" class="col-sm-2 col-form-label">주문상태:</label>
+                                    <div class="col-sm-10">
+                                        <select class="form-control" id="orderStatus">
+                                            <option value="none">none</option>
+                                            <option value="draft">draft</option>
+                                            <option value="activated">activated</option>
+                                            <option value="cancelled">cancelled</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="mb-3 row">
+                                    <label for="orderAmount" class="col-sm-2 col-form-label">수량:</label>
+                                    <div class="col-sm-10">
+                                        <input type="number" class="form-control" id="orderAmount" value="{{orderAmount}}">
+                                    </div>
+                                </div>
+                                <div class="mb-3 row">
+                                    <label for="productId" class="col-sm-2 col-form-label">제품ID:</label>
+                                    <div class="col-sm-10">
+                                        <input type="number" class="form-control" id="productId" value="{{productId}}">
+                                    </div>
+                                </div>
+                                <div class="mb-3 row">
+                                    <label for="contractId" class="col-sm-2 col-form-label">계약ID:</label>
+                                    <div class="col-sm-10">
+                                        <input type="number" class="form-control" id="contractId" value="{{contractId}}">
+                                    </div>
+                                </div>
+                                <div class="mb-3 row">
+                                    <label for="partnerOpId" class="col-sm-2 col-form-label">파트너OPID:</label>
+                                    <div class="col-sm-10">
+                                        <input type="number" step="0.01" class="form-control" id="partnerOpId" value="">
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-end">
+                                    <button type="submit" id="createButton" class="btn btn-custom-create btn-sm">
+                                        <i class="fas fa-plus-circle"></i> 저장
+                                    </button>
+                                </div>
+                            </form>
+
+                        {{/orders}}
+
+
+
+
+
+                    </table>
+                </div>
+            </div>
+
+
+
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-table me-1"></i>
+                    Orders Status
+                </div>
+                <div class="card-body">
+                    <table id="orders_status">
+
+
+                        {{#orders}}
+                            <tbody>
+
+                            </tbody>
+                        {{/orders}}
+                    </table>
+                </div>
+            </div>
+
+
+        </div>
+    </main>
+
+
+    <script>
+        {{#orders}}
+        document.addEventListener("DOMContentLoaded", function() {
+            // Mustache 템플릿에서 서버 데이터를 가져옴
+            var orderStatus = "{{orderStatus}}";
+
+        // 폼에 데이터 채우기
+        document.getElementById("orderStatus").value = orderStatus;
+        });
+    {{/orders}}
+    </script>
+
+
+
+    {{>main/footer}}
