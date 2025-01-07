@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -67,7 +69,10 @@ public class OpportunitiesService {
         opportunitiesEntity.setOpportunityStatus(dto.getOpportunityStatus());
         opportunitiesEntity.setSuccessRate(dto.getSuccessRate());
         opportunitiesRepository.save(opportunitiesEntity);
+
     }
+
+
 
     // Delete
     public void deleteOpportunities(Long opportunityId) {
@@ -89,7 +94,7 @@ public class OpportunitiesService {
     }
 
 
-
+    // lead comment
     @Transactional
     public List<OpportunitiesCommentEntity> getCommentsByOpportunityId(Long opportunityId) {
         OpportunitiesEntity opportunity = searchOpportunities(opportunityId);
@@ -99,6 +104,18 @@ public class OpportunitiesService {
         comments.forEach(comment -> System.out.println("Comment: " + comment.getContent()));
 
         return comments;
+    }
+
+    // create comment
+    @Transactional
+    public void createComment(String content, Long opportunityId, String author) {
+        OpportunitiesEntity opportunity = searchOpportunities(opportunityId);
+        OpportunitiesCommentEntity comment = new OpportunitiesCommentEntity();
+        comment.setContent(content);
+        comment.setCommentCreatedDate(LocalDateTime.now());
+        comment.setAuthor(author);
+        comment.setOpportunity(opportunity);
+        opportunitiesCommentRepository.save(comment);
     }
 
 

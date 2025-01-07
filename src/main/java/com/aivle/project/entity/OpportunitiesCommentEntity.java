@@ -10,6 +10,7 @@ import lombok.Setter;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @NoArgsConstructor
@@ -25,15 +26,20 @@ public class OpportunitiesCommentEntity implements Serializable {
     private String content;
 
     @Column(nullable = false)
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate commentCreatedDate;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    private LocalDateTime commentCreatedDate;
 
+    @Column(nullable = false)
+    private String author; // 작성자 임시 필드.(추후 인사ID 외부키로 대체하여 조회)
 
     // 외래키 부분
 
     @ManyToOne
     @JoinColumn(name = "opportunity_id", nullable = false)
     private OpportunitiesEntity opportunity;
+
+
+
 
 
 }

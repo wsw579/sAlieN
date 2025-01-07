@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -18,8 +19,8 @@ public class OpportunitiesCommentDto {
 
     private Long opportunityCommentId;
     private String content;
-    private LocalDate commentCreatedDate;
-
+    private LocalDateTime commentCreatedDate;
+    private String author; // 추후 인사ID필드로 대체 예정
 
     // 외래키 부분
     private OpportunitiesEntity opportunityId;

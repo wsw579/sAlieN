@@ -51,6 +51,13 @@ public class OpportunitiesController {
         return "opportunities/opportunities_detail";
     }
 
+    // create comment
+    @PostMapping("/opportunities/detail/createcomment")
+    public String createComment(@RequestParam("content") String content, @RequestParam("opportunityId") Long opportunityId) {
+        opportunitiesService.createComment(content, opportunityId, "작성자"); // 작성자 이름을 실제로 설정
+        return "redirect:/opportunities/detail/" + opportunityId + "#commentSection";
+    }
+
 
 
     // Create model page (초기값으로 페이지 생성)
