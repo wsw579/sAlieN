@@ -41,6 +41,33 @@ public class EmployeeService {
         employeeRepository.save(member);
     }
 
+    public void editPassword(EmployeeDto.Patch employee) {
+        EmployeeEntity findEmployee = employeeRepository.findByEmployeeId(employee.getEmployeeId());
+
+        // 평문 비밀번호를 암호화된 비밀번호와 비교
+        if (bCryptPasswordEncoder.matches(employee.getExistPassword(), findEmployee.getPassword())) {
+            // 비밀번호 일치 - 새 비밀번호 저장
+            findEmployee.setPassword(bCryptPasswordEncoder.encode(employee.getNewPassword())); // 새 비밀번호 암호화하여 저장
+            employeeRepository.save(findEmployee);
+        } else {
+            // 비밀번호 불일치
+            throw new IllegalArgumentException("기존 비밀번호가 일치하지 않습니다.");
+        }
+    }
+
+    public EmployeeDto.Get findEmployeeById(String employeeId) {
+        EmployeeEntity findEmployee = employeeRepository.findByEmployeeId(employeeId);
+        EmployeeDto.Get employee = new EmployeeDto.Get();
+        employee.setEmployeeId(employeeId);
+        employee.setEmployeeName(findEmployee.getEmployeeName());
+        employee.setHireDate(findEmployee.getHireDate());
+        employee.setPosition(findEmployee.getPosition());
+        employee.setTeam("영업1팀");
+        employee.setDept("영업부");
+        return employee;
+    }
+
+
 //    public MemberDto.Get findByEmployeeId(String employeeId) {
 //        MemberEntity findMember = memberRepository.findByEmployeeId(employeeId);
 //        MemberDto.Get member = new MemberDto.Get();

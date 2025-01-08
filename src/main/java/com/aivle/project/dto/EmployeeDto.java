@@ -38,5 +38,18 @@ public class EmployeeDto {
         private float baseSalary;
         private Position position;
         private Role accessPermission;
+        private String dept;
+        private String team;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    public static class Patch{
+        private String employeeId;
+        private String existPassword;
+        private String newPassword;
     }
 }
