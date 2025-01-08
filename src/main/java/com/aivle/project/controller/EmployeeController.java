@@ -47,6 +47,25 @@ public class EmployeeController {
         return "redirect:/";
     }
 
+    @GetMapping("/mypage")
+    public String mypage(){
+        return "user/mypage";
+    }
+
+    @PostMapping("/password-edit")
+    public String passwordEdit(EmployeeDto.Patch employeeDto){
+        String employeeId = employeeService.editPassword(employeeDto);
+        return "redirect:/mypage/" + employeeId;
+    }
+
+    @GetMapping("/mypage/{employeeId}")
+    public String mypage(@PathVariable("employeeId") String employeeId, Model model){
+        EmployeeDto.Get employee = employeeService.findEmployeeById(employeeId);
+        model.addAttribute("employee", employee);
+        return "user/mypage";
+    }
+
+
 //    @GetMapping("/user/{employeeId}")
 //    public String user(@PathVariable String employeeId, Model model) {
 //        memberService.findByEmployeeId(employeeId);
