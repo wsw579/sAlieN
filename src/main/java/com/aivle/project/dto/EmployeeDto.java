@@ -13,8 +13,8 @@ public class EmployeeDto {
     @AllArgsConstructor
     @ToString
     public static class Post{
-        private String userId;
-        private String name;
+        private String employeeId;
+        private String employeeName;
         private String password;
         private String position;
         private String dept;
@@ -38,5 +38,18 @@ public class EmployeeDto {
         private float baseSalary;
         private Position position;
         private Role accessPermission;
+        private String dept;
+        private String team;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    public static class Patch{
+        private String employeeId;
+        private String existPassword;
+        private String newPassword;
     }
 }
