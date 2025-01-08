@@ -17,7 +17,6 @@ import java.time.LocalDate;
 @Setter
 public class EmployeeEntity {
     @Id
-    @Column(length = 50, nullable = false)
     private String employeeId;
 
     @Column(length = 50, nullable = false)

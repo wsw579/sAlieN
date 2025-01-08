@@ -13,8 +13,8 @@ public class EmployeeDto {
     @AllArgsConstructor
     @ToString
     public static class Post{
-        private String userId;
-        private String name;
+        private String employeeId;
+        private String employeeName;
         private String password;
         private String position;
         private String dept;

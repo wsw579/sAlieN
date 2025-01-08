@@ -54,8 +54,8 @@ public class EmployeeController {
 
     @PostMapping("/password-edit")
     public String passwordEdit(EmployeeDto.Patch employeeDto){
-        employeeService.editPassword(employeeDto);
-        return "redirect:/mypage";
+        String employeeId = employeeService.editPassword(employeeDto);
+        return "redirect:/mypage/" + employeeId;
     }
 
     @GetMapping("/mypage/{employeeId}")
