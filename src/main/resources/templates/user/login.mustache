@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로그인 페이지</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #e7f0ff;
+        }
+        .login-container {
+            max-width: 400px;
+            margin: auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .logo {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="logo">
+        <img src="/assets/img/sAIes_crm_logo.png" alt="SAIEAIS CRM" class="img-fluid" style="width: 350px; height: auto;">
+    </div>
+    <div class="login-container">
+        <h3 class="text-center">로그인</h3>
+
+        <form action="/user-login" enctype="application/x-www-form-urlencoded" method="POST">
+            <div class="form-group">
+                <label for="username">사용자 이름</label>
+                <input type="text" class="form-control" id="username" name="username" placeholder="사용자 이름" required>
+            </div>
+            <div class="form-group">
+                <label for="password">암호</label>
+                <input type="password" class="form-control" id="password" name="password" placeholder="암호" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">로그인</button>
+            <!-- 로그인 실패 시 메시지 표시 -->
+            {{#error}}
+                <div id="error-message" style="color: red; text-align: center;">
+                    <p>아이디 또는 비밀번호가 일치하지 않습니다.</p>
+                </div>
+            {{/error}}
+        </form>
+        <div class="text-center mt-3">
+            <a href="#">Forgot Password?</a>
+        </div>
+        <div class="text-center">
+            <a href="/signup">Sign Up</a>
+        </div>
+    </div>
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    $(document).ready(function() {
+        const errorMessage = $('#error-message');
+        if (errorMessage.length) {
+            setTimeout(function() {
+                errorMessage.fadeOut('slow');
+            }, 3000);
+        }
+    });
+</script>
+</body>
+</html>
