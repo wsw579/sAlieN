@@ -1,4 +1,4 @@
-package com.aivle.project.entity.products;
+package com.aivle.project.enums;
 
 public enum ProductCondition {
     available,

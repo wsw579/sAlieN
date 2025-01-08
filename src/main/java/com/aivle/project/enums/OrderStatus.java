@@ -1,4 +1,4 @@
-package com.aivle.project.entity.orders;
+package com.aivle.project.enums;
 
 public enum OrderStatus {
     none,
