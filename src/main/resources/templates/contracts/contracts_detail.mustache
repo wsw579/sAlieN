@@ -1,0 +1,430 @@
+{{>main/header}}
+
+<style>
+    .button-container {
+        display: flex;
+        justify-content: flex-end; /* 오른쪽 정렬 */
+        gap: 10px; /* 버튼 간격 */
+    }
+    .btn-custom-create {
+        background-color: #d4edda; /* 파스텔 그린 */
+        border-color: #c3e6cb;
+        color: #155724;
+    }
+    .btn-custom-delete {
+        background-color: #f8d7da; /* 파스텔 레드 */
+        border-color: #f5c6cb;
+        color: #721c24;
+    }
+    .btn-custom-create:hover {
+        background-color: #c3e6cb; /* 약간 어두운 그린 */
+        border-color: #b1dfbb;
+    }
+    .btn-custom-delete:hover {
+        background-color: #f5c6cb; /* 약간 어두운 레드 */
+        border-color: #f1b0b7;
+    }
+    .btn-sm {
+        font-size: 0.875rem; /* 버튼 폰트 크기 감소 */
+        padding: 0.25rem 0.5rem; /* 패딩 감소 */
+    }
+
+
+    .container {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+    }
+    .col-form-label {
+        font-weight: bold;
+    }
+    .btn-primary {
+        background-color: #6c757d;
+        border: none;
+    }
+    .btn-primary:hover {
+        background-color: #5a6268;
+    }
+
+
+
+
+
+
+
+.progress-container {
+    position: relative;
+    width: 100%;
+    height: 70px; /* 높이를 조금 늘립니다 */
+    margin: 20px 0;
+}
+
+.progress-bar {
+    position: absolute;
+    top: 38%; /* 중앙 정렬 */
+    left: 10%; /* Qualification 원의 중앙에서 시작하도록 조정합니다 */
+    transform: translateY(-50%);
+    width: 0;
+    height: 10px;
+    background-color: green;
+    transition: width 0.4s ease;
+}
+
+.progress-steps {
+    display: flex;
+    justify-content: space-between;
+    position: absolute;
+    top: 50%; /* 중앙 정렬 */
+    width: 100%;
+    transform: translateY(-50%);
+}
+
+.step {
+    width: 20%;
+    text-align: center;
+    position: relative;
+    padding-top: 30px; /* 텍스트를 아래로 내리기 위해 패딩 추가 */
+}
+
+
+.step::before {
+    content: '';
+    position: absolute;
+    top: 16%; /* 원의 위치를 조정합니다 */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: white;
+    border: 2px solid green;
+    transition: background-color 0.4s ease, border-color 0.4s ease;
+}
+
+.step.active::before {
+    background-color: green;
+    border-color: green;
+}
+
+
+
+        .comment-section {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+            width: 100%;
+        }
+        .comment {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 10px;
+            background-color: #f1f1f1;
+            position: relative;
+            width: calc(100% - 20px);
+        }
+        .comment .author {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .comment .timestamp {
+            font-size: 0.8em;
+            color: #888;
+            position: absolute;
+            bottom: 5px;
+            right: 10px;
+        }
+        .comment-form {
+            display: flex;
+            width: 100%;
+            align-items: center;
+            margin-top: 10px;
+            background-color: #f9f9f9;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .comment-form input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-right: 10px;
+            font-size: 16px;
+        }
+        .comment-form button {
+            padding: 10px 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .comment-form button:hover {
+            background-color: #0056b3;
+        }
+
+</style>
+
+
+
+
+
+<div id="layoutSidenav_content">
+    <main>
+        <div class="container-fluid px-4">
+            <h1 class="mt-4">Contracts</h1>
+            <ol class="breadcrumb mb-4">
+                <li class="breadcrumb-item active">Contracts</li>
+            </ol>
+            <div class="row">
+            </div>
+            <div class="row">
+            </div>
+
+            <!-- 계약 상태 부분 -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-table me-1"></i>
+                    Contracts Status
+                </div>
+                <div class="card-body">
+                    <table id="contracts_status">
+
+
+                        {{#contracts}}
+                            <tbody>
+                            <div class="progress-container">
+                                <div class="progress-bar" id="progressBar"></div>
+                                <div class="progress-steps">
+                                    <div class="step" data-step="Qualification">Draft</div>
+                                    <div class="step" data-step="Needs Analysis">In Approval Progress</div>
+                                    <div class="step" data-step="Proposal">Activated</div>
+                                </div>
+                            </div>
+
+                            </tbody>
+                        {{/contracts}}
+
+
+                    </table>
+                </div>
+            </div>
+
+
+            <!-- 계약 상세내용 부분 -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-table me-1"></i>
+                    Contracts detail
+                </div>
+                <div class="card-body">
+                    <table id="contracts_detail">
+                        {{#contracts}}
+                        <div class="button-container mb-3">
+                            <a href="/contracts/detail/create" class="btn btn-custom-create btn-sm" id="createButton">
+                                <i class="fas fa-plus-circle"></i> 신규
+                            </a>
+
+                            {{#contractId}}
+                            <a href="/contracts/detail/{{contractId}}/delete" class="btn btn-custom-delete btn-sm" id="deleteButton">
+                                <i class="fas fa-plus-circle"></i> 삭제
+                            </a>
+                            {{/contractId}}
+                            {{^contractId}}
+                                <a href="/contracts" class="btn btn-custom-delete btn-sm" id="deleteButton">
+                                    <i class="fas fa-plus-circle"></i> 삭제
+                                </a>
+                            {{/contractId}}
+
+                        </div>
+
+                            {{#contractId}}
+                            <form id="contractForm" action="/contracts/detail/{{contractId}}/update" method="POST">
+                            {{/contractId}}
+                            {{^contractId}}
+                            <form id="contractForm" action="/contracts/detail/create" method="POST">
+                            {{/contractId}}
+
+
+                                <div class="mb-3 row">
+                                    <label for="createdDate" class="col-sm-2 col-form-label">계약 번호:</label>
+                                    <div class="col-sm-10">
+                                        <input type="date" class="form-control" id="contractId" name="contractId" value="{{contractId}}" required>
+                                    </div>
+                                </div>
+                                <div class="mb-3 row">
+                                    <label for="createdDate" class="col-sm-2 col-form-label">시작일자:</label>
+                                    <div class="col-sm-10">
+                                        <input type="date" class="form-control" id="startDate" name="startDate" value="{{startDate}}" required>
+                                    </div>
+                                </div>
+                                <div class="mb-3 row">
+                                    <label for="targetCloseDate" class="col-sm-2 col-form-label">마감기한:</label>
+                                    <div class="col-sm-10">
+                                        <input type="date" class="form-control" id="terminationDate" name="terminationDate" value="{{terminationDate}}" required>
+                                    </div>
+                                </div>
+                                <div class="mb-3 row">
+                                    <label for="contractStatus" class="col-sm-2 col-form-label">계약 상태:</label>
+                                    <div class="col-sm-10">
+                                        <select class="form-control" id="contractStatus" name="contractStatus" required>
+                                            <option value="Qualification">Draft</option>
+                                            <option value="Needs Analysis">In Approval Process</option>
+                                            <option value="Proposal">Activated</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="mb-3 row">
+                                    <label for="owner" class="col-sm-2 col-form-label">계약 소유자:</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control" id="owner" name="owner" value="">
+                                    </div>
+                                </div>
+                                <div class="mb-3 row">
+                                    <label for="product" class="col-sm-2 col-form-label">계약 제품:</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control" id="product" name="product" value="">
+                                    </div>
+                                </div>
+                                <div class="mb-3 row">
+                                    <label for="quantity" class="col-sm-2 col-form-label">계약 수량:</label>
+                                    <div class="col-sm-10">
+                                        <input type="number" step="0.01" class="form-control" id="contractAmount" name="contractAmount" value="{{contractAmount}}" required>
+                                    </div>
+                                </div>
+                                <div class="mb-3 row">
+                                    <label for="expectedRevenue" class="col-sm-2 col-form-label">계약 가격:</label>
+                                    <div class="col-sm-10">
+                                        <input type="number" step="0.01" class="form-control" id="contractSales" name="contractSales" value="{{contractSales}}" required>
+                                    </div>
+                                </div>
+                                <div class="mb-3 row">
+                                    <label for="opportunityNotes" class="col-sm-2 col-form-label">계약 세부내용:</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control" id="contractDetail" name="contractDetail" value="{{contractDetail}}" required>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-end">
+                                    <button type="submit" id="updateButton" class="btn btn-custom-create btn-sm">
+                                        <i class="fas fa-plus-circle"></i> 저장
+                                    </button>
+                                </div>
+                            </form>
+
+                        {{/contracts}}
+                    </table>
+                </div>
+            </div>
+
+
+
+
+
+
+            <!-- 주문 부분 -->
+            {{#contracts.contractId}}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-table me-1"></i>
+                    Order
+                </div>
+
+            </div>
+            {{/contracts.contractId}}
+
+        </div>
+    </main>
+
+
+    <script>
+
+        // Form 부분 기회상태 초기값 연동 JS (select Form은 html로 초기 value 지정이 안되어서 JS로 처리)
+
+        {{#contracts}}
+        document.addEventListener("DOMContentLoaded", function() {
+            // Mustache 템플릿에서 서버 데이터를 가져옴
+            var contractStatus = "{{contractStatus}}";
+
+        // 폼에 데이터 채우기
+        document.getElementById("contractStatus").value = contractStatus;
+        });
+
+        document.addEventListener("DOMContentLoaded", function() {
+        document.getElementById("deleteButton").addEventListener("click", function(event) {
+            event.preventDefault(); // 기본 링크 동작을 막습니다.
+
+            // 사용자 확인 대화 상자 표시
+            var confirmDelete = confirm("정말 삭제하시겠습니까?");
+
+            if (confirmDelete) {
+                // 사용자가 확인을 클릭한 경우 링크를 따라 갑니다.
+                window.location.href = this.href;
+            }
+        });
+    });
+
+
+
+
+    // Form 삭제버튼 클릭 시 현 주소가 create인경우 create로 action주소 변경.
+
+    document.addEventListener("DOMContentLoaded", function() {
+        var form = document.getElementById("contractForm");
+        var currentUrl = window.location.pathname;
+
+        // 현재 URL이 "/contracts/detail/create"인 경우 폼 액션을 변경
+        if (currentUrl === "/contracts/detail/create") {
+            form.action = "/contracts/detail/create";
+        }
+
+        // 저장 버튼 클릭 시 변경사항 저장 여부 확인
+        document.getElementById("updateButton").addEventListener("click", function(event) {
+            var confirmSave = confirm("변경사항을 저장하겠습니까?");
+
+            if (!confirmSave) {
+                // 사용자가 취소를 클릭한 경우 폼 제출 중단
+                event.preventDefault();
+            }
+        });
+    });
+
+
+
+
+    // 현재 진행상황 bar JS
+    document.addEventListener("DOMContentLoaded", function() {
+        var progressSteps = document.querySelectorAll(".step");
+        var progressBar = document.getElementById("progressBar");
+        var contractStatus = "{{contractStatus}}"; // 현재 진행상황
+
+        // 단계 목록을 원하는 단계로 바꿉니다.
+        var steps = ["Draft", "In Approval Progress", "Activated"];
+        var currentIndex = -1;
+
+        // 현재 상태가 steps 배열 중 몇 번째인지 확인
+        currentIndex = steps.indexOf(contractStatus);
+
+        // 유효한 단계일 경우에만 진행도 표시
+        if (currentIndex !== -1) {
+            // 진행도 계산 (가장 마지막 단계까지 100%가 되도록)
+            var progressWidth = (currentIndex / (steps.length - 1)) * 100;
+            progressBar.style.width = progressWidth + "%";
+
+            // 이미 지난 단계들에 .active 클래스 부여
+            for (var i = 0; i <= currentIndex; i++) {
+                progressSteps[i].classList.add("active");
+            }
+        }
+    });
+
+
+
+    {{/contracts}}
+    </script>
+
+
+
+    {{>main/footer}}
