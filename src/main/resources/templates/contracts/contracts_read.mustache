@@ -123,28 +123,27 @@
                         <tr>
                             <th></th>
                             <th>계약 번호</th>
-                            <!-- <th>계정 이름</th> -->
                             <th>계약 시작 날짜</th>
                             <th>계약 종료 날짜</th>
                             <th>상태</th>
-                            <!-- <th>계약 소유자</th> -->
-
                         </tr>
                         </thead>
                         <tbody>
                         {{#contracts}}
-                        <tr data-index="{{contractId}}">
-                            <td><input type="checkbox" class="select-row" value="{{contractId}}" ></td>
-                            <td>{{contractId}}</td>
-                            <!-- <td>계정이름</td> -->
-                            <td>{{startDate}}</td>
-                            <td>{{terminatedDate}}</td>
-                            <td>{{contractStatus}}</td>
-                            <!-- <td>계약 소유자</td> -->
-
-                        </tr>
+                            <tr data-index="{{contractId}}">
+                                <td><input type="checkbox" class="select-row" value="{{contractId}}"></td>
+                                <td>
+                                    <a href="/contracts/detail/{{contractId}}">
+                                        {{contractId}}
+                                    </a>
+                                </td>
+                                <td>{{startDate}}</td>
+                                <td>{{terminationDate}}</td>
+                                <td>{{contractStatus}}</td>
+                            </tr>
                         {{/contracts}}
                         </tbody>
+
 
                     </table>
                 </div>

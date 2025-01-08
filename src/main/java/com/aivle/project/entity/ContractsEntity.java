@@ -41,15 +41,15 @@ public class ContractsEntity implements Serializable {
     @Column(nullable = false)
     private float contractAmount;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String contractClassification;
 
 
     // 외래키 부분
 
-    @ManyToOne
-    @JoinColumn(name = "opportunity_id", nullable = false)
-    private OpportunitiesEntity opportunity;
+//    @ManyToOne
+//    @JoinColumn(name = "opportunity_id", nullable = false)
+//    private OpportunitiesEntity opportunity;
 
 //    @ManyToOne
 //    @JoinColumn(name = "account_id", nullable = false)

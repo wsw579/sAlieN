@@ -64,7 +64,7 @@ public class ContractsController {
 
         ContractsEntity contracts = new ContractsEntity();
 
-        contracts.setContractStatus("");
+        contracts.setContractStatus("Draft");
         contracts.setStartDate(LocalDate.now());
         contracts.setTerminationDate(LocalDate.now());
         contracts.setContractDetail("");
