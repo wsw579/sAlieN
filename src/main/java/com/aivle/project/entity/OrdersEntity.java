@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+
 import java.io.Serializable;
 import java.time.LocalDate;
 
@@ -37,11 +38,11 @@ public class OrdersEntity implements Serializable {
     @Column(nullable = false)
     private String orderStatus;
 
-//    @ManyToOne -> entity생성시 해당 코드로 변경
-//    @JoinColumn(name = "contract_id", nullable = false)
-//    private Contract contract;
-    @Column(name = "contract_id", nullable = false)
-    private Long contractId;
+    @ManyToOne
+    @JoinColumn(name = "contract_id", nullable = false)
+    private ContractsEntity contract;
+//    @Column(name = "contract_id", nullable = false)
+//    private Long contractId;
 
 //    @ManyToOne
 //    @JoinColumn(name = "product_id", nullable = false)

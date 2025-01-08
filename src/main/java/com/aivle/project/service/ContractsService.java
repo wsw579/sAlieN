@@ -2,7 +2,9 @@ package com.aivle.project.service;
 
 import com.aivle.project.dto.ContractsDto;
 import com.aivle.project.entity.ContractsEntity;
+import com.aivle.project.entity.OrdersEntity;
 import com.aivle.project.repository.ContractsRepository;
+import com.aivle.project.repository.OrdersRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,7 @@ import java.util.List;
 public class ContractsService {
 
     private final ContractsRepository contractsRepository;
+    private final OrdersRepository ordersRepository;
 
     // Create
     public void createContracts(ContractsDto dto) {
@@ -76,28 +79,16 @@ public class ContractsService {
 
 
     // lead order
-//    @Transactional
-//    public List<OrderEntity> getOrdersByContractId(Long contractId) {
-//        ContractsEntity contract = searchContracts(contractId);
-//        List<OrderEntity> orders = OrderRepository.findByContract(contract);
-//
-//        // 디버깅을 위해 로그 출력
-//        orders.forEach(comment -> System.out.println("Order: " + order.getName()));
-//
-//        return orders;
-//    }
+    @Transactional
+    public List<OrdersEntity> getOrdersByContractId(Long contractId) {
+        ContractsEntity contract = searchContracts(contractId);
+        List<OrdersEntity> orders = ordersRepository.findByContract(contract);
 
-    // create order
-//    @Transactional
-//    public void createOrder(String content, Long contractId, String author) {
-//        ContractsEntity contract = searchContracts(contractId);
-//        OrderEntity order = new OrderEntity();
-//        order.setContent(content);
-//        order.setCommentCreatedDate(LocalDateTime.now());
-//        order.setAuthor(author);
-//        order.setContract(contract);
-//        OrderRepository.save(order);
-//    }
+        // 디버깅을 위해 로그 출력
+        //orders.forEach(comment -> System.out.println("Order: " + orders.getorderId()));
+
+        return orders;
+    }
 
 
 }

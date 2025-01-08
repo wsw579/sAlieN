@@ -10,12 +10,14 @@ import lombok.Setter;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+@Table(name = "contract")
 public class ContractsEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -54,18 +56,18 @@ public class ContractsEntity implements Serializable {
 //    @ManyToOne
 //    @JoinColumn(name = "account_id", nullable = false)
 //    private AccountsEntity account;
-//
+
 //    @ManyToOne
-//    @JoinColumn(name = "personnel_id", nullable = false)
-//    private PersonnelEntity personnel;
+//    @JoinColumn(name = "employee_id", nullable = false)
+//    private EmployeeEntity employee;
 //
 //    @ManyToOne
 //    @JoinColumn(name = "product_id", nullable = false)
 //    private ProductsEntity product;
 
-    //@ManyToOne
-    //@JoinColumn
-    //private OrderEntity orderId;
+    @OneToMany(mappedBy = "contract", cascade = CascadeType.ALL)
+    private List<OrdersEntity> orders;
+
 
 
 
