@@ -1,9 +1,14 @@
 package com.aivle.project.controller;
 
 import com.aivle.project.dto.ContractsDto;
+import com.aivle.project.dto.OrdersDto;
 import com.aivle.project.entity.ContractsEntity;
+import com.aivle.project.entity.OrdersEntity;
+import com.aivle.project.repository.ContractsRepository;
 import com.aivle.project.service.ContractsService;
+import com.aivle.project.service.OrdersService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,7 +22,10 @@ import java.util.Map;
 @Controller
 @RequiredArgsConstructor
 public class ContractsController {
+
     private final ContractsService contractsService;
+    private final ContractsRepository contractsRepository;
+    private final OrdersService ordersService;
 
 
     // Read page
@@ -38,25 +46,37 @@ public class ContractsController {
     @GetMapping("/contracts/detail/{contractId}")
     public String contracts(@PathVariable Long contractId, Model model) {
         ContractsEntity contracts = contractsService.searchContracts(contractId);
-        //List<OrderEntity> orders = contractsService.getOrdersByContractId(contractId);
+        List<OrdersEntity> orders = contractsService.getOrdersByContractId(contractId);
 
         // 디버깅을 위해 로그 출력
         System.out.println("Contracts: " + contracts);
-        //orders.forEach(order -> System.out.println("Comment: " + order.getOrderId() + ", Date: " + order.getOrderDate()));
+        orders.forEach(order -> System.out.println("Order: " + order.getOrderId() + ", Date: " + order.getOrderDate()));
 
         model.addAttribute("contracts", contracts);
-        //model.addAttribute("orders", orders);
+        model.addAttribute("orders", orders);
         return "contracts/contracts_detail";
     }
 
-    // create order
-//    @PostMapping("/contracts/detail/createorder")
-//    public String createOrder(@RequestParam("content") String content, @RequestParam("contractId") Long opportunityId) {
-//        opportunitiesService.createComment(content, opportunityId, "작성자"); // 작성자 이름을 실제로 설정
-//        return "redirect:/opportunities/detail/" + opportunityId + "#commentSection";
-//    }
+    @PostMapping("/contracts/detail/{contractId}/createorder")
+    public String createOrder(@ModelAttribute OrdersDto ordersDto, @PathVariable Long contractId) {
+        ContractsEntity contract = contractsRepository.findById(contractId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid contract ID"));
+        ordersService.createOrder(ordersDto, contract);
+        return "redirect:/contracts/detail/" + contractId + "#orderSection";
+    }
 
 
+    @GetMapping("/contracts/validate")
+    @ResponseBody
+    public ResponseEntity<?> validateContract(@RequestParam Long contractId) {
+        boolean exists = contractsRepository.existsById(contractId);
+
+        if (!exists) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Invalid contract ID");
+        }
+
+        return ResponseEntity.ok(Map.of("message", "Valid contract ID"));
+    }
 
     // Create model page (초기값으로 페이지 생성)
     @GetMapping("/contracts/detail/create")

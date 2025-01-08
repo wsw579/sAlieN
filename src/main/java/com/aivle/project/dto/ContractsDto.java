@@ -1,7 +1,9 @@
 package com.aivle.project.dto;
 
 
+import com.aivle.project.entity.EmployeeEntity;
 import com.aivle.project.entity.OpportunitiesEntity;
+import com.aivle.project.entity.ProductsEntity;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -27,7 +29,7 @@ public class ContractsDto {
     private OpportunitiesEntity opportunityId;
 
 //    private AccountsEntity accountId;
-//    private PersonnelEntity personnelId;
+//    private EmployeeEntity employee;
 //    private ProductsEntity productId;
 
 

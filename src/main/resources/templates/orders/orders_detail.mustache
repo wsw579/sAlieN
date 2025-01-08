@@ -228,7 +228,7 @@
                     <div class="mb-3 row">
                         <label for="contractId" class="col-sm-2 col-form-label">계약ID:</label>
                         <div class="col-sm-10">
-                            <input type="number" class="form-control" id="contractId" name="contractId" value="{{contractId}}" required>
+                            <input type="number" class="form-control" id="contractId" name="contractId" value="{{contract.contractId}}" {{#contractId}}readonly{{/contractId}} required>
                         </div>
                     </div>
 

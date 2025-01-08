@@ -1,7 +1,9 @@
 package com.aivle.project.controller;
 
 import com.aivle.project.dto.OrdersDto;
+import com.aivle.project.entity.ContractsEntity;
 import com.aivle.project.entity.OrdersEntity;
+import com.aivle.project.repository.ContractsRepository;
 import com.aivle.project.service.OrdersService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +20,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class OrdersController {
 
+    private final ContractsRepository contractsRepository;
     private final OrdersService ordersService;
 
     // Read page
@@ -44,14 +47,21 @@ public class OrdersController {
 
     // Create order page (초기값으로 페이지 생성)
     @GetMapping("/orders/detail/create")
-    public String ordersCreate(Model model) {
+    public String ordersCreate(@RequestParam(value = "contractId", required = false) Long contractId, Model model) {
 
         OrdersEntity orders = new OrdersEntity();
         orders.setOrderDate(LocalDate.now());
         orders.setSalesDate(LocalDate.now());
         orders.setOrderAmount(0F);
         orders.setOrderStatus("draft");
-        orders.setContractId(0L);
+
+        if (contractId != null) {
+            ContractsEntity contract = contractsRepository.findById(contractId)
+                    .orElse(null);
+            orders.setContract(contract);
+            // 존재하지 않으면 null
+        }
+
         orders.setProductId(0L);
         orders.setPartnerOpId(0L);
 
@@ -60,12 +70,22 @@ public class OrdersController {
         return "orders/orders_detail";
     }
 
+
     // Create new order
+
     @PostMapping("/orders/detail/create")
-    public String ordersCreateNew(@ModelAttribute OrdersDto ordersDto) {
-        ordersService.createOrder(ordersDto);
+    public String saveOrder(@ModelAttribute OrdersDto ordersDto) {
+        // Contract ID로 ContractsEntity 조회
+        ContractsEntity contract = contractsRepository.findById(ordersDto.getContractId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid contract ID"));
+
+        // OrdersEntity 생성 및 저장
+        ordersService.createOrder(ordersDto, contract);
+
         return "redirect:/orders";
     }
+
+
 
     // Update detail page
     @PostMapping("/orders/detail/{orderId}/update")
