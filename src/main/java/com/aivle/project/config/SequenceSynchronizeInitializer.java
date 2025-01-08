@@ -11,6 +11,107 @@ public class SequenceSynchronizeInitializer {
     @PersistenceContext
     private EntityManager entityManager;
 
+
+    // contracts
+    @PostConstruct
+    @Transactional
+    public void synchronizeContractsSequence() {
+        // id의 최대값을 가져옵니다.
+        Long maxId = (Long) entityManager.createQuery("SELECT COALESCE(MAX(p.contractId), 0) FROM ContractsEntity p")
+                .getSingleResult();
+
+        // maxId가 0이면 시퀀스를 1부터 시작
+        Long nextVal = (maxId == 0) ? 1 : maxId + 1;
+
+        // PostgreSQL 시퀀스를 maxId 값으로 동기화합니다.
+        entityManager.createNativeQuery("SELECT setval('contracts_contracts_id_seq', :nextVal, false)")
+                .setParameter("nextVal", nextVal)
+                .getSingleResult();
+    }
+
+
+    // employee
+    @PostConstruct
+    @Transactional
+    public void synchronizeEmployeeSequence() {
+        // id의 최대값을 가져옵니다.
+        Long maxId = (Long) entityManager.createQuery("SELECT COALESCE(MAX(p.employeeId), 0) FROM EmployeeEntity p")
+                .getSingleResult();
+
+        // maxId가 0이면 시퀀스를 1부터 시작
+        Long nextVal = (maxId == 0) ? 1 : maxId + 1;
+
+        // PostgreSQL 시퀀스를 maxId 값으로 동기화합니다.
+        entityManager.createNativeQuery("SELECT setval('employee_employee_id_seq', :nextVal, false)")
+                .setParameter("nextVal", nextVal)
+                .getSingleResult();
+    }
+
+
+
+    // leads
+    @PostConstruct
+    @Transactional
+    public void synchronizeLeadsSequence() {
+        // id의 최대값을 가져옵니다.
+        Long maxId = (Long) entityManager.createQuery("SELECT COALESCE(MAX(p.leadsId), 0) FROM LeadsEntity p")
+                .getSingleResult();
+
+        // maxId가 0이면 시퀀스를 1부터 시작
+        Long nextVal = (maxId == 0) ? 1 : maxId + 1;
+
+        // PostgreSQL 시퀀스를 maxId 값으로 동기화합니다.
+        entityManager.createNativeQuery("SELECT setval('leads_leads_id_seq', :nextVal, false)")
+                .setParameter("nextVal", nextVal)
+                .getSingleResult();
+    }
+
+    // opportunities
+    @PostConstruct
+    @Transactional
+    public void synchronizeOpportunitiesSequence() {
+        // id의 최대값을 가져옵니다.
+        Long maxId = (Long) entityManager.createQuery("SELECT COALESCE(MAX(p.opportunityId), 0) FROM OpportunitiesEntity p")
+                .getSingleResult();
+
+        // maxId가 0이면 시퀀스를 1부터 시작
+        Long nextVal = (maxId == 0) ? 1 : maxId + 1;
+
+        // PostgreSQL 시퀀스를 maxId 값으로 동기화합니다.
+        entityManager.createNativeQuery("SELECT setval('opportunities_opportunity_id_seq', :nextVal, false)")
+                .setParameter("nextVal", nextVal)
+                .getSingleResult();
+    }
+
+
+
+
+
+
+
+
+
+    // opportunities_comments
+    @PostConstruct
+    @Transactional
+    public void synchronizeOpportunitiesCommentSequence() {
+        // id의 최대값을 가져옵니다.
+        Long maxId = (Long) entityManager.createQuery("SELECT COALESCE(MAX(p.opportunityCommentId), 0) FROM OpportunitiesCommentEntity p")
+                .getSingleResult();
+
+        // maxId가 0이면 시퀀스를 1부터 시작
+        Long nextVal = (maxId == 0) ? 1 : maxId + 1;
+
+        // PostgreSQL 시퀀스를 maxId 값으로 동기화합니다.
+        entityManager.createNativeQuery("SELECT setval('opportunities_comment_opportunity_comment_id_seq', :nextVal, false)")
+                .setParameter("nextVal", nextVal)
+                .getSingleResult();
+    }
+
+
+
+
+    // orders
     @PostConstruct
     @Transactional
     public void synchronizeOrderSequence() {
@@ -25,6 +126,7 @@ public class SequenceSynchronizeInitializer {
                 .getSingleResult();
     }
 
+    // products
     @PostConstruct
     @Transactional
     public void synchronizeProductSequence() {
