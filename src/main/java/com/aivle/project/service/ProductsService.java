@@ -18,47 +18,50 @@ public class ProductsService {
 
     // Create
     public void createProduct(ProductsDto dto) {
-        ProductsEntity productsEntity = new ProductsEntity();
-        productsEntity.setProductName(dto.getProductName());
-        productsEntity.setFixedPrice(dto.getFixedPrice());
-        productsEntity.setDealerPrice(dto.getDealerPrice());
-        productsEntity.setCostPrice(dto.getCostPrice());
-        productsEntity.setProductCondition(dto.getProductCondition());
-        productsEntity.setProductDescription(dto.getProductDescription());
-        productsEntity.setProductFamily(dto.getProductFamily());
-        productsRepository.save(productsEntity);
+        ProductsEntity productEntity = new ProductsEntity();
+
+        productEntity.setProductName(dto.getProductName());
+        productEntity.setFixedPrice(dto.getFixedPrice());
+        productEntity.setDealerPrice(dto.getDealerPrice());
+        productEntity.setCostPrice(dto.getCostPrice());
+        productEntity.setProductCondition(dto.getProductCondition());
+        productEntity.setProductDescription(dto.getProductDescription());
+        productEntity.setProductFamily(dto.getProductFamily());
+        productsRepository.save(productEntity);
     }
 
-    // Read (모든 제품 조회)
+    // Read
     public List<ProductsEntity> readProducts() {
         return productsRepository.findAll();
     }
 
     // Update
+    @Transactional
     public void updateProduct(Long productId, ProductsDto dto) {
-        ProductsEntity productsEntity = productsRepository.findById(productId)
+        ProductsEntity productEntity = productsRepository.findById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("Product not found"));
 
-        productsEntity.setProductName(dto.getProductName());
-        productsEntity.setFixedPrice(dto.getFixedPrice());
-        productsEntity.setDealerPrice(dto.getDealerPrice());
-        productsEntity.setCostPrice(dto.getCostPrice());
-        productsEntity.setProductCondition(dto.getProductCondition());
-        productsEntity.setProductDescription(dto.getProductDescription());
-        productsEntity.setProductFamily(dto.getProductFamily());
-
-        productsRepository.save(productsEntity);
+        productEntity.setProductName(dto.getProductName());
+        productEntity.setFixedPrice(dto.getFixedPrice());
+        productEntity.setDealerPrice(dto.getDealerPrice());
+        productEntity.setCostPrice(dto.getCostPrice());
+        productEntity.setProductCondition(dto.getProductCondition());
+        productEntity.setProductDescription(dto.getProductDescription());
+        productEntity.setProductFamily(dto.getProductFamily());
+        productsRepository.save(productEntity);
     }
 
     // Delete
     public void deleteProduct(Long productId) {
-        if (!productsRepository.existsById(productId)) {
-            throw new IllegalArgumentException("Product not found");
-        }
         productsRepository.deleteById(productId);
     }
 
-    // Search (특정 제품 조회)
+    // Delete multiple products by IDs
+    public void deleteProductsByIds(List<Long> ids) {
+        productsRepository.deleteAllById(ids);
+    }
+
+    // Search
     public ProductsEntity searchProduct(Long productId) {
         return productsRepository.findById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("Product not found"));

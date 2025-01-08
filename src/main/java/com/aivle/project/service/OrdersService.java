@@ -7,6 +7,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -18,46 +19,51 @@ public class OrdersService {
 
     // Create
     public void createOrder(OrdersDto dto) {
-        OrdersEntity ordersEntity = new OrdersEntity();
-        ordersEntity.setOrderDate(dto.getOrderDate());
-        ordersEntity.setSalesDate(dto.getSalesDate());
-        ordersEntity.setOrderAmount(dto.getOrderAmount());
-        ordersEntity.setOrderStatus(dto.getOrderStatus());
-        ordersEntity.setContractId(dto.getContractId());
-        ordersEntity.setProductId(dto.getProductId());
-        ordersEntity.setPartnerOpId(dto.getPartnerOpId());
-        ordersRepository.save(ordersEntity);
+        OrdersEntity orderEntity = new OrdersEntity();
+
+        orderEntity.setOrderDate(dto.getOrderDate());
+        orderEntity.setSalesDate(dto.getSalesDate());
+        orderEntity.setOrderAmount(dto.getOrderAmount());
+        orderEntity.setOrderStatus(dto.getOrderStatus());
+        orderEntity.setContractId(dto.getContractId());
+        orderEntity.setProductId(dto.getProductId());
+        orderEntity.setPartnerOpId(dto.getPartnerOpId());
+        ordersRepository.save(orderEntity);
     }
 
-    // Read (모든 주문 조회)
+    // Read
     public List<OrdersEntity> readOrders() {
         return ordersRepository.findAll();
     }
 
     // Update
+    @Transactional
     public void updateOrder(Long orderId, OrdersDto dto) {
-        OrdersEntity ordersEntity = ordersRepository.findById(orderId)
+        OrdersEntity orderEntity = ordersRepository.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+        System.out.println("Before update: " + orderEntity);
 
-        ordersEntity.setOrderDate(dto.getOrderDate());
-        ordersEntity.setSalesDate(dto.getSalesDate());
-        ordersEntity.setOrderAmount(dto.getOrderAmount());
-        ordersEntity.setOrderStatus(dto.getOrderStatus());
-        ordersEntity.setContractId(dto.getContractId());
-        ordersEntity.setProductId(dto.getProductId());
-        ordersEntity.setPartnerOpId(dto.getPartnerOpId());
-        ordersRepository.save(ordersEntity);
+        orderEntity.setOrderDate(dto.getOrderDate());
+        orderEntity.setSalesDate(dto.getSalesDate());
+        orderEntity.setOrderAmount(dto.getOrderAmount());
+        orderEntity.setOrderStatus(dto.getOrderStatus());
+        orderEntity.setContractId(dto.getContractId());
+        orderEntity.setProductId(dto.getProductId());
+        orderEntity.setPartnerOpId(dto.getPartnerOpId());
+        ordersRepository.save(orderEntity);
     }
 
     // Delete
     public void deleteOrder(Long orderId) {
-        if (!ordersRepository.existsById(orderId)) {
-            throw new IllegalArgumentException("Order not found");
-        }
         ordersRepository.deleteById(orderId);
     }
 
-    // Search (특정 주문 조회)
+    // Delete multiple orders by IDs
+    public void deleteOrdersByIds(List<Long> ids) {
+        ordersRepository.deleteAllById(ids);
+    }
+
+    // Search
     public OrdersEntity searchOrder(Long orderId) {
         return ordersRepository.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("Order not found"));
