@@ -16,9 +16,8 @@
         }
 
         var rows = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
-        var lastYearData = Array(12).fill(0);
-        var currentYearData = Array(12).fill(0);
-
+        var lastYearData = {};
+        var currentYearData = {};
         for (var i = 0; i < rows.length; i++) {
             var createdDate = new Date(rows[i].getElementsByTagName("td")[2].innerText);
             var month = createdDate.getMonth(); // 월은 0부터 시작합니다.
@@ -26,45 +25,69 @@
             var status = rows[i].getElementsByTagName("td")[4].innerText;
 
             if (year == lastYear && status === "completed") {
-                lastYearData[month]++;
+                if (lastYearData[month]) {
+                    lastYearData[month]++;
+                } else {
+                    lastYearData[month] = 1;
+                }
             }
 
             if (year == currentYear && status === "completed") {
-                currentYearData[month]++;
+                if (currentYearData[month]) {
+                    currentYearData[month]++;
+                } else {
+                    currentYearData[month] = 1;
+                }
             }
         }
 
-        // 누적 값을 계산
-        for (var month = 1; month < 12; month++) {
-            lastYearData[month] += lastYearData[month - 1];
-            currentYearData[month] += currentYearData[month - 1];
+        var labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        var lastYearChartData = [];
+        var currentYearChartData = [];
+        for (var month = 0; month < 12; month++) {
+            lastYearChartData.push(lastYearData[month] || 0);
+            currentYearChartData.push(currentYearData[month] || 0);
         }
 
-        var labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
-        // Bar Chart Example
-        var ctx = document.getElementById("ordersReadBar");
+        // Area Chart Example
+        var ctx = document.getElementById("ordersReadChart");
         if (!ctx) {
-            console.error("Canvas with ID 'ordersReadBar' not found.");
+            console.error("Canvas with ID 'ordersReadChart' not found.");
             return;
         }
 
-        var myBarChart = new Chart(ctx, {
-            type: 'bar',
+        var myLineChart = new Chart(ctx, {
+            type: 'line',
             data: {
                 labels: labels,
                 datasets: [
                     {
                         label: "Last Year (Blue)",
-                        backgroundColor: "rgba(2,117,216,1)",
+                        lineTension: 0.3,
+                        backgroundColor: "rgba(2,117,216,0.2)",
                         borderColor: "rgba(2,117,216,1)",
-                        data: lastYearData,
+                        pointRadius: 5,
+                        pointBackgroundColor: "rgba(2,117,216,1)",
+                        pointBorderColor: "rgba(255,255,255,0.8)",
+                        pointHoverRadius: 5,
+                        pointHoverBackgroundColor: "rgba(2,117,216,1)",
+                        pointHitRadius: 50,
+                        pointBorderWidth: 2,
+                        data: lastYearChartData,
                     },
                     {
                         label: "This Year (Red)",
-                        backgroundColor: "rgba(255,0,0,1)",
+                        lineTension: 0.3,
+                        backgroundColor: "rgba(255,0,0,0.2)",
                         borderColor: "rgba(255,0,0,1)",
-                        data: currentYearData,
+                        pointRadius: 5,
+                        pointBackgroundColor: "rgba(255,0,0,1)",
+                        pointBorderColor: "rgba(255,255,255,0.8)",
+                        pointHoverRadius: 5,
+                        pointHoverBackgroundColor: "rgba(255,0,0,1)",
+                        pointHitRadius: 50,
+                        pointBorderWidth: 2,
+                        data: currentYearChartData,
                     }
                 ],
             },
@@ -87,7 +110,7 @@
                             maxTicksLimit: 5
                         },
                         gridLines: {
-                            display: true
+                            color: "rgba(0, 0, 0, .125)",
                         }
                     }],
                 },
@@ -97,4 +120,3 @@
             }
         });
     });
-
