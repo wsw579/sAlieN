@@ -24,6 +24,11 @@
             <button class="btn btn-primary" id="btnNavbarSearch" type="button"><i class="fas fa-search"></i></button>
         </div>
     </form>
+    {{#id}}
+        <div class="navbar-text text-light me-3">
+            {{id}}님 반갑습니다.
+        </div>
+    {{/id}}
     <!-- Navbar-->
     <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
         <li class="nav-item dropdown">
@@ -32,7 +37,7 @@
                 <li><a class="dropdown-item" href="#!">Settings</a></li>
                 <li><a class="dropdown-item" href="#!">Activity Log</a></li>
                 <li><hr class="dropdown-divider" /></li>
-                <li><a class="dropdown-item" href="#!">Logout</a></li>
+                <li><a class="dropdown-item" href="/logout">Logout</a></li>
             </ul>
         </li>
     </ul>
@@ -68,9 +73,9 @@
                             <a class="nav-link" href="/opportunities">Opportunities</a>
                             <a class="nav-link" href="/additional_opportunities">Additional Opportunities</a>
                             <a class="nav-link" href="/contracts">Contracts</a>
-                            <a class="nav-link" href="layout-static.html">Orders</a>
+                            <a class="nav-link" href="/orders">Orders</a>
                             <a class="nav-link" href="layout-static.html">Partner</a>
-                            <a class="nav-link" href="layout-static.html">Products</a>
+                            <a class="nav-link" href="/products">Products</a>
                         </nav>
                     </div>
 
