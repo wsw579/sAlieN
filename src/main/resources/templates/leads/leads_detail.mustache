@@ -1,0 +1,338 @@
+{{>main/header}}
+
+<style>
+    .button-container {
+        display: flex;
+        justify-content: flex-end; /* 오른쪽 정렬 */
+        gap: 10px; /* 버튼 간격 */
+    }
+    .btn-custom-create {
+        background-color: #d4edda; /* 파스텔 그린 */
+        border-color: #c3e6cb;
+        color: #155724;
+    }
+    .btn-custom-delete {
+        background-color: #f8d7da; /* 파스텔 레드 */
+        border-color: #f5c6cb;
+        color: #721c24;
+    }
+    .btn-custom-create:hover {
+        background-color: #c3e6cb; /* 약간 어두운 그린 */
+        border-color: #b1dfbb;
+    }
+    .btn-custom-delete:hover {
+        background-color: #f5c6cb; /* 약간 어두운 레드 */
+        border-color: #f1b0b7;
+    }
+    .btn-sm {
+        font-size: 0.875rem; /* 버튼 폰트 크기 감소 */
+        padding: 0.25rem 0.5rem; /* 패딩 감소 */
+    }
+
+
+    .container {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+    }
+    .col-form-label {
+        font-weight: bold;
+    }
+    .btn-primary {
+        background-color: #6c757d;
+        border: none;
+    }
+    .btn-primary:hover {
+        background-color: #5a6268;
+    }
+
+
+
+
+
+
+
+.progress-container {
+    position: relative;
+    width: 100%;
+    height: 70px; /* 높이를 조금 늘립니다 */
+    margin: 20px 0;
+}
+
+.progress-bar {
+    position: absolute;
+    top: 38%; /* 중앙 정렬 */
+    left: 10%; /* Qualification 원의 중앙에서 시작하도록 조정합니다 */
+    transform: translateY(-50%);
+    width: 0;
+    height: 10px;
+    background-color: green;
+    transition: width 0.4s ease;
+}
+
+.progress-steps {
+    display: flex;
+    justify-content: space-between;
+    position: absolute;
+    top: 50%; /* 중앙 정렬 */
+    width: 100%;
+    transform: translateY(-50%);
+}
+
+.step {
+    width: 20%;
+    text-align: center;
+    position: relative;
+    padding-top: 30px; /* 텍스트를 아래로 내리기 위해 패딩 추가 */
+}
+
+
+.step::before {
+    content: '';
+    position: absolute;
+    top: 16%; /* 원의 위치를 조정합니다 */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: white;
+    border: 2px solid green;
+    transition: background-color 0.4s ease, border-color 0.4s ease;
+}
+
+.step.active::before {
+    background-color: green;
+    border-color: green;
+}
+
+</style>
+
+
+
+
+
+<div id="layoutSidenav_content">
+    <main>
+        <div class="container-fluid px-4">
+            <h1 class="mt-4">Leads</h1>
+            <ol class="breadcrumb mb-4">
+                <li class="breadcrumb-item active">Leads</li>
+            </ol>
+            <div class="row">
+            </div>
+            <div class="row">
+            </div>
+
+
+            <!-- 리드 상세내용 부분 -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-table me-1"></i>
+                    Leads detail
+                </div>
+                <div class="card-body">
+                    <table id="leads_detail">
+                        {{#leads}}
+                        <div class="button-container mb-3">
+                            <a href="/leads/detail/create" class="btn btn-custom-create btn-sm" id="createButton">
+                                <i class="fas fa-plus-circle"></i> 신규
+                            </a>
+
+                            {{#leadId}}
+                            <a href="/leads/detail/{{leadId}}/delete" class="btn btn-custom-delete btn-sm" id="deleteButton">
+                                <i class="fas fa-plus-circle"></i> 삭제
+                            </a>
+                            {{/leadId}}
+                            {{^leadId}}
+                                <a href="/leads" class="btn btn-custom-delete btn-sm" id="deleteButton">
+                                    <i class="fas fa-plus-circle"></i> 삭제
+                                </a>
+                            {{/leadId}}
+
+                        </div>
+
+                            {{#leadId}}
+                            <form id="leadForm" action="/leads/detail/{{leadId}}/update" method="POST">
+                            {{/leadId}}
+                            {{^leadId}}
+                            <form id="leadForm" action="/leads/detail/create" method="POST">
+                            {{/leadId}}
+
+
+                                <div class="mb-3 row">
+                                    <label for="createdDate" class="col-sm-2 col-form-label">생성일자:</label>
+                                    <div class="col-sm-10">
+                                        <input type="date" class="form-control" id="createdDate" name="createdDate" value="{{createdDate}}" required>
+                                    </div>
+                                </div>
+                                <div class="mb-3 row">
+                                    <label for="targetCloseDate" class="col-sm-2 col-form-label">마감기한:</label>
+                                    <div class="col-sm-10">
+                                        <input type="date" class="form-control" id="targetCloseDate" name="targetCloseDate" value="{{targetCloseDate}}" required>
+                                    </div>
+                                </div>
+                                <div class="mb-3 row">
+                                    <label for="leadStatus" class="col-sm-2 col-form-label">리드상태:</label>
+                                    <div class="col-sm-10">
+                                        <select class="form-control" id="leadStatus" name="leadStatus" required>
+                                            <option value="제안됨">제안됨</option>
+                                            <option value="검토중">검토중</option>
+                                            <option value="기회전환">기회전환</option>
+                                            <option value="제안거절">제안거절</option>
+                                            <option value="보류">보류</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="mb-3 row">
+                                    <label for="companyName" class="col-sm-2 col-form-label">회사 명:</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control" id="companyName" name="companyName" value="{{companyName}}" required>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3 row">
+                                    <label for="leadSource" class="col-sm-2 col-form-label">리드소스:</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control" id="leadSource" name="leadSource" value="" >
+                                    </div>
+                                </div>
+                                <div class="mb-3 row">
+                                    <label for="customerRepresentitive" class="col-sm-2 col-form-label">계정 담당자:</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control" id="customerRepresentitive" name="customerRepresentitive" value="{{customerRepresentitive}}"required>
+                                    </div>
+                                </div>
+                                <div class="mb-3 row">
+                                    <label for="c_tel" class="col-sm-2 col-form-label">연락처:</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control" id="c_tel" name="c_tel" value="{{c_tel}}" required>
+                                    </div>
+                                </div>
+                                <div class="mb-3 row">
+                                    <label for="customerRequirements" class="col-sm-2 col-form-label">리드 내용:</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control" id="customerRequirements" name="customerRequirements" value="{{customerRequirements}}" required>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-end">
+                                    <button type="submit" id="updateButton" class="btn btn-custom-create btn-sm">
+                                        <i class="fas fa-plus-circle"></i> 저장
+                                    </button>
+                                </div>
+                            </form>
+
+                        {{/leads}}
+
+
+
+
+
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+
+    <script>
+
+        // Form 부분 리드상태 초기값 연동 JS (select Form은 html로 초기 value 지정이 안되어서 JS로 처리)
+
+        {{#leads}}
+        document.addEventListener("DOMContentLoaded", function() {
+            // Mustache 템플릿에서 서버 데이터를 가져옴
+            var leadStatus = "{{leadStatus}}";
+
+        // 폼에 데이터 채우기
+        document.getElementById("leadStatus").value = leadStatus;
+        });
+
+        document.addEventListener("DOMContentLoaded", function() {
+        document.getElementById("deleteButton").addEventListener("click", function(event) {
+            event.preventDefault(); // 기본 링크 동작을 막습니다.
+
+            // 사용자 확인 대화 상자 표시
+            var confirmDelete = confirm("정말 삭제하시겠습니까?");
+
+            if (confirmDelete) {
+                // 사용자가 확인을 클릭한 경우 링크를 따라 갑니다.
+                window.location.href = this.href;
+            }
+        });
+    });
+
+
+
+
+    // Form 삭제버튼 클릭 시 현 주소가 create인경우 create로 action주소 변경.
+
+    document.addEventListener("DOMContentLoaded", function() {
+        var form = document.getElementById("leadForm");
+        var currentUrl = window.location.pathname;
+
+        // 현재 URL이 "/leads/detail/create"인 경우 폼 액션을 변경
+        if (currentUrl === "/leads/detail/create") {
+            form.action = "/leads/detail/create";
+        }
+
+        // 저장 버튼 클릭 시 변경사항 저장 여부 확인
+        document.getElementById("updateButton").addEventListener("click", function(event) {
+            var confirmSave = confirm("변경사항을 저장하겠습니까?");
+
+            if (!confirmSave) {
+                // 사용자가 취소를 클릭한 경우 폼 제출 중단
+                event.preventDefault();
+            }
+        });
+    });
+
+
+
+
+    // 현재 진행상황 bar JS
+    document.addEventListener("DOMContentLoaded", function() {
+        var progressSteps = document.querySelectorAll(".step");
+        var progressBar = document.getElementById("progressBar");
+        var leadStatus = "{{leadStatus}}"; // 현재 진행상황
+
+        var steps = ["Proposal", "UnderReview", "Closed"];
+        var currentIndex = -1;
+
+        // 진행상황 업데이트
+        if (leadStatus.startsWith("Closed")) {
+            currentIndex = steps.indexOf("Closed");
+        } else {
+            currentIndex = steps.indexOf(leadStatus);
+        }
+
+        if (currentIndex !== -1) {
+            var progressWidth = (currentIndex / (steps.length - 1)) * 100;
+
+            // `Closed` 단계일 경우 한스텝 줄이기
+            if (leadStatus.startsWith("Closed")) {
+                progressWidth -= (100 / steps.length);
+            }
+
+            progressBar.style.width = progressWidth + "%";
+
+            for (var i = 0; i <= currentIndex; i++) {
+                progressSteps[i].classList.add("active");
+            }
+        }
+    });
+
+
+        // 페이지 로드 시 댓글 섹션 스크롤 최하단으로 이동
+        window.onload = function() {
+            var commentSection = document.getElementById("commentSection");
+            commentSection.scrollTop = commentSection.scrollHeight;
+        };
+
+
+    {{/leads}}
+    </script>
+
+
+
+{{>main/footer}}
