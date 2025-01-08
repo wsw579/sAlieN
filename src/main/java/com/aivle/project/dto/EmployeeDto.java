@@ -1,8 +1,12 @@
 package com.aivle.project.dto;
 
+import com.aivle.project.enums.Position;
+import com.aivle.project.enums.Role;
 import lombok.*;
 
-public class MemberDto {
+import java.time.LocalDate;
+
+public class EmployeeDto {
     @Getter
     @Setter
     @NoArgsConstructor
@@ -27,9 +31,12 @@ public class MemberDto {
     @AllArgsConstructor
     @ToString
     public static class Get{
-        private String id;
-        private String name;
-        private String phone;
-        private String email;
+        private String employeeId;
+        private String employeeName;
+        private LocalDate hireDate;
+        private LocalDate terminationDate;
+        private float baseSalary;
+        private Position position;
+        private Role accessPermission;
     }
 }

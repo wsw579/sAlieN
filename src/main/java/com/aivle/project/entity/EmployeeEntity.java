@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Getter
 @Setter
-public class MemberEntity {
+public class EmployeeEntity {
     @Id
     @Column(length = 50, nullable = false)
     private String employeeId;

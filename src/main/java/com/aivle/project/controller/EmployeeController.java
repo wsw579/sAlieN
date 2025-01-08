@@ -1,7 +1,7 @@
 package com.aivle.project.controller;
 
-import com.aivle.project.dto.MemberDto;
-import com.aivle.project.service.MemberService;
+import com.aivle.project.dto.EmployeeDto;
+import com.aivle.project.service.EmployeeService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -10,16 +10,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequiredArgsConstructor
-public class MemberController {
+public class EmployeeController {
 
-    private final MemberService memberService;
+    private final EmployeeService employeeService;
 
     @GetMapping("/login")
     public String login(@RequestParam(value = "error", required = false) String error, Model model) {
@@ -30,10 +27,8 @@ public class MemberController {
     }
 
     @PostMapping("/signup")
-    public String user(MemberDto.Post memberDto){
-        System.out.println("controller, id: " + memberDto.getUserId());
-        System.out.println("controller, name: " + memberDto.getName());
-        memberService.join(memberDto);
+    public String user(EmployeeDto.Post memberDto){
+        employeeService.join(memberDto);
         return "redirect:/";
     }
 
@@ -51,5 +46,11 @@ public class MemberController {
         }
         return "redirect:/";
     }
+
+//    @GetMapping("/user/{employeeId}")
+//    public String user(@PathVariable String employeeId, Model model) {
+//        memberService.findByEmployeeId(employeeId);
+//        return "user/user";
+//    }
 
 }

@@ -1,6 +1,6 @@
 package com.aivle.project.config;
 
-import com.aivle.project.entity.MemberEntity;
+import com.aivle.project.entity.EmployeeEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -8,9 +8,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class CustomUserDetails implements UserDetails {
-    private MemberEntity member;
+    private EmployeeEntity member;
 
-    public CustomUserDetails(MemberEntity member) {
+    public CustomUserDetails(EmployeeEntity member) {
         this.member = member;
     }
 
