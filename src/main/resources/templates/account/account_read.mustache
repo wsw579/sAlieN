@@ -50,19 +50,18 @@
 </style>
 
 
-
 <div id="layoutSidenav_content">
     <main>
         <div class="container-fluid px-4">
-            <h1 class="mt-4">Opportunities</h1>
+            <h1 class="mt-4">Account</h1>
             <ol class="breadcrumb mb-4">
-                <li class="breadcrumb-item active">Opportunities</li>
+                <li class="breadcrumb-item active">Account</li>
             </ol>
             <!-- 상단 데이터 요약 카드 바 -->
             <div class="row">
                 <div class="col-xl-3 col-md-6">
                     <div class="card bg-primary text-white mb-4">
-                        <div class="card-body">진행중 기회</div>
+                        <div class="card-body">모든 계정</div>
                         <div class="card-footer d-flex align-items-center justify-content-between">
                             <h3 id="ongoingCount"></h3>
                             <div class="small text-white"><i class="fas fa-angle-right"></i></div>
@@ -71,113 +70,94 @@
                 </div>
                 <div class="col-xl-3 col-md-6">
                     <div class="card bg-warning text-white mb-4">
-                        <div class="card-body">마감일자 초과</div>
+                        <div class="card-body">내 계정</div>
                         <div class="card-footer d-flex align-items-center justify-content-between">
                             <h3 id="overdueCount"></h3>
                             <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                         </div>
                     </div>
                 </div>
-                <div class="col-xl-3 col-md-6">
-                    <div class="card bg-success text-white mb-4">
-                        <div class="card-body">계약 전환 성공</div>
-                        <div class="card-footer d-flex align-items-center justify-content-between">
-                            <h3 id="closedCount"></h3>
-                            <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                <div class="row">
+
+                    <!-- 차트1 -->
+                    <div class="col-xl-6">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-chart-area me-1"></i>
+                                계정 유형
+                            </div>
+                            <div class="card-body">
+                                <canvas id="opportunitiesReadChart" width="100%" height="40"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 차트2 -->
+                    <div class="col-xl-6">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <i class="fas fa-chart-bar me-1"></i>
+                                계정 생성 추이
+                            </div>
+                            <div class="card-body">
+                                <canvas id="opportunitiesReadBar" width="100%" height="40"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-xl-3 col-md-6">
-                    <div class="card bg-danger text-white mb-4">
-                        <div class="card-body">기회 보류</div>
-                        <div class="card-footer d-flex align-items-center justify-content-between">
-                            <h3 id="pendingCount"></h3>
-                            <div class="small text-white"><i class="fas fa-angle-right"></i></div>
-                        </div>
+
+
+                <!-- 계정 테이블 -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <i class="fas fa-table me-1"></i>
+                        My Account
                     </div>
-                </div>
-            </div>
-            <div class="row">
+                    <div class="card-body">
+                        <table id="datatablesSimple">
 
-                <!-- 차트1 -->
-                <div class="col-xl-6">
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <i class="fas fa-chart-area me-1"></i>
-                            연간 계약 전환 현황
-                        </div>
-                        <div class="card-body"><canvas id="opportunitiesReadChart" width="100%" height="40"></canvas></div>
-                    </div>
-                </div>
+                            <div class="button-container mb-3">
+                                <a href="/account/detail/create" class="btn btn-custom-create btn-sm" id="createButton">
+                                    <i class="fas fa-plus-circle"></i>계정 생성
+                                </a>
 
-                <!-- 차트2 -->
-                <div class="col-xl-6">
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <i class="fas fa-chart-bar me-1"></i>
-                            연간 계약 전환 누적 현황
-                        </div>
-                        <div class="card-body"><canvas id="opportunitiesReadBar" width="100%" height="40"></canvas></div>
-                    </div>
-                </div>
-            </div>
+                                <button class="btn btn-custom-delete btn-sm" id="deleteButton">
+                                    <i class="fas fa-plus-circle"></i>삭제
+                                </button>
+                            </div>
 
-
-            <!-- 기회테이블 -->
-            <div class="card mb-4">
-                <div class="card-header">
-                    <i class="fas fa-table me-1"></i>
-                    My Opportunities
-                </div>
-                <div class="card-body">
-                    <table id="datatablesSimple">
-
-                        <div class="button-container mb-3">
-                            <a href="/opportunities/detail/create" class="btn btn-custom-create btn-sm" id="createButton">
-                                <i class="fas fa-plus-circle"></i> 신규
-                            </a>
-
-                            <button class="btn btn-custom-delete btn-sm" id="deleteButton">
-                                <i class="fas fa-plus-circle"></i> 삭제
-                            </button>
-                        </div>
-
-                        <thead>
-                        <tr>
-                            <th></th>
-                            <th>ID</th>
-                            <th>생성일자</th>
-                            <th>기회명</th>
-                            <!-- <th>계정이름</th> -->
-                            <!-- <th>제품명</th> -->
-                            <th>기회매출</th>
-                            <th>상태</th>
-                            <th>마감일자</th>
-                            <th>성공률</th>
-                            <!-- <th>기회소유자</th> -->
-
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {{#opportunities}}
-                            <tr data-index="{{opportunityId}}">
-                                <td><input type="checkbox" class="select-row" value="{{opportunityId}}" ></td>
-                                <td>{{opportunityId}}</td>
-                                <td>{{createdDate}}</td>
-                                <td><a href="/opportunities/detail/{{opportunityId}}">{{opportunityName}}</a></td>
-                                <!-- <td>계정이름</td> -->
-                                <!-- <td>제품명</td> -->
-                                <td>{{expectedRevenue}}</td>
-                                <td>{{opportunityStatus}}</td>
-                                <td>{{targetCloseDate}}</td>
-                                <td>{{successRate}}</td>
-                                <!-- <td>기회소유자</td> -->
+                            <thead>
+                            <tr>
+                                <th></th>
+                                <th>ID</th>
+                                <th>생성 일자</th>
+                                <th>상위계정 이름</th>
+                                <th>계정 이름</th>
+                                <th>계정 상태</th>
+                                <th>대표 전화</th>
+                                <th>배송지</th>
+                                <!--                        <th>계정 소유자</th> -->
 
                             </tr>
-                        {{/opportunities}}
-                        </tbody>
+                            </thead>
+                            <tbody>
+                            {{#accounts}}
+                                <tr data-index="{{accountId}}">
+                                    <td><input type="checkbox" class="select-row" value="{{accountId}}"></td>
+                                    <td>{{accountId}}</td>
+                                    <td>{{accountCreatedDate}}</td>
+                                    <td>{{#parentAccount}}{{accountName}}{{/parentAccount}}</td>
+                                    <td><a href="/account/detail/{{accountId}}">{{accountName}}</a></td>
+                                    <td>{{accountStatus}}</td>
+                                    <td>{{contact}}</td>
+                                    <td>{{address}}</td>
+                                </tr>
+                            {{/accounts}}
+                            </tbody>
 
-                    </table>
+                        </table>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -234,9 +214,9 @@
                 var selectedIds = [];
 
                 selectedCheckboxes.forEach(function(checkbox) {
-                    var opportunityId = checkbox.value;
-                    console.log("Opportunity ID:", opportunityId); // 로그 추가
-                    selectedIds.push(opportunityId);
+                    var accountId = checkbox.value;
+                    console.log("Account ID:", accountId); // 로그 추가
+                    selectedIds.push(accountId);
                 });
 
                 if (selectedIds.length > 0) {
@@ -244,7 +224,7 @@
 
                     if (confirmDelete) {
                         console.log("Deleting IDs:", selectedIds); // 로그 추가
-                        fetch("/opportunities/detail/delete", {
+                        fetch("/account/detail/delete", {
                             method: "POST",
                             headers: {
                                 "Content-Type": "application/json"
@@ -253,7 +233,7 @@
                         }).then(response => {
                             if (response.ok) {
                                 // 서버 응답이 성공적이면 리다이렉트 수행
-                                window.location.href = "/opportunities";
+                                window.location.href = "/account";
                             } else {
                                 alert("삭제 중 오류가 발생했습니다.");
                             }
@@ -268,9 +248,6 @@
             });
         }
     });
-
-
-
 
 
     </script>
