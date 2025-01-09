@@ -224,7 +224,7 @@
                                 <select class="form-control" id="productId" name="productId" required>
                                     <option value="">-- 제품 선택 --</option>
                                     {{#products}}
-                                        <option value="{{productId}}" {{#isSelected}}selected{{/isSelected}}>
+                                        <option value="{{productId}}" {{#productSelected}}selected{{/productSelected}}>
                                             {{productName}} (ID: {{productId}})
                                         </option>
                                     {{/products}}
@@ -238,7 +238,7 @@
                                 <select class="form-control" id="contractId" name="contractId" required>
                                     <option value="">-- 계약 선택 --</option>
                                     {{#contracts}}
-                                        <option value="{{contractId}}" {{#isSelected}}selected{{/isSelected}}>
+                                        <option value="{{contractId}}" {{#contractSelected}}selected{{/contractSelected}}>
                                             (ID: {{contractId}})
                                         </option>
                                     {{/contracts}}
@@ -348,6 +348,9 @@
             }
         });
     }
+});
+    Handlebars.registerHelper('ifEquals', function (arg1, arg2, options) {
+    return arg1 === arg2 ? options.fn(this) : options.inverse(this);
 });
 
     {{/orders}}

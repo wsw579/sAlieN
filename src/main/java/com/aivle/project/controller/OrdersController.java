@@ -45,7 +45,31 @@ public class OrdersController {
     @GetMapping("/orders/detail/{orderId}")
     public String ordersDetail(@PathVariable Long orderId, Model model) {
         OrdersEntity orders = ordersService.searchOrder(orderId);
+        // 제품 목록 조회 후 모델에 추가 (드롭다운 메뉴용)
+        List<ProductsEntity> products = productsRepository.findAll();
+        List<ContractsEntity> contracts = contractsRepository.findAll();
+
+        // 제품 목록에 선택된 제품 표시
+        for (ProductsEntity product : products) {
+            if (product.getProductId().equals(orders.getProduct().getProductId())) {
+                product.setProductSelected(true); // 선택된 제품에 대해 표시
+            } else {
+                product.setProductSelected(false);
+            }
+        }
+
+        // 제품 목록에 선택된 제품 표시
+        for (ContractsEntity contract : contracts) {
+            if (contract.getContractId().equals(orders.getContract().getContractId())) {
+                contract.setContractSelected(true); // 선택된 제품에 대해 표시
+            } else {
+                contract.setContractSelected(false);
+            }
+        }
+
         model.addAttribute("orders", orders);
+        model.addAttribute("products", products);
+        model.addAttribute("contracts", contracts);
         return "orders/orders_detail";
     }
 

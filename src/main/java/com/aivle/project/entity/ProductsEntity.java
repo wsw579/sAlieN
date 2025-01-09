@@ -41,4 +41,6 @@ public class ProductsEntity implements Serializable {
     private String productDescription;
 
     private String productFamily;
+
+    private boolean productSelected;
 }

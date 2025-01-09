@@ -23,6 +23,7 @@ public class ContractsDto {
     private float contractSales;
     private float contractAmount;
     private String contractClassification;
+    private boolean contractSelected;
 
     // 외래키 부분
 
