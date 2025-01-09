@@ -20,5 +20,5 @@ public class OrdersDto {
     private String orderStatus; // Enum 대신 String으로 변환
     private Long contractId;
     private Long productId;
-    private Long partnerOpId;
+//    private Long partnerOpId;
 }

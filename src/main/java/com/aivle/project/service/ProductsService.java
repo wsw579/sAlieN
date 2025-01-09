@@ -2,6 +2,7 @@ package com.aivle.project.service;
 
 import com.aivle.project.dto.ProductsDto;
 import com.aivle.project.entity.ProductsEntity;
+import com.aivle.project.enums.ProductCondition;
 import com.aivle.project.repository.ProductsRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,7 @@ public class ProductsService {
         productEntity.setFixedPrice(dto.getFixedPrice());
         productEntity.setDealerPrice(dto.getDealerPrice());
         productEntity.setCostPrice(dto.getCostPrice());
-        productEntity.setProductCondition(dto.getProductCondition());
+        productEntity.setProductCondition(ProductCondition.valueOf(dto.getProductCondition()));
         productEntity.setProductDescription(dto.getProductDescription());
         productEntity.setProductFamily(dto.getProductFamily());
         productsRepository.save(productEntity);
@@ -45,7 +46,7 @@ public class ProductsService {
         productEntity.setFixedPrice(dto.getFixedPrice());
         productEntity.setDealerPrice(dto.getDealerPrice());
         productEntity.setCostPrice(dto.getCostPrice());
-        productEntity.setProductCondition(dto.getProductCondition());
+        productEntity.setProductCondition(ProductCondition.valueOf(dto.getProductCondition()));
         productEntity.setProductDescription(dto.getProductDescription());
         productEntity.setProductFamily(dto.getProductFamily());
         productsRepository.save(productEntity);
