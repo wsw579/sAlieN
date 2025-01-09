@@ -218,26 +218,33 @@
                         </div>
                     </div>
 
-                    <div class="mb-3 row">
-                        <label for="productId" class="col-sm-2 col-form-label">제품ID:</label>
-                        <div class="col-sm-10">
-                            <input type="number" class="form-control" id="productId" name="productId" value="{{productId}}" required>
+                        <div class="mb-3 row">
+                            <label for="productId" class="col-sm-2 col-form-label">제품:</label>
+                            <div class="col-sm-10">
+                                <select class="form-control" id="productId" name="productId" required>
+                                    <option value="">-- 제품 선택 --</option>
+                                    {{#products}}
+                                        <option value="{{productId}}" {{#isSelected}}selected{{/isSelected}}>
+                                            {{productName}} (ID: {{productId}})
+                                        </option>
+                                    {{/products}}
+                                </select>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="mb-3 row">
-                        <label for="contractId" class="col-sm-2 col-form-label">계약ID:</label>
-                        <div class="col-sm-10">
-                            <input type="number" class="form-control" id="contractId" name="contractId" value="{{contract.contractId}}" {{#contractId}}readonly{{/contractId}} required>
+                        <div class="mb-3 row">
+                            <label for="contractId" class="col-sm-2 col-form-label">계약:</label>
+                            <div class="col-sm-10">
+                                <select class="form-control" id="contractId" name="contractId" required>
+                                    <option value="">-- 계약 선택 --</option>
+                                    {{#contracts}}
+                                        <option value="{{contractId}}" {{#isSelected}}selected{{/isSelected}}>
+                                            (ID: {{contractId}})
+                                        </option>
+                                    {{/contracts}}
+                                </select>
+                            </div>
                         </div>
-                    </div>
-
-                    <div class="mb-3 row">
-                        <label for="partnerOpId" class="col-sm-2 col-form-label">파트너OPID:</label>
-                        <div class="col-sm-10">
-                            <input type="number" step="0.01" class="form-control" id="partnerOpId" name="partnerOpId" value="{{partnerOpId}}" required>
-                        </div>
-                    </div>
 
                     <div class="d-flex justify-content-end">
                         <button type="submit" id="updateButton" class="btn btn-custom-create btn-sm">

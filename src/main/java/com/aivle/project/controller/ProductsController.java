@@ -2,6 +2,7 @@ package com.aivle.project.controller;
 
 import com.aivle.project.dto.ProductsDto;
 import com.aivle.project.entity.ProductsEntity;
+import com.aivle.project.enums.ProductCondition;
 import com.aivle.project.service.ProductsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -50,7 +51,7 @@ public class ProductsController {
         products.setFixedPrice(0F);
         products.setDealerPrice(0F);
         products.setCostPrice(0F);
-        products.setProductCondition("new");
+        products.setProductCondition(ProductCondition.available);
         products.setProductDescription("");
         products.setProductFamily("");
 

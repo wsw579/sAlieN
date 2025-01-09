@@ -3,7 +3,10 @@ package com.aivle.project.controller;
 import com.aivle.project.dto.OrdersDto;
 import com.aivle.project.entity.ContractsEntity;
 import com.aivle.project.entity.OrdersEntity;
+import com.aivle.project.entity.ProductsEntity;
+import com.aivle.project.enums.OrderStatus;
 import com.aivle.project.repository.ContractsRepository;
+import com.aivle.project.repository.ProductsRepository;
 import com.aivle.project.service.OrdersService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +25,7 @@ public class OrdersController {
 
     private final ContractsRepository contractsRepository;
     private final OrdersService ordersService;
+    private final ProductsRepository productsRepository;
 
     // Read page
     @GetMapping("/orders")
@@ -47,13 +51,13 @@ public class OrdersController {
 
     // Create order page (초기값으로 페이지 생성)
     @GetMapping("/orders/detail/create")
-    public String ordersCreate(@RequestParam(value = "contractId", required = false) Long contractId, Model model) {
+    public String ordersCreate(@RequestParam(value = "contractId", required = false) Long contractId, @RequestParam(value = "productId", required = false) Long productId, Model model) {
 
         OrdersEntity orders = new OrdersEntity();
         orders.setOrderDate(LocalDate.now());
         orders.setSalesDate(LocalDate.now());
         orders.setOrderAmount(0F);
-        orders.setOrderStatus("draft");
+        orders.setOrderStatus(OrderStatus.draft);
 
         if (contractId != null) {
             ContractsEntity contract = contractsRepository.findById(contractId)
@@ -62,10 +66,22 @@ public class OrdersController {
             // 존재하지 않으면 null
         }
 
-        orders.setProductId(0L);
-        orders.setPartnerOpId(0L);
+
+        if (productId != null) {
+            ProductsEntity product = productsRepository.findById(productId)
+                    .orElse(null);
+            orders.setProduct(product);
+            // 존재하지 않으면 null
+        }
+//        orders.setPartnerOpId(0L);
+
+        // 제품 목록 조회 후 모델에 추가 (드롭다운 메뉴용)
+        List<ProductsEntity> products = productsRepository.findAll();
+        List<ContractsEntity> contracts = contractsRepository.findAll();
 
         model.addAttribute("orders", orders);
+        model.addAttribute("products", products);
+        model.addAttribute("contracts", contracts);
 
         return "orders/orders_detail";
     }
