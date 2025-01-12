@@ -18,6 +18,9 @@ public class OrdersDto {
     private LocalDate salesDate;
     private float orderAmount;
     private String orderStatus; // Enum 대신 String으로 변환
+    private boolean orderSelected;
+    private boolean orderDeleted = false;
+    // 외래키
     private Long contractId;
     private Long productId;
 //    private Long partnerOpId;

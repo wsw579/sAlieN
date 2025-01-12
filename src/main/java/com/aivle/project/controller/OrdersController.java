@@ -100,8 +100,8 @@ public class OrdersController {
 //        orders.setPartnerOpId(0L);
 
         // 제품 목록 조회 후 모델에 추가 (드롭다운 메뉴용)
-        List<ProductsEntity> products = productsRepository.findAll();
-        List<ContractsEntity> contracts = contractsRepository.findAll();
+        List<ProductsEntity> products = productsRepository.findAllActive();
+        List<ContractsEntity> contracts = contractsRepository.findAllByOrderByCreatedDateAndIdDescActive();
 
         model.addAttribute("orders", orders);
         model.addAttribute("products", products);
