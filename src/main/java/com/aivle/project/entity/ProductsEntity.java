@@ -43,4 +43,7 @@ public class ProductsEntity implements Serializable {
     private String productFamily;
 
     private boolean productSelected;
+
+    @Column(nullable = false)
+    private boolean productDeleted = false;
 }

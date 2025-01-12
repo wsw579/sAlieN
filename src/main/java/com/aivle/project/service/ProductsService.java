@@ -33,7 +33,7 @@ public class ProductsService {
 
     // Read
     public List<ProductsEntity> readProducts() {
-        return productsRepository.findAll();
+        return productsRepository.findAllActive();
     }
 
     // Update
@@ -54,12 +54,12 @@ public class ProductsService {
 
     // Delete
     public void deleteProduct(Long productId) {
-        productsRepository.deleteById(productId);
+        productsRepository.softDeleteById(productId);
     }
 
     // Delete multiple products by IDs
     public void deleteProductsByIds(List<Long> ids) {
-        productsRepository.deleteAllById(ids);
+        productsRepository.softDeleteAllById(ids);
     }
 
     // Search

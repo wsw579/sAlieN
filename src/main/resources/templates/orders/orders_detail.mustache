@@ -224,8 +224,8 @@
                                 <select class="form-control" id="productId" name="productId" required>
                                     <option value="">-- 제품 선택 --</option>
                                     {{#products}}
-                                        <option value="{{productId}}" {{#productSelected}}selected{{/productSelected}}>
-                                            {{productName}} (ID: {{productId}})
+                                        <option value="{{productId}}" {{#productSelected}}selected{{/productSelected}} {{#productDeleted}}disabled{{/productDeleted}}>
+                                            {{productName}} (ID: {{productId}}{{#productDeleted}}(삭제됨){{/productDeleted}})
                                         </option>
                                     {{/products}}
                                 </select>
@@ -238,8 +238,8 @@
                                 <select class="form-control" id="contractId" name="contractId" required>
                                     <option value="">-- 계약 선택 --</option>
                                     {{#contracts}}
-                                        <option value="{{contractId}}" {{#contractSelected}}selected{{/contractSelected}}>
-                                            (ID: {{contractId}})
+                                        <option value="{{contractId}}" {{#contractSelected}}selected{{/contractSelected}} {{#contractDeleted}}disabled{{/contractDeleted}}>
+                                            (ID: {{contractId}}{{#contractDeleted}}(삭제됨){{/contractDeleted}})
                                         </option>
                                     {{/contracts}}
                                 </select>

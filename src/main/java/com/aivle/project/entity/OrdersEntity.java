@@ -37,6 +37,9 @@ public class OrdersEntity implements Serializable {
     @Column(nullable = false)
     private OrderStatus orderStatus;
 
+    @Column(nullable = false)
+    private boolean orderDeleted = false;
+
     @ManyToOne
     @JoinColumn(name = "contract_id", nullable = false)
     private ContractsEntity contract;

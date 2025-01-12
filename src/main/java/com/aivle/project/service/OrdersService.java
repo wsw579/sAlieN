@@ -46,7 +46,7 @@ public class OrdersService {
 
     // Read
     public List<OrdersEntity> readOrders() {
-        return ordersRepository.findAll();
+        return ordersRepository.findAllActive();
     }
 
     // Update
@@ -74,12 +74,12 @@ public class OrdersService {
 
     // Delete
     public void deleteOrder(Long orderId) {
-        ordersRepository.deleteById(orderId);
+        ordersRepository.softDeleteById(orderId);
     }
 
     // Delete multiple orders by IDs
     public void deleteOrdersByIds(List<Long> ids) {
-        ordersRepository.deleteAllById(ids);
+        ordersRepository.softDeleteAllById(ids);
     }
 
     // Search

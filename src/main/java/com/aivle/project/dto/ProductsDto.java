@@ -19,4 +19,5 @@ public class ProductsDto {
     private String productDescription;
     private String productFamily;
     private boolean productSelected;
+    private boolean productDeleted = false;
 }
