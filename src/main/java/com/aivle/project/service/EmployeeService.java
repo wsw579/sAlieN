@@ -2,15 +2,22 @@ package com.aivle.project.service;
 
 import com.aivle.project.dto.EmployeeDto;
 import com.aivle.project.entity.EmployeeEntity;
+import com.aivle.project.enums.Dept;
 import com.aivle.project.enums.Position;
 import com.aivle.project.enums.Role;
+import com.aivle.project.enums.Team;
 import com.aivle.project.repository.EmployeeRepository;
+import com.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvValidationException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.FileReader;
+import java.io.IOException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 @Service
 @RequiredArgsConstructor
@@ -68,11 +75,29 @@ public class EmployeeService {
         return employee;
     }
 
+    public void loadEmployeeDataFromCSV(String csvFilePath) throws IOException {
+        // CSV 파일 읽기
+        try (CSVReader reader = new CSVReader(new FileReader(csvFilePath))) {
+            String[] line;
+            reader.readNext(); // 첫 번째 줄은 헤더이므로 건너뜀
+            while ((line = reader.readNext()) != null) {
+                EmployeeEntity employee = new EmployeeEntity();
+                employee.setEmployeeId(line[0]);
+                employee.setEmployeeName(line[1]);
+                employee.setHireDate(LocalDate.parse(line[2], DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+                employee.setTerminationDate(line[3].isEmpty() ? null : LocalDate.parse(line[3], DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+                employee.setBaseSalary(Float.parseFloat(line[4]));
+                employee.setPosition(Position.valueOf(line[5]));
+                employee.setAccessPermission(Role.valueOf(line[6]));
+                employee.setPassword(bCryptPasswordEncoder.encode(line[7]));
+                employee.setPasswordAnswer(line[8]);
+                employee.setDepartmentId(line[9].isEmpty() ? null : Dept.valueOf(line[9]));
+                employee.setTeamId(line[10].isEmpty() ? null : Team.valueOf(line[10]));
+                employeeRepository.save(employee);  // 데이터베이스에 저장
+            }
+        } catch (CsvValidationException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-//    public MemberDto.Get findByEmployeeId(String employeeId) {
-//        MemberEntity findMember = memberRepository.findByEmployeeId(employeeId);
-//        MemberDto.Get member = new MemberDto.Get();
-//
-//
-//    }
 }

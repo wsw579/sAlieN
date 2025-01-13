@@ -1,5 +1,6 @@
 package com.aivle.project.entity;
 
+import com.aivle.project.enums.ProductCondition;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -33,13 +34,16 @@ public class ProductsEntity implements Serializable {
     @Column(nullable = false)
     private Float costPrice;
 
-//    @Enumerated(EnumType.STRING)
-//    @Column(nullable = false)
-//    private ProductCondition product_condition;
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String productCondition;
+    private ProductCondition productCondition;
 
     private String productDescription;
 
     private String productFamily;
+
+    private boolean productSelected;
+
+    @Column(nullable = false)
+    private boolean productDeleted = false;
 }

@@ -36,7 +36,7 @@ public class ContractsService {
 
     // Read
     public List<ContractsEntity> readContracts() {
-        return contractsRepository.findAllByOrderByCreatedDateAndIdDesc();
+        return contractsRepository.findAllByOrderByCreatedDateAndIdDescActive();
     }
 
 
@@ -60,13 +60,13 @@ public class ContractsService {
 
     // Delete
     public void deleteContracts(Long contractId) {
-        contractsRepository.deleteById(contractId);
+        contractsRepository.softDeleteById(contractId);
     }
 
 
 
     public void deleteContractsByIds(List<Long> ids) {
-        contractsRepository.deleteAllById(ids);
+        contractsRepository.softDeleteAllById(ids);
     }
 
 

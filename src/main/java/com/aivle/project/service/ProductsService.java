@@ -2,6 +2,7 @@ package com.aivle.project.service;
 
 import com.aivle.project.dto.ProductsDto;
 import com.aivle.project.entity.ProductsEntity;
+import com.aivle.project.enums.ProductCondition;
 import com.aivle.project.repository.ProductsRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,7 @@ public class ProductsService {
         productEntity.setFixedPrice(dto.getFixedPrice());
         productEntity.setDealerPrice(dto.getDealerPrice());
         productEntity.setCostPrice(dto.getCostPrice());
-        productEntity.setProductCondition(dto.getProductCondition());
+        productEntity.setProductCondition(ProductCondition.valueOf(dto.getProductCondition()));
         productEntity.setProductDescription(dto.getProductDescription());
         productEntity.setProductFamily(dto.getProductFamily());
         productsRepository.save(productEntity);
@@ -32,7 +33,7 @@ public class ProductsService {
 
     // Read
     public List<ProductsEntity> readProducts() {
-        return productsRepository.findAll();
+        return productsRepository.findAllActive();
     }
 
     // Update
@@ -45,7 +46,7 @@ public class ProductsService {
         productEntity.setFixedPrice(dto.getFixedPrice());
         productEntity.setDealerPrice(dto.getDealerPrice());
         productEntity.setCostPrice(dto.getCostPrice());
-        productEntity.setProductCondition(dto.getProductCondition());
+        productEntity.setProductCondition(ProductCondition.valueOf(dto.getProductCondition()));
         productEntity.setProductDescription(dto.getProductDescription());
         productEntity.setProductFamily(dto.getProductFamily());
         productsRepository.save(productEntity);
@@ -53,12 +54,12 @@ public class ProductsService {
 
     // Delete
     public void deleteProduct(Long productId) {
-        productsRepository.deleteById(productId);
+        productsRepository.softDeleteById(productId);
     }
 
     // Delete multiple products by IDs
     public void deleteProductsByIds(List<Long> ids) {
-        productsRepository.deleteAllById(ids);
+        productsRepository.softDeleteAllById(ids);
     }
 
     // Search

@@ -46,6 +46,11 @@ public class ContractsEntity implements Serializable {
     @Column(nullable = true)
     private String contractClassification;
 
+    private boolean contractSelected;
+
+    @Column(nullable = false)
+    private boolean contractDeleted = false;
+
 
     // 외래키 부분
 
