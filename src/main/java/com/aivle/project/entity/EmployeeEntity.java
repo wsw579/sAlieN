@@ -1,7 +1,9 @@
 package com.aivle.project.entity;
 
+import com.aivle.project.enums.Dept;
 import com.aivle.project.enums.Position;
 import com.aivle.project.enums.Role;
+import com.aivle.project.enums.Team;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -43,4 +45,10 @@ public class EmployeeEntity {
 
     @Column(length = 30, nullable = false)
     private String passwordAnswer;
+
+    @Enumerated(EnumType.STRING)
+    private Dept departmentId;
+
+    @Enumerated(EnumType.STRING)
+    private Team teamId;
 }
