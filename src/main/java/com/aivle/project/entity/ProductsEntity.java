@@ -43,14 +43,10 @@ public class ProductsEntity implements Serializable {
 
     private String productFamily;
 
-    private boolean productSelected;
-
-    @Column(nullable = false)
-    private boolean productDeleted = false;
-
     // 외부 외래키
     @OneToMany(mappedBy = "productId", cascade = CascadeType.ALL)
     private List<OpportunitiesEntity> opportunities;
 
-
+    @OneToMany(mappedBy = "productId", cascade = CascadeType.ALL)
+    private List<OrdersEntity> orders;
 }
