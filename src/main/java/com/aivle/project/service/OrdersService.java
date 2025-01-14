@@ -25,21 +25,15 @@ public class OrdersService {
     private final ProductsRepository productsRepository;
 
     // Create
-    public void createOrder(OrdersDto dto, ContractsEntity contract) {
+    public void createOrder(OrdersDto dto) {
         OrdersEntity orderEntity = new OrdersEntity();
-
-        ProductsEntity product = productsRepository.findById(dto.getProductId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid product ID"));
 
         orderEntity.setOrderDate(dto.getOrderDate());
         orderEntity.setSalesDate(dto.getSalesDate());
         orderEntity.setOrderAmount(dto.getOrderAmount());
         orderEntity.setOrderStatus(OrderStatus.valueOf(dto.getOrderStatus()));
-        // ContractsEntity 설정
-        if (contract != null) {
-            orderEntity.setContract(contract);
-        }
-        orderEntity.setProduct(product);
+        orderEntity.setContractId(dto.getContractId());
+        orderEntity.setProductId(dto.getProductId());
         ordersRepository.save(orderEntity);
     }
 
@@ -51,12 +45,6 @@ public class OrdersService {
     // Update
     @Transactional
     public void updateOrder(Long orderId, OrdersDto dto) {
-        ContractsEntity contract = contractsRepository.findById(dto.getContractId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid contract ID"));
-
-        ProductsEntity product = productsRepository.findById(dto.getProductId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid product ID"));
-
         OrdersEntity order = ordersRepository.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid order ID"));
         System.out.println("Before update: " + order);
@@ -65,8 +53,8 @@ public class OrdersService {
         order.setSalesDate(dto.getSalesDate());
         order.setOrderAmount(dto.getOrderAmount());
         order.setOrderStatus(OrderStatus.valueOf(dto.getOrderStatus()));
-        order.setContract(contract);
-        order.setProduct(product);
+        order.setContractId(dto.getContractId());
+        order.setProductId(dto.getProductId());
         ordersRepository.save(order);
     }
 
