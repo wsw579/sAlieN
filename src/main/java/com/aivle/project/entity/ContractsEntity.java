@@ -54,21 +54,21 @@ public class ContractsEntity implements Serializable {
 
     // 외래키 부분
 
-//    @ManyToOne
-//    @JoinColumn(name = "opportunity_id", nullable = false)
-//    private OpportunitiesEntity opportunity;
+    @ManyToOne
+    @JoinColumn(name = "account_id", nullable = false)
+    private AccountEntity accountId;
 
-//    @ManyToOne
-//    @JoinColumn(name = "account_id", nullable = false)
-//    private AccountsEntity account;
-
-//    @ManyToOne
-//    @JoinColumn(name = "employee_id", nullable = false)
-//    private EmployeeEntity employee;
+    @ManyToOne
+    @JoinColumn(name = "employee_id", nullable = false)
+    private EmployeeEntity employeeId;
 //
-//    @ManyToOne
-//    @JoinColumn(name = "product_id", nullable = false)
-//    private ProductsEntity product;
+    @ManyToOne
+    @JoinColumn(name = "product_id", nullable = false)
+    private ProductsEntity productId;
+
+    @ManyToOne
+    @JoinColumn(name = "opportunity_id", nullable = false)
+    private OpportunitiesEntity opportunityId;
 
     @OneToMany(mappedBy = "contract", cascade = CascadeType.ALL)
     private List<OrdersEntity> orders;
