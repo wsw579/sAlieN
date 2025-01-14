@@ -2,6 +2,10 @@ package com.aivle.project.controller;
 
 import com.aivle.project.dto.OpportunitiesDto;
 import com.aivle.project.entity.*;
+import com.aivle.project.repository.AccountRepository;
+import com.aivle.project.repository.EmployeeRepository;
+import com.aivle.project.repository.LeadsRepository;
+import com.aivle.project.repository.ProductsRepository;
 import com.aivle.project.service.OpportunitiesService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
@@ -19,6 +23,10 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class OpportunitiesController {
     private final OpportunitiesService opportunitiesService;
+    private final ProductsRepository productsRepository;
+    private final AccountRepository accountRepository;
+    private final EmployeeRepository employeeRepository;
+    private final LeadsRepository leadsRepository;
 
 
     // Read page
@@ -41,12 +49,23 @@ public class OpportunitiesController {
         OpportunitiesEntity opportunities = opportunitiesService.searchOpportunities(opportunityId);
         List<OpportunitiesCommentEntity> opportunitiesComments = opportunitiesService.getCommentsByOpportunityId(opportunityId);
 
+        // 목록 조회 후 모델에 추가 (드롭다운 메뉴용)
+        List<ProductsEntity> products = productsRepository.findAll();
+        List<AccountEntity> accounts = accountRepository.findAll();
+        List<EmployeeEntity> employee = employeeRepository.findAll();
+        List<LeadsEntity> leads = leadsRepository.findAll();
+
+
         // 디버깅을 위해 로그 출력
         System.out.println("Opportunities: " + opportunities);
         opportunitiesComments.forEach(comment -> System.out.println("Comment: " + comment.getContent() + ", Date: " + comment.getCommentCreatedDate()));
 
         model.addAttribute("opportunities", opportunities);
         model.addAttribute("opportunitiesComments", opportunitiesComments);
+        model.addAttribute("products", products);
+        model.addAttribute("accounts", accounts);
+        model.addAttribute("employee", employee);
+        model.addAttribute("leads", leads);
         return "opportunities/opportunities_detail";
     }
 
@@ -64,6 +83,13 @@ public class OpportunitiesController {
     public String opportunitiesCreate(Model model) {
 
         OpportunitiesEntity opportunities = new OpportunitiesEntity();
+
+        // 목록 조회 후 모델에 추가 (드롭다운 메뉴용)
+        List<ProductsEntity> products = productsRepository.findAll();
+        List<AccountEntity> accounts = accountRepository.findAll();
+        List<EmployeeEntity> employee = employeeRepository.findAll();
+        List<LeadsEntity> leads = leadsRepository.findAll();
+
 
         opportunities.setOpportunityName("");
         opportunities.setRegion("");
@@ -86,7 +112,10 @@ public class OpportunitiesController {
         opportunities.setEmployeeId(new EmployeeEntity());
 
         model.addAttribute("opportunities", opportunities);
-
+        model.addAttribute("products", products);
+        model.addAttribute("accounts", accounts);
+        model.addAttribute("employee", employee);
+        model.addAttribute("leads", leads);
         return "opportunities/opportunities_detail";
     }
 
