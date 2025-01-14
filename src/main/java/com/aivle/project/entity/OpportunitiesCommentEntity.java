@@ -40,7 +40,4 @@ public class OpportunitiesCommentEntity implements Serializable {
     private OpportunitiesEntity opportunity;
 
 
-
-
-
 }
