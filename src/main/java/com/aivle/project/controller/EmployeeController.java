@@ -5,12 +5,16 @@ import com.aivle.project.service.EmployeeService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -66,10 +70,12 @@ public class EmployeeController {
     }
 
 
-//    @GetMapping("/user/{employeeId}")
-//    public String user(@PathVariable String employeeId, Model model) {
-//        memberService.findByEmployeeId(employeeId);
-//        return "user/user";
-//    }
-
+    @GetMapping("/api/generateEmployeeId")
+    @ResponseBody // 반환값을 JSON으로 처리
+    public ResponseEntity<Map<String, String>> generateUserId(@RequestParam("year") int year) {
+        Map<String, String> response = new HashMap<>();
+        String employeeId = employeeService.makeNewEmployeeId(year+"");
+        response.put("employeeId", employeeId); // 예시 응답
+        return ResponseEntity.ok(response);
+    }
 }

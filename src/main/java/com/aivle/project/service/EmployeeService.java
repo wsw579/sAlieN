@@ -28,24 +28,40 @@ public class EmployeeService {
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public void join(EmployeeDto.Post memberDto){
-
-        // 동일한 id를 가진 user가 존재하는지 검증
-        boolean findUser = employeeRepository.existsByEmployeeId(memberDto.getEmployeeId());
-        if(findUser){
-            System.out.println("중복된 사용자 입니다.");
-            return;
-        }
-
-        EmployeeEntity member = new EmployeeEntity();
-        member.setEmployeeId(memberDto.getEmployeeId());
-        member.setPassword(bCryptPasswordEncoder.encode(memberDto.getPassword()));
-        member.setEmployeeName(memberDto.getEmployeeName());
-        member.setHireDate(LocalDate.parse(memberDto.getHireDate()));
-        member.setPosition(Position.valueOf(memberDto.getPosition()));
-        member.setAccessPermission(Role.ROLE_USER);
-        member.setPasswordAnswer(memberDto.getPasswordAnswer());
-        employeeRepository.save(member);
+//    public void join(EmployeeDto.Post memberDto){
+//
+//        // 동일한 id를 가진 user가 존재하는지 검증
+//        boolean findUser = employeeRepository.existsByEmployeeId(memberDto.getEmployeeId());
+//        if(findUser){
+//            System.out.println("중복된 사용자 입니다.");
+//            return;
+//        }
+//
+//        EmployeeEntity member = new EmployeeEntity();
+//        member.setEmployeeId(memberDto.getEmployeeId());
+//        member.setPassword(bCryptPasswordEncoder.encode(memberDto.getPassword()));
+//        member.setEmployeeName(memberDto.getEmployeeName());
+//        member.setHireDate(LocalDate.parse(memberDto.getHireDate()));
+//        member.setPosition(Position.valueOf(memberDto.getPosition()));
+//        member.setAccessPermission(Role.ROLE_USER);
+//        member.setPasswordAnswer(memberDto.getPasswordAnswer());
+//        employeeRepository.save(member);
+//    }
+    public void join(EmployeeDto.Post employeeDto) {
+        // EmployeeEntity 생성 및 저장
+        EmployeeEntity employee = new EmployeeEntity();
+        employee.setEmployeeId(employeeDto.getEmployeeId());
+        employee.setEmployeeName(employeeDto.getEmployeeName());
+        employee.setHireDate(LocalDate.parse(employeeDto.getHireDate()));
+        employee.setTerminationDate(null);
+        employee.setBaseSalary(employeeDto.getBaseSalary());
+        employee.setPosition(Position.valueOf(employeeDto.getPosition()));
+        employee.setAccessPermission(Role.ROLE_USER);
+        employee.setPassword(bCryptPasswordEncoder.encode(employeeDto.getPassword()));
+        employee.setPasswordAnswer(employeeDto.getPasswordAnswer());
+        employee.setDepartmentId(Dept.valueOf(employeeDto.getDept()));
+        employee.setTeamId(Team.valueOf(employeeDto.getTeam()));
+        employeeRepository.save(employee);
     }
 
     public String editPassword(EmployeeDto.Patch employee) {
@@ -70,8 +86,8 @@ public class EmployeeService {
         employee.setEmployeeName(findEmployee.getEmployeeName());
         employee.setHireDate(findEmployee.getHireDate());
         employee.setPosition(findEmployee.getPosition());
-        employee.setTeam("영업1팀");
-        employee.setDept("영업부");
+        employee.setTeam(findEmployee.getTeamId());
+        employee.setDept(findEmployee.getDepartmentId());
         return employee;
     }
 
@@ -100,4 +116,16 @@ public class EmployeeService {
         }
     }
 
+    public String makeNewEmployeeId(String year) {
+        // 데이터베이스에서 해당 연도에 가장 마지막으로 등록된 employeeId 조회
+        String lastEmployeeId = employeeRepository.findLastEmployeeIdByYear(year);
+
+        // 해당 연도의 마지막 번호 계산
+        int nextNumber = 1; // 기본값은 1 (입사자가 없을 경우)
+        if (lastEmployeeId != null && lastEmployeeId.startsWith(year)) {
+            // 연도 이후의 번호를 추출하고 숫자로 변환하여 증가
+            nextNumber = Integer.parseInt(lastEmployeeId.substring(4)) + 1;
+        }
+        return String.format("%s%04d", year, nextNumber);
+    }
 }
