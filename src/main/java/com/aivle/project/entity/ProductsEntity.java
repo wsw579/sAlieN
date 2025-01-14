@@ -44,7 +44,7 @@ public class ProductsEntity implements Serializable {
     private String productFamily;
 
     // 외부 외래키
-    @OneToMany(mappedBy = "productId", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "productId", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     private List<OpportunitiesEntity> opportunities;
 
     @OneToMany(mappedBy = "productId", cascade = CascadeType.ALL)

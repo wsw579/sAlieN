@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -76,22 +78,22 @@ public class OpportunitiesEntity implements Serializable {
     // 내부 외래키 부분
 
     @ManyToOne
-    @JoinColumn(name = "lead_id", nullable = true)
+    @JoinColumn(name = "lead_id", nullable = true, foreignKey = @ForeignKey(name = "fk_opportunities_lead_id"))
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private LeadsEntity leadId;
 
     @ManyToOne
-    @JoinColumn(name = "account_id", nullable = false)
+    @JoinColumn(name = "account_id", nullable = false, foreignKey = @ForeignKey(name = "fk_opportunities_account_id"))
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private AccountEntity accountId;
 
     @ManyToOne
-    @JoinColumn(name = "product_id", nullable = false)
+    @JoinColumn(name = "product_id", nullable = false, foreignKey = @ForeignKey(name = "fk_opportunities_product_id"))
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private ProductsEntity productId;
 
     @ManyToOne
-    @JoinColumn(name = "employee_id", nullable = false)
+    @JoinColumn(name = "employee_id", nullable = false, foreignKey = @ForeignKey(name = "fk_opportunities_employee_id"))
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private EmployeeEntity employeeId;
 

@@ -1,5 +1,6 @@
 {{>main/header}}
 
+
 <style>
     .button-container {
         display: flex;
@@ -250,14 +251,16 @@
                             <div class="mb-3 row">
                                 <label for="leadId" class="col-sm-2 col-form-label">리드 명:</label>
                                 <div class="col-sm-10">
+                                        <select id="leadId" name="leadId">
 
-                                    {{#leadId}}
-                                        <input type="text" class="form-control" id="leadId" name="leadId" value="{{leadId}}">
-                                    {{/leadId}}
-                                    {{^leadId}}
-                                        <input type="text" class="form-control" id="leadId" name="leadId" value="">
-                                    {{/leadId}}
+                                            <option value="">-- 리드 선택 --</option>
+                                            {{#leads}}
+                                                <option value="{{leadId}}">
+                                                    {{leadId}} (ID: {{leadId}})
+                                                </option>
+                                            {{/leads}}
 
+                                        </select>
                                 </div>
                             </div>
                             <div class="mb-3 row">
@@ -269,13 +272,31 @@
                             <div class="mb-3 row">
                                 <label for="accountId" class="col-sm-2 col-form-label">계정 명:</label>
                                 <div class="col-sm-10">
-                                    <input type="text" class="form-control" id="accountId" name="accountId" value="{{accountId.accountName}}" required>
+                                    <select id="accountId" name="accountId" required>
+
+                                        <option value="">-- 계정 선택 --</option>
+                                        {{#accounts}}
+                                            <option value="{{accountId}}">
+                                                {{accountName}} (ID: {{accountId}})
+                                            </option>
+                                        {{/accounts}}
+
+                                    </select>
                                 </div>
                             </div>
                             <div class="mb-3 row">
                                 <label for="employeeId" class="col-sm-2 col-form-label">기회 담당자:</label>
                                 <div class="col-sm-10">
-                                    <input type="text" class="form-control" id="employeeId" name="employeeId" value="{{employeeId.employeeId}}">
+                                    <select id="employeeId" name="employeeId" required>
+
+                                        <option value="">-- 담당자 선택 --</option>
+                                        {{#employee}}
+                                            <option value="{{employeeId}}">
+                                                {{employeeName}} (ID: {{employeeId}})
+                                            </option>
+                                        {{/employee}}
+
+                                    </select>
                                 </div>
                             </div>
                             <div class="mb-3 row">
@@ -314,12 +335,25 @@
                                     <input type="text" class="form-control" id="opportunityNotes" name="opportunityNotes" value="{{opportunityNotes}}" required>
                                 </div>
                             </div>
+
+
                             <div class="mb-3 row">
                                 <label for="product" class="col-sm-2 col-form-label">기회 제품:</label>
                                 <div class="col-sm-10">
-                                    <input type="text" class="form-control" id="productId" name="productId" value="{{productId.productName}}">
+                                    <select id="productId" name="productId" required>
+
+                                        <option value="">-- 제품 선택 --</option>
+                                        {{#products}}
+                                            <option value="{{productId}}">
+                                                {{productName}} (ID: {{productId}})
+                                            </option>
+                                        {{/products}}
+
+                                    </select>
                                 </div>
                             </div>
+
+
                             <div class="mb-3 row">
                                 <label for="quantity" class="col-sm-2 col-form-label">기회 수량:</label>
                                 <div class="col-sm-10">
@@ -454,18 +488,75 @@
     </main>
 
 
+
     <script>
 
         // Form 부분 기회상태 초기값 연동 JS (select Form은 html로 초기 value 지정이 안되어서 JS로 처리)
 
-        {{#opportunities}}
-            document.addEventListener("DOMContentLoaded", function() {
-                // Mustache 템플릿에서 서버 데이터를 가져옴
-                var opportunityStatus = "{{opportunityStatus}}";
+    {{#opportunities}}
 
-        // 폼에 데이터 채우기
-        document.getElementById("opportunityStatus").value = opportunityStatus;
+        {{#opportunityId}}
+        document.addEventListener("DOMContentLoaded", function() {
+            // Mustache 템플릿에서 서버 데이터를 가져옴
+            var opportunityStatus = "{{opportunityStatus}}";
+            var productId = "{{productId.productId}}";
+            var accountId = "{{accountId.accountId}}";
+            var employeeId = "{{employeeId.employeeId}}";
+            {{#leadId.leadId}}
+                var leadId = "{{leadId.leadId}}";
+            {{/leadId.leadId}}
+
+            // 폼에 데이터 채우기
+            document.getElementById("opportunityStatus").value = opportunityStatus;
+            document.getElementById("productId").value = productId;
+            document.getElementById("accountId").value = accountId;
+            document.getElementById("employeeId").value = employeeId;
+            {{#leadId.leadId}}
+                document.getElementById("leadId").value = leadId;
+            {{/leadId.leadId}}
+
         });
+        {{/opportunityId}}
+
+
+        // select 폼데이터 조회 기능 (main/header와 footer에 CSS 추가, 상단에 Selectize CSS, JS로 명시)
+
+
+
+        document.addEventListener("DOMContentLoaded", function() {
+            // 계정 검색
+            $('#accountId').selectize({
+                create: false,
+                sortField: 'text'
+            });
+
+            // 리드 검색
+            $('#leadId').selectize({
+                create: false,
+                sortField: 'text'
+            });
+
+            // 직원 검색
+            $('#employeeId').selectize({
+                create: false,
+                sortField: 'text'
+            });
+
+            // 제품 검색
+            $('#productId').selectize({
+                create: false,
+                sortField: 'text'
+            });
+        });
+
+
+
+
+
+
+
+
+
 
         document.addEventListener("DOMContentLoaded", function() {
         document.getElementById("deleteButton").addEventListener("click", function(event) {
@@ -551,7 +642,6 @@
 
         {{/opportunities}}
     </script>
-
 
 
 {{>main/footer}}
