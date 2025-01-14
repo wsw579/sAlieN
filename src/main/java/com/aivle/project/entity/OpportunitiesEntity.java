@@ -2,6 +2,7 @@ package com.aivle.project.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -66,27 +67,32 @@ public class OpportunitiesEntity implements Serializable {
     private String successRate;
 
 
-    // 외래키 부분
+    // 외부 외래키 부분
 
     @OneToMany(mappedBy = "opportunity", cascade = CascadeType.ALL)
     private List<OpportunitiesCommentEntity> comments;
 
 
-    //@ManyToOne
-    //@JoinColumn
-    //private LeadEntity leadId;
+    // 내부 외래키 부분
 
-    //@ManyToOne
-    //@JoinColumn
-    //private AccountEntity accountId;
+    @ManyToOne
+    @JoinColumn(name = "lead_id", nullable = true)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private LeadsEntity leadId;
 
-    //@ManyToOne
-    //@JoinColumn
-    //private ProductEntity productId;
+    @ManyToOne
+    @JoinColumn(name = "account_id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private AccountEntity accountId;
 
-    //@ManyToOne
-    //@JoinColumn
-    //private EmployeeEntity employeeId;
+    @ManyToOne
+    @JoinColumn(name = "product_id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private ProductsEntity productId;
 
+    @ManyToOne
+    @JoinColumn(name = "employee_id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private EmployeeEntity employeeId;
 
 }
