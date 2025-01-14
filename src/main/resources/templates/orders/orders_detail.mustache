@@ -223,8 +223,8 @@
                                 <select class="form-control" id="productId" name="productId" required>
                                     <option value="">-- 제품 선택 --</option>
                                     {{#products}}
-                                        <option value="{{productId}}" {{#productSelected}}selected{{/productSelected}} {{#productDeleted}}disabled{{/productDeleted}}>
-                                            {{productName}} (ID: {{productId}}{{#productDeleted}}(삭제됨){{/productDeleted}})
+                                        <option value="{{productId}}">
+                                            {{productName}} (ID: {{productId}})
                                         </option>
                                     {{/products}}
                                 </select>
@@ -237,8 +237,8 @@
                                 <select class="form-control" id="contractId" name="contractId" required>
                                     <option value="">-- 계약 선택 --</option>
                                     {{#contracts}}
-                                        <option value="{{contractId}}" {{#contractSelected}}selected{{/contractSelected}} {{#contractDeleted}}disabled{{/contractDeleted}}>
-                                            (ID: {{contractId}}{{#contractDeleted}}(삭제됨){{/contractDeleted}})
+                                        <option value="{{contractId}}">
+                                            (ID: {{contractId}})
                                         </option>
                                     {{/contracts}}
                                 </select>
@@ -313,6 +313,8 @@
     document.addEventListener("DOMContentLoaded", function() {
     // Mustache 템플릿에서 서버 데이터를 가져옴
     var orderStatus = "{{orderStatus}}";
+    var productId = "{{product.productId}}";
+    var contractId = "{{contract.contractId}}";
 
     // 상태에 따른 진행상황 표시
     var progressSteps = document.querySelectorAll(".step");
@@ -329,6 +331,26 @@
     if (orderStatusSelect) {
         orderStatusSelect.value = orderStatus;
     }
+    document.getElementById("productId").value = productId;
+    document.getElementById("contractId").value = contractId;
+
+    // select 폼데이터 조회 기능 (main/header와 footer에 CSS 추가, 상단에 Selectize CSS, JS로 명시)
+
+
+
+        document.addEventListener("DOMContentLoaded", function() {
+            // 계약 검색
+            $('#contractId').selectize({
+                create: false,
+                sortField: 'text'
+            });
+
+            // 제품 검색
+            $('#productId').selectize({
+                create: false,
+                sortField: 'text'
+            });
+        });
 
     // Form 삭제버튼 클릭 시 현 주소가 create인 경우 create로 action주소 변경
     var form = document.getElementById("orderForm");

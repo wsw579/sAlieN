@@ -18,6 +18,4 @@ public class ProductsDto {
     private String productCondition; // Enum 대신 String으로 변환
     private String productDescription;
     private String productFamily;
-    private boolean productSelected;
-    private boolean productDeleted = false;
 }

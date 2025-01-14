@@ -40,13 +40,12 @@ public class OrdersService {
             orderEntity.setContract(contract);
         }
         orderEntity.setProduct(product);
-//        orderEntity.setPartnerOpId(dto.getPartnerOpId());
         ordersRepository.save(orderEntity);
     }
 
     // Read
     public List<OrdersEntity> readOrders() {
-        return ordersRepository.findAllActive();
+        return ordersRepository.findAll();
     }
 
     // Update
@@ -58,31 +57,30 @@ public class OrdersService {
         ProductsEntity product = productsRepository.findById(dto.getProductId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid product ID"));
 
-        OrdersEntity orderEntity = ordersRepository.findById(orderId)
+        OrdersEntity order = ordersRepository.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid order ID"));
-        System.out.println("Before update: " + orderEntity);
+        System.out.println("Before update: " + order);
 
-        orderEntity.setOrderDate(dto.getOrderDate());
-        orderEntity.setSalesDate(dto.getSalesDate());
-        orderEntity.setOrderAmount(dto.getOrderAmount());
-        orderEntity.setOrderStatus(OrderStatus.valueOf(dto.getOrderStatus()));
-        orderEntity.setContract(contract);
-        orderEntity.setProduct(product);
-//        orderEntity.setPartnerOpId(dto.getPartnerOpId());
-        ordersRepository.save(orderEntity);
+        order.setOrderDate(dto.getOrderDate());
+        order.setSalesDate(dto.getSalesDate());
+        order.setOrderAmount(dto.getOrderAmount());
+        order.setOrderStatus(OrderStatus.valueOf(dto.getOrderStatus()));
+        order.setContract(contract);
+        order.setProduct(product);
+        ordersRepository.save(order);
     }
 
     // Delete
     public void deleteOrder(Long orderId) {
-        ordersRepository.softDeleteById(orderId);
+        ordersRepository.deleteById(orderId);
     }
 
     // Delete multiple orders by IDs
     public void deleteOrdersByIds(List<Long> ids) {
         if (ids.size() == 1) {
-            ordersRepository.softDeleteById(ids.get(0));  // 단일 ID에 대해 개별 메서드 호출
+            ordersRepository.deleteById(ids.get(0));  // 단일 ID에 대해 개별 메서드 호출
         } else {
-            ordersRepository.softDeleteAllById(ids);  // 다중 ID에 대해 메서드 호출
+            ordersRepository.deleteAllById(ids);  // 다중 ID에 대해 메서드 호출
         }
     }
 
