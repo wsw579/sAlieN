@@ -55,6 +55,6 @@ public class EmployeeEntity {
 
     // 외부 외래키
 
-    @OneToMany(mappedBy = "employeeId", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "employeeId", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     private List<OpportunitiesEntity> opportunities;
 }

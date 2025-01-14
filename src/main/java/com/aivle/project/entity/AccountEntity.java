@@ -62,7 +62,7 @@ public class AccountEntity implements Serializable {
 
 
     // 외부 외래키
-    @OneToMany(mappedBy = "accountId", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "accountId", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     private List<OpportunitiesEntity> opportunities;
 
     // 상위 계정을 참조하는 필드 (셀프 조인 ManyToOne)
