@@ -334,6 +334,24 @@
     document.getElementById("productId").value = productId;
     document.getElementById("contractId").value = contractId;
 
+    // select 폼데이터 조회 기능 (main/header와 footer에 CSS 추가, 상단에 Selectize CSS, JS로 명시)
+
+
+
+        document.addEventListener("DOMContentLoaded", function() {
+            // 계약 검색
+            $('#contractId').selectize({
+                create: false,
+                sortField: 'text'
+            });
+
+            // 제품 검색
+            $('#productId').selectize({
+                create: false,
+                sortField: 'text'
+            });
+        });
+
     // Form 삭제버튼 클릭 시 현 주소가 create인 경우 create로 action주소 변경
     var form = document.getElementById("orderForm");
     var currentUrl = window.location.pathname;

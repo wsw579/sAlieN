@@ -47,6 +47,6 @@ public class ProductsEntity implements Serializable {
     @OneToMany(mappedBy = "productId", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     private List<OpportunitiesEntity> opportunities;
 
-    @OneToMany(mappedBy = "productId", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "product", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     private List<OrdersEntity> orders;
 }
