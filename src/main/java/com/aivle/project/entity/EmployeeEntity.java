@@ -57,4 +57,7 @@ public class EmployeeEntity {
 
     @OneToMany(mappedBy = "employeeId", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     private List<OpportunitiesEntity> opportunities;
+
+    @OneToMany(mappedBy = "employeeId", cascade = CascadeType.ALL)
+    private List<ContractsEntity> contracts;
 }
