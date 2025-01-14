@@ -59,6 +59,12 @@ public class AccountEntity implements Serializable {
 
 
     // 외래키 부분
+
+
+    // 외부 외래키
+    @OneToMany(mappedBy = "accountId", cascade = CascadeType.ALL)
+    private List<OpportunitiesEntity> opportunities;
+
     // 상위 계정을 참조하는 필드 (셀프 조인 ManyToOne)
     @ManyToOne
     @JoinColumn(name = "parent_account_id" , nullable = true) // 외래키 컬럼 이름
@@ -71,4 +77,5 @@ public class AccountEntity implements Serializable {
     //@ManyToOne
     //@JoinColumn
     //private EmployeeEntity employeeId;
+
 }

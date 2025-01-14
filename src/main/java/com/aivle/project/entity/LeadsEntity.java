@@ -53,8 +53,23 @@ public class LeadsEntity implements Serializable {
     private String c_tel;
 
 
+
     // 외래키 부분
 
-    //@OneToMany(mappedBy = "leads", cascade = CascadeType.ALL)
-    //private List<OpportunitiesCommentEntity> comments;
+    // 외부 외래키
+    @OneToMany(mappedBy = "leadId", cascade = CascadeType.ALL)
+    private List<OpportunitiesEntity> opportunities;
+
+
+    // 내부 외래키
+    // Employee 외래키 설정
+    @ManyToOne  // Many Leads to One Employee
+    @JoinColumn(name = "employee_id",  nullable = true)
+    private EmployeeEntity employee;
+
+
+    // Account 외래키 설정
+    @ManyToOne// Many Leads to One Account
+    @JoinColumn(name = "account_id",  nullable = true)
+    private AccountEntity account;
 }
