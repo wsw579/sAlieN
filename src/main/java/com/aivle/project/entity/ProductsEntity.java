@@ -9,6 +9,7 @@ import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.List;
 
 @Entity
 @Getter
@@ -46,4 +47,10 @@ public class ProductsEntity implements Serializable {
 
     @Column(nullable = false)
     private boolean productDeleted = false;
+
+    // 외부 외래키
+    @OneToMany(mappedBy = "productId", cascade = CascadeType.ALL)
+    private List<OpportunitiesEntity> opportunities;
+
+
 }

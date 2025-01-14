@@ -1,10 +1,10 @@
 package com.aivle.project.controller;
 
 import com.aivle.project.dto.OpportunitiesDto;
-import com.aivle.project.entity.OpportunitiesCommentEntity;
-import com.aivle.project.entity.OpportunitiesEntity;
+import com.aivle.project.entity.*;
 import com.aivle.project.service.OpportunitiesService;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -78,6 +78,12 @@ public class OpportunitiesController {
         opportunities.setTargetCloseDate(LocalDate.now());
         opportunities.setOpportunityStatus("");
         opportunities.setSuccessRate("");
+
+        //외래키 부분
+        opportunities.setLeadId(new LeadsEntity());
+        opportunities.setAccountId(new AccountEntity());
+        opportunities.setProductId(new ProductsEntity());
+        opportunities.setEmployeeId(new EmployeeEntity());
 
         model.addAttribute("opportunities", opportunities);
 

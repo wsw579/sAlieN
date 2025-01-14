@@ -1,6 +1,10 @@
 package com.aivle.project.dto;
 
 
+import com.aivle.project.entity.AccountEntity;
+import com.aivle.project.entity.EmployeeEntity;
+import com.aivle.project.entity.LeadsEntity;
+import com.aivle.project.entity.ProductsEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -34,10 +38,10 @@ public class OpportunitiesDto {
 
 
     // 외래키 부분
-    //private LeadEntity leadId;
-    //private AccountEntity accountId;
-    //private ProductEntity productId;
-    //private EmployeeEntity employeeId;
+    private LeadsEntity leadId;
+    private AccountEntity accountId;
+    private ProductsEntity productId;
+    private EmployeeEntity employeeId;
 
 
 

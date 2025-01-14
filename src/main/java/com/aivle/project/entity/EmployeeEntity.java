@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -51,4 +52,9 @@ public class EmployeeEntity {
 
     @Enumerated(EnumType.STRING)
     private Team teamId;
+
+    // 외부 외래키
+
+    @OneToMany(mappedBy = "employeeId", cascade = CascadeType.ALL)
+    private List<OpportunitiesEntity> opportunities;
 }
