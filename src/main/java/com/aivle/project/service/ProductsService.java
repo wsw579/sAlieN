@@ -59,7 +59,11 @@ public class ProductsService {
 
     // Delete multiple products by IDs
     public void deleteProductsByIds(List<Long> ids) {
-        productsRepository.softDeleteAllById(ids);
+        if (ids.size() == 1) {
+            productsRepository.softDeleteById(ids.get(0));  // 단일 ID에 대해 개별 메서드 호출
+        } else {
+            productsRepository.softDeleteAllById(ids);  // 다중 ID에 대해 메서드 호출
+        }
     }
 
     // Search
