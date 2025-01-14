@@ -57,7 +57,7 @@ public class LeadsEntity implements Serializable {
     // 외래키 부분
 
     // 외부 외래키
-    @OneToMany(mappedBy = "leadId", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "leadId", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     private List<OpportunitiesEntity> opportunities;
 
 
