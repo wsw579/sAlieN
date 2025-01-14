@@ -18,6 +18,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -28,25 +30,21 @@ public class EmployeeService {
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-//    public void join(EmployeeDto.Post memberDto){
-//
-//        // 동일한 id를 가진 user가 존재하는지 검증
-//        boolean findUser = employeeRepository.existsByEmployeeId(memberDto.getEmployeeId());
-//        if(findUser){
-//            System.out.println("중복된 사용자 입니다.");
-//            return;
-//        }
-//
-//        EmployeeEntity member = new EmployeeEntity();
-//        member.setEmployeeId(memberDto.getEmployeeId());
-//        member.setPassword(bCryptPasswordEncoder.encode(memberDto.getPassword()));
-//        member.setEmployeeName(memberDto.getEmployeeName());
-//        member.setHireDate(LocalDate.parse(memberDto.getHireDate()));
-//        member.setPosition(Position.valueOf(memberDto.getPosition()));
-//        member.setAccessPermission(Role.ROLE_USER);
-//        member.setPasswordAnswer(memberDto.getPasswordAnswer());
-//        employeeRepository.save(member);
-//    }
+
+    private static final Map<Position, Float> positionBaseSalaryMap = new HashMap<>();
+
+    static {
+        // static 블록에서 초기화
+        positionBaseSalaryMap.put(Position.STAFF, 50000000F);
+        positionBaseSalaryMap.put(Position.JUNIOR, 60000000F);
+        positionBaseSalaryMap.put(Position.ASSOCIATE, 75000000F);
+        positionBaseSalaryMap.put(Position.MANAGER, 100000000F);
+        positionBaseSalaryMap.put(Position.ASSISTANT_MANAGER, 120000000F);
+        positionBaseSalaryMap.put(Position.TEAM_LEADER, 140000000F);
+        positionBaseSalaryMap.put(Position.DEPARTMENT_HEAD, 160000000F);
+        positionBaseSalaryMap.put(Position.GENERAL_MANAGER, 180000000F);
+    }
+
     public void join(EmployeeDto.Post employeeDto) {
         // EmployeeEntity 생성 및 저장
         EmployeeEntity employee = new EmployeeEntity();
@@ -54,7 +52,7 @@ public class EmployeeService {
         employee.setEmployeeName(employeeDto.getEmployeeName());
         employee.setHireDate(LocalDate.parse(employeeDto.getHireDate()));
         employee.setTerminationDate(null);
-        employee.setBaseSalary(employeeDto.getBaseSalary());
+        employee.setBaseSalary(positionBaseSalaryMap.get(Position.valueOf(employeeDto.getPosition())));
         employee.setPosition(Position.valueOf(employeeDto.getPosition()));
         employee.setAccessPermission(Role.ROLE_USER);
         employee.setPassword(bCryptPasswordEncoder.encode(employeeDto.getPassword()));
