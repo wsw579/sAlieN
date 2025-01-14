@@ -33,7 +33,7 @@ public class EmployeeEntity {
     private LocalDate terminationDate;
 
     @Column
-    private float baseSalary;
+    private Float baseSalary;
 
     @Enumerated(EnumType.STRING)
     private Position position;

@@ -1,7 +1,9 @@
 package com.aivle.project.dto;
 
+import com.aivle.project.enums.Dept;
 import com.aivle.project.enums.Position;
 import com.aivle.project.enums.Role;
+import com.aivle.project.enums.Team;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -38,8 +40,8 @@ public class EmployeeDto {
         private float baseSalary;
         private Position position;
         private Role accessPermission;
-        private String dept;
-        private String team;
+        private Dept dept;
+        private Team team;
     }
 
     @Getter
@@ -51,5 +53,14 @@ public class EmployeeDto {
         private String employeeId;
         private String existPassword;
         private String newPassword;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @ToString
+    public static class GetId{
+        private String employeeId;
     }
 }
