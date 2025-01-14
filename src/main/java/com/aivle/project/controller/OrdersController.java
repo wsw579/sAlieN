@@ -1,9 +1,7 @@
 package com.aivle.project.controller;
 
 import com.aivle.project.dto.OrdersDto;
-import com.aivle.project.entity.ContractsEntity;
-import com.aivle.project.entity.OrdersEntity;
-import com.aivle.project.entity.ProductsEntity;
+import com.aivle.project.entity.*;
 import com.aivle.project.enums.OrderStatus;
 import com.aivle.project.repository.ContractsRepository;
 import com.aivle.project.repository.ProductsRepository;
@@ -49,24 +47,6 @@ public class OrdersController {
         List<ProductsEntity> products = productsRepository.findAll();
         List<ContractsEntity> contracts = contractsRepository.findAll();
 
-        // 제품 목록에 선택된 제품 표시
-        for (ProductsEntity product : products) {
-            if (product.getProductId().equals(orders.getProduct().getProductId())) {
-                product.setProductSelected(true); // 선택된 제품에 대해 표시
-            } else {
-                product.setProductSelected(false);
-            }
-        }
-
-        // 제품 목록에 선택된 제품 표시
-        for (ContractsEntity contract : contracts) {
-            if (contract.getContractId().equals(orders.getContract().getContractId())) {
-                contract.setContractSelected(true); // 선택된 제품에 대해 표시
-            } else {
-                contract.setContractSelected(false);
-            }
-        }
-
         model.addAttribute("orders", orders);
         model.addAttribute("products", products);
         model.addAttribute("contracts", contracts);
@@ -75,33 +55,21 @@ public class OrdersController {
 
     // Create order page (초기값으로 페이지 생성)
     @GetMapping("/orders/detail/create")
-    public String ordersCreate(@RequestParam(value = "contractId", required = false) Long contractId, @RequestParam(value = "productId", required = false) Long productId, Model model) {
+    public String ordersCreate(Model model) {
 
         OrdersEntity orders = new OrdersEntity();
+
+        // 목록 조회 후 모델에 추가 (드롭다운 메뉴용)
+        List<ProductsEntity> products = productsRepository.findAll();
+        List<ContractsEntity> contracts = contractsRepository.findAll();
+
         orders.setOrderDate(LocalDate.now());
         orders.setSalesDate(LocalDate.now());
         orders.setOrderAmount(0F);
         orders.setOrderStatus(OrderStatus.draft);
 
-        if (contractId != null) {
-            ContractsEntity contract = contractsRepository.findById(contractId)
-                    .orElse(null);
-            orders.setContract(contract);
-            // 존재하지 않으면 null
-        }
-
-
-        if (productId != null) {
-            ProductsEntity product = productsRepository.findById(productId)
-                    .orElse(null);
-            orders.setProduct(product);
-            // 존재하지 않으면 null
-        }
-//        orders.setPartnerOpId(0L);
-
-        // 제품 목록 조회 후 모델에 추가 (드롭다운 메뉴용)
-        List<ProductsEntity> products = productsRepository.findAllActive();
-        List<ContractsEntity> contracts = contractsRepository.findAllByOrderByCreatedDateAndIdDescActive();
+        orders.setProductId(new ProductsEntity());
+        orders.setContractId(new ContractsEntity());
 
         model.addAttribute("orders", orders);
         model.addAttribute("products", products);
@@ -115,12 +83,8 @@ public class OrdersController {
 
     @PostMapping("/orders/detail/create")
     public String saveOrder(@ModelAttribute OrdersDto ordersDto) {
-        // Contract ID로 ContractsEntity 조회
-        ContractsEntity contract = contractsRepository.findById(ordersDto.getContractId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid contract ID"));
-
         // OrdersEntity 생성 및 저장
-        ordersService.createOrder(ordersDto, contract);
+        ordersService.createOrder(ordersDto);
 
         return "redirect:/orders";
     }

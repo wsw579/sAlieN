@@ -33,7 +33,7 @@ public class EmployeeEntity {
     private LocalDate terminationDate;
 
     @Column
-    private float baseSalary;
+    private Float baseSalary;
 
     @Enumerated(EnumType.STRING)
     private Position position;
@@ -57,4 +57,7 @@ public class EmployeeEntity {
 
     @OneToMany(mappedBy = "employeeId", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     private List<OpportunitiesEntity> opportunities;
+
+    @OneToMany(mappedBy = "employeeId", cascade = CascadeType.ALL)
+    private List<ContractsEntity> contracts;
 }

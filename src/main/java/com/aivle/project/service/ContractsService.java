@@ -31,6 +31,11 @@ public class ContractsService {
         contractsEntity.setContractSales(dto.getContractSales());
         contractsEntity.setContractAmount(dto.getContractAmount());
         contractsEntity.setContractClassification(dto.getContractClassification());
+
+        contractsEntity.setOpportunityId(dto.getOpportunityId());
+        contractsEntity.setAccountId(dto.getAccountId());
+        contractsEntity.setProductId(dto.getProductId());
+        contractsEntity.setEmployeeId(dto.getEmployeeId());
         contractsRepository.save(contractsEntity);
     }
 
@@ -53,6 +58,12 @@ public class ContractsService {
         contractsEntity.setContractSales(dto.getContractSales());
         contractsEntity.setContractAmount(dto.getContractAmount());
         contractsEntity.setContractClassification(dto.getContractClassification());
+
+        contractsEntity.setOpportunityId(dto.getOpportunityId());
+        contractsEntity.setAccountId(dto.getAccountId());
+        contractsEntity.setProductId(dto.getProductId());
+        contractsEntity.setEmployeeId(dto.getEmployeeId());
+
         contractsRepository.save(contractsEntity);
 
     }
@@ -82,7 +93,7 @@ public class ContractsService {
     @Transactional
     public List<OrdersEntity> getOrdersByContractId(Long contractId) {
         ContractsEntity contract = searchContracts(contractId);
-        List<OrdersEntity> orders = ordersRepository.findByContract(contract);
+        List<OrdersEntity> orders = ordersRepository.findByContractId(contract);
 
         // 디버깅을 위해 로그 출력
         //orders.forEach(comment -> System.out.println("Order: " + orders.getorderId()));
