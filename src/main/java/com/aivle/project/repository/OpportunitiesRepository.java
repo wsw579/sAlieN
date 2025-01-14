@@ -16,5 +16,4 @@ public interface OpportunitiesRepository extends JpaRepository<OpportunitiesEnti
     @Query("SELECT o FROM OpportunitiesEntity o ORDER BY o.createdDate DESC, o.opportunityId DESC")
     List<OpportunitiesEntity> findAllByOrderByCreatedDateAndIdDesc();
 
-
 }

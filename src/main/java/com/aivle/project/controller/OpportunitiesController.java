@@ -1,6 +1,5 @@
 package com.aivle.project.controller;
 
-
 import com.aivle.project.dto.OpportunitiesDto;
 import com.aivle.project.entity.OpportunitiesCommentEntity;
 import com.aivle.project.entity.OpportunitiesEntity;
@@ -119,10 +118,6 @@ public class OpportunitiesController {
         opportunitiesService.deleteOpportunitiesByIds(ids);
         return ResponseEntity.ok().build(); // 상태 코드 200 반환
     }
-
-
-
-
 
 
 }

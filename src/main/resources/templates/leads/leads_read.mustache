@@ -51,18 +51,20 @@
 
 
 
+
+
 <div id="layoutSidenav_content">
     <main>
         <div class="container-fluid px-4">
-            <h1 class="mt-4">Opportunities</h1>
+            <h1 class="mt-4">Leads</h1>
             <ol class="breadcrumb mb-4">
-                <li class="breadcrumb-item active">Opportunities</li>
+                <li class="breadcrumb-item active">Leads</li>
             </ol>
             <!-- 상단 데이터 요약 카드 바 -->
             <div class="row">
                 <div class="col-xl-3 col-md-6">
                     <div class="card bg-primary text-white mb-4">
-                        <div class="card-body">진행중 기회</div>
+                        <div class="card-body">새로 작성된 리드</div>
                         <div class="card-footer d-flex align-items-center justify-content-between">
                             <h3 id="ongoingCount"></h3>
                             <div class="small text-white"><i class="fas fa-angle-right"></i></div>
@@ -71,7 +73,7 @@
                 </div>
                 <div class="col-xl-3 col-md-6">
                     <div class="card bg-warning text-white mb-4">
-                        <div class="card-body">마감일자 초과</div>
+                        <div class="card-body">진행중인 리드</div>
                         <div class="card-footer d-flex align-items-center justify-content-between">
                             <h3 id="overdueCount"></h3>
                             <div class="small text-white"><i class="fas fa-angle-right"></i></div>
@@ -80,22 +82,14 @@
                 </div>
                 <div class="col-xl-3 col-md-6">
                     <div class="card bg-success text-white mb-4">
-                        <div class="card-body">계약 전환 성공</div>
+                        <div class="card-body">완료된 리드</div>
                         <div class="card-footer d-flex align-items-center justify-content-between">
                             <h3 id="closedCount"></h3>
                             <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                         </div>
                     </div>
                 </div>
-                <div class="col-xl-3 col-md-6">
-                    <div class="card bg-danger text-white mb-4">
-                        <div class="card-body">기회 보류</div>
-                        <div class="card-footer d-flex align-items-center justify-content-between">
-                            <h3 id="pendingCount"></h3>
-                            <div class="small text-white"><i class="fas fa-angle-right"></i></div>
-                        </div>
-                    </div>
-                </div>
+
             </div>
             <div class="row">
 
@@ -104,36 +98,26 @@
                     <div class="card mb-4">
                         <div class="card-header">
                             <i class="fas fa-chart-area me-1"></i>
-                            연간 계약 전환 현황
+                            연간 기회 전환 현황
                         </div>
                         <div class="card-body"><canvas id="opportunitiesReadChart" width="100%" height="40"></canvas></div>
                     </div>
                 </div>
 
-                <!-- 차트2 -->
-                <div class="col-xl-6">
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <i class="fas fa-chart-bar me-1"></i>
-                            연간 계약 전환 누적 현황
-                        </div>
-                        <div class="card-body"><canvas id="opportunitiesReadBar" width="100%" height="40"></canvas></div>
-                    </div>
-                </div>
             </div>
 
 
-            <!-- 기회테이블 -->
+            <!-- 리드 테이블 -->
             <div class="card mb-4">
                 <div class="card-header">
                     <i class="fas fa-table me-1"></i>
-                    My Opportunities
+                    My Leads
                 </div>
                 <div class="card-body">
                     <table id="datatablesSimple">
 
                         <div class="button-container mb-3">
-                            <a href="/opportunities/detail/create" class="btn btn-custom-create btn-sm" id="createButton">
+                            <a href="/leads/detail/create" class="btn btn-custom-create btn-sm" id="createButton">
                                 <i class="fas fa-plus-circle"></i> 신규
                             </a>
 
@@ -147,34 +131,33 @@
                             <th></th>
                             <th>ID</th>
                             <th>생성일자</th>
-                            <th>기회명</th>
-                            <!-- <th>계정이름</th> -->
-                            <!-- <th>제품명</th> -->
-                            <th>기회매출</th>
-                            <th>상태</th>
+                            <th>회사이름</th>
+                            <!-- <th>영업담당자</th> -->
+                            <!-- <th>리드소스</th> -->
+                            <th>계정담당자</th>
                             <th>마감일자</th>
                             <th>성공률</th>
-                            <!-- <th>기회소유자</th> -->
+                            <!-- <th>연락처</th> -->
 
                         </tr>
                         </thead>
                         <tbody>
-                        {{#opportunities}}
-                            <tr data-index="{{opportunityId}}">
-                                <td><input type="checkbox" class="select-row" value="{{opportunityId}}" ></td>
-                                <td>{{opportunityId}}</td>
-                                <td>{{createdDate}}</td>
-                                <td><a href="/opportunities/detail/{{opportunityId}}">{{opportunityName}}</a></td>
-                                <!-- <td>계정이름</td> -->
-                                <!-- <td>제품명</td> -->
-                                <td>{{expectedRevenue}}</td>
-                                <td>{{opportunityStatus}}</td>
-                                <td>{{targetCloseDate}}</td>
-                                <td>{{successRate}}</td>
-                                <!-- <td>기회소유자</td> -->
+                        {{#leads}}
+                        <tr data-index="{{leadId}}">
+                            <td><input type="checkbox" class="select-row" value="{{leadId}}" ></td>
+                            <td>{{leadId}}</td>
+                            <td>{{createdDate}}</td>
+                            <td><a href="/leads/detail/{{leadId}}">{{companyName}}</a></td>
+                            <!-- <td>계정이름</td> -->
+                            <!-- <td>제품명</td> -->
+                            <td>{{expectedRevenue}}</td>
+                            <td>{{opportunityStatus}}</td>
+                            <td>{{targetCloseDate}}</td>
+                            <td>{{successRate}}</td>
+                            <!-- <td>기회소유자</td> -->
 
-                            </tr>
-                        {{/opportunities}}
+                        </tr>
+                        {{/leads}}
                         </tbody>
 
                     </table>
@@ -234,9 +217,9 @@
                 var selectedIds = [];
 
                 selectedCheckboxes.forEach(function(checkbox) {
-                    var opportunityId = checkbox.value;
-                    console.log("Opportunity ID:", opportunityId); // 로그 추가
-                    selectedIds.push(opportunityId);
+                    var leadId = checkbox.value;
+                    console.log("Lead ID:", leadId); // 로그 추가
+                    selectedIds.push(leadId);
                 });
 
                 if (selectedIds.length > 0) {
@@ -244,7 +227,7 @@
 
                     if (confirmDelete) {
                         console.log("Deleting IDs:", selectedIds); // 로그 추가
-                        fetch("/opportunities/detail/delete", {
+                        fetch("/leads/detail/delete", {
                             method: "POST",
                             headers: {
                                 "Content-Type": "application/json"
@@ -253,7 +236,7 @@
                         }).then(response => {
                             if (response.ok) {
                                 // 서버 응답이 성공적이면 리다이렉트 수행
-                                window.location.href = "/opportunities";
+                                window.location.href = "/leads";
                             } else {
                                 alert("삭제 중 오류가 발생했습니다.");
                             }
@@ -275,7 +258,7 @@
 
     </script>
 
-    <script src="/assets/demo/opportunities-read-chart.js"></script>
-    <script src="/assets/demo/opportunities-read-bar.js"></script>
+    <script src="/assets/demo/leads-read-chart.js"></script>
+    <script src="/assets/demo/leads-read-bar.js"></script>
 
 {{>main/footer}}
