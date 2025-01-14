@@ -52,10 +52,7 @@ public class LeadsEntity implements Serializable {
     @Column(nullable = false)
     private String c_tel;
 
-    // Employee 외래키 설정
-    @ManyToOne  // Many Leads to One Employee
-    @JoinColumn(name = "employee_id",  nullable = true)
-    private EmployeeEntity employee;
+
 
     // 외래키 부분
 
@@ -63,8 +60,14 @@ public class LeadsEntity implements Serializable {
     @OneToMany(mappedBy = "leadId", cascade = CascadeType.ALL)
     private List<OpportunitiesEntity> opportunities;
 
-    //@OneToMany(mappedBy = "leads", cascade = CascadeType.ALL)
-    //private List<OpportunitiesCommentEntity> comments;
+
+    // 내부 외래키
+    // Employee 외래키 설정
+    @ManyToOne  // Many Leads to One Employee
+    @JoinColumn(name = "employee_id",  nullable = true)
+    private EmployeeEntity employee;
+
+
     // Account 외래키 설정
     @ManyToOne// Many Leads to One Account
     @JoinColumn(name = "account_id",  nullable = true)
