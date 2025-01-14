@@ -45,7 +45,7 @@ public class ProductsEntity implements Serializable {
 
     private boolean productSelected;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private boolean productDeleted = false;
 
     // 외부 외래키
