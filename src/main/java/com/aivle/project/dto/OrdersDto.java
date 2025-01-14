@@ -1,5 +1,7 @@
 package com.aivle.project.dto;
 
+import com.aivle.project.entity.ContractsEntity;
+import com.aivle.project.entity.ProductsEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,6 +21,6 @@ public class OrdersDto {
     private float orderAmount;
     private String orderStatus; // Enum 대신 String으로 변환
     // 외래키
-    private Long contractId;
-    private Long productId;
+    private ContractsEntity contractId;
+    private ProductsEntity productId;
 }

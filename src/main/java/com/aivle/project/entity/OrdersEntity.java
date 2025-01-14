@@ -42,11 +42,12 @@ public class OrdersEntity implements Serializable {
     @Column(nullable = false)
     private OrderStatus orderStatus;
 
+    // 내부 외래키
     @ManyToOne
     @JoinColumn(name = "contract_id", nullable = false, foreignKey = @ForeignKey(name = "fk_orders_contract_Id"))
-    private ContractsEntity contract;
+    private ContractsEntity contractId;
 
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false, foreignKey = @ForeignKey(name = "fk_orders_product_Id"))
-    private ProductsEntity product;
+    private ProductsEntity productId;
 }

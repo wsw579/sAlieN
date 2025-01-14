@@ -70,7 +70,7 @@ public class ContractsEntity implements Serializable {
     @JoinColumn(name = "opportunity_id", nullable = false)
     private OpportunitiesEntity opportunityId;
 
-    @OneToMany(mappedBy = "contract", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+    @OneToMany(mappedBy = "contractId", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     private List<OrdersEntity> orders;
 
 
