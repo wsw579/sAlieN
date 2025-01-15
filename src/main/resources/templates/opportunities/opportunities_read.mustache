@@ -186,6 +186,8 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
+
+            // 1. 테이블 행 정보를 통해 상태 및 날짜 기반의 통계 계산
             var rows = document.querySelectorAll("#datatablesSimple tbody tr");
             var now = new Date();
 
@@ -195,13 +197,12 @@
             var pendingCount = 0;
 
             rows.forEach(function(row) {
-                var status = row.querySelector("td:nth-child(6)").innerText;
-                var targetCloseDate = new Date(row.querySelector("td:nth-child(7)").innerText);
+                var status = row.querySelector("td:nth-child(8)").innerText;
+                var targetCloseDate = new Date(row.querySelector("td:nth-child(9)").innerText);
 
                 if (!status.startsWith("Closed")) {
                     ongoingCount++;
                 }
-
                 if (status === "Closed(won)") {
                     closedCount++;
                 }
@@ -217,65 +218,56 @@
             document.getElementById("overdueCount").innerText = `${overdueCount} 건`;
             document.getElementById("closedCount").innerText = `${closedCount} 건`;
             document.getElementById("pendingCount").innerText = `${pendingCount} 건`;
-        });
 
 
 
+            // 4. 삭제 버튼 클릭 시 선택된 항목 삭제
+            var deleteButton = document.getElementById("deleteButton");
+            if (deleteButton) {
+                deleteButton.addEventListener("click", function() {
+                    var selectedCheckboxes = document.querySelectorAll(".select-row:checked");
+                    var selectedIds = [];
 
+                    selectedCheckboxes.forEach(function(checkbox) {
+                        var opportunityId = checkbox.value;
+                        console.log("Opportunity ID:", opportunityId); // 로그 추가
+                        selectedIds.push(opportunityId);
+                    });
 
+                    if (selectedIds.length > 0) {
+                        var confirmDelete = confirm("선택한 항목들을 삭제하시겠습니까?");
 
-
-
-    document.addEventListener("DOMContentLoaded", function() {
-        var deleteButton = document.getElementById("deleteButton");
-        if (deleteButton) {
-            deleteButton.addEventListener("click", function() {
-                var selectedCheckboxes = document.querySelectorAll(".select-row:checked");
-                var selectedIds = [];
-
-                selectedCheckboxes.forEach(function(checkbox) {
-                    var opportunityId = checkbox.value;
-                    console.log("Opportunity ID:", opportunityId); // 로그 추가
-                    selectedIds.push(opportunityId);
-                });
-
-                if (selectedIds.length > 0) {
-                    var confirmDelete = confirm("선택한 항목들을 삭제하시겠습니까?");
-
-                    if (confirmDelete) {
-                        console.log("Deleting IDs:", selectedIds); // 로그 추가
-                        fetch("/opportunities/detail/delete", {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json"
-                            },
-                            body: JSON.stringify({ ids: selectedIds })
-                        }).then(response => {
-                            if (response.ok) {
-                                // 서버 응답이 성공적이면 리다이렉트 수행
-                                window.location.href = "/opportunities";
-                            } else {
+                        if (confirmDelete) {
+                            console.log("Deleting IDs:", selectedIds); // 로그 추가
+                            fetch("/opportunities/detail/delete", {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json"
+                                },
+                                body: JSON.stringify({ ids: selectedIds })
+                            }).then(response => {
+                                if (response.ok) {
+                                    // 서버 응답이 성공적이면 리다이렉트 수행
+                                    window.location.href = "/opportunities";
+                                } else {
+                                    alert("삭제 중 오류가 발생했습니다.");
+                                }
+                            }).catch(error => {
+                                console.error("Error:", error);
                                 alert("삭제 중 오류가 발생했습니다.");
-                            }
-                        }).catch(error => {
-                            console.error("Error:", error);
-                            alert("삭제 중 오류가 발생했습니다.");
-                        });
+                            });
+                        }
+                    } else {
+                        alert("삭제할 항목을 선택해 주세요.");
                     }
-                } else {
-                    alert("삭제할 항목을 선택해 주세요.");
-                }
-            });
-        }
-    });
-
-
-
-
-
+                });
+            }
+        });
     </script>
 
+    <!-- 외부 스크립트 -->
     <script src="/assets/demo/opportunities-read-chart.js"></script>
     <script src="/assets/demo/opportunities-read-bar.js"></script>
+
 
 {{>main/footer}}

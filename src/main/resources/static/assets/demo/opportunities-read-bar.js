@@ -23,7 +23,7 @@
             var createdDate = new Date(rows[i].getElementsByTagName("td")[2].innerText);
             var month = createdDate.getMonth(); // 월은 0부터 시작합니다.
             var year = createdDate.getFullYear();
-            var status = rows[i].getElementsByTagName("td")[5].innerText;
+            var status = rows[i].getElementsByTagName("td")[7].innerText;
 
             if (year == lastYear && status === "Closed(won)") {
                 lastYearData[month]++;
