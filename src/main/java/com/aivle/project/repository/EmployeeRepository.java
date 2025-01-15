@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface EmployeeRepository extends JpaRepository<EmployeeEntity, String> {
     boolean existsByEmployeeId(String username);
@@ -15,4 +17,6 @@ public interface EmployeeRepository extends JpaRepository<EmployeeEntity, String
 
     @Query("SELECT e.employeeId FROM EmployeeEntity e WHERE e.employeeId LIKE CONCAT(:year, '%') ORDER BY e.employeeId DESC LIMIT 1")
     String findLastEmployeeIdByYear(@Param("year") String year);
+
+    List<EmployeeEntity> findAllByAccessPermission(Role role);
 }

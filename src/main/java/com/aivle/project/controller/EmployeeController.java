@@ -14,6 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -77,5 +78,12 @@ public class EmployeeController {
         String employeeId = employeeService.makeNewEmployeeId(year+"");
         response.put("employeeId", employeeId); // 예시 응답
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/employee-list")
+    public String employeeList(Model model){
+        List<EmployeeDto.Get> empList = employeeService.findAllEmployee();
+        model.addAttribute("employeeList", empList);
+        return "user/employee_list";
     }
 }
