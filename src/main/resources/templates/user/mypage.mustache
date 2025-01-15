@@ -140,55 +140,6 @@
     </div>
 
     <script>
-        const teamMapping = {
-            "STRATEGY_CUST_SECTOR": "전략고객섹터담당",
-            "STRATEGY_CUST_1": "전략고객1담당",
-            "STRATEGY_CUST_2": "전략고객2담당",
-            "PUBLIC_CUST_SECTOR": "공공고객섹터담당",
-            "PUBLIC_CUST_1": "공공고객1담당",
-            "PUBLIC_CUST_2": "공공고객2담당",
-            "FINANCE_CUST_SECTOR": "금융고객섹터담당",
-            "FINANCE_CUST_1": "금융고객1담당",
-            "FINANCE_CUST_2": "금융고객2담당",
-            "CORPORATE_SALES_PLANNING": "법인영업기획담당",
-            "CORPORATE_CUST": "법인고객담당",
-            "CORPORATE_RETAIL": "법인유통담당",
-            "CORPORATE_SALES_SECTOR": "법인섹터담당"
-        };
-
-        const deptMapping = {
-            "STRATEGY_DEPT": "전략고객본부",
-            "PUBLIC_DEPT": "공공고객본부",
-            "FINANCE_DEPT": "금융고객본부",
-            "CORPORATE_DEPT": "법인영업본부"
-        };
-
-        const positionMapping = {
-            "GENERAL_MANAGER": "본부장",
-            "DEPARTMENT_HEAD": "부장",
-            "TEAM_LEADER": "팀장",
-            "ASSISTANT_MANAGER": "차장",
-            "MANAGER": "과장",
-            "ASSOCIATE": "대리",
-            "JUNIOR": "주임",
-            "STAFF": "사원"
-        };
-
-
-
-
-        // employee.team에 해당하는 값 (예: "STRATEGY_CUST_1")
-        const employeeTeam = "{{employee.team}}"; // 서버에서 전달되는 값
-        const employeeDept = "{{employee.dept}}"; // 서버에서 전달되는 부서값
-        const employeePosition = "{{employee.position}}"; // 서버에서 전달되는 직급값
-
-
-        // 팀 주석을 표시
-        document.getElementById("team").textContent = teamMapping[employeeTeam] || "팀 정보 없음";
-        document.getElementById("department").textContent = deptMapping[employeeDept] || "부서 정보 없음";
-        document.getElementById("position").textContent = positionMapping[employeePosition] || "직급 정보 없음";
-
-
 
 
         // 모달이 열릴 때 이벤트 처리

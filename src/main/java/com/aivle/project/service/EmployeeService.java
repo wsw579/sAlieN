@@ -124,10 +124,8 @@ public class EmployeeService {
         employee.setEmployeeId(employeeId);
         employee.setEmployeeName(findEmployee.getEmployeeName());
         employee.setHireDate(findEmployee.getHireDate());
-        employee.setPosition(findEmployee.getPosition().toString());
-        System.out.println("팀정보" + findEmployee.getTeamId());
-//        employee.setTeam(findEmployee.getTeamId() == null ? "팀 정보 없음" : teamMap.get(findEmployee.getTeamId()));
-        employee.setTeam(findEmployee.getTeamId() == null ? teamMap.get(findEmployee.getTeamId()) : "팀 정보 없음");
+        employee.setPosition(positionMap.get(findEmployee.getPosition()));
+        employee.setTeam(findEmployee.getTeamId() == null ? "팀 정보 없음" : teamMap.get(findEmployee.getTeamId()));
         employee.setDept(findEmployee.getDepartmentId() == null ? "부서정보 없음" : deptMap.get(findEmployee.getDepartmentId()));
         return employee;
     }
