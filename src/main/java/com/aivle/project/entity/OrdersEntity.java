@@ -1,15 +1,21 @@
 package com.aivle.project.entity;
 
+import com.aivle.project.enums.OrderStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.ForeignKey;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.*;
 
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -32,27 +38,16 @@ public class OrdersEntity implements Serializable {
 
     private Float orderAmount;
 
-//    @Enumerated(EnumType.STRING)
-//    @Column(nullable = false)
-//    private OrderStatus order_status;
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String orderStatus;
+    private OrderStatus orderStatus;
+
+    // 내부 외래키
+    @ManyToOne
+    @JoinColumn(name = "contract_id", nullable = false, foreignKey = @ForeignKey(name = "fk_orders_contract_Id"))
+    private ContractsEntity contractId;
 
     @ManyToOne
-    @JoinColumn(name = "contract_id", nullable = false)
-    private ContractsEntity contract;
-//    @Column(name = "contract_id", nullable = false)
-//    private Long contractId;
-
-//    @ManyToOne
-//    @JoinColumn(name = "product_id", nullable = false)
-//    private Product product;
-    @Column(name = "product_id", nullable = false)
-    private Long productId;
-
-//    @ManyToOne
-//    @JoinColumn(name = "partner_op_id", nullable = false)
-//    private Partner_Op_Month partner_op_month
-    @Column(name = "partner_op_id", nullable = false)
-    private Long partnerOpId;
+    @JoinColumn(name = "product_id", nullable = false, foreignKey = @ForeignKey(name = "fk_orders_product_Id"))
+    private ProductsEntity productId;
 }

@@ -122,10 +122,12 @@
                         <thead>
                         <tr>
                             <th></th>
-                            <th>계약 번호</th>
+                            <th>ID</th>
+                            <th>계정 이름</th>
                             <th>계약 시작 날짜</th>
                             <th>계약 종료 날짜</th>
                             <th>상태</th>
+                            <th>계약 분류</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -137,9 +139,11 @@
                                         {{contractId}}
                                     </a>
                                 </td>
+                                <td>{{accountId.accountId}}</td>
                                 <td>{{startDate}}</td>
                                 <td>{{terminationDate}}</td>
                                 <td>{{contractStatus}}</td>
+                                <td>{{contractClassification}}</td>
                             </tr>
                         {{/contracts}}
                         </tbody>

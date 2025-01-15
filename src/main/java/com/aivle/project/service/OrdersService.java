@@ -3,8 +3,11 @@ package com.aivle.project.service;
 import com.aivle.project.dto.OrdersDto;
 import com.aivle.project.entity.ContractsEntity;
 import com.aivle.project.entity.OrdersEntity;
+import com.aivle.project.entity.ProductsEntity;
+import com.aivle.project.enums.OrderStatus;
 import com.aivle.project.repository.ContractsRepository;
 import com.aivle.project.repository.OrdersRepository;
+import com.aivle.project.repository.ProductsRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,21 +22,18 @@ public class OrdersService {
 
     private final ContractsRepository contractsRepository;
     private final OrdersRepository ordersRepository;
+    private final ProductsRepository productsRepository;
 
     // Create
-    public void createOrder(OrdersDto dto, ContractsEntity contract) {
+    public void createOrder(OrdersDto dto) {
         OrdersEntity orderEntity = new OrdersEntity();
 
         orderEntity.setOrderDate(dto.getOrderDate());
         orderEntity.setSalesDate(dto.getSalesDate());
         orderEntity.setOrderAmount(dto.getOrderAmount());
-        orderEntity.setOrderStatus(dto.getOrderStatus());
-        // ContractsEntity 설정
-        if (contract != null) {
-            orderEntity.setContract(contract);
-        }
+        orderEntity.setOrderStatus(OrderStatus.valueOf(dto.getOrderStatus()));
+        orderEntity.setContractId(dto.getContractId());
         orderEntity.setProductId(dto.getProductId());
-        orderEntity.setPartnerOpId(dto.getPartnerOpId());
         ordersRepository.save(orderEntity);
     }
 
@@ -45,21 +45,17 @@ public class OrdersService {
     // Update
     @Transactional
     public void updateOrder(Long orderId, OrdersDto dto) {
-        ContractsEntity contract = contractsRepository.findById(dto.getContractId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid contract ID"));
+        OrdersEntity order = ordersRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid order ID"));
+        System.out.println("Before update: " + order);
 
-        OrdersEntity orderEntity = ordersRepository.findById(orderId)
-                .orElseThrow(() -> new IllegalArgumentException("Order not found"));
-        System.out.println("Before update: " + orderEntity);
-
-        orderEntity.setOrderDate(dto.getOrderDate());
-        orderEntity.setSalesDate(dto.getSalesDate());
-        orderEntity.setOrderAmount(dto.getOrderAmount());
-        orderEntity.setOrderStatus(dto.getOrderStatus());
-        orderEntity.setContract(contract);
-        orderEntity.setProductId(dto.getProductId());
-        orderEntity.setPartnerOpId(dto.getPartnerOpId());
-        ordersRepository.save(orderEntity);
+        order.setOrderDate(dto.getOrderDate());
+        order.setSalesDate(dto.getSalesDate());
+        order.setOrderAmount(dto.getOrderAmount());
+        order.setOrderStatus(OrderStatus.valueOf(dto.getOrderStatus()));
+        order.setContractId(dto.getContractId());
+        order.setProductId(dto.getProductId());
+        ordersRepository.save(order);
     }
 
     // Delete
@@ -69,7 +65,11 @@ public class OrdersService {
 
     // Delete multiple orders by IDs
     public void deleteOrdersByIds(List<Long> ids) {
-        ordersRepository.deleteAllById(ids);
+        if (ids.size() == 1) {
+            ordersRepository.deleteById(ids.get(0));  // 단일 ID에 대해 개별 메서드 호출
+        } else {
+            ordersRepository.deleteAllById(ids);  // 다중 ID에 대해 메서드 호출
+        }
     }
 
     // Search

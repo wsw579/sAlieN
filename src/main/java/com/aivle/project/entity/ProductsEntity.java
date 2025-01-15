@@ -1,5 +1,6 @@
 package com.aivle.project.entity;
 
+import com.aivle.project.enums.ProductCondition;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,6 +9,7 @@ import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.List;
 
 @Entity
 @Getter
@@ -33,13 +35,21 @@ public class ProductsEntity implements Serializable {
     @Column(nullable = false)
     private Float costPrice;
 
-//    @Enumerated(EnumType.STRING)
-//    @Column(nullable = false)
-//    private ProductCondition product_condition;
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String productCondition;
+    private ProductCondition productCondition;
 
     private String productDescription;
 
     private String productFamily;
+
+    // 외부 외래키
+    @OneToMany(mappedBy = "productId", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+    private List<OpportunitiesEntity> opportunities;
+
+    @OneToMany(mappedBy = "productId", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+    private List<ContractsEntity> contracts;
+  
+    @OneToMany(mappedBy = "productId", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+    private List<OrdersEntity> orders;
 }

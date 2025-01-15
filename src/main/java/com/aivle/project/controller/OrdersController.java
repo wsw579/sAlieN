@@ -1,9 +1,10 @@
 package com.aivle.project.controller;
 
 import com.aivle.project.dto.OrdersDto;
-import com.aivle.project.entity.ContractsEntity;
-import com.aivle.project.entity.OrdersEntity;
+import com.aivle.project.entity.*;
+import com.aivle.project.enums.OrderStatus;
 import com.aivle.project.repository.ContractsRepository;
+import com.aivle.project.repository.ProductsRepository;
 import com.aivle.project.service.OrdersService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,7 @@ public class OrdersController {
 
     private final ContractsRepository contractsRepository;
     private final OrdersService ordersService;
+    private final ProductsRepository productsRepository;
 
     // Read page
     @GetMapping("/orders")
@@ -41,31 +43,37 @@ public class OrdersController {
     @GetMapping("/orders/detail/{orderId}")
     public String ordersDetail(@PathVariable Long orderId, Model model) {
         OrdersEntity orders = ordersService.searchOrder(orderId);
+        // 제품 목록 조회 후 모델에 추가 (드롭다운 메뉴용)
+        List<ProductsEntity> products = productsRepository.findAll();
+        List<ContractsEntity> contracts = contractsRepository.findAll();
+
         model.addAttribute("orders", orders);
+        model.addAttribute("products", products);
+        model.addAttribute("contracts", contracts);
         return "orders/orders_detail";
     }
 
     // Create order page (초기값으로 페이지 생성)
     @GetMapping("/orders/detail/create")
-    public String ordersCreate(@RequestParam(value = "contractId", required = false) Long contractId, Model model) {
+    public String ordersCreate(Model model) {
 
         OrdersEntity orders = new OrdersEntity();
+
+        // 목록 조회 후 모델에 추가 (드롭다운 메뉴용)
+        List<ProductsEntity> products = productsRepository.findAll();
+        List<ContractsEntity> contracts = contractsRepository.findAll();
+
         orders.setOrderDate(LocalDate.now());
         orders.setSalesDate(LocalDate.now());
         orders.setOrderAmount(0F);
-        orders.setOrderStatus("draft");
+        orders.setOrderStatus(OrderStatus.draft);
 
-        if (contractId != null) {
-            ContractsEntity contract = contractsRepository.findById(contractId)
-                    .orElse(null);
-            orders.setContract(contract);
-            // 존재하지 않으면 null
-        }
-
-        orders.setProductId(0L);
-        orders.setPartnerOpId(0L);
+        orders.setProductId(new ProductsEntity());
+        orders.setContractId(new ContractsEntity());
 
         model.addAttribute("orders", orders);
+        model.addAttribute("products", products);
+        model.addAttribute("contracts", contracts);
 
         return "orders/orders_detail";
     }
@@ -75,12 +83,8 @@ public class OrdersController {
 
     @PostMapping("/orders/detail/create")
     public String saveOrder(@ModelAttribute OrdersDto ordersDto) {
-        // Contract ID로 ContractsEntity 조회
-        ContractsEntity contract = contractsRepository.findById(ordersDto.getContractId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid contract ID"));
-
         // OrdersEntity 생성 및 저장
-        ordersService.createOrder(ordersDto, contract);
+        ordersService.createOrder(ordersDto);
 
         return "redirect:/orders";
     }

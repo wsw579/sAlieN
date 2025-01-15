@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Getter
 @Setter
+@Table(name = "opportunities_comment")
 public class OpportunitiesCommentEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,9 +38,6 @@ public class OpportunitiesCommentEntity implements Serializable {
     @ManyToOne
     @JoinColumn(name = "opportunity_id", nullable = false)
     private OpportunitiesEntity opportunity;
-
-
-
 
 
 }

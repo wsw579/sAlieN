@@ -250,13 +250,13 @@
 
 
                                 <div class="mb-3 row">
-                                    <label for="createdDate" class="col-sm-2 col-form-label">시작일자:</label>
+                                    <label for="startDate" class="col-sm-2 col-form-label">시작일자:</label>
                                     <div class="col-sm-10">
                                         <input type="date" class="form-control" id="startDate" name="startDate" value="{{startDate}}" required>
                                     </div>
                                 </div>
                                 <div class="mb-3 row">
-                                    <label for="targetCloseDate" class="col-sm-2 col-form-label">마감기한:</label>
+                                    <label for="terminationDate" class="col-sm-2 col-form-label">마감기한:</label>
                                     <div class="col-sm-10">
                                         <input type="date" class="form-control" id="terminationDate" name="terminationDate" value="{{terminationDate}}" required>
                                     </div>
@@ -272,35 +272,82 @@
                                     </div>
                                 </div>
                                 <div class="mb-3 row">
-                                    <label for="owner" class="col-sm-2 col-form-label">계약 소유자:</label>
+                                    <label for="accountId" class="col-sm-2 col-form-label">계정 명:</label>
                                     <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="owner" name="owner" value="">
+                                        <select id="accountId" name="accountId" required>
+
+                                            <option value="">-- 계정 선택 --</option>
+                                            {{#accounts}}
+                                                <option value="{{accountId}}">
+                                                    {{accountName}} (ID: {{accountId}})
+                                                </option>
+                                            {{/accounts}}
+
+                                        </select>
                                     </div>
                                 </div>
                                 <div class="mb-3 row">
-                                    <label for="product" class="col-sm-2 col-form-label">계약 제품:</label>
+                                    <label for="productId" class="col-sm-2 col-form-label">계약 제품:</label>
                                     <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="product" name="product" value="">
+                                        <select id="productId" name="productId" required>
+
+                                            <option value="">-- 제품 선택 --</option>
+                                            {{#products}}
+                                                <option value="{{productId}}">
+                                                    {{productName}} (ID: {{productId}})
+                                                </option>
+                                            {{/products}}
+
+                                        </select>
                                     </div>
                                 </div>
                                 <div class="mb-3 row">
-                                    <label for="quantity" class="col-sm-2 col-form-label">계약 수량:</label>
+                                    <label for="contractAmount" class="col-sm-2 col-form-label">계약 수량:</label>
                                     <div class="col-sm-10">
                                         <input type="number" step="0.01" class="form-control" id="contractAmount" name="contractAmount" value="{{contractAmount}}" required>
                                     </div>
                                 </div>
                                 <div class="mb-3 row">
-                                    <label for="expectedRevenue" class="col-sm-2 col-form-label">계약 가격:</label>
+                                    <label for="contractSales" class="col-sm-2 col-form-label">계약 가격:</label>
                                     <div class="col-sm-10">
                                         <input type="number" step="0.01" class="form-control" id="contractSales" name="contractSales" value="{{contractSales}}" required>
                                     </div>
                                 </div>
                                 <div class="mb-3 row">
-                                    <label for="opportunityNotes" class="col-sm-2 col-form-label">계약 세부내용:</label>
+                                    <label for="contractDetail" class="col-sm-2 col-form-label">계약 세부내용:</label>
                                     <div class="col-sm-10">
                                         <input type="text" class="form-control" id="contractDetail" name="contractDetail" value="{{contractDetail}}" required>
                                     </div>
                                 </div>
+                                <div class="mb-3 row">
+                                    <label for="contractClassification" class="col-sm-2 col-form-label">계약 분류:</label>
+                                    <div class="col-sm-10">
+                                        <select class="form-control" id="contractClassification" name="contractClassification" required>
+                                            <option value="None">선택없음</option>
+                                            <option value="Full Payment">완판</option>
+                                            <option value="Rent">임대</option>
+                                            <option value="Installment">할부</option>
+                                            <option value="Recontract">재계약</option>
+                                            <option value="Transfer">이관</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="mb-3 row">
+                                    <label for="employeeId" class="col-sm-2 col-form-label">계약 소유자:</label>
+                                    <div class="col-sm-10">
+                                        <select id="employeeId" name="employeeId" required>
+
+                                            <option value="">-- 담당자 선택 --</option>
+                                            {{#employee}}
+                                                <option value="{{employeeId}}">
+                                                    {{employeeName}} (ID: {{employeeId}})
+                                                </option>
+                                            {{/employee}}
+
+                                        </select>
+                                    </div>
+                                </div>
+
                                 <div class="d-flex justify-content-end">
                                     <button type="submit" id="updateButton" class="btn btn-custom-create btn-sm">
                                         <i class="fas fa-plus-circle"></i> 저장
@@ -355,7 +402,7 @@
                                 <td>{{salesDate}}</td>
                                 <td>{{orderStatus}}</td>
                                 <td>{{orderAmount}}</td>
-                                <td>{{productId}}</td>
+                                <td>{{product.productId}}</td>
                                 <td>{{contract.contractId}}</td>
                             </tr>
                         {{/orders}}
@@ -375,13 +422,42 @@
         // Form 부분 기회상태 초기값 연동 JS (select Form은 html로 초기 value 지정이 안되어서 JS로 처리)
 
         {{#contracts}}
-        document.addEventListener("DOMContentLoaded", function() {
-            // Mustache 템플릿에서 서버 데이터를 가져옴
-            var contractStatus = "{{contractStatus}}";
+            {{#contractId}}
+            document.addEventListener("DOMContentLoaded", function() {
+                // Mustache 템플릿에서 서버 데이터를 가져옴
+                var contractStatus = "{{contractStatus}}";
+                var productId = "{{productId.productId}}";
+                var accountId = "{{accountId.accountId}}";
+                var employeeId = "{{employeeId.employeeId}}";
 
-        // 폼에 데이터 채우기
-        document.getElementById("contractStatus").value = contractStatus;
-        });
+                // 폼에 데이터 채우기
+                document.getElementById("contractStatus").value = contractStatus;
+                document.getElementById("productId").value = productId;
+                document.getElementById("accountId").value = accountId;
+                document.getElementById("employeeId").value = employeeId;
+            });
+            {{/contractId}}
+
+            document.addEventListener("DOMContentLoaded", function() {
+                // 계정 검색
+                $('#accountId').selectize({
+                    create: false,
+                    sortField: 'text'
+                });
+
+                // 직원 검색
+                $('#employeeId').selectize({
+                    create: false,
+                    sortField: 'text'
+                });
+
+                // 제품 검색
+                $('#productId').selectize({
+                    create: false,
+                    sortField: 'text'
+                });
+            });
+
 
         document.addEventListener("DOMContentLoaded", function() {
         document.getElementById("deleteButton").addEventListener("click", function(event) {

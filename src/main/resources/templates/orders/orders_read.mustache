@@ -57,7 +57,7 @@
             <div class="row">
                 <div class="col-xl-3 col-md-6">
                     <div class="card bg-primary text-white mb-4">
-                        <div class="card-body">주문 확정 예정</div>
+                        <div class="card-body">주문 초안</div>
                         <div class="card-footer d-flex align-items-center justify-content-between">
                             <h3 id="draftCount"></h3>
                             <div class="small text-white"><i class="fas fa-angle-right"></i></div>
@@ -65,8 +65,18 @@
                     </div>
                 </div>
                 <div class="col-xl-3 col-md-6">
+                    <div class="card bg-warning text-white mb-4">
+                        <div class="card-body">주문 완료</div>
+                        <div class="card-footer d-flex align-items-center justify-content-between">
+                            <h3 id="completedCount"></h3>
+                            <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6">
                     <div class="card bg-success text-white mb-4">
-                        <div class="card-body">주문 확정</div>
+                        <div class="card-body">사용 중</div>
                         <div class="card-footer d-flex align-items-center justify-content-between">
                             <h3 id="activatedCount"></h3>
                             <div class="small text-white"><i class="fas fa-angle-right"></i></div>
@@ -144,8 +154,8 @@
                                 <td>{{salesDate}}</td>
                                 <td>{{orderStatus}}</td>
                                 <td>{{orderAmount}}</td>
-                                <td>{{productId}}</td>
-                                <td>{{contract.contractId}}</td>
+                                <td>{{productId.productId}}</td>
+                                <td>{{contractId.contractId}}</td>
                             </tr>
                         {{/orders}}
                         </tbody>
@@ -159,6 +169,7 @@
         document.addEventListener("DOMContentLoaded", function() {
             var rows = document.querySelectorAll("#datatablesSimple tbody tr");
             var draftCount = 0;
+            var completedCount = 0;
             var activatedCount = 0;
             var cancelledCount = 0;
 
@@ -167,6 +178,8 @@
 
                 if (status === "draft") {
                     draftCount++;
+                } else if (status === "completed") {
+                    completedCount++;
                 } else if (status === "activated") {
                     activatedCount++;
                 } else if (status === "cancelled") {
@@ -175,6 +188,7 @@
             });
 
             document.getElementById("draftCount").innerText = `${draftCount} 건`;
+            document.getElementById("completedCount").innerText = `${completedCount} 건`;
             document.getElementById("activatedCount").innerText = `${activatedCount} 건`;
             document.getElementById("cancelledCount").innerText = `${cancelledCount} 건`;
 
