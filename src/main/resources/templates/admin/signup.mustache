@@ -1,0 +1,157 @@
+{{>main/header}}
+
+<style>
+
+</style>
+
+
+<div id="layoutSidenav_content">
+    <main>
+        <div class="container-fluid px-4">
+            <h1 class="mt-4">Sign Up</h1>
+            <ol class="breadcrumb mb-4">
+                <li class="breadcrumb-item active">sign up</li>
+            </ol>
+            <form id="signupForm" action="/signup" method="POST">
+                <!-- 기본정보 섹션 -->
+                <div class="card mb-4">
+                    <div class="card-header mb-3">
+                        <i class="fas fa-table me-1"></i>
+                        기본정보
+                    </div>
+                    <div class="mb-3 row px-3 ms-4">
+                        <label for="name" class="col-sm-2 col-form-label">이름</label>
+                        <div class="col-sm-3 me-5">
+                            <input type="text" class="form-control" id="name" name="employeeName" required>
+                        </div>
+                        <label for="position" class="col-sm-2 col-form-label">부서</label>
+                        <div class="col-sm-3">
+                            <select class="form-control" id="position" name="dept" required>
+                                <option value="">선택</option>
+                                <option value="STRATEGY_DEPT">전략고객본부</option>
+                                <option value="PUBLIC_DEPT">공공고객본부</option>
+                                <option value="FINANCE_DEPT">금융고객본부</option>
+                                <option value="CORPORATE_DEPT">법인영업본부</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3 row px-3 ms-4">
+                        <label for="salary" class="col-sm-2 col-form-label">직급</label>
+                        <div class="col-sm-3 me-5">
+                            <select class="form-control" id="salary" name="position" required>
+                                <option value="">선택</option>
+                                <option value="STAFF">사원</option>
+                                <option value="JUNIOR">주임</option>
+                                <option value="ASSOCIATE">대리</option>
+                                <option value="MANAGER">과장</option>
+                                <option value="ASSISTANT_MANAGER">차장</option>
+                                <option value="TEAM_LEADER">팀장</option>
+                                <option value="DEPARTMENT_HEAD">부장</option>
+                                <option value="GENERAL_MANAGER">본부장</option>
+                            </select>
+                        </div>
+                        <label for="team" class="col-sm-2 col-form-label">팀</label>
+                        <div class="col-sm-3">
+                            <select class="form-control" id="team" name="team" required>
+                                <option value="">선택</option>
+                                <option value="STRATEGY_CUST_SECTOR">전략고객섹터담당</option>
+                                <option value="STRATEGY_CUST_1">전략고객1담당</option>
+                                <option value="STRATEGY_CUST_2">전략고객2담당</option>
+                                <option value="PUBLIC_CUST_SECTOR">공공고객섹터담당</option>
+                                <option value="PUBLIC_CUST_1">공공고객1담당</option>
+                                <option value="PUBLIC_CUST_2">공공고객2담당</option>
+                                <option value="FINANCE_CUST_SECTOR">금융고객섹터담당</option>
+                                <option value="FINANCE_CUST_1">금융고객1담당</option>
+                                <option value="FINANCE_CUST_2">금융고객2담당</option>
+                                <option value="CORPORATE_SALES_PLANNING">법인영업기획담당</option>
+                                <option value="CORPORATE_CUST">법인고객담당</option>
+                                <option value="CORPORATE_RETAIL">법인유통담당</option>
+                                <option value="CORPORATE_SALES_SECTOR">법인섹터담당</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3 row px-3 ms-4">
+                        <label for="joinDate" class="col-sm-2 col-form-label">입사일</label>
+                        <div class="col-sm-3 me-5">
+                            <input type="date" class="form-control" id="joinDate" name="hireDate" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 계정정보 섹션 -->
+                <div id="accountInfo" class="card mb-4 mt-4">
+                    <div class="card-header mb-3">
+                        <i class="fas fa-table me-1"></i>
+                        계정정보
+                    </div>
+                    <div class="mb-3 row px-3 ms-4">
+                        <label for="userId" class="col-sm-2 col-form-label">아이디</label>
+                        <div id="generatedUserId" class="col-sm-2 col-form-label"></div>
+                        <input type="hidden" id="generatedUserIdInput" name="employeeId">
+                    </div>
+                    <div class="mb-3 row px-3 ms-4">
+                        <label for="password" class="col-sm-2 col-form-label">비밀번호</label>
+                        <div class="col-sm-3 me-5">
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+                        <label for="confirmPassword" class="col-sm-2 col-form-label">비밀번호 확인</label>
+                        <div class="col-sm-3">
+                            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
+                        </div>
+                        <div id="passwordError" class="col-sm-3 password-error" style="display: none;">비밀번호가 일치하지 않습니다.</div>
+                    </div>
+                    <div class="mb-3 row px-3 ms-4">
+                        <label for="securityQuestion" class="col-sm-2 col-form-label">비밀번호 찾기 질문</label>
+                        <div class="col-sm-3 me-5">
+                            <label class="form-control-plaintext">가장 좋아하는 음식은?</label>
+                        </div>
+                        <label for="securityAnswer" class="col-sm-2 col-form-label">비밀번호 찾기 답변</label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" id="securityAnswer" name="passwordAnswer" required>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="d-flex justify-content-end mt-3">
+                    <button type="submit" class="btn btn-primary me-2">사원 추가</button>
+                    <button type="button" class="btn btn-secondary" onclick="location.href='/employee-list';">사원 목록</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        // 입사일 변경 시 서버로 아이디 요청
+        document.getElementById("joinDate").addEventListener("input", function () {
+            const hireDate = document.getElementById("joinDate").value;
+            if (!hireDate) {
+                return; // 입사일이 비어 있으면 요청하지 않음
+            }
+
+            const year = new Date(hireDate).getFullYear(); // 입사일에서 연도 정보 추출
+
+            // 서버로 GET 요청 보내기 (연도 정보를 포함하여 전송)
+            fetch(`/api/generateEmployeeId?year=${year}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error("서버 응답 오류");
+                        }
+                        return response.json(); // JSON 형식으로 응답 파싱
+                    })
+                    .then(data => {
+                        const employeeId = data.employeeId;
+                        // 받은 데이터에서 employeeId를 아이디 입력란에 표시하고, value에 넣기
+                        const generatedUserIdElement = document.getElementById("generatedUserId");
+                        generatedUserIdElement.textContent = employeeId; // 서버에서 받은 employeeId 사용
+                        const generatedUserIdInput = document.getElementById("generatedUserIdInput");
+                        generatedUserIdInput.value = employeeId; // 폼 전송 시에도 값을 함께 전송
+                    })
+                    .catch(error => {
+                        console.error("아이디 생성 중 오류:", error);
+                        alert("아이디 생성에 실패했습니다. 다시 시도해 주세요.");
+                    });
+        });
+    </script>
+
+{{>main/footer}}
