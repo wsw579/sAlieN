@@ -65,7 +65,7 @@ public class AccountEntity implements Serializable {
     @OneToMany(mappedBy = "accountId", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     private List<OpportunitiesEntity> opportunities;
 
-    @OneToMany(mappedBy = "accountId", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "accountId", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     private List<ContractsEntity> contracts;
 
     // 상위 계정을 참조하는 필드 (셀프 조인 ManyToOne)

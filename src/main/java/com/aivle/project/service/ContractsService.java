@@ -71,13 +71,13 @@ public class ContractsService {
 
     // Delete
     public void deleteContracts(Long contractId) {
-        contractsRepository.softDeleteById(contractId);
+        contractsRepository.deleteById(contractId);
     }
 
 
 
     public void deleteContractsByIds(List<Long> ids) {
-        contractsRepository.softDeleteAllById(ids);
+        contractsRepository.deleteAllById(ids);
     }
 
 
