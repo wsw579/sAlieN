@@ -84,7 +84,7 @@
                         <div class="card mb-4">
                             <div class="card-header">
                                 <i class="fas fa-chart-area me-1"></i>
-                                계정 유형
+                                    계정 유형
                             </div>
                             <div class="card-body">
                                 <canvas id="opportunitiesReadChart" width="100%" height="40"></canvas>
@@ -131,12 +131,11 @@
                                 <th></th>
                                 <th>ID</th>
                                 <th>생성 일자</th>
-                                <th>상위계정 이름</th>
                                 <th>계정 이름</th>
                                 <th>계정 상태</th>
                                 <th>대표 전화</th>
                                 <th>배송지</th>
-                                <!--                        <th>계정 소유자</th> -->
+                                <!--    <th>계정 소유자</th> -->
 
                             </tr>
                             </thead>
@@ -146,7 +145,6 @@
                                     <td><input type="checkbox" class="select-row" value="{{accountId}}"></td>
                                     <td>{{accountId}}</td>
                                     <td>{{accountCreatedDate}}</td>
-                                    <td>{{#parentAccount}}{{accountName}}{{/parentAccount}}</td>
                                     <td><a href="/account/detail/{{accountId}}">{{accountName}}</a></td>
                                     <td>{{accountStatus}}</td>
                                     <td>{{contact}}</td>
@@ -168,7 +166,6 @@
         document.addEventListener("DOMContentLoaded", function() {
             var rows = document.querySelectorAll("#datatablesSimple tbody tr");
             var now = new Date();
-
             var ongoingCount = 0;
             var overdueCount = 0;
             var closedCount = 0;
@@ -252,7 +249,11 @@
 
     </script>
 
-    <script src="/assets/demo/opportunities-read-chart.js"></script>
-    <script src="/assets/demo/opportunities-read-bar.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/assets/demo/account-parent-select.js"></script>
+
+
+
 
 {{>main/footer}}

@@ -1,13 +1,9 @@
 package com.aivle.project.dto;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.aivle.project.entity.EmployeeEntity;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -35,9 +31,9 @@ public class AccountDto {
     private AccountDto parentAccountDto; // 새로운 상위 계정 생성을 위한 정보
 
     // 필요한 경우 하위 계정을 포함
-    //private List<AccountDto> childAccounts;
+    // private List<AccountDto> childAccounts;
 
     // 외래키 부분
-    //private EmployeeEntity employeeId;
+    private EmployeeEntity employeeId;
 
 }

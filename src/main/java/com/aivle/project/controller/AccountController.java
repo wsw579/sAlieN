@@ -91,6 +91,23 @@ public class AccountController {
         accountService.deleteByIds(ids);
         return ResponseEntity.ok().build();
     }
+
+
+
+
+
+        @GetMapping("/parents")
+        public ResponseEntity<List<AccountEntity>> getParentAccounts() {
+            List<AccountEntity> parentAccounts = accountService.getParentAccounts();
+            return ResponseEntity.ok(parentAccounts);
+        }
+
+        @PostMapping("/parent")
+        public ResponseEntity<AccountEntity> createParentAccount(@RequestBody AccountDto accountDto) {
+            AccountEntity newAccount = accountService.createAccount(accountDto);
+            return ResponseEntity.ok(newAccount);
+    }
+
 }
 
 

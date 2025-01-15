@@ -15,33 +15,38 @@ import java.util.Optional;
 
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class AccountService {
     private final AccountRepository accountRepository;
 
-    public void createAccount(AccountDto dto) {
+    @Transactional
+    public AccountEntity createAccount(AccountDto dto) {
         AccountEntity accountEntity = new AccountEntity();
-        setBasicAccountInfo(accountEntity, dto);
 
-        // 상위 계정 처리
+        // 기본 정보 설정
+        accountEntity.setAccountName(dto.getAccountName());
+        accountEntity.setAccountType(dto.getAccountType());
+        accountEntity.setWebsite(dto.getWebsite());
+        accountEntity.setContact(dto.getContact());
+        accountEntity.setBusinessType(dto.getBusinessType());
+        accountEntity.setAccountManager(dto.getAccountManager());
+        accountEntity.setAccountDetail(dto.getAccountDetail());
+        accountEntity.setAddress(dto.getAddress());
+        accountEntity.setAccountManagerContact(dto.getAccountManagerContact());
+        accountEntity.setAccountStatus(dto.getAccountStatus());
+        accountEntity.setAccountCreatedDate(LocalDate.now());
+
+        // 상위 계정 설정
         if (dto.getParentAccountId() != null) {
-            Optional<AccountEntity> parentAccountOptional = accountRepository.findById(dto.getParentAccountId());
-
-            if (parentAccountOptional.isPresent()) {
-                accountEntity.setParentAccount(parentAccountOptional.get());
-            } else if (dto.getParentAccountDto() != null) {
-                // 상위 계정이 존재하지 않고, 새로운 상위 계정 정보가 있는 경우
-                AccountEntity newParentAccount = new AccountEntity();
-                setBasicAccountInfo(newParentAccount, dto.getParentAccountDto());
-                AccountEntity savedParentAccount = accountRepository.save(newParentAccount);
-                accountEntity.setParentAccount(savedParentAccount);
-            }
-            // parentAccountDto가 null이면 상위 계정 없이 진행
+            AccountEntity parentAccount = accountRepository.findById(dto.getParentAccountId())
+                    .orElseThrow(() -> new IllegalArgumentException("Parent account not found"));
+            accountEntity.setParentAccount(parentAccount);
         }
 
-        accountRepository.save(accountEntity);
+        return accountRepository.save(accountEntity);
     }
+
+
 
     private void setBasicAccountInfo(AccountEntity entity, AccountDto dto) {
         entity.setAccountName(dto.getAccountName());
@@ -112,6 +117,11 @@ public class AccountService {
     public AccountEntity searchAccount(Long accountId) {
         return accountRepository.findById(accountId)
                 .orElseThrow(()->new IllegalArgumentException("error"));
+    }
+
+    // 상위 계정 목록 조회
+    public List<AccountEntity> getParentAccounts() {
+        return accountRepository.findByParentAccountIsNull();
     }
 
 

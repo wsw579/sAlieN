@@ -14,6 +14,7 @@ public interface AccountRepository extends JpaRepository<AccountEntity, Long> {
 
     @Query("SELECT a FROM AccountEntity a ORDER BY a.accountCreatedDate DESC, a.accountId DESC")
     List<AccountEntity> findAllByOrderByCreatedDateAndIdDesc();
+    List<AccountEntity> findByParentAccountIsNull();
 
 }
 
