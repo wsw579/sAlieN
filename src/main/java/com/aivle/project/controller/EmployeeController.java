@@ -86,4 +86,9 @@ public class EmployeeController {
         model.addAttribute("employeeList", empList);
         return "user/employee_list";
     }
+
+    @GetMapping("/admin/employee-signup")
+    public String adminEmployeeSignup(Model model){
+        return "admin/signup";
+    }
 }
