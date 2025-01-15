@@ -173,6 +173,12 @@
                                     </div>
                                 </div>
                                 <div class="mb-3 row">
+                                    <label for="leadSource" class="col-sm-2 col-form-label">리드소스:</label>
+                                    <div class="col-sm-10">
+                                        <input type="text" class="form-control" id="leadSource" name="leadSource" value="" >
+                                    </div>
+                                </div>
+                                <div class="mb-3 row">
                                     <label for="leadStatus" class="col-sm-2 col-form-label">리드상태:</label>
                                     <div class="col-sm-10">
                                         <select class="form-control" id="leadStatus" name="leadStatus" required>
@@ -185,18 +191,37 @@
                                     </div>
                                 </div>
                                 <div class="mb-3 row">
-                                    <label for="companyName" class="col-sm-2 col-form-label">회사 명:</label>
+                                    <label for="accountId" class="col-sm-2 col-form-label">회사 명:</label>
                                     <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="companyName" name="companyName" value="{{companyName}}" required>
+                                        <select id="accountId" name="accountId" required>
+
+                                            <option value="">-- 계정 선택 --</option>
+                                            {{#accounts}}
+                                                <option value="{{accountId}}">
+                                                    {{accountName}} (ID: {{accountId}})
+                                                </option>
+                                            {{/accounts}}
+
+                                        </select>
                                     </div>
                                 </div>
 
                                 <div class="mb-3 row">
-                                    <label for="leadSource" class="col-sm-2 col-form-label">리드소스:</label>
+                                    <label for="employeeId" class="col-sm-2 col-form-label">기회 담당자:</label>
                                     <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="leadSource" name="leadSource" value="" >
+                                        <select id="employeeId" name="employeeId" required>
+
+                                            <option value="">-- 담당자 선택 --</option>
+                                            {{#employee}}
+                                                <option value="{{employeeId}}">
+                                                    {{employeeName}} (ID: {{employeeId}})
+                                                </option>
+                                            {{/employee}}
+
+                                        </select>
                                     </div>
                                 </div>
+
                                 <div class="mb-3 row">
                                     <label for="customerRepresentitive" class="col-sm-2 col-form-label">계정 담당자:</label>
                                     <div class="col-sm-10">
@@ -238,14 +263,34 @@
     <script>
 
         // Form 부분 리드상태 초기값 연동 JS (select Form은 html로 초기 value 지정이 안되어서 JS로 처리)
-
-        {{#leads}}
+    {{#leads}}
+        {{#leadId}}
         document.addEventListener("DOMContentLoaded", function() {
             // Mustache 템플릿에서 서버 데이터를 가져옴
             var leadStatus = "{{leadStatus}}";
+            var accountId = "{{accountId.accountId}}";
+            var employeeId = "{{employeeId.employeeId}}";
 
         // 폼에 데이터 채우기
         document.getElementById("leadStatus").value = leadStatus;
+        document.getElementById("accountId").value = accountId;
+        document.getElementById("employeeId").value = employeeId;
+        });
+        {{#leadId}}
+
+        // select 폼데이터 조회 기능 (main/header와 footer에 CSS 추가, 상단에 Selectize CSS, JS로 명시)
+
+        document.addEventListener("DOMContentLoaded", function() {
+             // 계정 검색
+            $('#accountId').selectize({
+                            create: false,
+                            sortField: 'text'
+                        });
+            // 직원 검색
+            $('#employeeId').selectize({
+                create: false,
+                sortField: 'text'
+            });
         });
 
         document.addEventListener("DOMContentLoaded", function() {

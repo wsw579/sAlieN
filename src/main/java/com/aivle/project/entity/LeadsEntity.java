@@ -1,14 +1,11 @@
 package com.aivle.project.entity;
 
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -55,7 +52,6 @@ public class LeadsEntity implements Serializable {
 
 
     // 외래키 부분
-
     // 외부 외래키
     @OneToMany(mappedBy = "leadId", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     private List<OpportunitiesEntity> opportunities;
@@ -64,12 +60,11 @@ public class LeadsEntity implements Serializable {
     // 내부 외래키
     // Employee 외래키 설정
     @ManyToOne  // Many Leads to One Employee
-    @JoinColumn(name = "employee_id",  nullable = true)
+    @JoinColumn(name = "employeeId",  nullable = true)
     private EmployeeEntity employee;
-
 
     // Account 외래키 설정
     @ManyToOne// Many Leads to One Account
-    @JoinColumn(name = "account_id",  nullable = true)
+    @JoinColumn(name = "accountId",  nullable = true)
     private AccountEntity account;
 }
