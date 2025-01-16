@@ -134,23 +134,23 @@
                 <div class="card-body">
                     <table id="leads_detail">
                         {{#leads}}
-                        <div class="button-container mb-3">
-                            <a href="/leads/detail/create" class="btn btn-custom-create btn-sm" id="createButton">
-                                <i class="fas fa-plus-circle"></i> 신규
-                            </a>
-
-                            {{#leadId}}
-                            <a href="/leads/detail/{{leadId}}/delete" class="btn btn-custom-delete btn-sm" id="deleteButton">
-                                <i class="fas fa-plus-circle"></i> 삭제
-                            </a>
-                            {{/leadId}}
-                            {{^leadId}}
-                                <a href="/leads" class="btn btn-custom-delete btn-sm" id="deleteButton">
-                                    <i class="fas fa-plus-circle"></i> 삭제
+                            <div class="button-container mb-3">
+                                <a href="/leads/detail/create" class="btn btn-custom-create btn-sm" id="createButton">
+                                    <i class="fas fa-plus-circle"></i> 신규
                                 </a>
-                            {{/leadId}}
 
-                        </div>
+                                {{#leadId}}
+                                    <a href="/leads/detail/{{leadId}}/delete" class="btn btn-custom-delete btn-sm" id="deleteButton">
+                                        <i class="fas fa-plus-circle"></i> 삭제
+                                    </a>
+                                {{/leadId}}
+                                {{^leadId}}
+                                    <a href="/leads" class="btn btn-custom-delete btn-sm" id="deleteButton">
+                                        <i class="fas fa-plus-circle"></i> 삭제
+                                    </a>
+                                {{/leadId}}
+
+                            </div>
 
                             {{#leadId}}
                             <form id="leadForm" action="/leads/detail/{{leadId}}/update" method="POST">
@@ -160,92 +160,92 @@
                             {{/leadId}}
 
 
-                                <div class="mb-3 row">
-                                    <label for="createdDate" class="col-sm-2 col-form-label">생성일자:</label>
-                                    <div class="col-sm-10">
-                                        <input type="date" class="form-control" id="createdDate" name="createdDate" value="{{createdDate}}" required>
-                                    </div>
+                            <div class="mb-3 row">
+                                <label for="createdDate" class="col-sm-2 col-form-label">생성일자:</label>
+                                <div class="col-sm-10">
+                                    <input type="date" class="form-control" id="createdDate" name="createdDate" value="{{createdDate}}" required>
                                 </div>
-                                <div class="mb-3 row">
-                                    <label for="targetCloseDate" class="col-sm-2 col-form-label">마감기한:</label>
-                                    <div class="col-sm-10">
-                                        <input type="date" class="form-control" id="targetCloseDate" name="targetCloseDate" value="{{targetCloseDate}}" required>
-                                    </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="targetCloseDate" class="col-sm-2 col-form-label">마감기한:</label>
+                                <div class="col-sm-10">
+                                    <input type="date" class="form-control" id="targetCloseDate" name="targetCloseDate" value="{{targetCloseDate}}" required>
                                 </div>
-                                <div class="mb-3 row">
-                                    <label for="leadSource" class="col-sm-2 col-form-label">리드소스:</label>
-                                    <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="leadSource" name="leadSource" value="" >
-                                    </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="leadSource" class="col-sm-2 col-form-label">리드소스:</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="leadSource" name="leadSource" value="" >
                                 </div>
-                                <div class="mb-3 row">
-                                    <label for="leadStatus" class="col-sm-2 col-form-label">리드상태:</label>
-                                    <div class="col-sm-10">
-                                        <select class="form-control" id="leadStatus" name="leadStatus" required>
-                                            <option value="제안됨">제안됨</option>
-                                            <option value="검토중">검토중</option>
-                                            <option value="기회전환">기회전환</option>
-                                            <option value="제안거절">제안거절</option>
-                                            <option value="보류">보류</option>
-                                        </select>
-                                    </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="leadStatus" class="col-sm-2 col-form-label">리드상태:</label>
+                                <div class="col-sm-10">
+                                    <select class="form-control" id="leadStatus" name="leadStatus" required>
+                                        <option value="제안됨">제안됨</option>
+                                        <option value="검토중">검토중</option>
+                                        <option value="기회전환">기회전환</option>
+                                        <option value="제안거절">제안거절</option>
+                                        <option value="보류">보류</option>
+                                    </select>
                                 </div>
-                                <div class="mb-3 row">
-                                    <label for="accountId" class="col-sm-2 col-form-label">회사 명:</label>
-                                    <div class="col-sm-10">
-                                        <select id="accountId" name="accountId" required>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="accountId" class="col-sm-2 col-form-label">회사 명:</label>
+                                <div class="col-sm-10">
+                                    <select id="accountId" name="accountId" required>
 
-                                            <option value="">-- 계정 선택 --</option>
-                                            {{#accounts}}
-                                                <option value="{{accountId}}">
-                                                    {{accountName}} (ID: {{accountId}})
-                                                </option>
-                                            {{/accounts}}
+                                        <option value="">-- 계정 선택 --</option>
+                                        {{#accounts}}
+                                            <option value="{{accountId}}">
+                                                {{accountName}} (ID: {{accountId}})
+                                            </option>
+                                        {{/accounts}}
 
-                                        </select>
-                                    </div>
+                                    </select>
                                 </div>
+                            </div>
 
-                                <div class="mb-3 row">
-                                    <label for="employeeId" class="col-sm-2 col-form-label">기회 담당자:</label>
-                                    <div class="col-sm-10">
-                                        <select id="employeeId" name="employeeId" required>
+                            <div class="mb-3 row">
+                                <label for="employeeId" class="col-sm-2 col-form-label">기회 담당자:</label>
+                                <div class="col-sm-10">
+                                    <select id="employeeId" name="employeeId" required>
 
-                                            <option value="">-- 담당자 선택 --</option>
-                                            {{#employee}}
-                                                <option value="{{employeeId}}">
-                                                    {{employeeName}} (ID: {{employeeId}})
-                                                </option>
-                                            {{/employee}}
+                                        <option value="">-- 담당자 선택 --</option>
+                                        {{#employee}}
+                                            <option value="{{employeeId}}">
+                                                {{employeeName}} (ID: {{employeeId}})
+                                            </option>
+                                        {{/employee}}
 
-                                        </select>
-                                    </div>
+                                    </select>
                                 </div>
+                            </div>
 
-                                <div class="mb-3 row">
-                                    <label for="customerRepresentitive" class="col-sm-2 col-form-label">계정 담당자:</label>
-                                    <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="customerRepresentitive" name="customerRepresentitive" value="{{customerRepresentitive}}"required>
-                                    </div>
+                            <div class="mb-3 row">
+                                <label for="customerRepresentitive" class="col-sm-2 col-form-label">계정 담당자:</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="customerRepresentitive" name="customerRepresentitive" value="{{customerRepresentitive}}"required>
                                 </div>
-                                <div class="mb-3 row">
-                                    <label for="c_tel" class="col-sm-2 col-form-label">연락처:</label>
-                                    <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="c_tel" name="c_tel" value="{{c_tel}}" required>
-                                    </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="c_tel" class="col-sm-2 col-form-label">연락처:</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="c_tel" name="c_tel" value="{{c_tel}}" required>
                                 </div>
-                                <div class="mb-3 row">
-                                    <label for="customerRequirements" class="col-sm-2 col-form-label">리드 내용:</label>
-                                    <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="customerRequirements" name="customerRequirements" value="{{customerRequirements}}" required>
-                                    </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="customerRequirements" class="col-sm-2 col-form-label">리드 내용:</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="customerRequirements" name="customerRequirements" value="{{customerRequirements}}" required>
                                 </div>
-                                <div class="d-flex justify-content-end">
-                                    <button type="submit" id="updateButton" class="btn btn-custom-create btn-sm">
-                                        <i class="fas fa-plus-circle"></i> 저장
-                                    </button>
-                                </div>
-                            </form>
+                            </div>
+                            <div class="d-flex justify-content-end">
+                                <button type="submit" id="updateButton" class="btn btn-custom-create btn-sm">
+                                    <i class="fas fa-plus-circle"></i> 저장
+                                </button>
+                            </div>
+                        </form>
 
                         {{/leads}}
 
@@ -271,12 +271,12 @@
             var accountId = "{{accountId.accountId}}";
             var employeeId = "{{employeeId.employeeId}}";
 
-        // 폼에 데이터 채우기
-        document.getElementById("leadStatus").value = leadStatus;
-        document.getElementById("accountId").value = accountId;
-        document.getElementById("employeeId").value = employeeId;
+            // 폼에 데이터 채우기
+            document.getElementById("leadStatus").value = leadStatus;
+            document.getElementById("accountId").value = accountId;
+            document.getElementById("employeeId").value = employeeId;
         });
-        {{#leadId}}
+        {{/leadId}}
 
         // select 폼데이터 조회 기능 (main/header와 footer에 CSS 추가, 상단에 Selectize CSS, JS로 명시)
 
@@ -375,7 +375,7 @@
         };
 
 
-    {{/leads}}
+        {{/leads}}
     </script>
 
 
