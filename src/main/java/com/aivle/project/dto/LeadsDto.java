@@ -1,5 +1,7 @@
 package com.aivle.project.dto;
 
+import com.aivle.project.entity.AccountEntity;
+import com.aivle.project.entity.EmployeeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -26,6 +28,6 @@ public class LeadsDto {
     private String c_tel;
 
     //외래키
-    //private AccountsEntity accountId;
-    //private EmployeeEntity employeeId;
+    private AccountEntity accountId;
+    private EmployeeEntity employeeId;
 }
