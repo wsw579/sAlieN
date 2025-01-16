@@ -78,7 +78,7 @@
                                 <td><input type="checkbox" class="select-row" value="{{employeeId}}"></td>
                                 {{/isAdmin}}
                                 {{#isAdmin}}
-                                <td><a href="/employee-detail/{{employeeId}}">{{employeeName}}</a></td>
+                                <td><a href="/admin/employee-detail/{{employeeId}}">{{employeeName}}</a></td>
                                 {{/isAdmin}}
                                 {{^isAdmin}}
                                 <td>{{employeeName}}</td>
@@ -96,6 +96,56 @@
     </main>
 
     <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var deleteButton = document.getElementById("deleteButton");
+            if (deleteButton) {
+                deleteButton.addEventListener("click", function () {
+                    var selectedCheckboxes = document.querySelectorAll(".select-row:checked");
+                    var selectedIds = [];
+
+                    selectedCheckboxes.forEach(function (checkbox) {
+                        var accountId = checkbox.value;
+                        console.log("employeeID:", accountId); // 로그 추가
+                        selectedIds.push(accountId);
+                    });
+
+                    if (selectedIds.length > 0) {
+                        var confirmDelete = confirm("선택한 항목들을 삭제하시겠습니까?");
+
+                        if (confirmDelete) {
+                            console.log("Deleting IDs:", selectedIds); // 로그 추가
+
+                            fetch("/admin/employee/delete", {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json"
+                                },
+                                body: JSON.stringify({ids: selectedIds})
+                            })
+                                    .then(response => {
+                                        if (response.ok) {
+                                            alert("선택한 항목이 성공적으로 삭제되었습니다.");
+                                            window.location.href = "/employee-list"; // 성공 시 리다이렉트
+                                        } else if (response.status === 400) {
+                                            alert("잘못된 요청입니다. 삭제할 항목을 다시 확인해 주세요.");
+                                        } else if (response.status === 404) {
+                                            alert("삭제 요청에 실패했습니다. 존재하지 않는 ID가 포함되어 있습니다.");
+                                        } else if (response.status === 500) {
+                                            alert("서버에서 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.");
+                                        }
+                                    })
+                                    .catch(error => {
+                                        console.error("Network Error:", error);
+                                        alert("네트워크 오류가 발생했습니다. 다시 시도해 주세요.");
+                                    });
+                        }
+                    } else {
+                        alert("삭제할 항목을 선택해 주세요.");
+                    }
+
+                });
+            }
+        });
     </script>
 
 {{>main/footer}}

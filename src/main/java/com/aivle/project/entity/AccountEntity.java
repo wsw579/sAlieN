@@ -80,8 +80,8 @@ public class AccountEntity implements Serializable {
     @OneToMany(mappedBy = "parentAccount", cascade = CascadeType.ALL)
     private List<AccountEntity> childAccounts;
 
-    //@ManyToOne
-    //@JoinColumn
-    //private EmployeeEntity employeeId;
+    @ManyToOne
+    @JoinColumn(name = "employee_id", nullable = true, foreignKey = @ForeignKey(name = "fk_accounts_employee_id"))
+    private EmployeeEntity employeeId;
 
 }

@@ -184,4 +184,30 @@ public class EmployeeService {
         }
         return empDtoList;
     }
+
+    public boolean resetEmployeePassword(String employeeId) {
+        try {
+            // Employee 엔티티를 데이터베이스에서 조회
+            EmployeeEntity findEmployee = employeeRepository.findByEmployeeId(employeeId);
+            if (findEmployee == null) {
+                return false; // 사원이 존재하지 않을 경우 false 반환
+            }
+
+            // 비밀번호를 "1234"로 초기화
+            findEmployee.setPassword(bCryptPasswordEncoder.encode("1234"));
+
+            // 변경사항 저장
+            employeeRepository.save(findEmployee);
+
+            return true; // 성공적으로 초기화 시 true 반환
+        } catch (Exception e) {
+            // 오류 발생 시 false 반환
+            e.printStackTrace(); // 예외 로그 출력
+            return false;
+        }
+    }
+
+    public void deleteByIds(List<String> ids) {
+        employeeRepository.deleteAllById(ids);
+    }
 }
