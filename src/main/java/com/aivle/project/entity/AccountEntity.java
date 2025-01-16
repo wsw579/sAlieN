@@ -68,6 +68,9 @@ public class AccountEntity implements Serializable {
     @OneToMany(mappedBy = "accountId", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     private List<ContractsEntity> contracts;
 
+    @OneToMany(mappedBy = "accountId", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+    private List<LeadsEntity> leads;
+
     // 상위 계정을 참조하는 필드 (셀프 조인 ManyToOne)
     @ManyToOne
     @JoinColumn(name = "parent_account_id" , nullable = true) // 외래키 컬럼 이름
@@ -77,8 +80,8 @@ public class AccountEntity implements Serializable {
     @OneToMany(mappedBy = "parentAccount", cascade = CascadeType.ALL)
     private List<AccountEntity> childAccounts;
 
-    //@ManyToOne
-    //@JoinColumn
-    //private EmployeeEntity employeeId;
+    @ManyToOne
+    @JoinColumn(name = "employee_id", nullable = true, foreignKey = @ForeignKey(name = "fk_accounts_employee_id"))
+    private EmployeeEntity employeeId;
 
 }
