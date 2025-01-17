@@ -1,8 +1,10 @@
 package com.aivle.project.config;
 
 import com.aivle.project.entity.EmployeeEntity;
+import com.aivle.project.enums.Dept;
 import com.aivle.project.enums.Position;
 import com.aivle.project.enums.Role;
+import com.aivle.project.enums.Team;
 import com.aivle.project.repository.EmployeeRepository;
 import com.aivle.project.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +33,10 @@ public class AccountInitializer implements CommandLineRunner {
             admin.setHireDate(LocalDate.now());
             admin.setBaseSalary(1000f);
             admin.setPosition(Position.DEPARTMENT_HEAD);
+            admin.setDepartmentId(Dept.CORPORATE_DEPT);
             admin.setPasswordAnswer("admin");
+            admin.setPasswordAnswer("1234");
+            admin.setTeamId(Team.CORPORATE_CUST);
             employeeRepository.save(admin);
         }
 

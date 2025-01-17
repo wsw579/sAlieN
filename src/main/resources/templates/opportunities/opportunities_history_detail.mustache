@@ -1,0 +1,360 @@
+{{>main/header}}
+
+<style>
+    .button-container {
+        display: flex;
+        justify-content: flex-end; /* 오른쪽 정렬 */
+        gap: 10px; /* 버튼 간격 */
+    }
+    .btn-custom-create {
+        background-color: #d4edda; /* 파스텔 그린 */
+        border-color: #c3e6cb;
+        color: #155724;
+    }
+    .btn-custom-delete {
+        background-color: #f8d7da; /* 파스텔 레드 */
+        border-color: #f5c6cb;
+        color: #721c24;
+    }
+    .btn-custom-create:hover {
+        background-color: #c3e6cb; /* 약간 어두운 그린 */
+        border-color: #b1dfbb;
+    }
+    .btn-custom-delete:hover {
+        background-color: #f5c6cb; /* 약간 어두운 레드 */
+        border-color: #f1b0b7;
+    }
+    .btn-sm {
+        font-size: 0.875rem; /* 버튼 폰트 크기 감소 */
+        padding: 0.25rem 0.5rem; /* 패딩 감소 */
+    }
+
+
+    .container {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+    }
+    .col-form-label {
+        font-weight: bold;
+    }
+    .btn-primary {
+        background-color: #6c757d;
+        border: none;
+    }
+    .btn-primary:hover {
+        background-color: #5a6268;
+    }
+
+
+
+
+
+
+
+.progress-container {
+    position: relative;
+    width: 100%;
+    height: 70px; /* 높이를 조금 늘립니다 */
+    margin: 20px 0;
+}
+
+.progress-bar {
+    position: absolute;
+    top: 38%; /* 중앙 정렬 */
+    left: 10%; /* Qualification 원의 중앙에서 시작하도록 조정합니다 */
+    transform: translateY(-50%);
+    width: 0;
+    height: 10px;
+    background-color: green;
+    transition: width 0.4s ease;
+}
+
+.progress-steps {
+    display: flex;
+    justify-content: space-between;
+    position: absolute;
+    top: 50%; /* 중앙 정렬 */
+    width: 100%;
+    transform: translateY(-50%);
+}
+
+.step {
+    width: 20%;
+    text-align: center;
+    position: relative;
+    padding-top: 30px; /* 텍스트를 아래로 내리기 위해 패딩 추가 */
+}
+
+
+.step::before {
+    content: '';
+    position: absolute;
+    top: 16%; /* 원의 위치를 조정합니다 */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: white;
+    border: 2px solid green;
+    transition: background-color 0.4s ease, border-color 0.4s ease;
+}
+
+.step.active::before {
+    background-color: green;
+    border-color: green;
+}
+
+
+
+        .comment-section {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+            width: 100%;
+        }
+        .comment {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 10px;
+            background-color: #f1f1f1;
+            position: relative;
+            width: calc(100% - 20px);
+        }
+        .comment .author {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .comment .timestamp {
+            font-size: 0.8em;
+            color: #888;
+            position: absolute;
+            bottom: 5px;
+            right: 10px;
+        }
+        .comment-form {
+            display: flex;
+            width: 100%;
+            align-items: center;
+            margin-top: 10px;
+            background-color: #f9f9f9;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .comment-form input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-right: 10px;
+            font-size: 16px;
+        }
+        .comment-form button {
+            padding: 10px 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .comment-form button:hover {
+            background-color: #0056b3;
+        }
+
+</style>
+
+
+
+
+
+<div id="layoutSidenav_content">
+    <main>
+        <div class="container-fluid px-4">
+            <h1 class="mt-4">Opportunities History</h1>
+            <ol class="breadcrumb mb-4">
+                <li class="breadcrumb-item active">Opportunities History</li>
+            </ol>
+
+            <!-- 기회 상세내용 -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-table me-1"></i>
+                    Opportunities History Detail
+                </div>
+
+                <div class="card-body">
+
+                    {{#history}}
+                        <div class="button-container mb-3">
+                            {{#historyId}}
+                                <a href="/opportunities/detail/{{opportunityId}}/history/{{historyId}}/delete" class="btn btn-custom-delete btn-sm" id="deleteButton">
+                                    <i class="fas fa-plus-circle"></i> 삭제
+                                </a>
+                            {{/historyId}}
+                        </div>
+                        {{#historyId}}
+                        <form id="historyForm" action="/opportunities/detail/{{opportunityId}}/history/{{historyId}}/update" method="POST">
+                        {{/historyId}}
+                        {{^historyId}}
+                        <form id="historyForm" action="/opportunities/detail/{{opportunityId}}/history/create" method="POST">
+                        {{/historyId}}
+                            <div class="mb-3 row">
+                                <label for="historyTitle" class="col-sm-2 col-form-label">제목:</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="historyTitle" name="historyTitle" value="{{historyTitle}}" required>
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="customerRepresentative" class="col-sm-2 col-form-label">담당자:</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="customerRepresentative" name="customerRepresentative" value="{{customerRepresentative}}" required>
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="targetCloseDate" class="col-sm-2 col-form-label">미팅날짜:</label>
+                                <div class="col-sm-10">
+                                    <input type="date" class="form-control" id="historyDate" name="historyDate" value="{{historyDate}}" required>
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="historyTime" class="col-sm-2 col-form-label">미팅시간:</label>
+                                <div class="col-sm-10">
+                                    <input type="time" class="form-control" id="historyTime" name="historyTime" value="{{historyTime}}" required>
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="meetingPlace" class="col-sm-2 col-form-label">미팅장소:</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="meetingPlace" name="meetingPlace" value="{{meetingPlace}}" required>
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="companySize" class="col-sm-2 col-form-label">회사규모:</label>
+                                <div class="col-sm-10">
+                                    <select class="form-control" id="companySize" name="companySize" required>
+                                        <option value="대기업">대기업</option>
+                                        <option value="중견기업">중견기업</option>
+                                        <option value="중소기업">중소기업</option>
+                                        <option value="기타">기타</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="actionTaken" class="col-sm-2 col-form-label">액션:</label>
+                                <div class="col-sm-10">
+                                    <select class="form-control" id="actionTaken" name="actionTaken" required>
+                                        <option value="후속 미팅 요청">후속 미팅 요청</option>
+                                        <option value="제안서 전달 및 검토">제안서 전달 및 검토</option>
+                                        <option value="계약 조율">계약 조율</option>
+                                        <option value="계약 및 클로징">계약 및 클로징</option>
+                                        <option value="고객 관리 및 대응">고객 관리 및 대응</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="customerRequirements" class="col-sm-2 col-form-label">고객문의사항:</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="customerRequirements" name="customerRequirements" value="{{customerRequirements}}" required>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-end">
+                                <button type="submit" id="updateButton" class="btn btn-custom-create btn-sm">
+                                    <i class="fas fa-plus-circle"></i> 저장
+                                </button>
+                            </div>
+                        </form>
+                    {{/history}}
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+
+    // Form 부분 기회상태 초기값 연동 JS (select Form은 html로 초기 value 지정이 안되어서 JS로 처리)
+
+        {{#opportunities}}
+        document.addEventListener("DOMContentLoaded", function() {
+            // Mustache 템플릿에서 서버 데이터를 가져옴
+            var actionTaken = "{{actionTaken}}";
+            var companySize = "{{companySize}}";
+
+            // 폼에 데이터 채우기
+            document.getElementById("actionTaken").value = actionTaken;
+            document.getElementById("companySize").value = companySize;
+        });
+
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById("deleteButton").addEventListener("click", function(event) {
+                event.preventDefault(); // 기본 링크 동작을 막습니다.
+
+                // 사용자 확인 대화 상자 표시
+                var confirmDelete = confirm("정말 삭제하시겠습니까?");
+
+                if (confirmDelete) {
+                    // 사용자가 확인을 클릭한 경우 링크를 따라 갑니다.
+                    window.location.href = this.href;
+                }
+            });
+        });
+
+
+        // Form 삭제버튼 클릭 시 현 주소가 create인경우 create로 action주소 변경.
+
+        document.addEventListener("DOMContentLoaded", function() {
+            var form = document.getElementById("historyForm");
+            var currentUrl = window.location.pathname;
+
+            // 현재 URL이 "/opportunities/detail/create"인 경우 폼 액션을 변경
+            if (currentUrl === "/opportunities/detail/{{opportunityId}}/history/create") {
+                form.action = "/opportunities/detail/{{opportunityId}}/history/create";
+            }
+
+            // 저장 버튼 클릭 시 변경사항 저장 여부 확인
+            document.getElementById("updateButton").addEventListener("click", function(event) {
+                var confirmSave = confirm("변경사항을 저장하겠습니까?");
+
+                if (!confirmSave) {
+                    // 사용자가 취소를 클릭한 경우 폼 제출 중단
+                    event.preventDefault();
+                }
+            });
+        });
+        {{/opportunities}}
+
+    document.addEventListener("DOMContentLoaded", function() {
+        var form = document.getElementById("historyForm");
+        var currentUrl = window.location.pathname;
+
+        // 현재 URL이 "/opportunities/detail/create"인 경우 폼 액션을 변경
+        if (currentUrl === "/opportunities/detail/{{opportunityId}}/history/create") {
+            form.action = "/opportunities/detail/{{opportunityId}}/history/create";
+        }
+
+        // 저장 버튼 클릭 시 변경사항 저장 여부 확인
+        document.getElementById("updateButton").addEventListener("click", function(event) {
+            var confirmSave = confirm("변경사항을 저장하겠습니까?");
+
+            if (!confirmSave) {
+                // 사용자가 취소를 클릭한 경우 폼 제출 중단
+                event.preventDefault();
+            }
+        });
+    });
+
+
+    document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById("deleteButton").addEventListener("click", function (event) {
+            event.preventDefault();
+            if (confirm("정말 삭제하시겠습니까?")) {
+                window.location.href = this.href;
+            }
+        });
+    });
+</script>
