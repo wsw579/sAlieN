@@ -87,7 +87,7 @@ public class AccountController {
 
     // 새 계정 생성
     @PostMapping("/account/detail/create")
-    public String accountCreateNew(@ModelAttribute AccountDto accountDto, Model model) {
+    public String accountCreateNew(@ModelAttribute AccountDto accountDto) {
             accountService.createAccount(accountDto);
 
             return "redirect:/account";
