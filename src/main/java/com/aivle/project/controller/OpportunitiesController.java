@@ -1,6 +1,12 @@
 package com.aivle.project.controller;
 
+import com.aivle.project.dto.HistoryDto;
 import com.aivle.project.dto.OpportunitiesDto;
+import com.aivle.project.entity.HistoryEntity;
+import com.aivle.project.entity.LeadsEntity;
+import com.aivle.project.entity.OpportunitiesCommentEntity;
+import com.aivle.project.entity.OpportunitiesEntity;
+import com.aivle.project.repository.OpportunitiesRepository;
 import com.aivle.project.entity.*;
 import com.aivle.project.repository.AccountRepository;
 import com.aivle.project.repository.EmployeeRepository;
@@ -15,6 +21,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +30,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class OpportunitiesController {
     private final OpportunitiesService opportunitiesService;
+    private final OpportunitiesRepository opportunitiesRepository;
     private final ProductsRepository productsRepository;
     private final AccountRepository accountRepository;
     private final EmployeeRepository employeeRepository;
@@ -47,6 +55,8 @@ public class OpportunitiesController {
     @GetMapping("/opportunities/detail/{opportunityId}")
     public String opportunities(@PathVariable Long opportunityId, Model model) {
         OpportunitiesEntity opportunities = opportunitiesService.searchOpportunities(opportunityId);
+        // 히스토리 부분 수정
+        List<HistoryEntity> history = opportunitiesService.getHistoryByOpportunityId(opportunityId);
         List<OpportunitiesCommentEntity> opportunitiesComments = opportunitiesService.getCommentsByOpportunityId(opportunityId);
 
         // 목록 조회 후 모델에 추가 (드롭다운 메뉴용)
@@ -61,6 +71,8 @@ public class OpportunitiesController {
         opportunitiesComments.forEach(comment -> System.out.println("Comment: " + comment.getContent() + ", Date: " + comment.getCommentCreatedDate()));
 
         model.addAttribute("opportunities", opportunities);
+        // 히스토리 수정
+        model.addAttribute("history", history);
         model.addAttribute("opportunitiesComments", opportunitiesComments);
         model.addAttribute("products", products);
         model.addAttribute("accounts", accounts);
@@ -68,6 +80,17 @@ public class OpportunitiesController {
         model.addAttribute("leads", leads);
         return "opportunities/opportunities_detail";
     }
+
+
+    // History Detail page
+    @GetMapping("/opportunities/detail/{opportunityId}/history/{historyId}")
+    public String opportunity_history(@PathVariable Long historyId, @PathVariable Long opportunityId, Model model) {
+        HistoryEntity opportunity_history = opportunitiesService.searchHistory(historyId);
+        model.addAttribute("history", opportunity_history);
+        model.addAttribute("opportunityId", opportunityId);
+        return "opportunities/opportunities_history_detail";
+    }
+
 
     // create comment
     @PostMapping("/opportunities/detail/createcomment")
@@ -128,6 +151,60 @@ public class OpportunitiesController {
     }
 
 
+
+    // create history 초기 페이지
+    @GetMapping("/opportunities/detail/{opportunityId}/history/create")
+    public String historyCreate(@PathVariable Long opportunityId, Model model) {
+
+        HistoryEntity history = new HistoryEntity();
+        OpportunitiesEntity opportunity = opportunitiesRepository.findById(opportunityId)
+                .orElseThrow(()->new IllegalArgumentException("error"));
+
+        history.setHistoryTitle("");
+        history.setCustomerRepresentative("");
+        history.setHistoryDate(LocalDate.now());
+        history.setHistoryTime(LocalTime.now());
+        history.setMeetingPlace("");
+        history.setActionTaken("");
+        history.setCompanySize("");
+        history.setCustomerRequirements("");
+        history.setOpportunity(new OpportunitiesEntity());
+
+        model.addAttribute("history", history);
+        model.addAttribute("opportunityId", opportunityId);
+
+        return "opportunities/opportunities_history_detail";
+    }
+
+    @PostMapping("/opportunities/detail/{opportunityId}/history/create")
+    public String createHistory(@PathVariable Long opportunityId, @ModelAttribute HistoryDto historyDto) {
+        // opportunityId로 OpportunitiesEntity 조회
+        OpportunitiesEntity opportunity = opportunitiesRepository.findById(opportunityId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid opportunity ID"));
+
+        // HistoryDto에 OpportunitiesEntity를 설정
+        historyDto.setOpportunityId(opportunity);  // DTO에 직접 OpportunitiesEntity를 설정
+
+        // 서비스에서 데이터를 저장
+        opportunitiesService.createHistory(historyDto);
+
+        return "redirect:/opportunities/detail/" + opportunityId;
+    }
+
+
+    // Update history in detail page
+    @PostMapping("/opportunities/detail/{opportunityId}/history/{historyId}/update")
+    public String historyUpdate(@PathVariable("historyId") Long historyId, @ModelAttribute HistoryDto historyDto) {
+        opportunitiesService.updateHistory(historyId, historyDto);
+        return "redirect:/opportunities/detail/{opportunityId}/history/" + historyId;
+    }
+
+    @GetMapping("/opportunities/detail/{opportunityId}/history/{historyId}/delete")
+    public String historyDeleteDetail(@PathVariable("historyId") Long historyId) {
+        opportunitiesService.deleteHistory(historyId);
+
+        return "redirect:/opportunities/detail/{opportunityId}";
+    }
 
 
     // Update detail page
