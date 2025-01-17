@@ -7,6 +7,7 @@ import com.aivle.project.repository.ContractsRepository;
 import com.aivle.project.repository.ProductsRepository;
 import com.aivle.project.service.OrdersService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -41,6 +42,9 @@ public class OrdersController {
     ) {
         // 서비스에서 페이지 데이터 가져오기
         Page<OrdersEntity> ordersPage = ordersService.readOrders(page, size, search, sortColumn, sortDirection);
+
+        // 상태별 주문 개수 가져오기
+        Map<String, Long> statusCounts = ordersService.getOrderStatusCounts();
 
         // 총 페이지 수 및 표시할 페이지 범위 계산
         int totalPages = ordersPage.getTotalPages();
@@ -79,7 +83,27 @@ public class OrdersController {
         model.addAttribute("sortColumn", sortColumn); // 정렬 기준
         model.addAttribute("sortDirection", sortDirection); // 정렬 방향
 
+        // 상태별 개수 추가
+        model.addAttribute("draftCount", statusCounts.getOrDefault("draft", 0L));
+        model.addAttribute("completedCount", statusCounts.getOrDefault("completed", 0L));
+        model.addAttribute("activatedCount", statusCounts.getOrDefault("activated", 0L));
+        model.addAttribute("cancelledCount", statusCounts.getOrDefault("cancelled", 0L));
+
         return "orders/orders_read"; // Mustache 템플릿 이름
+    }
+
+    @Cacheable("barData")
+    @GetMapping("/bar-data")
+    public ResponseEntity<Map<String, List<Integer>>> getBarData() {
+        Map<String, List<Integer>> chartData = ordersService.getBarData();
+        return ResponseEntity.ok(chartData);
+    }
+
+    @GetMapping("/chart-data")
+    public ResponseEntity<Map<String, List<Integer>>> getChartData() {
+        // 서비스에서 데이터를 가져옵니다.
+        Map<String, List<Integer>> chartData = ordersService.getChartData();
+        return ResponseEntity.ok(chartData);
     }
 
 

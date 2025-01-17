@@ -17,7 +17,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 @Transactional
@@ -87,5 +89,90 @@ public class OrdersService {
     public OrdersEntity searchOrder(Long orderId) {
         return ordersRepository.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+    }
+
+    // 상태 수 가져오기
+    public Map<String, Long> getOrderStatusCounts() {
+        Map<String, Long> statusCounts = new HashMap<>();
+        List<Object[]> results = ordersRepository.countOrdersByStatus();
+
+        for (Object[] result : results) {
+            String status = (String) result[0];
+            Long count = (Long) result[1];
+            statusCounts.put(status, count);
+        }
+
+        return statusCounts;
+    }
+
+    public Map<String, List<Integer>> getBarData() {
+        int currentYear = LocalDate.now().getYear();
+        int lastYear = currentYear - 1;
+
+        // 각 월별 주문 수를 초기화
+        List<Integer> lastYearData = IntStream.range(0, 12).mapToObj(i -> 0).collect(Collectors.toList());
+        List<Integer> currentYearData = IntStream.range(0, 12).mapToObj(i -> 0).collect(Collectors.toList());
+
+        // DB에서 월별 주문 수를 가져옵니다.
+        List<Object[]> lastYearOrders = ordersRepository.getMonthlyOrders(lastYear);
+        List<Object[]> currentYearOrders = ordersRepository.getMonthlyOrders(currentYear);
+
+        // 결과를 리스트에 추가
+        for (Object[] row : lastYearOrders) {
+            int month = ((Number) row[0]).intValue() - 1; // 월 (1월 = 0 인덱스)
+            int count = ((Number) row[1]).intValue(); // 주문 수
+            lastYearData.set(month, count);
+        }
+
+        for (Object[] row : currentYearOrders) {
+            int month = ((Number) row[0]).intValue() - 1; // 월 (1월 = 0 인덱스)
+            int count = ((Number) row[1]).intValue(); // 주문 수
+            currentYearData.set(month, count);
+        }
+
+        // 누적 값 계산
+        for (int i = 1; i < 12; i++) {
+            lastYearData.set(i, lastYearData.get(i) + lastYearData.get(i - 1));
+            currentYearData.set(i, currentYearData.get(i) + currentYearData.get(i - 1));
+        }
+
+        Map<String, List<Integer>> chartData = new HashMap<>();
+        chartData.put("lastYearData", lastYearData);
+        chartData.put("currentYearData", currentYearData);
+
+        return chartData;
+    }
+
+
+    public Map<String, List<Integer>> getChartData() {
+        int currentYear = LocalDate.now().getYear();
+        int lastYear = currentYear - 1;
+
+        // 각 월별 주문 수를 초기화
+        List<Integer> lastYearData = IntStream.range(0, 12).mapToObj(i -> 0).collect(Collectors.toList());
+        List<Integer> currentYearData = IntStream.range(0, 12).mapToObj(i -> 0).collect(Collectors.toList());
+
+        // DB에서 월별 주문 수를 가져옵니다.
+        List<Object[]> lastYearOrders = ordersRepository.getMonthlyOrders(lastYear);
+        List<Object[]> currentYearOrders = ordersRepository.getMonthlyOrders(currentYear);
+
+        // 결과를 리스트에 추가
+        for (Object[] row : lastYearOrders) {
+            int month = ((Number) row[0]).intValue() - 1; // 월 (1월 = 0 인덱스)
+            int count = ((Number) row[1]).intValue(); // 주문 수
+            lastYearData.set(month, count);
+        }
+
+        for (Object[] row : currentYearOrders) {
+            int month = ((Number) row[0]).intValue() - 1; // 월 (1월 = 0 인덱스)
+            int count = ((Number) row[1]).intValue(); // 주문 수
+            currentYearData.set(month, count);
+        }
+
+        Map<String, List<Integer>> chartData = new HashMap<>();
+        chartData.put("lastYearData", lastYearData);
+        chartData.put("currentYearData", currentYearData);
+
+        return chartData;
     }
 }
