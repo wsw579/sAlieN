@@ -38,10 +38,10 @@ public class EmployeeDto {
         private LocalDate hireDate;
         private LocalDate terminationDate;
         private float baseSalary;
-        private Position position;
-        private Role accessPermission;
-        private Dept dept;
-        private Team team;
+        private String position;
+        private String accessPermission;
+        private String dept;
+        private String team;
     }
 
     @Getter

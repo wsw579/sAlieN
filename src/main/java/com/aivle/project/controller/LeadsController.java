@@ -1,9 +1,12 @@
 package com.aivle.project.controller;
+
 import com.aivle.project.dto.LeadsDto;
-import com.aivle.project.dto.LeadsDto;
-import com.aivle.project.entity.LeadsEntity;
+import com.aivle.project.entity.*;
+import com.aivle.project.repository.AccountRepository;
+import com.aivle.project.repository.EmployeeRepository;
 import com.aivle.project.service.LeadsService;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,6 +24,8 @@ import java.util.Map;
 public class LeadsController {
     // declares a dependency on the LeadsService class
     private final LeadsService leadsService;
+    private final AccountRepository accountRepository;
+    private final EmployeeRepository employeeRepository;
 
     // Read Page
     @GetMapping("/leads")
@@ -51,9 +56,18 @@ public class LeadsController {
     public String leads(@PathVariable Long leadId, Model model){
         LeadsEntity leads = leadsService.searchLeads(leadId);
 
+        List<AccountEntity> accounts = accountRepository.findAll();
+        List<EmployeeEntity> employee = employeeRepository.findAll();
+
+
         System.out.println("Leads: "+ leads);
+
+
         model.addAttribute("leads", leads);
-        return "leads/leads_detail";}
+        model.addAttribute("accounts", accounts);
+        model.addAttribute("employee", employee);
+        return "leads/leads_detail";
+    }
 
     // Create model page
     // new lead를 만드는 페이지
@@ -62,18 +76,26 @@ public class LeadsController {
         // new instance of the LeadsEntity class
         LeadsEntity leads = new LeadsEntity();
 
+        List<AccountEntity> accounts = accountRepository.findAll();
+        List<EmployeeEntity> employee = employeeRepository.findAll();
+
         leads.setLeadStatus("");
         leads.setLeadSource("");
         leads.setCreatedDate(LocalDate.now());
         leads.setTargetCloseDate(LocalDate.now());
         leads.setCustomerRequirements("");
         leads.setCustomerRepresentitive("");
-        leads.setCompanyName("");
         leads.setC_tel("");
+
+        //외래키
+        leads.setAccountId(new AccountEntity());
+        leads.setEmployeeId(new EmployeeEntity());
 
 
         // leads_detail.html 에 "leads"가 보일 수 있도록
         model.addAttribute("leads", leads);
+        model.addAttribute("accounts", accounts);
+        model.addAttribute("employee", employee);
 
         return "leads/leads_detail";
     }
