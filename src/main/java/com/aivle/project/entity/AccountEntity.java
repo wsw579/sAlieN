@@ -36,7 +36,7 @@ public class AccountEntity implements Serializable {
     private List<AccountEntity> childAccounts;
 
 
-    @Column(name = "account_created_date" , nullable = true)
+    @Column(name = "account_created_date" )
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate accountCreatedDate;
 

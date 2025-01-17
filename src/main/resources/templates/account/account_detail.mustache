@@ -391,6 +391,8 @@
                                     <i class="fas fa-plus-circle"></i> 저장
                                 </button>
                             </div>
+
+                
                             </form>
 
                         {{/account}}
@@ -411,7 +413,7 @@
                 document.addEventListener("DOMContentLoaded", function() {
                     // Mustache 템플릿에서 서버 데이터를 가져옴
                     var accountStatus = "{{accountStatus}}";
-                    var employeeId = "{{employeeId.employeeId}}";
+                    var employeeId = "{{employee.employeeId}}";
                     var parentAccountId = "{{parentAccount.accountId}}";
 
                     // 폼에 데이터 채우기
