@@ -1,8 +1,11 @@
 package com.aivle.project.service;
 
+import com.aivle.project.dto.HistoryDto;
 import com.aivle.project.dto.OpportunitiesDto;
+import com.aivle.project.entity.HistoryEntity;
 import com.aivle.project.entity.OpportunitiesCommentEntity;
 import com.aivle.project.entity.OpportunitiesEntity;
+import com.aivle.project.repository.HistoryRepository;
 import com.aivle.project.repository.OpportunitiesCommentRepository;
 import com.aivle.project.repository.OpportunitiesRepository;
 import jakarta.transaction.Transactional;
@@ -22,6 +25,7 @@ public class OpportunitiesService {
 
     private final OpportunitiesRepository opportunitiesRepository;
     private final OpportunitiesCommentRepository opportunitiesCommentRepository;
+    private final HistoryRepository historyRepository;
 
     // Create
     public void createOpportunities(OpportunitiesDto dto) {
@@ -116,6 +120,65 @@ public class OpportunitiesService {
         comment.setAuthor(author);
         comment.setOpportunity(opportunity);
         opportunitiesCommentRepository.save(comment);
+    }
+
+
+
+    public HistoryEntity searchHistory(Long historyId) {
+        return historyRepository.findById(historyId)
+                .orElseThrow(()->new IllegalArgumentException("error"));
+    }
+
+    // history service
+    // Read history
+    @Transactional
+    public List<HistoryEntity> getHistoryByOpportunityId(Long opportunityId) {
+        OpportunitiesEntity opportunity = searchOpportunities(opportunityId);
+        List<HistoryEntity> history = historyRepository.findByOpportunityOrderByDateTimeDesc(opportunity);
+
+        return history;
+    }
+
+    // create history
+    @Transactional
+    public void createHistory(HistoryDto dto) {
+        HistoryEntity historyEntity = new HistoryEntity();
+        // 데이터베이스 제목 컬럼 하나 추가하기
+        historyEntity.setHistoryTitle(dto.getHistoryTitle());
+        historyEntity.setCustomerRepresentative(dto.getCustomerRepresentative());
+        historyEntity.setHistoryDate(dto.getHistoryDate());
+        historyEntity.setHistoryTime(dto.getHistoryTime());
+        historyEntity.setCompanySize(dto.getCompanySize());
+        historyEntity.setMeetingPlace(dto.getMeetingPlace());
+        historyEntity.setActionTaken(dto.getActionTaken());
+        historyEntity.setCustomerRequirements(dto.getCustomerRequirements());
+        historyEntity.setOpportunity(dto.getOpportunityId());
+        historyRepository.save(historyEntity);
+
+    }
+
+    // update history
+    @Transactional
+    public void updateHistory(Long historyId, HistoryDto dto) {
+        HistoryEntity historyEntity = historyRepository.findById(historyId)
+                .orElseThrow(() -> new IllegalArgumentException("History not found"));
+
+        historyEntity.setHistoryTitle(dto.getHistoryTitle());
+        historyEntity.setCustomerRepresentative(dto.getCustomerRepresentative());
+        historyEntity.setHistoryDate(dto.getHistoryDate());
+        historyEntity.setHistoryTime(dto.getHistoryTime());
+        historyEntity.setCompanySize(dto.getCompanySize());
+        historyEntity.setMeetingPlace(dto.getMeetingPlace());
+        historyEntity.setActionTaken(dto.getActionTaken());
+        historyEntity.setCustomerRequirements(dto.getCustomerRequirements());
+        historyEntity.setOpportunity(dto.getOpportunityId());
+        historyRepository.save(historyEntity);
+
+    }
+
+    // history delete
+    public void deleteHistory(Long historyId) {
+        historyRepository.deleteById(historyId);
     }
 
 

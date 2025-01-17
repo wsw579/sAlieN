@@ -71,6 +71,9 @@ public class OpportunitiesEntity implements Serializable {
     @OneToMany(mappedBy = "opportunity", cascade = CascadeType.ALL)
     private List<OpportunitiesCommentEntity> comments;
 
+    @OneToMany(mappedBy = "opportunity", cascade = CascadeType.ALL)
+    private List<HistoryEntity> history;
+
 
     //@ManyToOne
     //@JoinColumn
