@@ -38,6 +38,12 @@ public class AccountService {
         accountEntity.setEmployeeId(dto.getEmployeeId());
         accountEntity.setParentAccount(dto.getParentAccountId());
 
+        if (dto.getParentAccountId() != null) {
+            accountEntity.setParentAccount(dto.getParentAccountId());
+        } else {
+            accountEntity.setParentAccount(null);
+        }
+
         accountRepository.save(accountEntity);
 
         System.out.println("계정 생성 완료: " + accountEntity.getAccountId());
