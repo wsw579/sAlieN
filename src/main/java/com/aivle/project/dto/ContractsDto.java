@@ -24,8 +24,6 @@ public class ContractsDto {
     private float contractSales;
     private float contractAmount;
     private String contractClassification;
-    private boolean contractSelected;
-    private boolean contractDeleted = false;
 
     // 외래키 부분
 

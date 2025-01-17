@@ -5,6 +5,7 @@ import com.aivle.project.service.EmployeeService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,6 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -77,5 +79,61 @@ public class EmployeeController {
         String employeeId = employeeService.makeNewEmployeeId(year+"");
         response.put("employeeId", employeeId); // 예시 응답
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/employee-list")
+    public String employeeList(Model model){
+        List<EmployeeDto.Get> empList = employeeService.findAllEmployee();
+        model.addAttribute("employeeList", empList);
+        return "user/employee_list";
+    }
+
+    @GetMapping("/admin/employee-signup")
+    public String adminEmployeeSignup(Model model){
+        return "admin/signup";
+    }
+
+    @PostMapping("/admin/signup")
+    public String adminEmployeeSignup(EmployeeDto.Post memberDto){
+        employeeService.join(memberDto);
+        return "redirect:/admin/employee-signup";
+    }
+
+
+    @GetMapping("/admin/employee-detail/{employeeId}")
+    public String employeeDetail(@PathVariable("employeeId") String employeeId, Model model){
+        EmployeeDto.Get employee = employeeService.findEmployeeById(employeeId);
+        model.addAttribute("employee", employee);
+        return "admin/employee_detail";
+    }
+
+    @GetMapping("/admin/employee-password-reset/{employeeId}")
+    public ResponseEntity<Map<String, Object>> resetPassword(@PathVariable String employeeId) {
+        Map<String, Object> response = new HashMap<>();
+
+        boolean resetSuccess = employeeService.resetEmployeePassword(employeeId); // 비밀번호 초기화 로직
+
+        if (resetSuccess) {
+            response.put("success", true);
+        } else {
+            response.put("success", false);
+        }
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/admin/employee/delete")
+    public ResponseEntity<Void> deleteAccounts(@RequestBody Map<String, List<String>> request) {
+        try {
+            List<String> ids = request.get("ids");
+            if (ids == null || ids.isEmpty()) {
+                return ResponseEntity.badRequest().build(); // HTTP 400 응답
+            }
+            System.out.println("delete Employee Received IDs: " + ids);
+            employeeService.deleteByIds(ids);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            System.err.println("Error during delete: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // HTTP 500 응답
+        }
     }
 }

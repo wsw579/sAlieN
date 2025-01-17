@@ -129,8 +129,6 @@ public class ContractsController {
     }
 
 
-
-
     // Update detail page
     @PostMapping("/contracts/detail/{contractId}/update")
     public String contractsUpdate(@PathVariable("contractId") Long contractId, @ModelAttribute ContractsDto contractsDto) {

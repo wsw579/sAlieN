@@ -58,6 +58,12 @@ public class EmployeeEntity {
     @OneToMany(mappedBy = "employeeId", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     private List<OpportunitiesEntity> opportunities;
 
-    @OneToMany(mappedBy = "employeeId", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "employeeId", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     private List<ContractsEntity> contracts;
+
+    @OneToMany(mappedBy = "employeeId", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+    private List<LeadsEntity> leads;
+
+    @OneToMany(mappedBy = "employeeId", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+    private List<AccountEntity> accounts;
 }
