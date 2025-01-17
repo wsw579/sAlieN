@@ -10,6 +10,10 @@ import com.aivle.project.repository.OrdersRepository;
 import com.aivle.project.repository.ProductsRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -38,9 +42,16 @@ public class OrdersService {
     }
 
     // Read
-    public List<OrdersEntity> readOrders() {
-        return ordersRepository.findAll();
+    public Page<OrdersEntity> readOrders(int page, int size, String search, String sortColumn, String sortDirection) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortDirection), sortColumn));
+
+        if (search != null && !search.isEmpty()) {
+            return ordersRepository.findByOrderStatusContainingIgnoreCase(search, pageable);
+        } else {
+            return ordersRepository.findAll(pageable);
+        }
     }
+
 
     // Update
     @Transactional

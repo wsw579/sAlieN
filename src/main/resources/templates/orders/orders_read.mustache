@@ -124,7 +124,26 @@
                 </div>
                 <div class="card-body">
                     <table id="datatablesSimple">
+
                         <div class="button-container mb-3">
+
+                            <div class="search-container">
+                                <input type="text" id="customSearch" placeholder="검색어를 입력하세요" style="margin-bottom: 10px; padding: 5px; width: 200px;">
+                                <button id="searchButton" style="margin-left: 5px;">검색</button>
+                            </div>
+
+                            <form method="GET" action="/orders">
+                                <select name="sortColumn">
+                                    <option value="orderDate" {{#isOrderDateSorted}}selected{{/isOrderDateSorted}}>Order Date</option>
+                                    <option value="orderAmount" {{#isOrderAmountSorted}}selected{{/isOrderAmountSorted}}>Amount</option>
+                                </select>
+                                <select name="sortDirection">
+                                    <option value="asc" {{#isAscSorted}}selected{{/isAscSorted}}>Ascending</option>
+                                    <option value="desc" {{#isDescSorted}}selected{{/isDescSorted}}>Descending</option>
+                                </select>
+                                <button type="submit">정렬</button>
+                            </form>
+
                             <a href="/orders/detail/create" class="btn btn-custom-create btn-sm" id="createButton">
                                 <i class="fas fa-plus-circle"></i> 신규
                             </a>
@@ -160,6 +179,33 @@
                         {{/orders}}
                         </tbody>
                     </table>
+
+                    <div class="pagination">
+                        <!-- 이전 버튼 -->
+                        {{#hasPreviousPage}}
+                            <button onclick="window.location.href='/orders?page={{previousPage}}&size=10&search={{search}}&sortColumn={{sortColumn}}&sortDirection={{sortDirection}}'">
+                            이전
+                            </button>
+                        {{/hasPreviousPage}}
+
+                        <!-- 페이지 번호 버튼 -->
+                        {{#pageNumbers}}
+                            <button
+                                    onclick="window.location.href='/orders?page={{page}}&size=10&search={{search}}&sortColumn={{sortColumn}}&sortDirection={{sortDirection}}'"
+                            class="{{#isActive}}active{{/isActive}}">
+                            {{displayPage}}
+                            </button>
+                        {{/pageNumbers}}
+
+                        <!-- 다음 버튼 -->
+                        {{#hasNextPage}}
+                            <button onclick="window.location.href='/orders?page={{nextPage}}&size=10&search={{search}}&sortColumn={{sortColumn}}&sortDirection={{sortDirection}}'">
+                            다음
+                            </button>
+                        {{/hasNextPage}}
+                    </div>
+
+
                 </div>
             </div>
         </div>
@@ -191,6 +237,8 @@
             document.getElementById("completedCount").innerText = `${completedCount} 건`;
             document.getElementById("activatedCount").innerText = `${activatedCount} 건`;
             document.getElementById("cancelledCount").innerText = `${cancelledCount} 건`;
+
+            // 검색 기능 구현 예정
 
             var deleteButton = document.getElementById("deleteButton");
             if (deleteButton) {

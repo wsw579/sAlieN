@@ -11241,3 +11241,22 @@ body {
   font-size: 0.75rem;
   border-radius: 0.375rem !important;
 }
+
+.pagination button {
+    padding: 5px 10px;
+    margin: 0 2px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    cursor: pointer;
+}
+
+.pagination button:hover {
+    background-color: #ddd;
+}
+
+.pagination button.active {
+    background-color: #007bff; /* 활성화된 페이지 색상 */
+    color: white;
+    border-color: #0056b3;
+    cursor: default; /* 클릭 불가 */
+}
