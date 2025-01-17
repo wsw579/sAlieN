@@ -36,6 +36,7 @@ public class ContractsService {
         contractsEntity.setAccountId(dto.getAccountId());
         contractsEntity.setProductId(dto.getProductId());
         contractsEntity.setEmployeeId(dto.getEmployeeId());
+        contractsEntity.setOpportunityId((dto.getOpportunityId()));
         contractsRepository.save(contractsEntity);
     }
 
@@ -63,6 +64,7 @@ public class ContractsService {
         contractsEntity.setAccountId(dto.getAccountId());
         contractsEntity.setProductId(dto.getProductId());
         contractsEntity.setEmployeeId(dto.getEmployeeId());
+        contractsEntity.setOpportunityId((dto.getOpportunityId()));
 
         contractsRepository.save(contractsEntity);
 
