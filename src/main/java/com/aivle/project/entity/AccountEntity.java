@@ -1,7 +1,6 @@
 package com.aivle.project.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,8 +9,6 @@ import lombok.Setter;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -29,17 +26,16 @@ public class AccountEntity implements Serializable {
 
 
     // 상위계정 셀프조인
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "parent_account_id",  nullable = true , foreignKey = @ForeignKey(name = "fk_accounts_parent_account_id"))
-    @JsonIncludeProperties({"hibernateLazyInitializer" , "handler"})
     private AccountEntity parentAccount;
 
+    // 하위계정 리스트
     @OneToMany(mappedBy = "parentAccount" , cascade = {CascadeType.PERSIST , CascadeType.MERGE, CascadeType.REFRESH , CascadeType.DETACH })
-    private List<AccountEntity> childAccounts = new ArrayList<>();
+    private List<AccountEntity> childAccounts;
 
 
-
-    @Column(name = "account_created_date", nullable = true)          // 계정 생성날짜
+    @Column(name = "account_created_date" , nullable = true)
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate accountCreatedDate;
 
@@ -67,19 +63,19 @@ public class AccountEntity implements Serializable {
     @Column(nullable = false, length = 50)             // 고객사 주소
     private String address;
 
-    @Column(nullable = false, length = 50)             // 고객사 직원번호
+    @Column(nullable = false, length = 50)             // 고객사 직원  연락처
     private String accountManagerContact;
 
     @Column(nullable = false, length = 50)             // 계정 상태
     private String accountStatus;
 
-    @Column(nullable = false)
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate accountCreatedDate;
+    //외래키  -  인사테이블
+    @ManyToOne
+    @JoinColumn(name = "employee_id", nullable = true, foreignKey = @ForeignKey(name="fk_accounts_employee_id"))
+    private EmployeeEntity employeeId;
 
 
-    // 외래키 부분
-
+    // 외부 외래키 부분
 
     // 외부 외래키
     @OneToMany(mappedBy = "accountId", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
@@ -88,20 +84,4 @@ public class AccountEntity implements Serializable {
     @OneToMany(mappedBy = "accountId", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     private List<ContractsEntity> contracts;
 
-    // 상위 계정을 참조하는 필드 (셀프 조인 ManyToOne)
-    @ManyToOne
-    @JoinColumn(name = "parent_account_id" , nullable = true) // 외래키 컬럼 이름
-    private AccountEntity parentAccount;
-
-    // 하위 계정들을 참조하는 필드 (셀프 조인 OneToMany)
-    @OneToMany(mappedBy = "parentAccount", cascade = CascadeType.ALL)
-    private List<AccountEntity> childAccounts;
-
-    //@ManyToOne
-    //@JoinColumn
-    //private EmployeeEntity employeeId;
-
-    @JoinColumn(name = "employee_id", nullable = true, foreignKey = @ForeignKey(name="fk_accounts_employee_id"))
-    @JsonIncludeProperties({"hibernateLazyInitializer" , "handler"})
-    private EmployeeEntity employeeId;
 }

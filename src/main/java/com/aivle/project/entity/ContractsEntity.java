@@ -56,7 +56,7 @@ public class ContractsEntity implements Serializable {
     @ManyToOne
     @JoinColumn(name = "employee_id", nullable = false)
     private EmployeeEntity employeeId;
-//
+
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
     private ProductsEntity productId;
