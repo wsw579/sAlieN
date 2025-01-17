@@ -39,7 +39,9 @@ public class LeadsService {
         leadsEntity.setCustomerRepresentitive(dto.getCustomerRepresentitive());
         leadsEntity.setCompanyName(dto.getCompanyName());
         leadsEntity.setC_tel(dto.getC_tel());
-
+        // 외래키 부분
+        leadsEntity.setAccountId(dto.getAccountId());
+        leadsEntity.setEmployeeId(dto.getEmployeeId());
         //Saves the leadsEntity object to the database using the leadsRepository
         leadsRepository.save(leadsEntity);
     }
@@ -70,6 +72,10 @@ public class LeadsService {
         leadsEntity.setCustomerRepresentitive(dto.getCustomerRepresentitive());
         leadsEntity.setCompanyName(dto.getCompanyName());
         leadsEntity.setC_tel(dto.getC_tel());
+
+        //외래키 부분
+        leadsEntity.setAccountId(dto.getAccountId());
+        leadsEntity.setEmployeeId(dto.getEmployeeId());
         leadsRepository.save(leadsEntity);
     }
 

@@ -9,6 +9,7 @@ import lombok.Setter;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.List;
 
 @Entity
 @Getter
@@ -42,8 +43,13 @@ public class ProductsEntity implements Serializable {
 
     private String productFamily;
 
-    private boolean productSelected;
+    // 외부 외래키
+    @OneToMany(mappedBy = "productId", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+    private List<OpportunitiesEntity> opportunities;
 
-    @Column(nullable = false)
-    private boolean productDeleted = false;
+    @OneToMany(mappedBy = "productId", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+    private List<ContractsEntity> contracts;
+  
+    @OneToMany(mappedBy = "productId", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+    private List<OrdersEntity> orders;
 }

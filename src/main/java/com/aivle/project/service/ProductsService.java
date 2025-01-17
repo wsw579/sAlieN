@@ -33,7 +33,7 @@ public class ProductsService {
 
     // Read
     public List<ProductsEntity> readProducts() {
-        return productsRepository.findAllActive();
+        return productsRepository.findAll();
     }
 
     // Update
@@ -54,12 +54,16 @@ public class ProductsService {
 
     // Delete
     public void deleteProduct(Long productId) {
-        productsRepository.softDeleteById(productId);
+        productsRepository.deleteById(productId);
     }
 
     // Delete multiple products by IDs
     public void deleteProductsByIds(List<Long> ids) {
-        productsRepository.softDeleteAllById(ids);
+        if (ids.size() == 1) {
+            productsRepository.deleteById(ids.get(0));  // 단일 ID에 대해 개별 메서드 호출
+        } else {
+            productsRepository.deleteAllById(ids);  // 다중 ID에 대해 메서드 호출
+        }
     }
 
     // Search

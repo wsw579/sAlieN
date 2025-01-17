@@ -2,9 +2,11 @@ package com.aivle.project.controller;
 
 import com.aivle.project.dto.ContractsDto;
 import com.aivle.project.dto.OrdersDto;
-import com.aivle.project.entity.ContractsEntity;
-import com.aivle.project.entity.OrdersEntity;
+import com.aivle.project.entity.*;
+import com.aivle.project.repository.AccountRepository;
 import com.aivle.project.repository.ContractsRepository;
+import com.aivle.project.repository.EmployeeRepository;
+import com.aivle.project.repository.ProductsRepository;
 import com.aivle.project.service.ContractsService;
 import com.aivle.project.service.OrdersService;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +27,9 @@ public class ContractsController {
 
     private final ContractsService contractsService;
     private final ContractsRepository contractsRepository;
-    private final OrdersService ordersService;
+    private final ProductsRepository productsRepository;
+    private final AccountRepository accountRepository;
+    private final EmployeeRepository employeeRepository;
 
 
     // Read page
@@ -48,22 +52,29 @@ public class ContractsController {
         ContractsEntity contracts = contractsService.searchContracts(contractId);
         List<OrdersEntity> orders = contractsService.getOrdersByContractId(contractId);
 
+        List<ProductsEntity> products = productsRepository.findAll();
+        List<AccountEntity> accounts = accountRepository.findAll();
+        List<EmployeeEntity> employee = employeeRepository.findAll();
+
         // 디버깅을 위해 로그 출력
         System.out.println("Contracts: " + contracts);
         orders.forEach(order -> System.out.println("Order: " + order.getOrderId() + ", Date: " + order.getOrderDate()));
 
         model.addAttribute("contracts", contracts);
+        model.addAttribute("products", products);
+        model.addAttribute("accounts", accounts);
+        model.addAttribute("employee", employee);
         model.addAttribute("orders", orders);
         return "contracts/contracts_detail";
     }
 
-    @PostMapping("/contracts/detail/{contractId}/createorder")
-    public String createOrder(@ModelAttribute OrdersDto ordersDto, @PathVariable Long contractId) {
-        ContractsEntity contract = contractsRepository.findById(contractId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid contract ID"));
-        ordersService.createOrder(ordersDto, contract);
-        return "redirect:/contracts/detail/" + contractId + "#orderSection";
-    }
+//    @PostMapping("/contracts/detail/{contractId}/createorder")
+//    public String createOrder(@ModelAttribute OrdersDto ordersDto, @PathVariable Long contractId) {
+//        ContractsEntity contract = contractsRepository.findById(contractId)
+//                .orElseThrow(() -> new IllegalArgumentException("Invalid contract ID"));
+//        ordersService.createOrder(ordersDto, contract);
+//        return "redirect:/contracts/detail/" + contractId + "#orderSection";
+//    }
 
 
     @GetMapping("/contracts/validate")
@@ -84,6 +95,10 @@ public class ContractsController {
 
         ContractsEntity contracts = new ContractsEntity();
 
+        List<ProductsEntity> products = productsRepository.findAll();
+        List<AccountEntity> accounts = accountRepository.findAll();
+        List<EmployeeEntity> employee = employeeRepository.findAll();
+
         contracts.setContractStatus("Draft");
         contracts.setStartDate(LocalDate.now());
         contracts.setTerminationDate(LocalDate.now());
@@ -92,7 +107,15 @@ public class ContractsController {
         contracts.setContractAmount(0);
         contracts.setContractClassification("");
 
+        contracts.setOpportunityId(new OpportunitiesEntity());
+        contracts.setAccountId(new AccountEntity());
+        contracts.setProductId(new ProductsEntity());
+        contracts.setEmployeeId(new EmployeeEntity());
+
         model.addAttribute("contracts", contracts);
+        model.addAttribute("products", products);
+        model.addAttribute("accounts", accounts);
+        model.addAttribute("employee", employee);
 
         return "contracts/contracts_detail";
     }
@@ -104,8 +127,6 @@ public class ContractsController {
 
         return "redirect:/contracts";
     }
-
-
 
 
     // Update detail page

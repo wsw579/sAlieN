@@ -7,8 +7,14 @@ import com.aivle.project.entity.LeadsEntity;
 import com.aivle.project.entity.OpportunitiesCommentEntity;
 import com.aivle.project.entity.OpportunitiesEntity;
 import com.aivle.project.repository.OpportunitiesRepository;
+import com.aivle.project.entity.*;
+import com.aivle.project.repository.AccountRepository;
+import com.aivle.project.repository.EmployeeRepository;
+import com.aivle.project.repository.LeadsRepository;
+import com.aivle.project.repository.ProductsRepository;
 import com.aivle.project.service.OpportunitiesService;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,6 +31,10 @@ import java.util.Map;
 public class OpportunitiesController {
     private final OpportunitiesService opportunitiesService;
     private final OpportunitiesRepository opportunitiesRepository;
+    private final ProductsRepository productsRepository;
+    private final AccountRepository accountRepository;
+    private final EmployeeRepository employeeRepository;
+    private final LeadsRepository leadsRepository;
 
 
     // Read page
@@ -49,6 +59,13 @@ public class OpportunitiesController {
         List<HistoryEntity> history = opportunitiesService.getHistoryByOpportunityId(opportunityId);
         List<OpportunitiesCommentEntity> opportunitiesComments = opportunitiesService.getCommentsByOpportunityId(opportunityId);
 
+        // 목록 조회 후 모델에 추가 (드롭다운 메뉴용)
+        List<ProductsEntity> products = productsRepository.findAll();
+        List<AccountEntity> accounts = accountRepository.findAll();
+        List<EmployeeEntity> employee = employeeRepository.findAll();
+        List<LeadsEntity> leads = leadsRepository.findAll();
+
+
         // 디버깅을 위해 로그 출력
         System.out.println("Opportunities: " + opportunities);
         opportunitiesComments.forEach(comment -> System.out.println("Comment: " + comment.getContent() + ", Date: " + comment.getCommentCreatedDate()));
@@ -57,6 +74,10 @@ public class OpportunitiesController {
         // 히스토리 수정
         model.addAttribute("history", history);
         model.addAttribute("opportunitiesComments", opportunitiesComments);
+        model.addAttribute("products", products);
+        model.addAttribute("accounts", accounts);
+        model.addAttribute("employee", employee);
+        model.addAttribute("leads", leads);
         return "opportunities/opportunities_detail";
     }
 
@@ -86,6 +107,13 @@ public class OpportunitiesController {
 
         OpportunitiesEntity opportunities = new OpportunitiesEntity();
 
+        // 목록 조회 후 모델에 추가 (드롭다운 메뉴용)
+        List<ProductsEntity> products = productsRepository.findAll();
+        List<AccountEntity> accounts = accountRepository.findAll();
+        List<EmployeeEntity> employee = employeeRepository.findAll();
+        List<LeadsEntity> leads = leadsRepository.findAll();
+
+
         opportunities.setOpportunityName("");
         opportunities.setRegion("");
         opportunities.setCompanySize(0);
@@ -100,8 +128,17 @@ public class OpportunitiesController {
         opportunities.setOpportunityStatus("");
         opportunities.setSuccessRate("");
 
-        model.addAttribute("opportunities", opportunities);
+        //외래키 부분
+        opportunities.setLeadId(new LeadsEntity());
+        opportunities.setAccountId(new AccountEntity());
+        opportunities.setProductId(new ProductsEntity());
+        opportunities.setEmployeeId(new EmployeeEntity());
 
+        model.addAttribute("opportunities", opportunities);
+        model.addAttribute("products", products);
+        model.addAttribute("accounts", accounts);
+        model.addAttribute("employee", employee);
+        model.addAttribute("leads", leads);
         return "opportunities/opportunities_detail";
     }
 

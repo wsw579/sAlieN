@@ -44,6 +44,12 @@ public class OpportunitiesService {
         opportunitiesEntity.setTargetCloseDate(dto.getTargetCloseDate());
         opportunitiesEntity.setOpportunityStatus(dto.getOpportunityStatus());
         opportunitiesEntity.setSuccessRate(dto.getSuccessRate());
+        //외래키 부분
+        opportunitiesEntity.setLeadId(dto.getLeadId());
+        opportunitiesEntity.setAccountId(dto.getAccountId());
+        opportunitiesEntity.setProductId(dto.getProductId());
+        opportunitiesEntity.setEmployeeId(dto.getEmployeeId());
+
         opportunitiesRepository.save(opportunitiesEntity);
     }
 
@@ -72,6 +78,13 @@ public class OpportunitiesService {
         opportunitiesEntity.setTargetCloseDate(dto.getTargetCloseDate());
         opportunitiesEntity.setOpportunityStatus(dto.getOpportunityStatus());
         opportunitiesEntity.setSuccessRate(dto.getSuccessRate());
+
+        //외래키 부분
+        opportunitiesEntity.setLeadId(dto.getLeadId());
+        opportunitiesEntity.setAccountId(dto.getAccountId());
+        opportunitiesEntity.setProductId(dto.getProductId());
+        opportunitiesEntity.setEmployeeId(dto.getEmployeeId());
+
         opportunitiesRepository.save(opportunitiesEntity);
 
     }

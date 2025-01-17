@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -32,7 +33,7 @@ public class EmployeeEntity {
     private LocalDate terminationDate;
 
     @Column
-    private float baseSalary;
+    private Float baseSalary;
 
     @Enumerated(EnumType.STRING)
     private Position position;
@@ -51,4 +52,18 @@ public class EmployeeEntity {
 
     @Enumerated(EnumType.STRING)
     private Team teamId;
+
+    // 외부 외래키
+
+    @OneToMany(mappedBy = "employeeId", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+    private List<OpportunitiesEntity> opportunities;
+
+    @OneToMany(mappedBy = "employeeId", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+    private List<ContractsEntity> contracts;
+
+    @OneToMany(mappedBy = "employeeId", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+    private List<LeadsEntity> leads;
+
+    @OneToMany(mappedBy = "employeeId", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+    private List<AccountEntity> accounts;
 }

@@ -5,132 +5,177 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
+    <link href="/css/main_style.css" rel="stylesheet" />
+    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
     <style>
         body {
             background-color: #e7f0ff;
             padding-bottom: 50px;
         }
-        .form-section {
-            background-color: #f8f9fa;
-            padding: 20px;
-            border-radius: 0 0 10px 10px;
-            margin-bottom: 20px;
+        label {
+            margin-right: 10px;
         }
-        .table-head {
-            background-color: #D9D9D9;
-            padding: 10px;
-            border-radius: 10px 10px 0 0;
+        .password-error {
+            color: red;
+            font-size: 0.875em;
         }
     </style>
 </head>
 <body>
-
 <div class="container mt-5">
-    <h2 class="text-start">Sign Up</h2>
-
-    <form action="/signup" method="POST"> <!-- form  -->
-        <div class="mt-5">
-            <div class="table-head">
-                <h4>계정 정보</h4>
+    <div class="container-fluid px-4">
+        <h1 class="mt-4">Sign Up</h1>
+        <ol class="breadcrumb mb-4">
+            <li class="breadcrumb-item active">sign up</li>
+        </ol>
+        <form id="signupForm" action="/signup" method="POST">
+            <!-- 기본정보 섹션 -->
+            <div class="card mb-4">
+                <div class="card-header mb-3">
+                    <i class="fas fa-table me-1"></i>
+                    기본정보
+                </div>
+                <div class="mb-3 row px-3 ms-4">
+                    <label for="name" class="col-sm-2 col-form-label">이름</label>
+                    <div class="col-sm-3 me-5">
+                        <input type="text" class="form-control" id="name" name="employeeName" required>
+                    </div>
+                    <label for="position" class="col-sm-2 col-form-label">부서</label>
+                    <div class="col-sm-3">
+                        <select class="form-control" id="position" name="dept" required>
+                            <option value="">선택</option>
+                            <option value="STRATEGY_DEPT">전략고객본부</option>
+                            <option value="PUBLIC_DEPT">공공고객본부</option>
+                            <option value="FINANCE_DEPT">금융고객본부</option>
+                            <option value="CORPORATE_DEPT">법인영업본부</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mb-3 row px-3 ms-4">
+                    <label for="salary" class="col-sm-2 col-form-label">직급</label>
+                    <div class="col-sm-3 me-5">
+                        <select class="form-control" id="salary" name="position" required>
+                            <option value="">선택</option>
+                            <option value="STAFF">사원</option>
+                            <option value="JUNIOR">주임</option>
+                            <option value="ASSOCIATE">대리</option>
+                            <option value="MANAGER">과장</option>
+                            <option value="ASSISTANT_MANAGER">차장</option>
+                            <option value="TEAM_LEADER">팀장</option>
+                            <option value="DEPARTMENT_HEAD">부장</option>
+                            <option value="GENERAL_MANAGER">본부장</option>
+                        </select>
+                    </div>
+                    <label for="team" class="col-sm-2 col-form-label">팀</label>
+                    <div class="col-sm-3">
+                        <select class="form-control" id="team" name="team" required>
+                            <option value="">선택</option>
+                            <option value="STRATEGY_CUST_SECTOR">전략고객섹터담당</option>
+                            <option value="STRATEGY_CUST_1">전략고객1담당</option>
+                            <option value="STRATEGY_CUST_2">전략고객2담당</option>
+                            <option value="PUBLIC_CUST_SECTOR">공공고객섹터담당</option>
+                            <option value="PUBLIC_CUST_1">공공고객1담당</option>
+                            <option value="PUBLIC_CUST_2">공공고객2담당</option>
+                            <option value="FINANCE_CUST_SECTOR">금융고객섹터담당</option>
+                            <option value="FINANCE_CUST_1">금융고객1담당</option>
+                            <option value="FINANCE_CUST_2">금융고객2담당</option>
+                            <option value="CORPORATE_SALES_PLANNING">법인영업기획담당</option>
+                            <option value="CORPORATE_CUST">법인고객담당</option>
+                            <option value="CORPORATE_RETAIL">법인유통담당</option>
+                            <option value="CORPORATE_SALES_SECTOR">법인섹터담당</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mb-3 row px-3 ms-4">
+                    <label for="joinDate" class="col-sm-2 col-form-label">입사일</label>
+                    <div class="col-sm-3 me-5">
+                        <input type="date" class="form-control" id="joinDate" name="hireDate" required>
+                    </div>
+                </div>
             </div>
-            <div class="form-section">
-                <div class="form-group row">
+
+            <!-- 계정정보 섹션 -->
+            <div id="accountInfo" class="card mb-4 mt-4">
+                <div class="card-header mb-3">
+                    <i class="fas fa-table me-1"></i>
+                    계정정보
+                </div>
+                <div class="mb-3 row px-3 ms-4">
                     <label for="userId" class="col-sm-2 col-form-label">아이디</label>
-                    <div class="col-sm-8">
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="userId" name="employeeId">
-                            <small class="form-text text-muted">사용가능</small>
-                        </div>
-                    </div>
-                    <div class="col-sm-2">
-                        <button class="btn btn-primary">중복확인</button>
-                    </div>
+                    <div id="generatedUserId" class="col-sm-2 col-form-label"></div>
+                    <input type="hidden" id="generatedUserIdInput" name="employeeId">
                 </div>
-                <div class="form-group row">
+                <div class="mb-3 row px-3 ms-4">
                     <label for="password" class="col-sm-2 col-form-label">비밀번호</label>
-                    <div class="col-sm-10">
-                        <input type="password" class="form-control" id="password" name="password">
+                    <div class="col-sm-3 me-5">
+                        <input type="password" class="form-control" id="password" name="password" required>
                     </div>
-                </div>
-                <div class="form-group row">
                     <label for="confirmPassword" class="col-sm-2 col-form-label">비밀번호 확인</label>
-                    <div class="col-sm-10">
-                        <input type="password" class="form-control" id="confirmPassword" name="confirmPassword">
+                    <div class="col-sm-3">
+                        <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
                     </div>
+                    <div id="passwordError" class="col-sm-3 password-error" style="display: none;">비밀번호가 일치하지 않습니다.</div>
                 </div>
-                <div class="form-group row">
+                <div class="mb-3 row px-3 ms-4">
                     <label for="securityQuestion" class="col-sm-2 col-form-label">비밀번호 찾기 질문</label>
-                    <div class="col-sm-10">
+                    <div class="col-sm-3 me-5">
                         <label class="form-control-plaintext">가장 좋아하는 음식은?</label>
                     </div>
-                </div>
-                <div class="form-group row">
                     <label for="securityAnswer" class="col-sm-2 col-form-label">비밀번호 찾기 답변</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" id="securityAnswer" name="passwordAnswer">
+                    <div class="col-sm-3">
+                        <input type="text" class="form-control" id="securityAnswer" name="passwordAnswer" required>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="">
-            <div class="table-head">
-                <h4>기본 정보</h4>
+            <div id="signupButton" class="text-right">
+                <button type="submit" class="btn btn-primary">가입</button>
             </div>
-            <div class="form-section">
-                <div class="form-group row">
-                    <label for="name" class="col-sm-2 col-form-label">이름</label>
-                    <div class="col-sm-10">
-                        <input type="text" class="form-control" id="name" name="employeeName">
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label for="position" class="col-sm-2 col-form-label">부서</label>
-                    <div class="col-sm-10">
-                        <select class="form-control" id="position" name="dept">
-                            <option>영업</option>
-                            <option>인사</option>
-                            <option>개발</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label for="salary" class="col-sm-2 col-form-label">직급</label>
-                    <div class="col-sm-10">
-                        <select class="form-control" id="salary" name="position">
-                            <option value="EMPLOYEE">사원</option>
-                            <option value="TEAM_LEADER">팀장</option>
-                            <option value="MANAGER">부장</option>
-                            <option value="DIRECTOR">이사</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label for="team" class="col-sm-2 col-form-label">팀</label>
-                    <div class="col-sm-10">
-                        <select class="form-control" id="team" name="team">
-                            <option>영업1팀</option>
-                            <option>영업2팀</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <label for="joinDate" class="col-sm-2 col-form-label">입사일</label>
-                    <div class="col-sm-10">
-                        <input type="date" class="form-control" id="joinDate" name="hireDate" value="2025-01-03">
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="text-right">
-            <button type="submit" class="btn btn-primary">가입</button> <!-- form 제출 버튼 -->
-        </div>
-    </form>
+        </form>
+    </div>
 </div>
+
+<script>
+    // 입사일 변경 시 서버로 아이디 요청
+    document.getElementById("joinDate").addEventListener("input", function () {
+        const hireDate = document.getElementById("joinDate").value;
+        if (!hireDate) {
+            return; // 입사일이 비어 있으면 요청하지 않음
+        }
+
+        const year = new Date(hireDate).getFullYear(); // 입사일에서 연도 정보 추출
+
+        // 서버로 GET 요청 보내기 (연도 정보를 포함하여 전송)
+        fetch(`/api/generateEmployeeId?year=${year}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("서버 응답 오류");
+                    }
+                    return response.json(); // JSON 형식으로 응답 파싱
+                })
+                .then(data => {
+                    const employeeId = data.employeeId;
+                    // 받은 데이터에서 employeeId를 아이디 입력란에 표시하고, value에 넣기
+                    const generatedUserIdElement = document.getElementById("generatedUserId");
+                    generatedUserIdElement.textContent = employeeId; // 서버에서 받은 employeeId 사용
+                    const generatedUserIdInput = document.getElementById("generatedUserIdInput");
+                    generatedUserIdInput.value = employeeId; // 폼 전송 시에도 값을 함께 전송
+                })
+                .catch(error => {
+                    console.error("아이디 생성 중 오류:", error);
+                    alert("아이디 생성에 실패했습니다. 다시 시도해 주세요.");
+                });
+    });
+</script>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
 </body>
 </html>
+
+
+
+
