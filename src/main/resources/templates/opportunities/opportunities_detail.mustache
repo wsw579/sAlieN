@@ -426,17 +426,49 @@
                     Opportunities History
                 </div>
                 <div class="card-body">
-                    <table id="opportunities_history">
-
-
-                        {{#opportunities}}
-                            <tbody>
-
-                            </tbody>
-                        {{/opportunities}}
+                    <div class="button-container mb-3">
+                        <a href="/opportunities/detail/{{opportunityId}}/history/create" class="btn btn-custom-create btn-sm" id="createButton">
+                            <i class="fas fa-plus-circle"></i> 생성
+                        </a>
+                    </div>
+                    <table id="opportunities_history" class="table table-striped table-bordered">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>제목</th>
+                            <th>담당자</th>
+                            <th>미팅날짜</th>
+                            <th>미팅일시</th>
+                            <th>미팅장소</th>
+                            <th>회사규모</th>
+                            <th>액션</th>
+                            <th>고객문의</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {{#history}}
+                            <tr data-index="{{historyId}}">
+                                <td>{{historyId}}</td>
+                                <td><a href="/opportunities/detail/{{opportunityId}}/history/{{historyId}}">{{historyTitle}}</a></td>
+                                <td>{{customerRepresentative}}</td>
+                                <td>{{historyDate}}</td>
+                                <td>{{historyTime}}</td>
+                                <td>{{meetingPlace}}</td>
+                                <td>{{companySize}}</td>
+                                <td>{{actionTaken}}</td>
+                                <td>{{customerRequirements}}</td>
+                            </tr>
+                        {{/history}}
+                        {{^history}}
+                            <tr>
+                                <td colspan="9" class="text-center">No history available.</td>
+                            </tr>
+                        {{/history}}
+                        </tbody>
                     </table>
                 </div>
             </div>
+
 
 
 
@@ -491,6 +523,7 @@
 
     <script>
 
+
         // Form 부분 기회상태 초기값 연동 JS (select Form은 html로 초기 value 지정이 안되어서 JS로 처리)
 
     {{#opportunities}}
@@ -515,6 +548,9 @@
                 document.getElementById("leadId").value = leadId;
             {{/leadId.leadId}}
 
+        // 폼에 데이터 채우기
+            document.getElementById("opportunityStatus").value = opportunityStatus;
+            });
         });
         {{/opportunityId}}
 
@@ -548,9 +584,6 @@
                 sortField: 'text'
             });
         });
-
-
-
 
 
 
