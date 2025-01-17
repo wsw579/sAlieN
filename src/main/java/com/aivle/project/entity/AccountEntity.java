@@ -18,6 +18,7 @@ import java.util.List;
 @Setter
 @Table(name="accounts")
 public class AccountEntity implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "account_id" , nullable = false)
@@ -41,7 +42,7 @@ public class AccountEntity implements Serializable {
     @Column(nullable = false, length = 50)              //  계정명 : 고객사 회사명
     private String accountName;
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false, length = 50)              // 고객사 유형
     private String accountType;
 
     @Column(nullable = false, length = 50)              // 고객사 사이트
@@ -50,7 +51,7 @@ public class AccountEntity implements Serializable {
     @Column(nullable = false, length = 50)              // 고객사 대표전화
     private String contact;
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false, length = 50)              // 고객사사업유형
     private String businessType;
 
     @Column(nullable = false, length = 50)              // 고객사 직원명
@@ -62,14 +63,13 @@ public class AccountEntity implements Serializable {
     @Column(nullable = false, length = 50)             // 고객사 주소
     private String address;
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false, length = 50)             // 고객사 직원  연락처
     private String accountManagerContact;
 
     @Column(nullable = false, length = 50)             // 계정 상태
     private String accountStatus;
 
-
-    //외래키
+    //외래키  -  인사테이블
     @ManyToOne
     @JoinColumn(name = "employee_id", nullable = true, foreignKey = @ForeignKey(name="fk_accounts_employee_id"))
     private EmployeeEntity employeeId;
@@ -84,5 +84,7 @@ public class AccountEntity implements Serializable {
 
     @OneToMany(mappedBy = "accountId", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     private List<LeadsEntity> leads;
+
+
 
 }

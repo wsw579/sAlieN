@@ -3,10 +3,7 @@ package com.aivle.project.controller;
 import com.aivle.project.dto.ContractsDto;
 import com.aivle.project.dto.OrdersDto;
 import com.aivle.project.entity.*;
-import com.aivle.project.repository.AccountRepository;
-import com.aivle.project.repository.ContractsRepository;
-import com.aivle.project.repository.EmployeeRepository;
-import com.aivle.project.repository.ProductsRepository;
+import com.aivle.project.repository.*;
 import com.aivle.project.service.ContractsService;
 import com.aivle.project.service.OrdersService;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +27,7 @@ public class ContractsController {
     private final ProductsRepository productsRepository;
     private final AccountRepository accountRepository;
     private final EmployeeRepository employeeRepository;
+    private final OpportunitiesRepository opportunitiesRepository;
 
 
     // Read page
@@ -55,6 +53,7 @@ public class ContractsController {
         List<ProductsEntity> products = productsRepository.findAll();
         List<AccountEntity> accounts = accountRepository.findAll();
         List<EmployeeEntity> employee = employeeRepository.findAll();
+        List<OpportunitiesEntity> opportunities = opportunitiesRepository.findAll();
 
         // 디버깅을 위해 로그 출력
         System.out.println("Contracts: " + contracts);
@@ -64,6 +63,7 @@ public class ContractsController {
         model.addAttribute("products", products);
         model.addAttribute("accounts", accounts);
         model.addAttribute("employee", employee);
+        model.addAttribute("opportunities", opportunities);
         model.addAttribute("orders", orders);
         return "contracts/contracts_detail";
     }
@@ -98,6 +98,7 @@ public class ContractsController {
         List<ProductsEntity> products = productsRepository.findAll();
         List<AccountEntity> accounts = accountRepository.findAll();
         List<EmployeeEntity> employee = employeeRepository.findAll();
+        List<OpportunitiesEntity> opportunities = opportunitiesRepository.findAll();
 
         contracts.setContractStatus("Draft");
         contracts.setStartDate(LocalDate.now());
@@ -105,7 +106,7 @@ public class ContractsController {
         contracts.setContractDetail("");
         contracts.setContractSales(0);
         contracts.setContractAmount(0);
-        contracts.setContractClassification("");
+        contracts.setContractClassification("None");
 
         contracts.setOpportunityId(new OpportunitiesEntity());
         contracts.setAccountId(new AccountEntity());
@@ -116,6 +117,7 @@ public class ContractsController {
         model.addAttribute("products", products);
         model.addAttribute("accounts", accounts);
         model.addAttribute("employee", employee);
+        model.addAttribute("opportunities", opportunities);
 
         return "contracts/contracts_detail";
     }

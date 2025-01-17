@@ -212,20 +212,17 @@
 
 
                         {{#contracts}}
+                            <tbody>
                             <div class="progress-container">
                                 <div class="progress-bar" id="progressBar"></div>
                                 <div class="progress-steps">
-                                    <div class="step" data-step="Draft">
-                                        <span>Draft</span>
-                                    </div>
-                                    <div class="step" data-step="In Approval Process">
-                                        <span>In Approval Process</span>
-                                    </div>
-                                    <div class="step" data-step="Activated">
-                                        <span>Activated</span>
-                                    </div>
+                                    <div class="step" data-step="Draft">Draft</div>
+                                    <div class="step" data-step="In Approval Process">In Approval Progress</div>
+                                    <div class="step" data-step="Activated">Activated</div>
                                 </div>
                             </div>
+
+                            </tbody>
                         {{/contracts}}
 
 
@@ -259,7 +256,7 @@
                                     </a>
                                 {{/contractId}}
 
-                            </div>
+                        </div>
 
                             {{#contractId}}
                             <form id="contractForm" action="/contracts/detail/{{contractId}}/update" method="POST">
@@ -292,7 +289,7 @@
                                 </div>
                             </div>
                             <div class="mb-3 row">
-                                <label for="accountId" class="col-sm-2 col-form-label">계정 명:</label>
+                                <label for="accountId" class="col-sm-2 col-form-label">계정명:</label>
                                 <div class="col-sm-10">
                                     <select id="accountId" name="accountId" required>
 
@@ -303,13 +300,28 @@
                                             </option>
                                         {{/accounts}}
 
-                                    </select>
+                                        </select>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="mb-3 row">
-                                <label for="productId" class="col-sm-2 col-form-label">계약 제품:</label>
-                                <div class="col-sm-10">
-                                    <select id="productId" name="productId" required>
+                                <div class="mb-3 row">
+                                    <label for="opportunityId" class="col-sm-2 col-form-label">기회명:</label>
+                                    <div class="col-sm-10">
+                                        <select id="opportunityId" name="opportunityId" required>
+
+                                            <option value="">-- 기회 선택 --</option>
+                                            {{#opportunities}}
+                                                <option value="{{opportunityId}}">
+                                                    {{opportunityName}} (ID: {{opportunityId}})
+                                                </option>
+                                            {{/opportunities}}
+
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="mb-3 row">
+                                    <label for="productId" class="col-sm-2 col-form-label">계약 제품:</label>
+                                    <div class="col-sm-10">
+                                        <select id="productId" name="productId" required>
 
                                         <option value="">-- 제품 선택 --</option>
                                         {{#products}}
@@ -443,19 +455,21 @@
 
         {{#contracts}}
             {{#contractId}}
-                document.addEventListener("DOMContentLoaded", function() {
-                    // Mustache 템플릿에서 서버 데이터를 가져옴
-                    var contractStatus = "{{contractStatus}}";
+            document.addEventListener("DOMContentLoaded", function() {
+                // Mustache 템플릿에서 서버 데이터를 가져옴
+                var contractStatus = "{{contractStatus}}";
                 var contractClassification = "{{contractClassification}}";
                 var productId = "{{productId.productId}}";
                 var accountId = "{{accountId.accountId}}";
                 var employeeId = "{{employeeId.employeeId}}";
+                var opportunityId = "{{opportunityId.opportunityId}}";
 
                 // 폼에 데이터 채우기
                 document.getElementById("contractStatus").value = contractStatus;
                 document.getElementById("contractClassification").value = contractClassification;
                 document.getElementById("productId").value = productId;
                 document.getElementById("accountId").value = accountId;
+                document.getElementById("opportunityId").value = opportunityId;
                 document.getElementById("employeeId").value = employeeId;
             });
             {{/contractId}}
@@ -469,6 +483,12 @@
 
                 // 직원 검색
                 $('#employeeId').selectize({
+                    create: false,
+                    sortField: 'text'
+                });
+
+                // 기회 검색
+                $('#opportunityId').selectize({
                     create: false,
                     sortField: 'text'
                 });
