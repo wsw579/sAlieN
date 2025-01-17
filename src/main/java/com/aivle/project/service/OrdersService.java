@@ -25,61 +25,51 @@ public class OrdersService {
     private final ProductsRepository productsRepository;
 
     // Create
-    public void createOrder(OrdersDto dto, ContractsEntity contract) {
+    public void createOrder(OrdersDto dto) {
         OrdersEntity orderEntity = new OrdersEntity();
-
-        ProductsEntity product = productsRepository.findById(dto.getProductId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid product ID"));
 
         orderEntity.setOrderDate(dto.getOrderDate());
         orderEntity.setSalesDate(dto.getSalesDate());
         orderEntity.setOrderAmount(dto.getOrderAmount());
         orderEntity.setOrderStatus(OrderStatus.valueOf(dto.getOrderStatus()));
-        // ContractsEntity 설정
-        if (contract != null) {
-            orderEntity.setContract(contract);
-        }
-        orderEntity.setProduct(product);
-//        orderEntity.setPartnerOpId(dto.getPartnerOpId());
+        orderEntity.setContractId(dto.getContractId());
+        orderEntity.setProductId(dto.getProductId());
         ordersRepository.save(orderEntity);
     }
 
     // Read
     public List<OrdersEntity> readOrders() {
-        return ordersRepository.findAllActive();
+        return ordersRepository.findAll();
     }
 
     // Update
     @Transactional
     public void updateOrder(Long orderId, OrdersDto dto) {
-        ContractsEntity contract = contractsRepository.findById(dto.getContractId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid contract ID"));
-
-        ProductsEntity product = productsRepository.findById(dto.getProductId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid product ID"));
-
-        OrdersEntity orderEntity = ordersRepository.findById(orderId)
+        OrdersEntity order = ordersRepository.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid order ID"));
-        System.out.println("Before update: " + orderEntity);
+        System.out.println("Before update: " + order);
 
-        orderEntity.setOrderDate(dto.getOrderDate());
-        orderEntity.setSalesDate(dto.getSalesDate());
-        orderEntity.setOrderAmount(dto.getOrderAmount());
-        orderEntity.setOrderStatus(OrderStatus.valueOf(dto.getOrderStatus()));
-        orderEntity.setContract(contract);
-        orderEntity.setProduct(product);
-//        orderEntity.setPartnerOpId(dto.getPartnerOpId());
-        ordersRepository.save(orderEntity);
+        order.setOrderDate(dto.getOrderDate());
+        order.setSalesDate(dto.getSalesDate());
+        order.setOrderAmount(dto.getOrderAmount());
+        order.setOrderStatus(OrderStatus.valueOf(dto.getOrderStatus()));
+        order.setContractId(dto.getContractId());
+        order.setProductId(dto.getProductId());
+        ordersRepository.save(order);
     }
 
     // Delete
     public void deleteOrder(Long orderId) {
-        ordersRepository.softDeleteById(orderId);
+        ordersRepository.deleteById(orderId);
     }
 
     // Delete multiple orders by IDs
     public void deleteOrdersByIds(List<Long> ids) {
-        ordersRepository.softDeleteAllById(ids);
+        if (ids.size() == 1) {
+            ordersRepository.deleteById(ids.get(0));  // 단일 ID에 대해 개별 메서드 호출
+        } else {
+            ordersRepository.deleteAllById(ids);  // 다중 ID에 대해 메서드 호출
+        }
     }
 
     // Search

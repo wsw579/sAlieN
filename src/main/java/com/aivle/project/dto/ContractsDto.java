@@ -1,6 +1,7 @@
 package com.aivle.project.dto;
 
 
+import com.aivle.project.entity.AccountEntity;
 import com.aivle.project.entity.EmployeeEntity;
 import com.aivle.project.entity.OpportunitiesEntity;
 import com.aivle.project.entity.ProductsEntity;
@@ -23,16 +24,13 @@ public class ContractsDto {
     private float contractSales;
     private float contractAmount;
     private String contractClassification;
-    private boolean contractSelected;
-    private boolean contractDeleted = false;
 
     // 외래키 부분
 
+    private AccountEntity accountId;
+    private EmployeeEntity employeeId;
+    private ProductsEntity productId;
     private OpportunitiesEntity opportunityId;
-
-//    private AccountsEntity accountId;
-//    private EmployeeEntity employee;
-//    private ProductsEntity productId;
 
 
 

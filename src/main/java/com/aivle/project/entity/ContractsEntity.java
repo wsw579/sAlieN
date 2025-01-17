@@ -46,33 +46,27 @@ public class ContractsEntity implements Serializable {
     @Column(nullable = true)
     private String contractClassification;
 
-    private boolean contractSelected;
-
-    @Column(nullable = false)
-    private boolean contractDeleted = false;
-
 
     // 외래키 부분
 
-//    @ManyToOne
-//    @JoinColumn(name = "opportunity_id", nullable = false)
-//    private OpportunitiesEntity opportunity;
+    @ManyToOne
+    @JoinColumn(name = "account_id", nullable = false)
+    private AccountEntity accountId;
 
-//    @ManyToOne
-//    @JoinColumn(name = "account_id", nullable = false)
-//    private AccountsEntity account;
-
-//    @ManyToOne
-//    @JoinColumn(name = "employee_id", nullable = false)
-//    private EmployeeEntity employee;
+    @ManyToOne
+    @JoinColumn(name = "employee_id", nullable = false)
+    private EmployeeEntity employeeId;
 //
-//    @ManyToOne
-//    @JoinColumn(name = "product_id", nullable = false)
-//    private ProductsEntity product;
+    @ManyToOne
+    @JoinColumn(name = "product_id", nullable = false)
+    private ProductsEntity productId;
 
-    @OneToMany(mappedBy = "contract", cascade = CascadeType.ALL)
+    @ManyToOne
+    @JoinColumn(name = "opportunity_id", nullable = false)
+    private OpportunitiesEntity opportunityId;
+
+    @OneToMany(mappedBy = "contractId", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     private List<OrdersEntity> orders;
-
 
 
 
