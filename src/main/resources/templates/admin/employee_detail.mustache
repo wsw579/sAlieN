@@ -27,16 +27,14 @@
 <div id="layoutSidenav_content">
     <main>
         <div class="container-fluid px-4">
-            <h1 class="mt-4">Profile</h1>
+            <h1 class="mt-4">Employee Detail</h1>
             <ol class="breadcrumb mb-4">
-                <li class="breadcrumb-item active">profile</li>
+                <li class="breadcrumb-item active">employee detail</li>
             </ol>
             <div class="row">
             </div>
             <div class="row">
             </div>
-
-
 
             <div class="card mb-4">
                 <div class="card-header">
@@ -73,7 +71,7 @@
                 </div>
             </div>
 
-<!--            계정정보 부분-->
+            <!--            계정정보 부분-->
             <div class="card mb-4">
                 <div class="card-header">
                     <i class="fas fa-table me-1"></i>
@@ -99,60 +97,56 @@
             <div class="d-flex justify-content-end">
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                         data-bs-target="#passwordModal"
-                        data-id="{{id}}">
-                    비밀번호 수정
+                        data-id="{{employee.employeeId}}">
+                    비밀번호 초기화
                 </button>
             </div>
         </div>
     </main>
-
-    <!-- 비밀번호 수정 모달 -->
-    <div class="modal fade" id="passwordModal" tabindex="-1" aria-labelledby="passwordModalLabel" aria-hidden="true">
+    <!-- Modal for success message -->
+    <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="passwordModalLabel">비밀번호 변경</h5>
+                    <h5 class="modal-title" id="successModalLabel">비밀번호 초기화 완료</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="/password-edit" method="POST">
-                        <input type="hidden" name="employeeId" id="modal-userId" value="">
-                        <div class="mb-3">
-                            <label for="current-password" class="form-label">기존 비밀번호</label>
-                            <input type="password" class="form-control" name="existPassword" id="current-password" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="new-password" class="form-label">새 비밀번호</label>
-                            <input type="password" class="form-control" name="newPassword" id="new-password" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="confirm-password" class="form-label">새 비밀번호 확인</label>
-                            <input type="password" class="form-control" id="confirm-password" required>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
-                            <button type="submit" class="btn btn-primary">저장</button>
-                        </div>
-                    </form>
+                    비밀번호가 성공적으로 초기화되었습니다.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">확인</button>
                 </div>
             </div>
         </div>
     </div>
+    <script>
+        // 비밀번호 초기화 버튼 클릭 시 GET 요청 보내기
+        document.querySelector('[data-bs-target="#passwordModal"]').addEventListener('click', function() {
+            var employeeId = this.getAttribute('data-id');
 
-<script>
+            fetch(`/admin/employee-password-reset/${employeeId}`, {
+                method: 'GET',
+            })
+                    .then(response => {
+                        if (response.ok) {
+                            return response.json();
+                        }
+                        throw new Error('비밀번호 초기화 실패');
+                    })
+                    .then(data => {
+                        // 비밀번호 초기화 성공 시 모달 창 띄우기
+                        if (data.success) {
+                            var successModal = new bootstrap.Modal(document.getElementById('successModal'));
+                            successModal.show();
+                        } else {
+                            alert('비밀번호 초기화 실패');
+                        }
+                    })
+                    .catch(error => {
+                        alert(error.message);
+                    });
+        });
+    </script>
 
-
-    // 모달이 열릴 때 이벤트 처리
-    const passwordModal = document.getElementById('passwordModal');
-    passwordModal.addEventListener('show.bs.modal', function (event) {
-        // 버튼에서 data-id 속성을 가져옴
-        const button = event.relatedTarget;
-        const userId = button.getAttribute('data-id');
-
-        // 숨겨진 input 필드에 userId 값을 설정
-        const userIdInput = document.getElementById('modal-userId');
-        userIdInput.value = userId;
-    });
-</script>
-
-{{>main/footer}}
+    {{>main/footer}}
