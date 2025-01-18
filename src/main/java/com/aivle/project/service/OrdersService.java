@@ -44,11 +44,16 @@ public class OrdersService {
     }
 
     // Read
-    public Page<OrdersEntity> readOrders(int page, int size, String search, String sortColumn, String sortDirection) {
+    public Page<OrdersEntity> readOrder(int page, int size, String search, String sortColumn, String sortDirection) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortDirection), sortColumn));
 
         if (search != null && !search.isEmpty()) {
-            return ordersRepository.findByOrderStatusContainingIgnoreCase(search, pageable);
+            try {
+                return ordersRepository.findByOrderIdLike(search, pageable);
+            } catch (NumberFormatException e) {
+                // 숫자가 아닌 경우 빈 페이지 반환
+                return Page.empty(pageable);
+            }
         } else {
             return ordersRepository.findAll(pageable);
         }

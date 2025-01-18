@@ -13,7 +13,8 @@ import java.util.List;
 
 public interface OrdersRepository extends JpaRepository<OrdersEntity, Long> {
     List<OrdersEntity> findByContractId(ContractsEntity contractId);
-    Page<OrdersEntity> findByOrderStatusContainingIgnoreCase(String search, Pageable pageable);
+    @Query("SELECT o FROM OrdersEntity o WHERE CAST(o.orderId AS string) LIKE %:orderId%")
+    Page<OrdersEntity> findByOrderIdLike(@Param("orderId") String orderId, Pageable pageable);
 
     @Query("SELECT CAST(o.orderStatus AS string), COUNT(o) FROM OrdersEntity o GROUP BY o.orderStatus")
     List<Object[]> countOrdersByStatus();

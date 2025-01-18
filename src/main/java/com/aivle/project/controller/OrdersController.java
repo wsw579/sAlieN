@@ -9,6 +9,9 @@ import com.aivle.project.service.OrdersService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -41,7 +44,7 @@ public class OrdersController {
             Model model
     ) {
         // 서비스에서 페이지 데이터 가져오기
-        Page<OrdersEntity> ordersPage = ordersService.readOrders(page, size, search, sortColumn, sortDirection);
+        Page<OrdersEntity> ordersPage = ordersService.readOrder(page, size, search, sortColumn, sortDirection);
 
         // 상태별 주문 개수 가져오기
         Map<String, Long> statusCounts = ordersService.getOrderStatusCounts();
@@ -82,6 +85,11 @@ public class OrdersController {
         model.addAttribute("search", search); // 검색어
         model.addAttribute("sortColumn", sortColumn); // 정렬 기준
         model.addAttribute("sortDirection", sortDirection); // 정렬 방향
+        // Mustache 렌더링에 필요한 플래그 추가
+        model.addAttribute("isOrderDateSorted", "orderDate".equals(sortColumn)); // 정렬 기준이 orderDate인지
+        model.addAttribute("isOrderAmountSorted", "orderAmount".equals(sortColumn)); // 정렬 기준이 orderAmount인지
+        model.addAttribute("isAscSorted", "asc".equals(sortDirection)); // 정렬 방향이 asc인지
+        model.addAttribute("isDescSorted", "desc".equals(sortDirection)); // 정렬 방향이 desc인지
 
         // 상태별 개수 추가
         model.addAttribute("draftCount", statusCounts.getOrDefault("draft", 0L));

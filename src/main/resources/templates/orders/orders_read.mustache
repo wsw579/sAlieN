@@ -123,27 +123,37 @@
                     My Orders
                 </div>
                 <div class="card-body">
-                    <table id="datatablesSimple">
+                    <div class="button-container mb-3" style="display: flex; align-items: center; gap: 10px;">
+                        <div style="flex: 1; display: flex; align-items: center; gap: 10px;">
+                            <form method="GET" action="/orders" style="display: flex; align-items: center; gap: 5px;">
+                                <!-- 검색어 -->
+                                <input type="text" name="search" id="customSearch" placeholder="검색어를 입력하세요"
+                                       style="padding: 5px; width: 200px;" value="{{search}}">
 
-                        <div class="button-container mb-3">
+                                <!-- 정렬 기준 -->
+                                <label>
+                                    <select name="sortColumn">
+                                        <option value="orderDate" {{#isOrderDateSorted}}selected{{/isOrderDateSorted}}>Order Date</option>
+                                        <option value="orderAmount" {{#isOrderAmountSorted}}selected{{/isOrderAmountSorted}}>Amount</option>
+                                    </select>
+                                </label>
 
-                            <div class="search-container">
-                                <input type="text" id="customSearch" placeholder="검색어를 입력하세요" style="margin-bottom: 10px; padding: 5px; width: 200px;">
-                                <button id="searchButton" style="margin-left: 5px;">검색</button>
-                            </div>
+                                <!-- 정렬 방향 -->
+                                <label>
+                                    <select name="sortDirection">
+                                        <option value="asc" {{#isAscSorted}}selected{{/isAscSorted}}>Ascending</option>
+                                        <option value="desc" {{#isDescSorted}}selected{{/isDescSorted}}>Descending</option>
+                                    </select>
+                                </label>
 
-                            <form method="GET" action="/orders">
-                                <select name="sortColumn">
-                                    <option value="orderDate" {{#isOrderDateSorted}}selected{{/isOrderDateSorted}}>Order Date</option>
-                                    <option value="orderAmount" {{#isOrderAmountSorted}}selected{{/isOrderAmountSorted}}>Amount</option>
-                                </select>
-                                <select name="sortDirection">
-                                    <option value="asc" {{#isAscSorted}}selected{{/isAscSorted}}>Ascending</option>
-                                    <option value="desc" {{#isDescSorted}}selected{{/isDescSorted}}>Descending</option>
-                                </select>
-                                <button type="submit">정렬</button>
+                                <!-- 제출 버튼 -->
+                                <button type="submit">검색 및 정렬</button>
                             </form>
 
+                        </div>
+
+                        <div>
+                            <!-- 신규 및 삭제 버튼 -->
                             <a href="/orders/detail/create" class="btn btn-custom-create btn-sm" id="createButton">
                                 <i class="fas fa-plus-circle"></i> 신규
                             </a>
@@ -151,7 +161,9 @@
                                 <i class="fas fa-trash-alt"></i> 삭제
                             </button>
                         </div>
+                    </div>
 
+                    <table id="datatablesSimple">
                         <thead>
                         <tr>
                             <th></th>
@@ -204,15 +216,13 @@
                             </button>
                         {{/hasNextPage}}
                     </div>
-
-
                 </div>
+
             </div>
         </div>
     </main>
 
     <script>
-            // 검색 기능 구현 예정
 
             var deleteButton = document.getElementById("deleteButton");
             if (deleteButton) {
