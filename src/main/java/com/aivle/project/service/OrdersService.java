@@ -44,7 +44,7 @@ public class OrdersService {
     }
 
     // Read
-    public Page<OrdersEntity> readOrder(int page, int size, String search, String sortColumn, String sortDirection) {
+    public Page<OrdersEntity> readOrders(int page, int size, String search, String sortColumn, String sortDirection) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortDirection), sortColumn));
 
         if (search != null && !search.isEmpty()) {

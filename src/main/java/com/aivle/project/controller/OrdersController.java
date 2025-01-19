@@ -5,13 +5,16 @@ import com.aivle.project.entity.*;
 import com.aivle.project.enums.OrderStatus;
 import com.aivle.project.repository.ContractsRepository;
 import com.aivle.project.repository.ProductsRepository;
+import com.aivle.project.service.ContractsService;
 import com.aivle.project.service.OrdersService;
+import com.aivle.project.service.ProductsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -31,6 +34,8 @@ public class OrdersController {
 
     private final ContractsRepository contractsRepository;
     private final OrdersService ordersService;
+    private final ContractsService contractsService;
+    private final ProductsService productsService;
     private final ProductsRepository productsRepository;
 
     // Read page
@@ -44,7 +49,7 @@ public class OrdersController {
             Model model
     ) {
         // 서비스에서 페이지 데이터 가져오기
-        Page<OrdersEntity> ordersPage = ordersService.readOrder(page, size, search, sortColumn, sortDirection);
+        Page<OrdersEntity> ordersPage = ordersService.readOrders(page, size, search, sortColumn, sortDirection);
 
         // 상태별 주문 개수 가져오기
         Map<String, Long> statusCounts = ordersService.getOrderStatusCounts();
@@ -100,11 +105,10 @@ public class OrdersController {
         return "orders/orders_read"; // Mustache 템플릿 이름
     }
 
-    @Cacheable("barData")
     @GetMapping("/bar-data")
     public ResponseEntity<Map<String, List<Integer>>> getBarData() {
-        Map<String, List<Integer>> chartData = ordersService.getBarData();
-        return ResponseEntity.ok(chartData);
+        Map<String, List<Integer>> barData = ordersService.getBarData();
+        return ResponseEntity.ok(barData);
     }
 
     @GetMapping("/chart-data")
