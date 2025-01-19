@@ -1,14 +1,21 @@
 package com.aivle.project.service;
 
 import com.aivle.project.dto.ProductsDto;
+import com.aivle.project.entity.OrdersEntity;
 import com.aivle.project.entity.ProductsEntity;
 import com.aivle.project.enums.ProductCondition;
 import com.aivle.project.repository.ProductsRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional
@@ -32,8 +39,19 @@ public class ProductsService {
     }
 
     // Read
-    public List<ProductsEntity> readProducts() {
-        return productsRepository.findAll();
+    public Page<ProductsEntity> readProducts(int page, int size, String search, String sortColumn, String sortDirection) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortDirection), sortColumn));
+
+        if (search != null && !search.isEmpty()) {
+            try {
+                return productsRepository.findByProductIdLike(search, pageable);
+            } catch (NumberFormatException e) {
+                // 숫자가 아닌 경우 빈 페이지 반환
+                return Page.empty(pageable);
+            }
+        } else {
+            return productsRepository.findAll(pageable);
+        }
     }
 
     // Update
@@ -70,5 +88,19 @@ public class ProductsService {
     public ProductsEntity searchProduct(Long productId) {
         return productsRepository.findById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("Product not found"));
+    }
+
+    // 상태 수 세기
+    public Map<String, Long> getProductConditionCounts() {
+        Map<String, Long> conditionCounts = new HashMap<>();
+        List<Object[]> results = productsRepository.countProductsByCondition();
+
+        for (Object[] result : results) {
+            String status = (String) result[0];
+            Long count = (Long) result[1];
+            conditionCounts.put(status, count);
+        }
+
+        return conditionCounts;
     }
 }

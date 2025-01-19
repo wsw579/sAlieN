@@ -127,8 +127,8 @@
 }
 
 .step.completed.active {
-    background-color: gray;
-    border-color: gray;
+    background-color: yellow;
+    border-color: yellow;
 }
 
 .step.cancelled.active {
@@ -218,17 +218,15 @@
                     </div>
 
                         <div class="mb-3 row">
-                            <label for="product" class="col-sm-2 col-form-label">기회 제품:</label>
+                            <label for="product" class="col-sm-2 col-form-label">제품:</label>
                             <div class="col-sm-10">
                                 <select id="productId" name="productId" required>
-
                                     <option value="">-- 제품 선택 --</option>
                                     {{#products}}
-                                        <option value="{{productId}}">
+                                        <option value="{{productId}}" {{#isSelected}}{{productId}}{{/isSelected}}>
                                             {{productName}} (ID: {{productId}})
                                         </option>
                                     {{/products}}
-
                                 </select>
                             </div>
                         </div>
@@ -239,7 +237,7 @@
                                 <select id="contractId" name="contractId" required>
                                     <option value="">-- 계약 선택 --</option>
                                     {{#contracts}}
-                                        <option value="{{contractId}}">
+                                        <option value="{{contractId}}" {{#isSelected}}{{contractId}}{{/isSelected}}>
                                             {{contractId}} (ID: {{contractId}})
                                         </option>
                                     {{/contracts}}
@@ -281,8 +279,8 @@
                         <div class="progress-steps">
                             <div class="step none" data-step="none"></div>
                             <div class="step draft" data-step="draft"></div>
-                            <div class="step activated" data-step="activated"></div>
                             <div class="step completed" data-step="completed"></div>
+                            <div class="step activated" data-step="activated"></div>
                             <div class="step cancelled" data-step="cancelled"></div>
                         </div>
                     </div>
@@ -293,78 +291,69 @@
     </div>
 </main>
 
-
     <script>
-
-    {{#orders}}
         document.addEventListener("DOMContentLoaded", function () {
-    // 삭제 버튼 클릭 이벤트 등록
-    var deleteButton = document.getElementById("deleteButton");
-    if (deleteButton) {
-        deleteButton.addEventListener("click", function (event) {
-            event.preventDefault(); // 기본 링크 동작을 막습니다.
+        // Mustache 템플릿에서 서버 데이터를 가져옴
+        var orderStatus = "{{orders.orderStatus}}";
+        var productId = "{{orders.productId.productId}}"; // orders에 포함된 productId
+        var contractId = "{{orders.contractId.contractId}}"; // orders에 포함된 contractId
 
-            var confirmDelete = confirm("정말 삭제하시겠습니까?");
-            if (confirmDelete) {
-                window.location.href = this.href;
-            }
+        // 폼에 데이터 채우기
+        var orderStatusSelect = document.getElementById("orderStatus");
+        var productSelect = document.getElementById("productId");
+        var contractSelect = document.getElementById("contractId");
+
+        if (orderStatusSelect) {
+            orderStatusSelect.value = orderStatus;
+        }
+
+        if (productSelect) {
+            productSelect.value = productId;
+        }
+
+        if (contractSelect) {
+            contractSelect.value = contractId;
+        }
+
+        // Selectize 초기화
+        $('#contractId').selectize({
+            create: false,
+            sortField: 'text'
         });
-    }
-
-    // Mustache 템플릿에서 서버 데이터를 가져옴
-    var orderStatus = "{{orderStatus}}";
-    var productId = "{{productId}}"; // Mustache 템플릿에서 올바른 값 바인딩
-    var contractId = "{{contractId}}";
-
-    // 폼에 데이터 채우기
-    var orderStatusSelect = document.getElementById("orderStatus");
-    if (orderStatusSelect) {
-        orderStatusSelect.value = orderStatus;
-    }
-    document.getElementById("productId").value = productId;
-    document.getElementById("contractId").value = contractId;
-
-    // Selectize 초기화
-    $('#contractId').selectize({
-        create: false,
-        sortField: 'text'
-    });
-    $('#productId').selectize({
-        create: false,
-        sortField: 'text'
-    });
-
-    // Form 삭제버튼 클릭 시 현 주소가 create인 경우 create로 action 주소 변경
-    var form = document.getElementById("orderForm");
-    var currentUrl = window.location.pathname;
-    if (form && currentUrl === "/orders/detail/create") {
-        form.action = "/orders/detail/create";
-    }
-
-    // 저장 버튼 클릭 시 변경사항 저장 여부 확인
-    var updateButton = document.getElementById("updateButton");
-    if (updateButton) {
-        updateButton.addEventListener("click", function (event) {
-            var confirmSave = confirm("변경사항을 저장하겠습니까?");
-            if (!confirmSave) {
-                event.preventDefault();
-            }
+        $('#productId').selectize({
+            create: false,
+            sortField: 'text'
         });
-    }
 
-    // 상태에 따른 진행상황 표시
-    var progressSteps = document.querySelectorAll(".step");
-    var steps = ["none", "draft", "activated", "completed", "cancelled"];
-    var currentIndex = steps.indexOf(orderStatus);
-    if (currentIndex !== -1) {
-        progressSteps[currentIndex].classList.add("active");
-    }
-});
+        // Form 삭제버튼 클릭 시 현 주소가 create인 경우 create로 action 주소 변경
+        var form = document.getElementById("orderForm");
+        var currentUrl = window.location.pathname;
+        if (form && currentUrl === "/orders/detail/create") {
+            form.action = "/orders/detail/create";
+        }
 
+        // 저장 버튼 클릭 시 변경사항 저장 여부 확인
+        var updateButton = document.getElementById("updateButton");
+        if (updateButton) {
+            updateButton.addEventListener("click", function (event) {
+                var confirmSave = confirm("변경사항을 저장하겠습니까?");
+                if (!confirmSave) {
+                    event.preventDefault();
+                }
+            });
+        }
 
-    {{/orders}}
+        // 상태에 따른 진행상황 표시
+        var progressSteps = document.querySelectorAll(".step");
+        var steps = ["none", "draft", "completed", "activated", "cancelled"];
+        var currentIndex = steps.indexOf(orderStatus);
+        if (currentIndex !== -1) {
+            progressSteps[currentIndex].classList.add("active");
+        }
+    });
     </script>
 
 
 
-    {{>main/footer}}
+
+{{>main/footer}}
