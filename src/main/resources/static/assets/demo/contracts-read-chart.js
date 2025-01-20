@@ -1,12 +1,12 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const ctx = document.getElementById("opportunitiesReadChart");
+    const ctx = document.getElementById("contractsReadChart");
 
     if (!ctx) {
         console.error("Canvas not found.");
         return;
     }
 
-    fetch('/opportunities/chart-data')
+    fetch('/contracts/chart-data')
         .then(response => response.json())
         .then(data => {
             const labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
