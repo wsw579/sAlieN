@@ -45,7 +45,7 @@ public class OrdersController {
             @RequestParam(defaultValue = "10") int size, // 페이지 크기
             @RequestParam(defaultValue = "") String search, // 검색어
             @RequestParam(defaultValue = "orderDate") String sortColumn, // 정렬 기준
-            @RequestParam(defaultValue = "asc") String sortDirection, // 정렬 방향
+            @RequestParam(defaultValue = "desc") String sortDirection, // 정렬 방향
             Model model
     ) {
         // 서비스에서 페이지 데이터 가져오기
@@ -105,13 +105,13 @@ public class OrdersController {
         return "orders/orders_read"; // Mustache 템플릿 이름
     }
 
-    @GetMapping("/bar-data")
+    @GetMapping("/orders/bar-data")
     public ResponseEntity<Map<String, List<Integer>>> getBarData() {
         Map<String, List<Integer>> barData = ordersService.getBarData();
         return ResponseEntity.ok(barData);
     }
 
-    @GetMapping("/chart-data")
+    @GetMapping("/orders/chart-data")
     public ResponseEntity<Map<String, List<Integer>>> getChartData() {
         // 서비스에서 데이터를 가져옵니다.
         Map<String, List<Integer>> chartData = ordersService.getChartData();

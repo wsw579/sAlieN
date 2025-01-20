@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
     }
 
-    fetch('/bar-data')
+    fetch('/orders/bar-data')
         .then(response => response.json())
         .then(data => {
             const chart = new Chart(ctx, {

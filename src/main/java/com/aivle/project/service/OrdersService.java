@@ -141,11 +141,11 @@ public class OrdersService {
             currentYearData.set(i, currentYearData.get(i) + currentYearData.get(i - 1));
         }
 
-        Map<String, List<Integer>> chartData = new HashMap<>();
-        chartData.put("lastYearData", lastYearData);
-        chartData.put("currentYearData", currentYearData);
+        Map<String, List<Integer>> barData = new HashMap<>();
+        barData.put("lastYearData", lastYearData);
+        barData.put("currentYearData", currentYearData);
 
-        return chartData;
+        return barData;
     }
 
 
