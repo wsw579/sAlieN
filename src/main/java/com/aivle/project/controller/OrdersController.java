@@ -1,27 +1,22 @@
 package com.aivle.project.controller;
 
+import com.aivle.project.dto.ContractsDto;
 import com.aivle.project.dto.OrdersDto;
+import com.aivle.project.dto.ProductsDto;
 import com.aivle.project.entity.*;
 import com.aivle.project.enums.OrderStatus;
 import com.aivle.project.repository.ContractsRepository;
-import com.aivle.project.repository.ProductsRepository;
 import com.aivle.project.service.ContractsService;
 import com.aivle.project.service.OrdersService;
 import com.aivle.project.service.ProductsService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +31,6 @@ public class OrdersController {
     private final OrdersService ordersService;
     private final ContractsService contractsService;
     private final ProductsService productsService;
-    private final ProductsRepository productsRepository;
 
     // Read page
     @GetMapping("/orders")
@@ -123,9 +117,11 @@ public class OrdersController {
     @GetMapping("/orders/detail/{orderId}")
     public String ordersDetail(@PathVariable Long orderId, Model model) {
         OrdersEntity orders = ordersService.searchOrder(orderId);
+
+        // 로딩속도를 올리기 위해 findAll -> id와 name만 가져오게 변경
         // 제품 목록 조회 후 모델에 추가 (드롭다운 메뉴용)
-        List<ProductsEntity> products = productsRepository.findAll();
-        List<ContractsEntity> contracts = contractsRepository.findAll();
+        List<ProductsDto> products = productsService.getAllProductIdsAndNames();
+        List<ContractsDto> contracts = contractsService.getAllContractIds();
 
         model.addAttribute("orders", orders);
         model.addAttribute("products", products);
@@ -140,8 +136,8 @@ public class OrdersController {
         OrdersEntity orders = new OrdersEntity();
 
         // 목록 조회 후 모델에 추가 (드롭다운 메뉴용)
-        List<ProductsEntity> products = productsRepository.findAll();
-        List<ContractsEntity> contracts = contractsRepository.findAll();
+        List<ProductsDto> products = productsService.getAllProductIdsAndNames();
+        List<ContractsDto> contracts = contractsService.getAllContractIds();
 
         orders.setOrderDate(LocalDate.now());
         orders.setSalesDate(LocalDate.now());

@@ -1,11 +1,9 @@
 package com.aivle.project.controller;
 
-import com.aivle.project.dto.ContractsDto;
-import com.aivle.project.dto.OrdersDto;
+import com.aivle.project.dto.*;
 import com.aivle.project.entity.*;
 import com.aivle.project.repository.*;
-import com.aivle.project.service.ContractsService;
-import com.aivle.project.service.OrdersService;
+import com.aivle.project.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -15,11 +13,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Controller
@@ -27,11 +23,11 @@ import java.util.stream.IntStream;
 public class ContractsController {
 
     private final ContractsService contractsService;
+    private final ProductsService productsService;
+    private final AccountService accountService;
+    private final EmployeeService employeeService;
+    private final OpportunitiesService opportunitiesService;
     private final ContractsRepository contractsRepository;
-    private final ProductsRepository productsRepository;
-    private final AccountRepository accountRepository;
-    private final EmployeeRepository employeeRepository;
-    private final OpportunitiesRepository opportunitiesRepository;
 
 
     // Read page
@@ -125,10 +121,11 @@ public class ContractsController {
         ContractsEntity contracts = contractsService.searchContracts(contractId);
         List<OrdersEntity> orders = contractsService.getOrdersByContractId(contractId);
 
-        List<ProductsEntity> products = productsRepository.findAll();
-        List<AccountEntity> accounts = accountRepository.findAll();
-        List<EmployeeEntity> employee = employeeRepository.findAll();
-        List<OpportunitiesEntity> opportunities = opportunitiesRepository.findAll();
+        // 로딩속도를 올리기 위해 findAll -> id와 name만 가져오게 변경
+        List<ProductsDto> products = productsService.getAllProductIdsAndNames();
+        List<AccountDto> accounts = accountService.getAllAccountIdsAndNames();
+        List<EmployeeDto.GetId> employee = employeeService.getAllEmployeeIdsAndNames();
+        List<OpportunitiesDto> opportunities = opportunitiesService.getAllOpportunityIdsAndNames();
 
         // 디버깅을 위해 로그 출력
         System.out.println("Contracts: " + contracts);
@@ -170,10 +167,10 @@ public class ContractsController {
 
         ContractsEntity contracts = new ContractsEntity();
 
-        List<ProductsEntity> products = productsRepository.findAll();
-        List<AccountEntity> accounts = accountRepository.findAll();
-        List<EmployeeEntity> employee = employeeRepository.findAll();
-        List<OpportunitiesEntity> opportunities = opportunitiesRepository.findAll();
+        List<ProductsDto> products = productsService.getAllProductIdsAndNames();
+        List<AccountDto> accounts = accountService.getAllAccountIdsAndNames();
+        List<EmployeeDto.GetId> employee = employeeService.getAllEmployeeIdsAndNames();
+        List<OpportunitiesDto> opportunities = opportunitiesService.getAllOpportunityIdsAndNames();
 
         contracts.setContractStatus("Draft");
         contracts.setStartDate(LocalDate.now());

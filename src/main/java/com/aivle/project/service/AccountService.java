@@ -1,6 +1,7 @@
 package com.aivle.project.service;
 
 import com.aivle.project.dto.AccountDto;
+import com.aivle.project.dto.OpportunitiesDto;
 import com.aivle.project.entity.AccountEntity;
 import com.aivle.project.repository.AccountRepository;
 import jakarta.transaction.Transactional;
@@ -8,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -95,7 +97,18 @@ public class AccountService {
                 .orElseThrow(() -> new IllegalArgumentException("error"));
     }
 
-
+    // detail select를 위한 이름 id 불러오기
+    public List<AccountDto> getAllAccountIdsAndNames() {
+        List<Object[]> results = accountRepository.findAllAccountIdAndAccountName();
+        return results.stream()
+                .map(result -> {
+                    AccountDto dto = new AccountDto();
+                    dto.setAccountId((Long) result[0]);
+                    dto.setAccountName((String) result[1]);
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
 
 
 

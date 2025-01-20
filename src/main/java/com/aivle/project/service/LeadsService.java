@@ -1,6 +1,7 @@
 package com.aivle.project.service;
 
 import com.aivle.project.dto.LeadsDto;
+import com.aivle.project.dto.ProductsDto;
 import com.aivle.project.entity.LeadsEntity;
 import com.aivle.project.entity.OrdersEntity;
 import com.aivle.project.repository.LeadsRepository;
@@ -116,6 +117,19 @@ public class LeadsService {
         }
 
         return leadsEntity;  // This is called after the null check
+    }
+
+    // detail 페이지 select 로딩을 위한 id와 name 가져오기
+    public List<LeadsDto> getAllLeadIdsAndCompanyNames() {
+        List<Object[]> results = leadsRepository.findAllLeadIdAndCompanyName();
+        return results.stream()
+                .map(result -> {
+                    LeadsDto dto = new LeadsDto();
+                    dto.setLeadId((Long) result[0]);
+                    dto.setCompanyName((String) result[1]);
+                    return dto;
+                })
+                .collect(Collectors.toList());
     }
 
     // 상태 수 가져오기

@@ -17,8 +17,8 @@ public interface OpportunitiesRepository extends JpaRepository<OpportunitiesEnti
 
     OpportunitiesEntity findByOpportunityId(Long opportunityId);
 
-    @Query("SELECT o FROM OpportunitiesEntity o ORDER BY o.createdDate DESC, o.opportunityId DESC")
-    List<OpportunitiesEntity> findAllByOrderByCreatedDateAndIdDesc();
+    @Query("SELECT o.opportunityId, o.opportunityName FROM OpportunitiesEntity o")
+    List<Object[]> findAllOpportunityIdAndOpportunityName();
 
     @Query("SELECT o FROM OpportunitiesEntity o WHERE CAST(o.opportunityId AS string) LIKE %:opportunityId%")
     Page<OpportunitiesEntity> findByOpportunityIdLike(@Param("opportunityId") String opportunityId, Pageable pageable);

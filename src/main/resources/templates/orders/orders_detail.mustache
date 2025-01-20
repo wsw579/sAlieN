@@ -218,7 +218,7 @@
                     </div>
 
                         <div class="mb-3 row">
-                            <label for="product" class="col-sm-2 col-form-label">제품:</label>
+                            <label for="productId" class="col-sm-2 col-form-label">제품:</label>
                             <div class="col-sm-10">
                                 <select id="productId" name="productId" required>
                                     <option value="">-- 제품 선택 --</option>
@@ -252,11 +252,6 @@
                     </div>
                 </form> <!-- 폼 닫기 -->
                     {{/orders}}
-
-
-
-
-
                     </table>
 
                 </div>
@@ -292,28 +287,22 @@
 </main>
 
     <script>
+
+
         document.addEventListener("DOMContentLoaded", function () {
+{{#orders}}
+
+    {{#orderId}}
         // Mustache 템플릿에서 서버 데이터를 가져옴
-        var orderStatus = "{{orders.orderStatus}}";
-        var productId = "{{orders.productId.productId}}"; // orders에 포함된 productId
-        var contractId = "{{orders.contractId.contractId}}"; // orders에 포함된 contractId
+            var orderStatus = "{{orderStatus}}";
+            var productId = "{{productId.productId}}";
+            var contractId = "{{contractId.contractId}}";
 
-        // 폼에 데이터 채우기
-        var orderStatusSelect = document.getElementById("orderStatus");
-        var productSelect = document.getElementById("productId");
-        var contractSelect = document.getElementById("contractId");
-
-        if (orderStatusSelect) {
-            orderStatusSelect.value = orderStatus;
-        }
-
-        if (productSelect) {
-            productSelect.value = productId;
-        }
-
-        if (contractSelect) {
-            contractSelect.value = contractId;
-        }
+            // 폼에 데이터 채우기
+            document.getElementById("orderStatus").value = orderStatus;
+            document.getElementById("productId").value = productId;
+            document.getElementById("contractId").value = contractId;
+    {{/orderId}}
 
         // Selectize 초기화
         $('#contractId').selectize({
@@ -351,6 +340,7 @@
             progressSteps[currentIndex].classList.add("active");
         }
     });
+{{/orders}}
     </script>
 
 

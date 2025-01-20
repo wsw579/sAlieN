@@ -15,6 +15,10 @@ import java.util.List;
 public interface ContractsRepository extends JpaRepository<ContractsEntity, Long> {
     ContractsEntity findByContractId(Long contractId);
 
+    // select 전용 쿼리
+    @Query("SELECT c.contractId FROM ContractsEntity c")
+    List<Long> findAllContractIds();
+
     @Query("SELECT c FROM ContractsEntity c WHERE CAST(c.contractId AS string) LIKE %:contractId%")
     Page<ContractsEntity> findByContractIdLike(@Param("contractId") String contractId, Pageable pageable);
 
