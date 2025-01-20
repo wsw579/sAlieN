@@ -55,6 +55,9 @@
     margin: 20px 0;
 }
 
+/* 바(—):
+   - 지름 20px 원에 맞춰, 양쪽 10px 띄움
+   - 따라서 "왼쪽 원 중심" ~ "오른쪽 원 중심"까지가 바 */
 .progress-bar {
     position: absolute;
     top: 50%;
@@ -67,7 +70,6 @@
     transition: width 0.4s ease;
     z-index: 0;
 }
-
 
 /* 각 스텝(원 + 텍스트) 가로로 균등 분배 */
 .progress-steps {
@@ -114,6 +116,7 @@
     display: block;
     margin-top: 30px; /* 적당히 조정 */
 }
+
 
 
 
@@ -212,17 +215,20 @@
 
 
                         {{#contracts}}
-                            <tbody>
                             <div class="progress-container">
                                 <div class="progress-bar" id="progressBar"></div>
                                 <div class="progress-steps">
-                                    <div class="step" data-step="Draft">Draft</div>
-                                    <div class="step" data-step="In Approval Process">In Approval Progress</div>
-                                    <div class="step" data-step="Activated">Activated</div>
+                                    <div class="step" data-step="Draft">
+                                        <span>Draft</span>
+                                    </div>
+                                    <div class="step" data-step="In Approval Process">
+                                        <span>In Approval Process</span>
+                                    </div>
+                                    <div class="step" data-step="Activated">
+                                        <span>Activated</span>
+                                    </div>
                                 </div>
                             </div>
-
-                            </tbody>
                         {{/contracts}}
 
 

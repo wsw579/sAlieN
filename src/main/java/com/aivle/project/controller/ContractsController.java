@@ -68,13 +68,6 @@ public class ContractsController {
         return "contracts/contracts_detail";
     }
 
-//    @PostMapping("/contracts/detail/{contractId}/createorder")
-//    public String createOrder(@ModelAttribute OrdersDto ordersDto, @PathVariable Long contractId) {
-//        ContractsEntity contract = contractsRepository.findById(contractId)
-//                .orElseThrow(() -> new IllegalArgumentException("Invalid contract ID"));
-//        ordersService.createOrder(ordersDto, contract);
-//        return "redirect:/contracts/detail/" + contractId + "#orderSection";
-//    }
 
 
     @GetMapping("/contracts/validate")
