@@ -1,20 +1,14 @@
 package com.aivle.project.controller;
 
-import com.aivle.project.dto.HistoryDto;
-import com.aivle.project.dto.OpportunitiesDto;
+import com.aivle.project.dto.*;
 import com.aivle.project.entity.HistoryEntity;
 import com.aivle.project.entity.LeadsEntity;
 import com.aivle.project.entity.OpportunitiesCommentEntity;
 import com.aivle.project.entity.OpportunitiesEntity;
 import com.aivle.project.repository.OpportunitiesRepository;
 import com.aivle.project.entity.*;
-import com.aivle.project.repository.AccountRepository;
-import com.aivle.project.repository.EmployeeRepository;
-import com.aivle.project.repository.LeadsRepository;
-import com.aivle.project.repository.ProductsRepository;
-import com.aivle.project.service.OpportunitiesService;
+import com.aivle.project.service.*;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -23,23 +17,20 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Controller
 @RequiredArgsConstructor
 public class OpportunitiesController {
     private final OpportunitiesService opportunitiesService;
+    private final ProductsService productsService;
+    private final AccountService accountService;
+    private final EmployeeService employeeService;
+    private final LeadsService leadsService;
     private final OpportunitiesRepository opportunitiesRepository;
-    private final ProductsRepository productsRepository;
-    private final AccountRepository accountRepository;
-    private final EmployeeRepository employeeRepository;
-    private final LeadsRepository leadsRepository;
-
 
     // Read page
     @GetMapping("/opportunities")
@@ -125,11 +116,12 @@ public class OpportunitiesController {
         List<HistoryEntity> history = opportunitiesService.getHistoryByOpportunityId(opportunityId);
         List<OpportunitiesCommentEntity> opportunitiesComments = opportunitiesService.getCommentsByOpportunityId(opportunityId);
 
+        // 로딩속도를 올리기 위해 findAll -> id와 name만 가져오게 변경
         // 목록 조회 후 모델에 추가 (드롭다운 메뉴용)
-        List<ProductsEntity> products = productsRepository.findAll();
-        List<AccountEntity> accounts = accountRepository.findAll();
-        List<EmployeeEntity> employee = employeeRepository.findAll();
-        List<LeadsEntity> leads = leadsRepository.findAll();
+        List<ProductsDto> products = productsService.getAllProductIdsAndNames();
+        List<AccountDto> accounts = accountService.getAllAccountIdsAndNames();
+        List<EmployeeDto.GetId> employee = employeeService.getAllEmployeeIdsAndNames();
+        List<LeadsDto> leads = leadsService.getAllLeadIdsAndCompanyNames();
 
 
         // 디버깅을 위해 로그 출력
@@ -174,10 +166,10 @@ public class OpportunitiesController {
         OpportunitiesEntity opportunities = new OpportunitiesEntity();
 
         // 목록 조회 후 모델에 추가 (드롭다운 메뉴용)
-        List<ProductsEntity> products = productsRepository.findAll();
-        List<AccountEntity> accounts = accountRepository.findAll();
-        List<EmployeeEntity> employee = employeeRepository.findAll();
-        List<LeadsEntity> leads = leadsRepository.findAll();
+        List<ProductsDto> products = productsService.getAllProductIdsAndNames();
+        List<AccountDto> accounts = accountService.getAllAccountIdsAndNames();
+        List<EmployeeDto.GetId> employee = employeeService.getAllEmployeeIdsAndNames();
+        List<LeadsDto> leads = leadsService.getAllLeadIdsAndCompanyNames();
 
 
         opportunities.setOpportunityName("");

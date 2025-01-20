@@ -12,6 +12,9 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface ProductsRepository extends JpaRepository<ProductsEntity, Long> {
+    @Query("SELECT p.productId, p.productName FROM ProductsEntity p")
+    List<Object[]> findAllProductIdAndProductName();
+
     @Query("SELECT p FROM ProductsEntity p WHERE CAST(p.productId AS string) LIKE %:productId%")
     Page<ProductsEntity> findByProductIdLike(@Param("productId") String productId, Pageable pageable);
 

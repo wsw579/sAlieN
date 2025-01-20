@@ -1,6 +1,7 @@
 package com.aivle.project.service;
 
 import com.aivle.project.dto.ContractsDto;
+import com.aivle.project.dto.ProductsDto;
 import com.aivle.project.entity.ContractsEntity;
 import com.aivle.project.entity.OrdersEntity;
 import com.aivle.project.repository.ContractsRepository;
@@ -121,6 +122,18 @@ public class ContractsService {
         //orders.forEach(comment -> System.out.println("Order: " + orders.getorderId()));
 
         return orders;
+    }
+
+    // detail 페이지 select 로딩을 위한 id와 name 가져오기
+    public List<ContractsDto> getAllContractIds() {
+        List<Long> results = contractsRepository.findAllContractIds();
+        return results.stream()
+                .map(result -> {
+                    ContractsDto dto = new ContractsDto();
+                    dto.setContractId(result);
+                    return dto;
+                })
+                .collect(Collectors.toList());
     }
 
     // 상태 수 가져오기

@@ -17,6 +17,9 @@ public interface LeadsRepository extends JpaRepository<LeadsEntity, Long> {
     // retrieves a LeadsEntity by its leadId
     LeadsEntity findByLeadId(Long leadId);
 
+    @Query("SELECT l.leadId, l.companyName FROM LeadsEntity l")
+    List<Object[]> findAllLeadIdAndCompanyName();
+
     @Query("SELECT l FROM LeadsEntity l WHERE CAST(l.leadId AS string) LIKE %:leadId%")
     Page<LeadsEntity> findByLeadIdLike(@Param("leadId") String leadId, Pageable pageable);
 

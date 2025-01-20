@@ -2,6 +2,7 @@ package com.aivle.project.service;
 
 import com.aivle.project.dto.HistoryDto;
 import com.aivle.project.dto.OpportunitiesDto;
+import com.aivle.project.dto.ProductsDto;
 import com.aivle.project.entity.HistoryEntity;
 import com.aivle.project.entity.OpportunitiesCommentEntity;
 import com.aivle.project.entity.OpportunitiesEntity;
@@ -212,6 +213,19 @@ public class OpportunitiesService {
     // history delete
     public void deleteHistory(Long historyId) {
         historyRepository.deleteById(historyId);
+    }
+
+    // detail select를 위한 이름 id 불러오기
+    public List<OpportunitiesDto> getAllOpportunityIdsAndNames() {
+        List<Object[]> results = opportunitiesRepository.findAllOpportunityIdAndOpportunityName();
+        return results.stream()
+                .map(result -> {
+                    OpportunitiesDto dto = new OpportunitiesDto();
+                    dto.setOpportunityId((Long) result[0]);
+                    dto.setOpportunityName((String) result[1]);
+                    return dto;
+                })
+                .collect(Collectors.toList());
     }
 
     // 상태 수 가져오기

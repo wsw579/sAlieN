@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -88,6 +89,18 @@ public class ProductsService {
     public ProductsEntity searchProduct(Long productId) {
         return productsRepository.findById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("Product not found"));
+    }
+
+    public List<ProductsDto> getAllProductIdsAndNames() {
+        List<Object[]> results = productsRepository.findAllProductIdAndProductName();
+        return results.stream()
+                .map(result -> {
+                    ProductsDto dto = new ProductsDto();
+                    dto.setProductId((Long) result[0]);
+                    dto.setProductName((String) result[1]);
+                    return dto;
+                })
+                .collect(Collectors.toList());
     }
 
     // 상태 수 세기
