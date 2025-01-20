@@ -64,7 +64,7 @@
                     <div class="card bg-primary text-white mb-4">
                         <div class="card-body">진행중 기회</div>
                         <div class="card-footer d-flex align-items-center justify-content-between">
-                            <h3 id="ongoingCount"></h3>
+                            <h3 id="ongoingCount">{{ongoingCount}} 건</h3>
                             <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                         </div>
                     </div>
@@ -73,7 +73,7 @@
                     <div class="card bg-warning text-white mb-4">
                         <div class="card-body">마감일자 초과</div>
                         <div class="card-footer d-flex align-items-center justify-content-between">
-                            <h3 id="overdueCount"></h3>
+                            <h3 id="overdueCount">{{overdueCount}} 건</h3>
                             <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                         </div>
                     </div>
@@ -82,7 +82,7 @@
                     <div class="card bg-success text-white mb-4">
                         <div class="card-body">계약 전환 성공</div>
                         <div class="card-footer d-flex align-items-center justify-content-between">
-                            <h3 id="closedCount"></h3>
+                            <h3 id="closedCount">{{closedCount}} 건</h3>
                             <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                         </div>
                     </div>
@@ -91,7 +91,7 @@
                     <div class="card bg-danger text-white mb-4">
                         <div class="card-body">기회 보류</div>
                         <div class="card-footer d-flex align-items-center justify-content-between">
-                            <h3 id="pendingCount"></h3>
+                            <h3 id="pendingCount">{{pendingCount}} 건</h3>
                             <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                         </div>
                     </div>
@@ -130,18 +130,46 @@
                     My Opportunities
                 </div>
                 <div class="card-body">
-                    <table id="datatablesSimple">
+                    <div class="button-container mb-3" style="display: flex; align-items: center; gap: 10px;">
+                        <div style="flex: 1; display: flex; align-items: center; gap: 10px;">
+                            <form method="GET" action="/opportunities" style="display: flex; align-items: center; gap: 5px;">
+                                <!-- 검색어 -->
+                                <input type="text" name="search" id="customSearch" placeholder="검색어를 입력하세요"
+                                       style="padding: 5px; width: 200px;" value="{{search}}">
 
-                        <div class="button-container mb-3">
-                            <a href="/opportunities/detail/create" class="btn btn-custom-create btn-sm" id="createButton">
-                                <i class="fas fa-plus-circle"></i> 신규
-                            </a>
+                                <!-- 정렬 기준 -->
+                                <label>
+                                    <select name="sortColumn">
+                                        <option value="createdDate" {{#isCreatedDateSorted}}selected{{/isCreatedDateSorted}}>Created Date</option>
+                                        <option value="targetCloseDate" {{#isTargetCloseDateSorted}}selected{{/isTargetCloseDateSorted}}>TargetClose Date</option>
+                                    </select>
+                                </label>
 
-                            <button class="btn btn-custom-delete btn-sm" id="deleteButton">
-                                <i class="fas fa-plus-circle"></i> 삭제
-                            </button>
+                                <!-- 정렬 방향 -->
+                                <label>
+                                    <select name="sortDirection">
+                                        <option value="asc" {{#isAscSorted}}selected{{/isAscSorted}}>Ascending</option>
+                                        <option value="desc" {{#isDescSorted}}selected{{/isDescSorted}}>Descending</option>
+                                    </select>
+                                </label>
+
+                                <!-- 제출 버튼 -->
+                                <button type="submit">검색 및 정렬</button>
+                            </form>
+
                         </div>
 
+                        <div>
+                            <!-- 신규 및 삭제 버튼 -->
+                            <a href="/orders/detail/create" class="btn btn-custom-create btn-sm" id="createButton">
+                                <i class="fas fa-plus-circle"></i> 신규
+                            </a>
+                            <button class="btn btn-custom-delete btn-sm" id="deleteButton">
+                                <i class="fas fa-trash-alt"></i> 삭제
+                            </button>
+                        </div>
+                    </div>
+                    <table id="datatablesSimple">
                         <thead>
                         <tr>
                             <th></th>
@@ -178,6 +206,31 @@
                         </tbody>
 
                     </table>
+
+                    <div class="pagination">
+                        <!-- 이전 버튼 -->
+                        {{#hasPreviousPage}}
+                            <button onclick="window.location.href='/opportunities?page={{previousPage}}&size=10&search={{search}}&sortColumn={{sortColumn}}&sortDirection={{sortDirection}}'">
+                            이전
+                            </button>
+                        {{/hasPreviousPage}}
+
+                        <!-- 페이지 번호 버튼 -->
+                        {{#pageNumbers}}
+                            <button
+                                    onclick="window.location.href='/opportunities?page={{page}}&size=10&search={{search}}&sortColumn={{sortColumn}}&sortDirection={{sortDirection}}'"
+                            class="{{#isActive}}active{{/isActive}}">
+                            {{displayPage}}
+                            </button>
+                        {{/pageNumbers}}
+
+                        <!-- 다음 버튼 -->
+                        {{#hasNextPage}}
+                            <button onclick="window.location.href='/opportunities?page={{nextPage}}&size=10&search={{search}}&sortColumn={{sortColumn}}&sortDirection={{sortDirection}}'">
+                            다음
+                            </button>
+                        {{/hasNextPage}}
+                    </div>
                 </div>
             </div>
         </div>
@@ -185,46 +238,6 @@
 
 
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var rows = document.querySelectorAll("#datatablesSimple tbody tr");
-            var now = new Date();
-
-            var ongoingCount = 0;
-            var overdueCount = 0;
-            var closedCount = 0;
-            var pendingCount = 0;
-
-            rows.forEach(function(row) {
-                var status = row.querySelector("td:nth-child(6)").innerText;
-                var targetCloseDate = new Date(row.querySelector("td:nth-child(7)").innerText);
-
-                if (!status.startsWith("Closed")) {
-                    ongoingCount++;
-                }
-
-                if (status === "Closed(won)") {
-                    closedCount++;
-                }
-                if (status === "Pending") {
-                    pendingCount++;
-                }
-                if (targetCloseDate < now && !status.startsWith("Closed")) {
-                    overdueCount++;
-                }
-            });
-
-            document.getElementById("ongoingCount").innerText = `${ongoingCount} 건`;
-            document.getElementById("overdueCount").innerText = `${overdueCount} 건`;
-            document.getElementById("closedCount").innerText = `${closedCount} 건`;
-            document.getElementById("pendingCount").innerText = `${pendingCount} 건`;
-        });
-
-
-
-
-
-
-
 
     document.addEventListener("DOMContentLoaded", function() {
         var deleteButton = document.getElementById("deleteButton");

@@ -1,12 +1,12 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const ctx = document.getElementById("ordersReadBar");
+    const ctx = document.getElementById("leadsReadBar");
 
     if (!ctx) {
         console.error("Canvas not found.");
         return;
     }
 
-    fetch('/orders/bar-data')
+    fetch('/leads/bar-data')
         .then(response => response.json())
         .then(data => {
             const chart = new Chart(ctx, {
