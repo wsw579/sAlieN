@@ -15,6 +15,9 @@ public interface EmployeeRepository extends JpaRepository<EmployeeEntity, String
     EmployeeEntity findByEmployeeId(String username);
     boolean existsByAccessPermission(Role role);
 
+    @Query("SELECT e.employeeId, e.employeeName FROM EmployeeEntity e")
+    List<Object[]> findAllEmployeeIdAndEmployeeName();
+
     @Query("SELECT e.employeeId FROM EmployeeEntity e WHERE e.employeeId LIKE CONCAT(:year, '%') ORDER BY e.employeeId DESC LIMIT 1")
     String findLastEmployeeIdByYear(@Param("year") String year);
 

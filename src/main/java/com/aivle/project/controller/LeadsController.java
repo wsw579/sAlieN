@@ -1,12 +1,13 @@
 package com.aivle.project.controller;
 
+import com.aivle.project.dto.AccountDto;
+import com.aivle.project.dto.EmployeeDto;
 import com.aivle.project.dto.LeadsDto;
 import com.aivle.project.entity.*;
-import com.aivle.project.repository.AccountRepository;
-import com.aivle.project.repository.EmployeeRepository;
+import com.aivle.project.service.AccountService;
+import com.aivle.project.service.EmployeeService;
 import com.aivle.project.service.LeadsService;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -14,11 +15,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 
@@ -28,8 +27,8 @@ import java.util.stream.IntStream;
 public class LeadsController {
     // declares a dependency on the LeadsService class
     private final LeadsService leadsService;
-    private final AccountRepository accountRepository;
-    private final EmployeeRepository employeeRepository;
+    private final AccountService accountService;
+    private final EmployeeService employeeService;
 
     // Read Page
     @GetMapping("/leads")
@@ -113,8 +112,8 @@ public class LeadsController {
     public String leads(@PathVariable Long leadId, Model model){
         LeadsEntity leads = leadsService.searchLeads(leadId);
 
-        List<AccountEntity> accounts = accountRepository.findAll();
-        List<EmployeeEntity> employee = employeeRepository.findAll();
+        List<AccountDto> accounts = accountService.getAllAccountIdsAndNames();
+        List<EmployeeDto.GetId> employee = employeeService.getAllEmployeeIdsAndNames();
 
 
         System.out.println("Leads: "+ leads);
@@ -133,8 +132,9 @@ public class LeadsController {
         // new instance of the LeadsEntity class
         LeadsEntity leads = new LeadsEntity();
 
-        List<AccountEntity> accounts = accountRepository.findAll();
-        List<EmployeeEntity> employee = employeeRepository.findAll();
+        // 로딩속도를 올리기 위해 findAll -> id와 name만 가져오게 변경
+        List<AccountDto> accounts = accountService.getAllAccountIdsAndNames();
+        List<EmployeeDto.GetId> employee = employeeService.getAllEmployeeIdsAndNames();
 
         leads.setLeadStatus("");
         leads.setLeadSource("");
