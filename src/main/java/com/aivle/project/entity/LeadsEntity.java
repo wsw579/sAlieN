@@ -67,7 +67,7 @@ public class LeadsEntity implements Serializable {
 
     // Account 외래키 설정
     @ManyToOne
-    @JoinColumn(name = "account_id", nullable = false, foreignKey = @ForeignKey(name = "fk_leads_account_id"))
+    @JoinColumn(name = "account_id", foreignKey = @ForeignKey(name = "fk_leads_account_id"))
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private AccountEntity accountId;
 }
