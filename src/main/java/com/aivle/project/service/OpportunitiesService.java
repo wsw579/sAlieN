@@ -1,18 +1,31 @@
 package com.aivle.project.service;
 
+import com.aivle.project.dto.HistoryDto;
 import com.aivle.project.dto.OpportunitiesDto;
+import com.aivle.project.dto.ProductsDto;
+import com.aivle.project.entity.HistoryEntity;
 import com.aivle.project.entity.OpportunitiesCommentEntity;
 import com.aivle.project.entity.OpportunitiesEntity;
+import com.aivle.project.entity.OrdersEntity;
+import com.aivle.project.repository.HistoryRepository;
 import com.aivle.project.repository.OpportunitiesCommentRepository;
 import com.aivle.project.repository.OpportunitiesRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 
 @Service
@@ -22,6 +35,7 @@ public class OpportunitiesService {
 
     private final OpportunitiesRepository opportunitiesRepository;
     private final OpportunitiesCommentRepository opportunitiesCommentRepository;
+    private final HistoryRepository historyRepository;
 
     // Create
     public void createOpportunities(OpportunitiesDto dto) {
@@ -50,8 +64,19 @@ public class OpportunitiesService {
     }
 
     // Read
-    public List<OpportunitiesEntity> readOpportunities() {
-        return opportunitiesRepository.findAllByOrderByCreatedDateAndIdDesc();
+    public Page<OpportunitiesEntity> readOpportunities(int page, int size, String search, String sortColumn, String sortDirection) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortDirection), sortColumn));
+
+        if (search != null && !search.isEmpty()) {
+            try {
+                return opportunitiesRepository.findByOpportunityIdLike(search, pageable);
+            } catch (NumberFormatException e) {
+                // 숫자가 아닌 경우 빈 페이지 반환
+                return Page.empty(pageable);
+            }
+        } else {
+            return opportunitiesRepository.findAll(pageable);
+        }
     }
 
 
@@ -131,5 +156,166 @@ public class OpportunitiesService {
         opportunitiesCommentRepository.save(comment);
     }
 
+
+
+    public HistoryEntity searchHistory(Long historyId) {
+        return historyRepository.findById(historyId)
+                .orElseThrow(()->new IllegalArgumentException("error"));
+    }
+
+    // history service
+    // Read history
+    @Transactional
+    public List<HistoryEntity> getHistoryByOpportunityId(Long opportunityId) {
+        OpportunitiesEntity opportunity = searchOpportunities(opportunityId);
+        List<HistoryEntity> history = historyRepository.findByOpportunityOrderByDateTimeDesc(opportunity);
+
+        return history;
+    }
+
+    // create history
+    @Transactional
+    public void createHistory(HistoryDto dto) {
+        HistoryEntity historyEntity = new HistoryEntity();
+        // 데이터베이스 제목 컬럼 하나 추가하기
+        historyEntity.setHistoryTitle(dto.getHistoryTitle());
+        historyEntity.setCustomerRepresentative(dto.getCustomerRepresentative());
+        historyEntity.setHistoryDate(dto.getHistoryDate());
+        historyEntity.setHistoryTime(dto.getHistoryTime());
+        historyEntity.setCompanySize(dto.getCompanySize());
+        historyEntity.setMeetingPlace(dto.getMeetingPlace());
+        historyEntity.setActionTaken(dto.getActionTaken());
+        historyEntity.setCustomerRequirements(dto.getCustomerRequirements());
+        historyEntity.setOpportunity(dto.getOpportunityId());
+        historyRepository.save(historyEntity);
+
+    }
+
+    // update history
+    @Transactional
+    public void updateHistory(Long historyId, HistoryDto dto) {
+        HistoryEntity historyEntity = historyRepository.findById(historyId)
+                .orElseThrow(() -> new IllegalArgumentException("History not found"));
+
+        historyEntity.setHistoryTitle(dto.getHistoryTitle());
+        historyEntity.setCustomerRepresentative(dto.getCustomerRepresentative());
+        historyEntity.setHistoryDate(dto.getHistoryDate());
+        historyEntity.setHistoryTime(dto.getHistoryTime());
+        historyEntity.setCompanySize(dto.getCompanySize());
+        historyEntity.setMeetingPlace(dto.getMeetingPlace());
+        historyEntity.setActionTaken(dto.getActionTaken());
+        historyEntity.setCustomerRequirements(dto.getCustomerRequirements());
+        historyEntity.setOpportunity(dto.getOpportunityId());
+        historyRepository.save(historyEntity);
+
+    }
+
+    // history delete
+    public void deleteHistory(Long historyId) {
+        historyRepository.deleteById(historyId);
+    }
+
+    // detail select를 위한 이름 id 불러오기
+    public List<OpportunitiesDto> getAllOpportunityIdsAndNames() {
+        List<Object[]> results = opportunitiesRepository.findAllOpportunityIdAndOpportunityName();
+        return results.stream()
+                .map(result -> {
+                    OpportunitiesDto dto = new OpportunitiesDto();
+                    dto.setOpportunityId((Long) result[0]);
+                    dto.setOpportunityName((String) result[1]);
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
+
+    // 상태 수 가져오기
+    public Map<String, Long> getOpportunitiesStatusCounts() {
+        Map<String, Long> statusCounts = new HashMap<>();
+
+        // 쿼리 결과 가져오기
+        List<Object[]> results = opportunitiesRepository.countAllStatuses();
+
+        // 결과 매핑
+        for (Object[] result : results) {
+            String status = (String) result[0];
+            Long count = (Long) result[1];
+            statusCounts.put(status, count);
+        }
+
+        return statusCounts;
+    }
+
+
+
+    public Map<String, List<Integer>> getBarData() {
+        int currentYear = LocalDate.now().getYear();
+        int lastYear = currentYear - 1;
+
+        // 각 월별 주문 수를 초기화
+        List<Integer> lastYearData = IntStream.range(0, 12).mapToObj(i -> 0).collect(Collectors.toList());
+        List<Integer> currentYearData = IntStream.range(0, 12).mapToObj(i -> 0).collect(Collectors.toList());
+
+        // DB에서 월별 주문 수를 가져옵니다.
+        List<Object[]> lastYearOrders = opportunitiesRepository.getMonthlyOpportunities(lastYear);
+        List<Object[]> currentYearOrders = opportunitiesRepository.getMonthlyOpportunities(currentYear);
+
+        // 결과를 리스트에 추가
+        for (Object[] row : lastYearOrders) {
+            int month = ((Number) row[0]).intValue() - 1; // 월 (1월 = 0 인덱스)
+            int count = ((Number) row[1]).intValue(); // 주문 수
+            lastYearData.set(month, count);
+        }
+
+        for (Object[] row : currentYearOrders) {
+            int month = ((Number) row[0]).intValue() - 1; // 월 (1월 = 0 인덱스)
+            int count = ((Number) row[1]).intValue(); // 주문 수
+            currentYearData.set(month, count);
+        }
+
+        // 누적 값 계산
+        for (int i = 1; i < 12; i++) {
+            lastYearData.set(i, lastYearData.get(i) + lastYearData.get(i - 1));
+            currentYearData.set(i, currentYearData.get(i) + currentYearData.get(i - 1));
+        }
+
+        Map<String, List<Integer>> barData = new HashMap<>();
+        barData.put("lastYearData", lastYearData);
+        barData.put("currentYearData", currentYearData);
+
+        return barData;
+    }
+
+
+    public Map<String, List<Integer>> getChartData() {
+        int currentYear = LocalDate.now().getYear();
+        int lastYear = currentYear - 1;
+
+        // 각 월별 주문 수를 초기화
+        List<Integer> lastYearData = IntStream.range(0, 12).mapToObj(i -> 0).collect(Collectors.toList());
+        List<Integer> currentYearData = IntStream.range(0, 12).mapToObj(i -> 0).collect(Collectors.toList());
+
+        // DB에서 월별 주문 수를 가져옵니다.
+        List<Object[]> lastYearOrders = opportunitiesRepository.getMonthlyOpportunities(lastYear);
+        List<Object[]> currentYearOrders = opportunitiesRepository.getMonthlyOpportunities(currentYear);
+
+        // 결과를 리스트에 추가
+        for (Object[] row : lastYearOrders) {
+            int month = ((Number) row[0]).intValue() - 1; // 월 (1월 = 0 인덱스)
+            int count = ((Number) row[1]).intValue(); // 주문 수
+            lastYearData.set(month, count);
+        }
+
+        for (Object[] row : currentYearOrders) {
+            int month = ((Number) row[0]).intValue() - 1; // 월 (1월 = 0 인덱스)
+            int count = ((Number) row[1]).intValue(); // 주문 수
+            currentYearData.set(month, count);
+        }
+
+        Map<String, List<Integer>> chartData = new HashMap<>();
+        chartData.put("lastYearData", lastYearData);
+        chartData.put("currentYearData", currentYearData);
+
+        return chartData;
+    }
 
 }

@@ -1,6 +1,7 @@
 package com.aivle.project.service;
 
 import com.aivle.project.dto.EmployeeDto;
+import com.aivle.project.dto.OpportunitiesDto;
 import com.aivle.project.entity.EmployeeEntity;
 import com.aivle.project.enums.Dept;
 import com.aivle.project.enums.Position;
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -229,5 +231,18 @@ public class EmployeeService {
 
     public void deleteByIds(List<String> ids) {
         employeeRepository.deleteAllById(ids);
+    }
+
+    // detail select를 위한 이름 id 불러오기
+    public List<EmployeeDto.GetId> getAllEmployeeIdsAndNames() {
+        List<Object[]> results = employeeRepository.findAllEmployeeIdAndEmployeeName();
+        return results.stream()
+                .map(result -> {
+                    EmployeeDto.GetId dto = new EmployeeDto.GetId();
+                    dto.setEmployeeId((String) result[0]);
+                    dto.setEmployeeName((String) result[1]);
+                    return dto;
+                })
+                .collect(Collectors.toList());
     }
 }
