@@ -13,6 +13,7 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.HashMap;
 import java.util.List;
@@ -59,10 +60,31 @@ public class EmployeeController {
     }
 
     @PostMapping("/password-edit")
-    public String passwordEdit(EmployeeDto.Patch employeeDto){
-        String employeeId = employeeService.editPassword(employeeDto);
-        return "redirect:/mypage/" + employeeId;
+    @ResponseBody
+    public ResponseEntity<String> passwordEdit(@RequestBody EmployeeDto.Patch employeeDto) {
+        try {
+            // 비밀번호 변경 로직
+            String employeeId = employeeService.editPassword(employeeDto);
+
+            // 비밀번호 변경이 완료된 후, mypage/employeeId로 리다이렉트
+            return ResponseEntity.ok("비밀번호가 성공적으로 변경되었습니다.");
+        } catch (IllegalArgumentException e) {
+            // 오류 메시지 반환
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
+
+    @PostMapping("/password-find")
+    public ResponseEntity<String> passwordFind(@RequestBody EmployeeDto.Patch employeeDto) {
+        try {
+            String employeeId = employeeService.findPassword(employeeDto);
+            return ResponseEntity.ok("비밀번호가 성공적으로 변경되었습니다.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+
 
     @GetMapping("/mypage/{employeeId}")
     public String mypage(@PathVariable("employeeId") String employeeId, Model model){

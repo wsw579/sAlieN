@@ -142,6 +142,7 @@ public class LeadsController {
         leads.setTargetCloseDate(LocalDate.now());
         leads.setCustomerRequirements("");
         leads.setCustomerRepresentitive("");
+        leads.setCompanyName("");
         leads.setC_tel("");
 
         //외래키
