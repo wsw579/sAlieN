@@ -115,8 +115,19 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="/password-edit" method="POST">
+                    <!-- 오류 메시지 출력 영역 -->
+                    <div id="error-message" class="alert alert-danger" style="display:none;"></div>
+
+                    <form id="password-change-form">
                         <input type="hidden" name="employeeId" id="modal-userId" value="">
+                        <div class="mb-3">
+                            <label for="password-question" class="form-label">비밀번호 찾기 질문</label>
+                            <input type="text" class="form-control" id="password-question" value="가장 좋아하는 음식은?" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password-answer" class="form-label">비밀번호 찾기 답변</label>
+                            <input type="text" class="form-control" name="passwordAnswer" id="password-answer" required>
+                        </div>
                         <div class="mb-3">
                             <label for="current-password" class="form-label">기존 비밀번호</label>
                             <input type="password" class="form-control" name="existPassword" id="current-password" required>
@@ -139,6 +150,7 @@
         </div>
     </div>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 
 
@@ -153,6 +165,47 @@
         const userIdInput = document.getElementById('modal-userId');
         userIdInput.value = userId;
     });
+
+    $(document).ready(function () {
+        $("#password-change-form").submit(function (event) {
+            event.preventDefault(); // form이 기본적으로 제출되지 않도록 방지
+
+            // 입력된 데이터를 가져옵니다.
+            var formData = {
+                employeeId: $('#modal-userId').val(),
+                passwordAnswer: $('#password-answer').val(),
+                existPassword: $('#current-password').val(),
+                newPassword: $('#new-password').val()
+            };
+
+            // Ajax 요청
+            $.ajax({
+                type: "POST",
+                url: "/password-edit",  // 비밀번호 변경 요청 URL
+                contentType: "application/json",
+                data: JSON.stringify(formData),
+                success: function (response) {
+                    // 비밀번호 변경 성공 시 페이지 이동
+                    alert(response); // 서버에서 반환된 성공 메시지 사용
+                    $('#passwordModal').modal('hide');
+                },
+                error: function (xhr) {
+                    // 에러 처리
+                    if (xhr.status === 400) {
+                        // 서버에서 반환된 오류 메시지 출력
+                        const errorMessage = xhr.responseText;
+                        $('#error-message').text(errorMessage).fadeIn();
+                        setTimeout(function () {
+                            $('#error-message').fadeOut();
+                        }, 3000);
+                    } else {
+                        $('#error-message').text('서버와의 통신 중 문제가 발생했습니다.').fadeIn();
+                    }
+                }
+            });
+        });
+    });
+
 </script>
 
 {{>main/footer}}
