@@ -1,44 +1,5 @@
-
-    document.addEventListener("DOMContentLoaded", function() {
-        // Set new default font family and font color to mimic Bootstrap's default styling
-        Chart.defaults.global.defaultFontFamily = '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
-        Chart.defaults.global.defaultFontColor = '#292b2c';
-
-        // 현재 연도와 작년 연도 설정
-        var currentYear = new Date().getFullYear();
-        var lastYear = currentYear - 1;
-
-        // 테이블 데이터를 추출하여 차트 데이터로 변환
-        var table = document.getElementById("datatablesSimple");
-        if (!table) {
-            console.error("Table with ID 'datatablesSimple' not found.");
-            return;
-        }
-
-        var rows = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
-        var lastYearData = Array(12).fill(0);
-        var currentYearData = Array(12).fill(0);
-
-        for (var i = 0; i < rows.length; i++) {
-            var createdDate = new Date(rows[i].getElementsByTagName("td")[2].innerText);
-            var month = createdDate.getMonth(); // 월은 0부터 시작합니다.
-            var year = createdDate.getFullYear();
-            var status = rows[i].getElementsByTagName("td")[7].innerText;
-
-            if (year == lastYear && status === "Closed(won)") {
-                lastYearData[month]++;
-            }
-
-            if (year == currentYear && status === "Closed(won)") {
-                currentYearData[month]++;
-            }
-        }
-
-        // 누적 값을 계산
-        for (var month = 1; month < 12; month++) {
-            lastYearData[month] += lastYearData[month - 1];
-            currentYearData[month] += currentYearData[month - 1];
-        }
+document.addEventListener("DOMContentLoaded", function () {
+    const ctx = document.getElementById("opportunitiesReadBar");
 
         var labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
