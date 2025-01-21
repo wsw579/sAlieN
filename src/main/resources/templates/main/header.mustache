@@ -17,7 +17,7 @@
 <body class="sb-nav-fixed">
 <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
     <!-- Navbar Brand-->
-    <a class="navbar-brand ps-3" href="/">sAIes CRM - 도입회사명</a>
+    <a class="navbar-brand ps-3" href="/">sAIes CRM - KT</a>
     <!-- Sidebar Toggle-->
     <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
     <!-- Navbar Search-->
@@ -63,7 +63,23 @@
                     </a>
 
 
-                    <div class="sb-sidenav-menu-heading">Sales</div>
+
+                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseCS" aria-expanded="false" aria-controls="collapseCS">
+                        <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                        CS
+                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                    </a>
+                    <div class="collapse" id="collapseCS" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                        <nav class="sb-sidenav-menu-nested nav">
+
+                            <a class="nav-link" href="/leads">Leads</a>
+                            <a class="nav-link" href="/account">Accounts</a>
+
+                        </nav>
+                    </div>
+
+
+
 
                     <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseSales" aria-expanded="false" aria-controls="collapseSales">
                         <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
@@ -76,32 +92,43 @@
                             <a class="nav-link" href="/leads">Leads</a>
                             <a class="nav-link" href="/account">Accounts</a>
                             <a class="nav-link" href="/opportunities">Opportunities</a>
-                            <a class="nav-link" href="/additional_opportunities">Additional Opportunities</a>
                             <a class="nav-link" href="/contracts">Contracts</a>
                             <a class="nav-link" href="/orders">Orders</a>
+
+                        </nav>
+                    </div>
+
+
+
+                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseMarketing" aria-expanded="false" aria-controls="collapseMarketing">
+                        <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                        Marketing
+                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                    </a>
+                    <div class="collapse" id="collapseMarketing" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                        <nav class="sb-sidenav-menu-nested nav">
+
+                            <a class="nav-link" href="/account">Accounts</a>
                             <a class="nav-link" href="/products">Products</a>
                         </nav>
                     </div>
 
 
 
-                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseMyKPI" aria-expanded="false" aria-controls="collapseMyKPI">
+                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseSCM" aria-expanded="false" aria-controls="collapseSCM">
                         <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
-                        My KPI
+                        SCM
                         <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                     </a>
-                    <div class="collapse" id="collapseMyKPI" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                    <div class="collapse" id="collapseSCM" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                         <nav class="sb-sidenav-menu-nested nav">
-                            <a class="nav-link" href="layout-static.html">My OP</a>
-                            <a class="nav-link" href="layout-static.html">My OL</a>
-                            <a class="nav-link" href="layout-static.html">My KPI</a>
-                            <a class="nav-link" href="layout-static.html">My Incentive</a>
+
+                            <a class="nav-link" href="/orders">Orders</a>
+                            <a class="nav-link" href="/products">Products</a>
                         </nav>
                     </div>
 
 
-
-                    <div class="sb-sidenav-menu-heading">Member</div>
 
                     <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseINFO" aria-expanded="false" aria-controls="collapseINFO">
                         <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
@@ -119,7 +146,273 @@
             </div>
             <div class="sb-sidenav-footer">
                 <div class="small">Logged in as:</div>
-                Start Bootstrap
+                sAies CRM
             </div>
         </nav>
     </div>
+
+
+
+
+
+    <!-- Add this after the existing HTML code -->
+    <style>
+        /* Add this CSS to your main CSS file */
+        .chatbot-modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1000; /* Sit on top */
+            left: 50%; /* Center horizontally */
+            top: 50%; /* Center vertically */
+            transform: translate(-50%, -50%); /* Center the modal */
+            width: 50%; /* Width of modal */
+            max-width: 600px;
+            height: auto;
+            background-color: rgb(0, 0, 0); /* Fallback color */
+            background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chatbot-modal-content {
+            background-color: #fefefe;
+            padding: 0; /* Remove padding to adjust for title bar */
+            border: 1px solid #888;
+            width: 100%;
+            max-height: 80vh; /* Max height of modal */
+            overflow-y: auto; /* Enable scroll if needed */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chatbot-title-bar {
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .user-message, .bot-message {
+            border-radius: 10px;
+            padding: 10px;
+            margin: 10px 0;
+            display: inline-block;
+            max-width: 70%;
+        }
+
+        .user-message {
+            text-align: right;
+            background-color: #dcf8c6;
+            align-self: flex-end; /* Align user message to the right */
+        }
+
+        .bot-message {
+            text-align: left;
+            background-color: #f1f1f1;
+            align-self: flex-start; /* Align bot message to the left */
+        }
+
+        .message-info {
+            font-size: 12px;
+            color: #555;
+        }
+
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+        }
+
+        .input-container {
+            display: flex;
+            padding: 10px;
+        }
+
+        .user-info {
+            text-align: right;
+        }
+
+        .bot-info {
+            text-align: left;
+        }
+
+        #chatbotInput {
+            flex: 1;
+            padding: 10px;
+            margin-right: 10px;
+        }
+
+        #sendChatbotMessage {
+            display: none;
+        }
+
+    </style>
+
+    <!-- Chatbot Button -->
+    <div id="chatbotButton" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000; width: 60px; height: 60px; background-color: #007bff; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px;">
+        💬
+    </div>
+
+    <!-- Chatbot Modal -->
+    <div id="chatbotModal" class="chatbot-modal">
+        <div class="chatbot-modal-content">
+            <div class="chatbot-title-bar">
+                sAIes CRM chat bot
+                <span class="close">&times;</span>
+            </div>
+            <div id="chatbotMessages" class="chat-container"></div>
+            <div class="input-container">
+                <input type="text" id="chatbotInput" placeholder="Type a message..." onkeydown="if (event.key === 'Enter') sendChatbotMessage();">
+                <button id="voiceInputButton">🎤</button>
+                <button id="sendChatbotMessage">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add this JavaScript to your main JS file
+        document.addEventListener("DOMContentLoaded", function() {
+            var chatbotButton = document.getElementById('chatbotButton');
+            var chatbotModal = document.getElementById('chatbotModal');
+            var closeModal = document.getElementsByClassName('close')[0];
+
+            chatbotModal.style.display = "none";
+
+            chatbotButton.onclick = function() {
+                chatbotModal.style.display = "block";
+            }
+
+            closeModal.onclick = function() {
+                chatbotModal.style.display = "none";
+            }
+
+            var recognition;
+            var recognizing = false;
+            var timeoutId;
+            var finalTranscript = '';
+
+            if ('webkitSpeechRecognition' in window) {
+                recognition = new webkitSpeechRecognition();
+                recognition.continuous = true;
+                recognition.interimResults = true;
+                recognition.lang = 'ko-KR';
+
+                recognition.onstart = function() {
+                    recognizing = true;
+                    console.log('Speech recognition started');
+                };
+
+                recognition.onresult = function(event) {
+                    clearTimeout(timeoutId); // Clear the timeout if there's any speech input
+                    var interimTranscript = '';
+                    for (var i = event.resultIndex; i < event.results.length; ++i) {
+                        if (event.results[i].isFinal) {
+                            finalTranscript += event.results[i][0].transcript;
+                        } else {
+                            interimTranscript += event.results[i][0].transcript;
+                        }
+                    }
+                    document.getElementById('chatbotInput').value = finalTranscript + interimTranscript;
+                    timeoutId = setTimeout(function() {
+                        if (recognizing) {
+                            recognition.stop();
+                        }
+                    }, 5000); // Stop recognition after 5 seconds of silence
+                };
+
+                recognition.onerror = function(event) {
+                    console.log('Speech recognition error', event);
+                    recognizing = false;
+                };
+
+                recognition.onend = function() {
+                    recognizing = false;
+                    document.getElementById('chatbotInput').value = finalTranscript; // Ensure the final transcript remains
+                    console.log('Speech recognition ended');
+                };
+
+                document.getElementById('voiceInputButton').onclick = function() {
+                    if (recognizing) {
+                        recognition.stop();
+                    } else {
+                        finalTranscript = document.getElementById('chatbotInput').value; // Reset the final transcript to current input
+                        recognition.start();
+                    }
+                };
+            } else {
+                console.log('Speech recognition not supported');
+            }
+
+        var sendChatbotMessage = function() {
+            if (recognizing) {
+                recognition.stop();
+            }
+            var message = document.getElementById('chatbotInput').value;
+            var currentTime = new Date().toLocaleTimeString();
+
+            {{#id}}
+            var userMessage = "<div class='chat-container'><div class='user-info message-info'>{{id}}</div><div class='user-message'>" + message + "<br><span class='message-info'>" + currentTime + "</span></div></div>";
+            {{/id}}
+
+            {{^id}}
+            var userMessage = "<div class='chat-container'><div class='user-info message-info'>User</div><div class='user-message'>" + message + "<br><span class='message-info'>" + currentTime + "</span></div></div>";
+            {{/id}}
+
+            document.getElementById('chatbotMessages').innerHTML += userMessage;
+            document.getElementById('chatbotInput').value = "";
+            finalTranscript = ''; // Reset the final transcript after sending the message
+            document.getElementById('chatbotMessages').scrollTop = document.getElementById('chatbotMessages').scrollHeight;
+
+            // API 호출 부분
+            fetch('http://127.0.0.1:8000/chatbot', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ request: message })
+            })
+            .then(response => response.json())
+            .then(data => {
+                var botMessage = "<div class='chat-container'><div class='bot-info message-info'>sAIes CRM</div><div class='bot-message'>" + data.response + "<br><span class='message-info'>" + currentTime + "</span></div></div>";
+                document.getElementById('chatbotMessages').innerHTML += botMessage;
+                document.getElementById('chatbotMessages').scrollTop = document.getElementById('chatbotMessages').scrollHeight;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                var botMessage = "<div class='chat-container'><div class='bot-info message-info'>sAIes CRM</div><div class='bot-message'>API 호출 오류: " + error.message + "<br><span class='message-info'>" + currentTime + "</span></div></div>";
+                document.getElementById('chatbotMessages').innerHTML += botMessage;
+                document.getElementById('chatbotMessages').scrollTop = document.getElementById('chatbotMessages').scrollHeight;
+            });
+        }
+
+        document.getElementById('chatbotInput').onkeydown = function(event) {
+            if (event.key === 'Enter') {
+                sendChatbotMessage();
+                setTimeout(function() {
+                    document.getElementById('chatbotMessages').scrollTop = document.getElementById('chatbotMessages').scrollHeight;
+                }, 100); // Adjust the delay as needed
+            }
+        };
+    });
+    </script>
+
+
+
