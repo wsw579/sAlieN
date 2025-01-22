@@ -173,11 +173,10 @@ public class LeadsController {
     }
 
     // Delete detail page
-    @GetMapping("/leads/detail/{leadId}/delete")
-    public String leadsDeleteDetail(@PathVariable("leadId") Long leadId) {
+    @PostMapping("/leads/detail/{leadId}/delete")
+    public ResponseEntity<Void> deleteLead(@PathVariable("leadId") Long leadId) {
         leadsService.deleteLeads(leadId);
-
-        return "redirect:/leads";
+        return ResponseEntity.ok().build();
     }
 
     // Delete read page (list)

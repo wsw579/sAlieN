@@ -211,11 +211,10 @@ public class ContractsController {
     }
 
     // Delete detail page
-    @GetMapping("/contracts/detail/{contractId}/delete")
-    public String opportunitiesDeleteDetail(@PathVariable("contractId") Long contractId) {
+    @PostMapping("/contracts/detail/{contractId}/delete")
+    public ResponseEntity<Void> deleteContract(@PathVariable("contractId") Long contractId) {
         contractsService.deleteContracts(contractId);
-
-        return "redirect:/contracts";
+        return ResponseEntity.ok().build();
     }
 
     // Delete read page (list)

@@ -273,11 +273,10 @@ public class OpportunitiesController {
     }
 
     // Delete detail page
-    @GetMapping("/opportunities/detail/{opportunityId}/delete")
-    public String opportunitiesDeleteDetail(@PathVariable("opportunityId") Long opportunityId) {
+    @PostMapping("/opportunities/detail/{opportunityId}/delete")
+    public ResponseEntity<Void> deleteOpportunity(@PathVariable("opportunityId") Long opportunityId) {
         opportunitiesService.deleteOpportunities(opportunityId);
-
-        return "redirect:/opportunities";
+        return ResponseEntity.ok().build();
     }
 
     // Delete read page (list)
