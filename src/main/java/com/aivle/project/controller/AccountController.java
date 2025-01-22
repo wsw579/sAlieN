@@ -128,11 +128,11 @@ public class AccountController {
 
         List<AccountEntity> accounts = accountRepository.findAll();
         List<EmployeeEntity> employee = employeeRepository.findAll();
-
+        List<AccountEntity> activeAccounts = accountRepository.findByAccountStatus("Active");
 
         model.addAttribute("account", account);
         model.addAttribute("employee", employee);
-        model.addAttribute("accounts", accounts);
+        model.addAttribute("accounts", activeAccounts);
 
         return "account/account_detail";
     }
@@ -145,6 +145,7 @@ public class AccountController {
 
         List<AccountEntity> accounts = accountRepository.findAll();
         List<EmployeeEntity> employee = employeeRepository.findAll();
+        List<AccountEntity> activeAccounts = accountRepository.findByAccountStatus("Active");
 
         // 초기값 설정
         account.setAccountName("");
@@ -159,13 +160,12 @@ public class AccountController {
         account.setAccountStatus("");
         account.setAccountCreatedDate(LocalDate.now());
 
-
         account.setEmployeeId(new EmployeeEntity());
         account.setParentAccount(new AccountEntity());
 
         model.addAttribute("account", account);
         model.addAttribute("employee", employee);
-        model.addAttribute("accounts", accounts);
+        model.addAttribute("accounts", activeAccounts);
 
         return "account/account_detail";
     }

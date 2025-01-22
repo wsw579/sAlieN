@@ -105,6 +105,14 @@ public class AccountService {
                 .orElseThrow(() -> new IllegalArgumentException("error"));
     }
 
+    public Page<AccountEntity> readAccount(PageRequest pageRequest) {
+        return accountRepository.findAll(pageRequest);
+    }
+
+    public Page<AccountEntity> searchAccounts(String keyword, PageRequest pageRequest) {
+        return accountRepository.findByAccountNameContainingOrAccountTypeContaining(keyword, keyword, pageRequest);
+    }
+
     // 목록  Search
     public Page<AccountEntity> searchAccounts(String keyword, Pageable pageable) {
         // 키워드가 포함된 계정을 검색하는 메서드
@@ -122,7 +130,7 @@ public class AccountService {
         return accountRepository.countAccountsByEmployeeId(employeeId);
     }
 
-        // detail select를 위한 이름 id 불러오기
+    // detail  select 를 위한 이름 id 불러오기
     public List<AccountDto> getAllAccountIdsAndNames() {
         List<Object[]> results = accountRepository.findAllAccountIdAndAccountName();
         return results.stream()

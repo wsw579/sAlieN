@@ -28,4 +28,8 @@ public interface AccountRepository extends JpaRepository<AccountEntity, Long> {
     // 상태바 employeeId 연결
     @Query("SELECT COUNT(a) FROM AccountEntity a WHERE a.employeeId.employeeId = :employeeId")
     Long countAccountsByEmployeeId(@Param("employeeId") String employeeId);
+
+    Page<AccountEntity> findByAccountNameContainingOrAccountTypeContaining(String name, String type, Pageable pageable);
+    List<AccountEntity> findByAccountStatus(String status);
+
 }

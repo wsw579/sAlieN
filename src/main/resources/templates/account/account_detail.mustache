@@ -234,6 +234,7 @@
                                 <label for="accountStatus" class="col-sm-2 col-form-label">계정 상태:</label>
                                 <div class="col-sm-10">
                                     <select class="form-control" id="accountStatus" name="accountStatus">
+                                        <option value="">계정 상태 선택</option>
                                         <option value="Active">Active</option>
                                         <option value="Closed">Closed</option>
                                     </select>
@@ -264,13 +265,20 @@
                                 </div>
                             </div>
 
+
                             <div class="mb-3 row">
                                 <label for="accountType" class="col-sm-2 col-form-label">유형:</label>
                                 <div class="col-sm-10">
-                                    <input type="text" class="form-control" id="accountType" name="accountType"
-                                           value="{{accountType}}" required>
+                                    <select class="form-control" id="accountType" name="accountType">
+                                        <option value="">유형 선택</option>
+                                        <option value="고객사">고객사</option>
+                                        <option value="협력사">협력사</option>
+                                        <option value="파트너사">파트너사</option>
+                                        <option value="계열사">계열사</option>
+                                    </select>
                                 </div>
                             </div>
+
 
                             <div class="mb-3 row">
                                 <label for="parentAccountId" class="col-sm-2 col-form-label">상위 계정:</label>
@@ -304,11 +312,20 @@
                                 </div>
                             </div>
 
+
                             <div class="mb-3 row">
                                 <label for="businessType" class="col-sm-2 col-form-label">사업 유형:</label>
                                 <div class="col-sm-10">
-                                    <input type="text" class="form-control" id="businessType" name="businessType"
-                                           value="{{businessType}}" required>
+                                    <select class="form-control" id="businessType" name="businessType">
+                                        <option value="">사업 유형 선택</option>
+                                        <option value="제조업">제조업</option>
+                                        <option value="IT서비스">IT서비스</option>
+                                        <option value="소프트웨어">소프트웨어</option>
+                                        <option value="반도체">반도체</option>
+                                        <option value="전자부품">전자부품</option>
+                                        <option value="통신">통신</option>
+                                        <option value="보안">보안</option>
+                                    </select>
                                 </div>
                             </div>
 
