@@ -52,58 +52,74 @@
 
 
 
+
 .progress-container {
     position: relative;
     width: 100%;
-    height: 70px; /* 높이를 조금 늘립니다 */
+    height: 70px;
     margin: 20px 0;
 }
 
+/* 바(—):
+   - 지름 20px 원에 맞춰, 양쪽 10px 띄움
+   - 따라서 "왼쪽 원 중심" ~ "오른쪽 원 중심"까지가 바 */
 .progress-bar {
     position: absolute;
-    top: 38%; /* 중앙 정렬 */
-    left: 10%; /* Qualification 원의 중앙에서 시작하도록 조정합니다 */
+    top: 50%;
     transform: translateY(-50%);
-    width: 0;
+    left: 10px;
+    right: 10px;
     height: 10px;
     background-color: green;
+    border-radius: 5px; /* 둥글려주면 원과 자연스럽게 이어짐 */
     transition: width 0.4s ease;
+    z-index: 0;
 }
 
+/* 각 스텝(원 + 텍스트) 가로로 균등 분배 */
 .progress-steps {
     display: flex;
     justify-content: space-between;
     position: absolute;
-    top: 50%; /* 중앙 정렬 */
+    top: 50%;
     width: 100%;
     transform: translateY(-50%);
 }
 
+/* 스텝 */
 .step {
-    width: 20%;
     text-align: center;
     position: relative;
-    padding-top: 30px; /* 텍스트를 아래로 내리기 위해 패딩 추가 */
 }
 
-
+/* 원(●):
+   - "step"의 가로 중앙에 찍되,
+     정확히 -50%만큼만 이동해서 완벽한 중앙 */
 .step::before {
     content: '';
     position: absolute;
-    top: 16%; /* 원의 위치를 조정합니다 */
+    top: 50%;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translate(-50%, -50%); /* -45% 등으로 바꾸면 틀어짐! */
     width: 20px;
     height: 20px;
     border-radius: 50%;
     background-color: white;
     border: 2px solid green;
     transition: background-color 0.4s ease, border-color 0.4s ease;
+    z-index: 1; /* 바 위로 표시 */
 }
 
+/* 활성화된(채워진) 원(●) */
 .step.active::before {
     background-color: green;
     border-color: green;
+}
+
+/* 텍스트를 원 아래로 내리고 싶다면 */
+.step span {
+    display: block;
+    margin-top: 30px; /* 적당히 조정 */
 }
 
 </style>
@@ -122,6 +138,38 @@
             <div class="row">
             </div>
             <div class="row">
+            </div>
+
+            <!-- 리드 상태 부분 -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-table me-1"></i>
+                    Lead Status
+                </div>
+                <div class="card-body">
+                    <table id="lead_status">
+
+
+                        {{#leads}}
+                            <div class="progress-container">
+                                <div class="progress-bar" id="progressBar"></div>
+                                <div class="progress-steps">
+                                    <div class="step" data-step="Proposal">
+                                        <span>Proposal</span>
+                                    </div>
+                                    <div class="step" data-step="UnderReview">
+                                        <span>UnderReview</span>
+                                    </div>
+                                    <div class="step" data-step="Closed">
+                                        <span>Closed</span>
+                                    </div>
+                                </div>
+                            </div>
+                        {{/leads}}
+
+
+                    </table>
+                </div>
             </div>
 
 
@@ -182,11 +230,11 @@
                                 <label for="leadStatus" class="col-sm-2 col-form-label">리드상태:</label>
                                 <div class="col-sm-10">
                                     <select class="form-control" id="leadStatus" name="leadStatus" required>
-                                        <option value="제안됨">제안됨</option>
-                                        <option value="검토중">검토중</option>
-                                        <option value="기회전환">기회전환</option>
-                                        <option value="제안거절">제안거절</option>
-                                        <option value="보류">보류</option>
+                                        <option value="Proposal">Proposal</option>
+                                        <option value="Under Review">Under Review</option>
+                                        <option value="Accepted">Accepted</option>
+                                        <option value="Rejected">Rejected</option>
+                                        <option value="Pending">Pending</option>
                                     </select>
                                 </div>
                             </div>
@@ -336,43 +384,46 @@
 
 
     // 현재 진행상황 bar JS
-    document.addEventListener("DOMContentLoaded", function() {
-        var progressSteps = document.querySelectorAll(".step");
-        var progressBar = document.getElementById("progressBar");
-        var leadStatus = "{{leadStatus}}"; // 현재 진행상황
+        document.addEventListener("DOMContentLoaded", function () {
+        const progressSteps = document.querySelectorAll(".step");
+        const progressBar = document.getElementById("progressBar");
 
-        var steps = ["Proposal", "UnderReview", "Closed"];
-        var currentIndex = -1;
+        // 단계 목록
+        const steps = ["Proposal", "UnderReview", "Closed"];
 
-        // 진행상황 업데이트
-        if (leadStatus.startsWith("Closed")) {
-            currentIndex = steps.indexOf("Closed");
-        } else {
-            currentIndex = steps.indexOf(leadStatus);
-        }
+        // `leadStatus`와 단계 매핑
+        const statusMapping = {
+            "Proposal": "Proposal",
+            "Under Review": "UnderReview",
+            "Accepted": "Closed",
+            "Rejected": "Closed",
+            "Pending": "Closed"
+        };
 
-        if (currentIndex !== -1) {
-            var progressWidth = (currentIndex / (steps.length - 1)) * 100;
+        // 서버에서 전달된 `leadStatus` 값
+        const leadStatus = "{{leadStatus}}" || "제안됨"; // 기본값은 "제안됨"
+        const currentStep = statusMapping[leadStatus] || "Proposal";
 
-            // `Closed` 단계일 경우 한스텝 줄이기
-            if (leadStatus.startsWith("Closed")) {
-                progressWidth -= (100 / steps.length);
+        const currentIndex = steps.indexOf(currentStep);
+        if (currentIndex === -1) return;
+
+        // 진행 퍼센트 계산
+        const intervals = steps.length - 1;
+        const progressPercent = (currentIndex / intervals) * 100;
+
+        // 진행 바 너비 설정
+        progressBar.style.width = progressPercent + "%";
+
+        // 활성화된 스텝 표시
+        progressSteps.forEach((step, index) => {
+            if (index <= currentIndex) {
+                step.classList.add("active");
+            } else {
+                step.classList.remove("active");
             }
-
-            progressBar.style.width = progressWidth + "%";
-
-            for (var i = 0; i <= currentIndex; i++) {
-                progressSteps[i].classList.add("active");
-            }
-        }
+        });
     });
 
-
-        // 페이지 로드 시 댓글 섹션 스크롤 최하단으로 이동
-        window.onload = function() {
-            var commentSection = document.getElementById("commentSection");
-            commentSection.scrollTop = commentSection.scrollHeight;
-        };
 
 
         {{/leads}}
