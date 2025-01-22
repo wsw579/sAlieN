@@ -43,7 +43,6 @@ public interface OpportunitiesRepository extends JpaRepository<OpportunitiesEnti
 
 
 
-
     // 차트 그래프
     @Query("SELECT MONTH(o.createdDate), COUNT(o) " +
             "FROM OpportunitiesEntity o " +

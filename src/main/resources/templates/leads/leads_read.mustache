@@ -178,7 +178,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        {{#leads}}
+                        {{#pagination.contents}}
                         <tr data-index="{{leadId}}">
                             <td><input type="checkbox" class="select-row" value="{{leadId}}" ></td>
                             <td>{{leadId}}</td>
@@ -192,34 +192,34 @@
                             <td>{{c_tel}}</td>
 
                         </tr>
-                        {{/leads}}
+                        {{/pagination.contents}}
                         </tbody>
 
                     </table>
 
                     <div class="pagination">
                         <!-- 이전 버튼 -->
-                        {{#hasPreviousPage}}
-                            <button onclick="window.location.href='/leads?page={{previousPage}}&size=10&search={{search}}&sortColumn={{sortColumn}}&sortDirection={{sortDirection}}'">
+                        {{#pagination.hasPreviousPage}}
+                            <button onclick="window.location.href='/leads?page={{pagination.previousPage}}&size=10&search={{search}}&sortColumn={{sortColumn}}&sortDirection={{sortDirection}}'">
                             이전
                             </button>
-                        {{/hasPreviousPage}}
+                        {{/pagination.hasPreviousPage}}
 
                         <!-- 페이지 번호 버튼 -->
-                        {{#pageNumbers}}
+                        {{#pagination.pageNumbers}}
                             <button
                                     onclick="window.location.href='/leads?page={{page}}&size=10&search={{search}}&sortColumn={{sortColumn}}&sortDirection={{sortDirection}}'"
                             class="{{#isActive}}active{{/isActive}}">
                             {{displayPage}}
                             </button>
-                        {{/pageNumbers}}
+                        {{/pagination.pageNumbers}}
 
                         <!-- 다음 버튼 -->
-                        {{#hasNextPage}}
-                            <button onclick="window.location.href='/leads?page={{nextPage}}&size=10&search={{search}}&sortColumn={{sortColumn}}&sortDirection={{sortDirection}}'">
+                        {{#pagination.hasNextPage}}
+                            <button onclick="window.location.href='/leads?page={{pagination.nextPage}}&size=10&search={{search}}&sortColumn={{sortColumn}}&sortDirection={{sortDirection}}'">
                             다음
                             </button>
-                        {{/hasNextPage}}
+                        {{/pagination.hasNextPage}}
                     </div>
 
                 </div>
