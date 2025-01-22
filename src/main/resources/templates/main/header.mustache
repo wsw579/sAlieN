@@ -391,15 +391,21 @@
             })
             .then(response => response.json())
             .then(data => {
-                var botMessage = "<div class='chat-container'><div class='bot-info message-info'>sAIes CRM</div><div class='bot-message'>" + data.response + "<br><span class='message-info'>" + currentTime + "</span></div></div>";
+                // \n 문자를 <br> 태그로 대체
+                var formattedResponse = data.response.replace(/\\n/g, '<br>');
+                var botMessage = "<div class='chat-container'><div class='bot-info message-info'>sAIes CRM</div><div class='bot-message'>" + formattedResponse + "<br><span class='message-info'>" + currentTime + "</span></div></div>";
                 document.getElementById('chatbotMessages').innerHTML += botMessage;
-                document.getElementById('chatbotMessages').scrollTop = document.getElementById('chatbotMessages').scrollHeight;
+                // 모달 창 내의 스크롤 최하단으로 내리기
+                var chatContainer = document.getElementById('chatbotMessages');
+                chatContainer.scrollTop = chatContainer.scrollHeight;
             })
             .catch(error => {
                 console.error('Error:', error);
                 var botMessage = "<div class='chat-container'><div class='bot-info message-info'>sAIes CRM</div><div class='bot-message'>API 호출 오류: " + error.message + "<br><span class='message-info'>" + currentTime + "</span></div></div>";
                 document.getElementById('chatbotMessages').innerHTML += botMessage;
-                document.getElementById('chatbotMessages').scrollTop = document.getElementById('chatbotMessages').scrollHeight;
+                // 모달 창 내의 스크롤 최하단으로 내리기 (오류 메시지 경우에도)
+                var chatContainer = document.getElementById('chatbotMessages');
+                chatContainer.scrollTop = chatContainer.scrollHeight;
             });
         }
 
