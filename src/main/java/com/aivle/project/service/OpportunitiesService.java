@@ -228,6 +228,7 @@ public class OpportunitiesService {
                 .collect(Collectors.toList());
     }
 
+
     // 상태 수 가져오기
     public Map<String, Long> getOpportunitiesStatusCounts() {
         Map<String, Long> statusCounts = new HashMap<>();

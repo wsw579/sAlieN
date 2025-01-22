@@ -6,13 +6,13 @@ import com.aivle.project.entity.ContractsEntity;
 import com.aivle.project.entity.OrdersEntity;
 import com.aivle.project.repository.ContractsRepository;
 import com.aivle.project.repository.OrdersRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -20,6 +20,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 @Service
@@ -29,195 +32,180 @@ public class ContractsService {
 
     private final ContractsRepository contractsRepository;
     private final OrdersRepository ordersRepository;
+    private static final Logger logger = LoggerFactory.getLogger(ContractsService.class);
 
     // Create
     public void createContracts(ContractsDto dto) {
-        ContractsEntity contractsEntity = new ContractsEntity();
-
-        contractsEntity.setContractStatus(dto.getContractStatus());
-        contractsEntity.setStartDate(dto.getStartDate());
-        contractsEntity.setTerminationDate(dto.getTerminationDate());
-        contractsEntity.setContractDetail(dto.getContractDetail());
-        contractsEntity.setContractSales(dto.getContractSales());
-        contractsEntity.setContractAmount(dto.getContractAmount());
-        contractsEntity.setContractClassification(dto.getContractClassification());
-
-        contractsEntity.setOpportunityId(dto.getOpportunityId());
-        contractsEntity.setAccountId(dto.getAccountId());
-        contractsEntity.setProductId(dto.getProductId());
-        contractsEntity.setEmployeeId(dto.getEmployeeId());
-        contractsEntity.setOpportunityId((dto.getOpportunityId()));
+        ContractsEntity contractsEntity = convertDtoToEntity(dto);
         contractsRepository.save(contractsEntity);
     }
 
     // Read
+    @Transactional(readOnly = true)
     public Page<ContractsEntity> readContracts(int page, int size, String search, String sortColumn, String sortDirection) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortDirection), sortColumn));
 
         if (search != null && !search.isEmpty()) {
-            try {
-                return contractsRepository.findByContractIdLike(search, pageable);
-            } catch (NumberFormatException e) {
-                // 숫자가 아닌 경우 빈 페이지 반환
-                return Page.empty(pageable);
-            }
-        } else {
-            return contractsRepository.findAll(pageable);
+            return contractsRepository.findByContractIdLike("%" + search + "%", pageable);
         }
+        return contractsRepository.findAll(pageable);
     }
 
-
     // Update
-    @Transactional
     public void updateContracts(Long contractId, ContractsDto dto) {
         ContractsEntity contractsEntity = contractsRepository.findById(contractId)
                 .orElseThrow(() -> new IllegalArgumentException("Contract not found"));
-
-        contractsEntity.setContractStatus(dto.getContractStatus());
-        contractsEntity.setStartDate(dto.getStartDate());
-        contractsEntity.setTerminationDate(dto.getTerminationDate());
-        contractsEntity.setContractDetail(dto.getContractDetail());
-        contractsEntity.setContractSales(dto.getContractSales());
-        contractsEntity.setContractAmount(dto.getContractAmount());
-        contractsEntity.setContractClassification(dto.getContractClassification());
-
-        contractsEntity.setOpportunityId(dto.getOpportunityId());
-        contractsEntity.setAccountId(dto.getAccountId());
-        contractsEntity.setProductId(dto.getProductId());
-        contractsEntity.setEmployeeId(dto.getEmployeeId());
-        contractsEntity.setOpportunityId((dto.getOpportunityId()));
-
+        updateEntityFromDto(contractsEntity, dto);
         contractsRepository.save(contractsEntity);
-
     }
-
 
     // Delete
     public void deleteContracts(Long contractId) {
         contractsRepository.deleteById(contractId);
     }
 
-
-
     public void deleteContractsByIds(List<Long> ids) {
         contractsRepository.deleteAllById(ids);
     }
 
+    // 테이블 데이터 전달
+    @Transactional(readOnly = true)
+    public Map<String, Object> getContractPageData(int page, int size, String search, String sortColumn, String sortDirection) {
+        Page<ContractsEntity> contractsPage = readContracts(page, size, search, sortColumn, sortDirection);
+        Map<String, Long> statusCounts = getContractStatusCounts();
 
+        Map<String, Object> data = new HashMap<>();
+        data.put("contractsPage", contractsPage);
+        data.put("statusCounts", statusCounts);
+        data.put("totalCount", statusCounts.values().stream().mapToLong(Long::longValue).sum());
 
-    // Search
-    public ContractsEntity searchContracts(Long contractId) {
-        return contractsRepository.findById(contractId)
-                .orElseThrow(()->new IllegalArgumentException("error"));
+        return data;
     }
 
 
-    // lead order
-    @Transactional
-    public List<OrdersEntity> getOrdersByContractId(Long contractId) {
-        ContractsEntity contract = searchContracts(contractId);
-        List<OrdersEntity> orders = ordersRepository.findByContractId(contract);
 
-        // 디버깅을 위해 로그 출력
-        //orders.forEach(comment -> System.out.println("Order: " + orders.getorderId()));
-
-        return orders;
-    }
-
-    // detail 페이지 select 로딩을 위한 id와 name 가져오기
-    public List<ContractsDto> getAllContractIds() {
-        List<Long> results = contractsRepository.findAllContractIds();
-        return results.stream()
-                .map(result -> {
-                    ContractsDto dto = new ContractsDto();
-                    dto.setContractId(result);
-                    return dto;
-                })
-                .collect(Collectors.toList());
-    }
-
-    // 상태 수 가져오기
+    // 상태별 카운트 가져오기
+    @Transactional(readOnly = true)
     public Map<String, Long> getContractStatusCounts() {
         Map<String, Long> statusCounts = new HashMap<>();
         List<Object[]> results = contractsRepository.countContractsByStatus();
-
         for (Object[] result : results) {
             String status = (String) result[0];
             Long count = (Long) result[1];
             statusCounts.put(status, count);
         }
-
         return statusCounts;
     }
 
-    public Map<String, List<Integer>> getBarData() {
-        int currentYear = LocalDate.now().getYear();
-        int lastYear = currentYear - 1;
-
-        // 각 월별 주문 수를 초기화
-        List<Integer> lastYearData = IntStream.range(0, 12).mapToObj(i -> 0).collect(Collectors.toList());
-        List<Integer> currentYearData = IntStream.range(0, 12).mapToObj(i -> 0).collect(Collectors.toList());
-
-        // DB에서 월별 주문 수를 가져옵니다.
-        List<Object[]> lastYearOrders = contractsRepository.getMonthlyContracts(lastYear);
-        List<Object[]> currentYearOrders = contractsRepository.getMonthlyContracts(currentYear);
-
-        // 결과를 리스트에 추가
-        for (Object[] row : lastYearOrders) {
-            int month = ((Number) row[0]).intValue() - 1; // 월 (1월 = 0 인덱스)
-            int count = ((Number) row[1]).intValue(); // 주문 수
-            lastYearData.set(month, count);
+    @Transactional(readOnly = true)
+    public ContractsEntity searchContracts(Long contractId) {
+        logger.info("Searching for contract with ID: {}", contractId);
+        if (contractId == null) {
+            throw new IllegalArgumentException("Contract ID cannot be null");
         }
-
-        for (Object[] row : currentYearOrders) {
-            int month = ((Number) row[0]).intValue() - 1; // 월 (1월 = 0 인덱스)
-            int count = ((Number) row[1]).intValue(); // 주문 수
-            currentYearData.set(month, count);
-        }
-
-        // 누적 값 계산
-        for (int i = 1; i < 12; i++) {
-            lastYearData.set(i, lastYearData.get(i) + lastYearData.get(i - 1));
-            currentYearData.set(i, currentYearData.get(i) + currentYearData.get(i - 1));
-        }
-
-        Map<String, List<Integer>> barData = new HashMap<>();
-        barData.put("lastYearData", lastYearData);
-        barData.put("currentYearData", currentYearData);
-
-        return barData;
+        return contractsRepository.findById(contractId)
+                .orElseThrow(() -> {
+                    logger.error("Contract not found with ID: {}", contractId);
+                    return new IllegalArgumentException("Contract not found with ID: " + contractId);
+                });
     }
 
+    // 주문 정보 가져오기
+    @Transactional(readOnly = true)
+    public List<OrdersEntity> getOrdersByContractId(Long contractId) {
+        logger.info("Fetching orders for contract ID: {}", contractId);
+        if (contractId == null) {
+            throw new IllegalArgumentException("Contract ID cannot be null");
+        }
+        ContractsEntity contract = searchContracts(contractId);
+        return ordersRepository.findByContractId(contract);
+    }
 
+    // ID 가져오기
+    @Transactional(readOnly = true)
+    public List<ContractsDto> getAllContractIds() {
+        List<Long> results = contractsRepository.findAllContractIds();
+        return results.stream()
+                .map(this::convertIdToDto)
+                .collect(Collectors.toList());
+    }
+
+    // Bar 및 Chart Data
+    @Transactional(readOnly = true)
+    public Map<String, List<Integer>> getBarData() {
+        return getYearlyData(true); // 누적 데이터 포함
+    }
+
+    @Transactional(readOnly = true)
     public Map<String, List<Integer>> getChartData() {
+        return getYearlyData(false); // 누적 데이터 제외
+    }
+
+    private Map<String, List<Integer>> getYearlyData(boolean accumulate) {
         int currentYear = LocalDate.now().getYear();
         int lastYear = currentYear - 1;
 
-        // 각 월별 주문 수를 초기화
-        List<Integer> lastYearData = IntStream.range(0, 12).mapToObj(i -> 0).collect(Collectors.toList());
-        List<Integer> currentYearData = IntStream.range(0, 12).mapToObj(i -> 0).collect(Collectors.toList());
+        List<Integer> lastYearData = initializeMonthlyData();
+        List<Integer> currentYearData = initializeMonthlyData();
 
-        // DB에서 월별 주문 수를 가져옵니다.
-        List<Object[]> lastYearOrders = contractsRepository.getMonthlyContracts(lastYear);
-        List<Object[]> currentYearOrders = contractsRepository.getMonthlyContracts(currentYear);
+        populateMonthlyData(lastYear, lastYearData);
+        populateMonthlyData(currentYear, currentYearData);
 
-        // 결과를 리스트에 추가
-        for (Object[] row : lastYearOrders) {
-            int month = ((Number) row[0]).intValue() - 1; // 월 (1월 = 0 인덱스)
-            int count = ((Number) row[1]).intValue(); // 주문 수
-            lastYearData.set(month, count);
+        if (accumulate) {
+            accumulateMonthlyData(lastYearData);
+            accumulateMonthlyData(currentYearData);
         }
 
-        for (Object[] row : currentYearOrders) {
-            int month = ((Number) row[0]).intValue() - 1; // 월 (1월 = 0 인덱스)
-            int count = ((Number) row[1]).intValue(); // 주문 수
-            currentYearData.set(month, count);
+        Map<String, List<Integer>> yearlyData = new HashMap<>();
+        yearlyData.put("lastYearData", lastYearData);
+        yearlyData.put("currentYearData", currentYearData);
+
+        return yearlyData;
+    }
+
+    private List<Integer> initializeMonthlyData() {
+        return IntStream.range(0, 12).mapToObj(i -> 0).collect(Collectors.toList());
+    }
+
+    private void populateMonthlyData(int year, List<Integer> monthlyData) {
+        List<Object[]> orders = contractsRepository.getMonthlyContracts(year);
+        for (Object[] row : orders) {
+            int month = ((Number) row[0]).intValue() - 1; // 1월 = 0
+            int count = ((Number) row[1]).intValue();
+            monthlyData.set(month, count);
         }
+    }
 
-        Map<String, List<Integer>> chartData = new HashMap<>();
-        chartData.put("lastYearData", lastYearData);
-        chartData.put("currentYearData", currentYearData);
+    private void accumulateMonthlyData(List<Integer> monthlyData) {
+        for (int i = 1; i < monthlyData.size(); i++) {
+            monthlyData.set(i, monthlyData.get(i) + monthlyData.get(i - 1));
+        }
+    }
 
-        return chartData;
+    // 헬퍼 메서드
+    private ContractsEntity convertDtoToEntity(ContractsDto dto) {
+        ContractsEntity contractsEntity = new ContractsEntity();
+        updateEntityFromDto(contractsEntity, dto);
+        return contractsEntity;
+    }
+
+    private void updateEntityFromDto(ContractsEntity entity, ContractsDto dto) {
+        entity.setContractStatus(dto.getContractStatus());
+        entity.setStartDate(dto.getStartDate());
+        entity.setTerminationDate(dto.getTerminationDate());
+        entity.setContractDetail(dto.getContractDetail());
+        entity.setContractSales(dto.getContractSales());
+        entity.setContractAmount(dto.getContractAmount());
+        entity.setContractClassification(dto.getContractClassification());
+        entity.setOpportunityId(dto.getOpportunityId());
+        entity.setAccountId(dto.getAccountId());
+        entity.setProductId(dto.getProductId());
+        entity.setEmployeeId(dto.getEmployeeId());
+    }
+
+    private ContractsDto convertIdToDto(Long id) {
+        ContractsDto dto = new ContractsDto();
+        dto.setContractId(id);
+        return dto;
     }
 }
