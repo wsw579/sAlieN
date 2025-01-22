@@ -1,16 +1,21 @@
 package com.aivle.project.service;
 
 import com.aivle.project.dto.AccountDto;
-import com.aivle.project.dto.OpportunitiesDto;
 import com.aivle.project.entity.AccountEntity;
 import com.aivle.project.repository.AccountRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
+import org.springframework.data.domain.Sort;
 
 @Service
 @Transactional
@@ -52,9 +57,12 @@ public class AccountService {
     }
 
 
-    // Read: 전체 계정 조회
-    public List<AccountEntity> readAccount() {
-        return accountRepository.findAllByOrderByAccountCreatedDateDescAccountIdDesc();
+
+    public Page<AccountEntity> readAccount(Pageable pageable) {
+        List<Sort.Order> sorts = new ArrayList<>();  // Sort.Order 페이지네이션 + 정렬 동시에 해주는 객체
+        sorts.add(Sort.Order.desc("accountCreatedDate")); // 생성날짜 내림차순 정렬 , 최근생성한 계정이 1페이지 최상단에 보여진다.
+        pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(sorts));    // 조회할 페이지번호 , 단일페이지 크기 , 소프트객체
+        return this.accountRepository.findAll(pageable);
     }
 
 
@@ -97,7 +105,32 @@ public class AccountService {
                 .orElseThrow(() -> new IllegalArgumentException("error"));
     }
 
-    // detail select를 위한 이름 id 불러오기
+    public Page<AccountEntity> readAccount(PageRequest pageRequest) {
+        return accountRepository.findAll(pageRequest);
+    }
+
+    public Page<AccountEntity> searchAccounts(String keyword, PageRequest pageRequest) {
+        return accountRepository.findByAccountNameContainingOrAccountTypeContaining(keyword, keyword, pageRequest);
+    }
+
+    // 목록  Search
+    public Page<AccountEntity> searchAccounts(String keyword, Pageable pageable) {
+        // 키워드가 포함된 계정을 검색하는 메서드
+        return accountRepository.findByAccountNameContainingIgnoreCase(keyword, pageable);
+    }
+
+    // 저장된 모든 계정 수
+    public long getTotalAccountCount() {
+        return accountRepository.count();
+    }
+
+
+    // 로그인한 employee 계정 수
+    public Long getAccountCountForEmployee(String employeeId) {
+        return accountRepository.countAccountsByEmployeeId(employeeId);
+    }
+
+    // detail  select 를 위한 이름 id 불러오기
     public List<AccountDto> getAllAccountIdsAndNames() {
         List<Object[]> results = accountRepository.findAllAccountIdAndAccountName();
         return results.stream()
@@ -109,10 +142,6 @@ public class AccountService {
                 })
                 .collect(Collectors.toList());
     }
-
-
-
-
 }
 
 

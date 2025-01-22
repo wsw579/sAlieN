@@ -238,19 +238,32 @@
                                     </select>
                                 </div>
                             </div>
+
                             <div class="mb-3 row">
                                 <label for="accountId" class="col-sm-2 col-form-label">회사 명:</label>
                                 <div class="col-sm-10">
-                                    <select id="accountId" name="accountId" required>
-
+                                    <select id="accountId" name="accountId" onchange="updateCompanyName()" required>
                                         <option value="">-- 계정 선택 --</option>
                                         {{#accounts}}
                                             <option value="{{accountId}}">
                                                 {{accountName}} (ID: {{accountId}})
                                             </option>
                                         {{/accounts}}
-
                                     </select>
+                                </div>
+                            </div>
+
+                            <div class="mb-3 row">
+                                <label for="customCompanyName" class="col-sm-2 col-form-label">직접 입력:</label>
+                                <div class="col-sm-10">
+                                    <input type="text" id="customCompanyName" name="customCompanyName" placeholder="직접 입력" oninput="updateCompanyName()" />
+                                </div>
+                            </div>
+
+                            <div class="mb-3 row">
+                                <label for="companyName" class="col-sm-2 col-form-label">최종 회사명:</label>
+                                <div class="col-sm-10">
+                                    <input type="text" id="companyName" name="companyName" readonly required />
                                 </div>
                             </div>
 
@@ -296,12 +309,13 @@
                         </form>
 
                         {{/leads}}
-
+                    </form>
 
 
 
 
                     </table>
+
                 </div>
             </div>
         </div>
@@ -316,13 +330,26 @@
         document.addEventListener("DOMContentLoaded", function() {
             // Mustache 템플릿에서 서버 데이터를 가져옴
             var leadStatus = "{{leadStatus}}";
-            var accountId = "{{accountId.accountId}}";
+            {{#accountId.accountId}}
+                var accountId = "{{accountId.accountId}}";
+            {{/accountId.accountId}}
             var employeeId = "{{employeeId.employeeId}}";
+            var leadSource = "{{leadSource}}";
+            var companyName = "{{companyName}}";
+
+            // accountId가 null인 경우 기본값 설정
+            if (!accountId || accountId === "null") {
+                accountId = ""; // 기본값으로 빈 문자열 설정
+            }
 
             // 폼에 데이터 채우기
             document.getElementById("leadStatus").value = leadStatus;
+            {{#accountId.accountId}}
             document.getElementById("accountId").value = accountId;
+            {{/accountId.accountId}}
             document.getElementById("employeeId").value = employeeId;
+            document.getElementById("leadSource").value = leadSource;
+            document.getElementById("companyName").value = companyName;
         });
         {{/leadId}}
 
@@ -340,6 +367,39 @@
                 sortField: 'text'
             });
         });
+
+        function updateCompanyName() {
+        const customNameInput = document.getElementById("customCompanyName");
+        const selectedAccount = document.getElementById("accountId");
+        const companyNameField = document.getElementById("companyName");
+
+        // 우선 직접 입력을 적용, 없으면 선택한 계정을 사용
+        if (customNameInput.value.trim() !== "") {
+            companyNameField.value = customNameInput.value;
+        } else if (selectedAccount.value !== "") {
+            const selectedOption = selectedAccount. options[selectedAccount.selectedIndex];
+            let selectedText = selectedOption.textContent.trim();
+
+             const companyName = selectedText.split(/\s+/)[0]; // 연속된 공백 기준으로 나누기
+
+             // companyName 필드와 hiddenAccountId 필드 업데이트
+            companyNameField. value = companyName;
+            accountIdField. value = selectedAccount.value; // 드롭다운 value로 accountId 설정
+        } else {
+            companyNameField.value = ""; // 유효성 검증을 위해 비워둠
+        }
+    }
+
+
+    // 폼 제출 시 회사명이 비어 있는지 확인
+    document.querySelector("form").addEventListener("submit", function (e) {
+        const companyNameField = document.getElementById("companyName");
+
+        if (!companyNameField.value.trim()) {
+            alert("회사 명을 입력하거나 선택해주세요!");
+            e.preventDefault(); // 폼 제출 중단
+        }
+    });
 
         document.addEventListener("DOMContentLoaded", function() {
         document.getElementById("deleteButton").addEventListener("click", function(event) {

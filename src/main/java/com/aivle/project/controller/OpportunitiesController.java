@@ -85,7 +85,6 @@ public class OpportunitiesController {
         model.addAttribute("accounts", accountService.getAllAccountIdsAndNames());
         model.addAttribute("employee", employeeService.getAllEmployeeIdsAndNames());
         model.addAttribute("leads", leadsService.getAllLeadIdsAndCompanyNames());
-
         return "opportunities/opportunities_detail";
     }
 
