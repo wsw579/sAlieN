@@ -129,7 +129,6 @@
                     Contracts List
                 </div>
                 <div class="card-body">
-
                     <div class="button-container mb-3" style="display: flex; align-items: center; gap: 10px;">
                         <div style="flex: 1; display: flex; align-items: center; gap: 10px;">
                             <form method="GET" action="/contracts" style="display: flex; align-items: center; gap: 5px;">
@@ -140,16 +139,16 @@
                                 <!-- 정렬 기준 -->
                                 <label>
                                     <select name="sortColumn">
-                                        <option value="startDate" {{#isStartDateSorted}}selected{{/isStartDateSorted}}>Start Date</option>
-                                        <option value="terminationDate" {{#isTerminationDateSorted}}selected{{/isTerminationDateSorted}}>Termination Date</option>
+                                        <option value="startDate" {{#sortColumn}} {{.}}=="startDate" ? 'selected' : '' {{/sortColumn}}>Start Date</option>
+                                        <option value="terminationDate" {{#sortColumn}} {{.}}=="terminationDate" ? 'selected' : '' {{/sortColumn}}>Termination Date</option>
                                     </select>
                                 </label>
 
                                 <!-- 정렬 방향 -->
                                 <label>
                                     <select name="sortDirection">
-                                        <option value="asc" {{#isAscSorted}}selected{{/isAscSorted}}>Ascending</option>
-                                        <option value="desc" {{#isDescSorted}}selected{{/isDescSorted}}>Descending</option>
+                                        <option value="asc" {{#sortDirection}} {{.}}=="asc" ? 'selected' : '' {{/sortDirection}}>Ascending</option>
+                                        <option value="desc" {{#sortDirection}} {{.}}=="desc" ? 'selected' : '' {{/sortDirection}}>Descending</option>
                                     </select>
                                 </label>
 
