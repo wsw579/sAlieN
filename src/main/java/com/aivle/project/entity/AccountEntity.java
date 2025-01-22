@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -34,8 +35,8 @@ public class AccountEntity implements Serializable {
     @OneToMany(mappedBy = "parentAccount" , cascade = {CascadeType.PERSIST , CascadeType.MERGE, CascadeType.REFRESH , CascadeType.DETACH })
     private List<AccountEntity> childAccounts;
 
-
-    @Column(name = "account_created_date" )
+    @CreationTimestamp   // Hibernate가 INSERT 시점에 자동으로 값(현재 시각)을 넣어준다
+    @Column(name = "account_created_date", updatable = false)
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate accountCreatedDate;
 
