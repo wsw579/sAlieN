@@ -133,7 +133,7 @@ public class OpportunitiesController {
         model.addAttribute("history", history);
         model.addAttribute("opportunitiesComments", opportunitiesComments);
         model.addAttribute("products", products);
-        model.addAttribute("accounts", accounts);
+       model.addAttribute("accounts", accounts);
         model.addAttribute("employee", employee);
         model.addAttribute("leads", leads);
         return "opportunities/opportunities_detail";

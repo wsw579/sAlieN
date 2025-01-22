@@ -57,22 +57,25 @@
             <ol class="breadcrumb mb-4">
                 <li class="breadcrumb-item active">Account</li>
             </ol>
+
             <!-- 상단 데이터 요약 카드 바 -->
             <div class="row">
                 <div class="col-xl-3 col-md-6">
                     <div class="card bg-primary text-white mb-4">
                         <div class="card-body">모든 계정</div>
                         <div class="card-footer d-flex align-items-center justify-content-between">
-                            <h3 id="ongoingCount"></h3>
+                            <h3 >{{totalAccounts}}</h3>
                             <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                         </div>
                     </div>
                 </div>
-                <div class="col-xl-3 col-md-6">
+
+
+            <div class="col-xl-3 col-md-6">
                     <div class="card bg-warning text-white mb-4">
                         <div class="card-body">내 계정</div>
                         <div class="card-footer d-flex align-items-center justify-content-between">
-                            <h3 id="overdueCount"></h3>
+                            <h3 id="accountByEmployee"></h3>
                             <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                         </div>
                     </div>
@@ -84,7 +87,7 @@
                         <div class="card mb-4">
                             <div class="card-header">
                                 <i class="fas fa-chart-area me-1"></i>
-                                    계정 유형
+                                계정 유형
                             </div>
                             <div class="card-body">
                                 <canvas id="opportunitiesReadChart" width="100%" height="40"></canvas>
@@ -114,6 +117,14 @@
                         My Account
                     </div>
                     <div class="card-body">
+
+                        <!-- 검색 폼 추가 -->
+                        <form id="searchForm" method="get" action="/account" class="mb-3">
+                            <input type="text" id="searchInput" name="keyword" value="{{keyword}}"
+                                   placeholder="Search by account name" class="form-control" style="width: 300px;">
+                        </form>
+
+
                         <table id="datatablesSimple">
 
                             <div class="button-container mb-3">
@@ -128,6 +139,7 @@
 
                             <thead>
                             <tr>
+
                                 <th></th>
                                 <th>ID</th>
                                 <th>생성 일자</th>
@@ -139,7 +151,8 @@
                             </tr>
                             </thead>
                             <tbody>
-                            {{#accounts}}
+
+                            {{#paging}}
                                 <tr data-index="{{accountId}}">
                                     <td><input type="checkbox" class="select-row" value="{{accountId}}"></td>
                                     <td>{{accountId}}</td>
@@ -149,106 +162,133 @@
                                     <td>{{contact}}</td>
                                     <td>{{address}}</td>
                                 </tr>
-                            {{/accounts}}
+                            {{/paging}}
+
                             </tbody>
 
                         </table>
                     </div>
+
+
+                    <!-- 페이징처리 시작 -->
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item {{^paging.hasPrevious}}disabled{{/paging.hasPrevious}}">
+                                <a class="page-link" href="?page=1&keyword={{keyword}}" aria-label="First">
+                                    <span aria-hidden="true">&laquo;&laquo;</span>
+                                </a>
+                            </li>
+                            <li class="page-item {{^paging.hasPrevious}}disabled{{/paging.hasPrevious}}">
+                                <a class="page-link" href="?page={{#paging.hasPrevious}}{{paging.number}}{{/paging.hasPrevious}}{{^paging.hasPrevious}}1{{/paging.hasPrevious}}&keyword={{keyword}}" aria-label="Previous"> <!-- 추가: &keyword={{keyword}} -->
+                                <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                            {{#pageNumbers}}
+                                <li class="page-item {{#isCurrentPage}}active{{/isCurrentPage}}">
+                                    <a class="page-link" href="?page={{number}}&keyword={{keyword}}">{{number}}</a>
+                                </li>
+                            {{/pageNumbers}}
+                            <li class="page-item {{^paging.hasNext}}disabled{{/paging.hasNext}}">
+                                <a class="page-link" href="?page={{#paging.hasNext}}{{nextPage}}{{/paging.hasNext}}{{^paging.hasNext}}{{totalPages}}{{/paging.hasNext}}&keyword={{keyword}}" aria-label="Next"> <!-- 추가: &keyword={{keyword}} -->
+                                <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                            <li class="page-item {{^paging.hasNext}}disabled{{/paging.hasNext}}">
+                                <a class="page-link" href="?page={{totalPages}}&keyword={{keyword}}" aria-label="Last">
+                                <span aria-hidden="true">&raquo;&raquo;</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+
+                    <!-- 페이징처리 끝 -->
 
                 </div>
             </div>
         </div>
     </main>
 
-
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var rows = document.querySelectorAll("#datatablesSimple tbody tr");
-            var now = new Date();
-            var ongoingCount = 0;
-            var overdueCount = 0;
-            var closedCount = 0;
-            var pendingCount = 0;
-
-            rows.forEach(function(row) {
-                var status = row.querySelector("td:nth-child(6)").innerText;
-                var targetCloseDate = new Date(row.querySelector("td:nth-child(7)").innerText);
-
-                if (!status.startsWith("Closed")) {
-                    ongoingCount++;
-                }
-
-                if (status === "Closed(won)") {
-                    closedCount++;
-                }
-                if (status === "Pending") {
-                    pendingCount++;
-                }
-                if (targetCloseDate < now && !status.startsWith("Closed")) {
-                    overdueCount++;
-                }
-            });
-
-            document.getElementById("ongoingCount").innerText = `${ongoingCount} 건`;
-            document.getElementById("overdueCount").innerText = `${overdueCount} 건`;
-            document.getElementById("closedCount").innerText = `${closedCount} 건`;
-            document.getElementById("pendingCount").innerText = `${pendingCount} 건`;
-        });
 
 
 
+        // 로그인한 직원 계정 수
+       document.addEventListener('DOMContentLoaded', function() {
+    var currentEmployeeAccountCount = {{currentEmployeeAccountCount}};
+    document.getElementById('accountByEmployee').textContent = currentEmployeeAccountCount;
+});
+
+
+        // 검색
+       document.addEventListener('DOMContentLoaded', function() {
+       var searchInput = document.getElementById('searchInput');
+
+       // 페이지 로드 시 검색 입력 필드에 포커스
+       searchInput.focus();
+
+       // 커서를 입력 필드의 끝으로 이동
+       var inputValue = searchInput.value;
+       searchInput.value = '';
+       searchInput.value = inputValue;
+
+       // 입력 이벤트 리스너 추가
+       searchInput.addEventListener('input', function() {
+           clearTimeout(this.debounceTimer);
+           this.debounceTimer = setTimeout(() => {
+               document.getElementById('searchForm').submit();
+           }, 550);
+       });
+   });
 
 
 
+               document.addEventListener("DOMContentLoaded", function() {
+                   var deleteButton = document.getElementById("deleteButton");
+                   if (deleteButton) {
+                       deleteButton.addEventListener("click", function() {
+                           var selectedCheckboxes = document.querySelectorAll(".select-row:checked");
+                           var selectedIds = [];
 
+                           selectedCheckboxes.forEach(function(checkbox) {
+                               var accountId = checkbox.value;
+                               console.log("Account ID:", accountId); // 로그 추가
+                               selectedIds.push(accountId);
+                           });
 
-    document.addEventListener("DOMContentLoaded", function() {
-        var deleteButton = document.getElementById("deleteButton");
-        if (deleteButton) {
-            deleteButton.addEventListener("click", function() {
-                var selectedCheckboxes = document.querySelectorAll(".select-row:checked");
-                var selectedIds = [];
+                           if (selectedIds.length > 0) {
+                               var confirmDelete = confirm("선택한 항목들을 삭제하시겠습니까?");
 
-                selectedCheckboxes.forEach(function(checkbox) {
-                    var accountId = checkbox.value;
-                    console.log("Account ID:", accountId); // 로그 추가
-                    selectedIds.push(accountId);
-                });
-
-                if (selectedIds.length > 0) {
-                    var confirmDelete = confirm("선택한 항목들을 삭제하시겠습니까?");
-
-                    if (confirmDelete) {
-                        console.log("Deleting IDs:", selectedIds); // 로그 추가
-                        fetch("/account/detail/delete", {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json"
-                            },
-                            body: JSON.stringify({ ids: selectedIds })
-                        }).then(response => {
-                            if (response.ok) {
-                                // 서버 응답이 성공적이면 리다이렉트 수행
-                                window.location.href = "/account";
-                            } else {
-                                alert("삭제 중 오류가 발생했습니다.");
-                            }
-                        }).catch(error => {
-                            console.error("Error:", error);
-                            alert("삭제 중 오류가 발생했습니다.");
-                        });
-                    }
-                } else {
-                    alert("삭제할 항목을 선택해 주세요.");
-                }
-            });
-        }
-    });
+                               if (confirmDelete) {
+                                   console.log("Deleting IDs:", selectedIds); // 로그 추가
+                                   fetch("/account/detail/delete", {
+                                       method: "POST",
+                                       headers: {
+                                           "Content-Type": "application/json"
+                                       },
+                                       body: JSON.stringify({ ids: selectedIds })
+                                   }).then(response => {
+                                       if (response.ok) {
+                                           // 서버 응답이 성공적이면 리다이렉트 수행
+                                           window.location.href = "/account";
+                                       } else {
+                                           alert("삭제 중 오류가 발생했습니다.");
+                                       }
+                                   }).catch(error => {
+                                       console.error("Error:", error);
+                                       alert("삭제 중 오류가 발생했습니다.");
+                                   });
+                               }
+                           } else {
+                               alert("삭제할 항목을 선택해 주세요.");
+                           }
+                       });
+                   }
+               });
 
 
     </script>
 
-    bundle.m<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.in.js"></script>
 
 
