@@ -1,6 +1,7 @@
 package com.aivle.project.dto;
 
 import com.aivle.project.entity.ContractsEntity;
+import com.aivle.project.entity.EmployeeEntity;
 import com.aivle.project.entity.ProductsEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,4 +24,5 @@ public class OrdersDto {
     // 외래키
     private ContractsEntity contractId;
     private ProductsEntity productId;
+    private EmployeeEntity employeeId;
 }

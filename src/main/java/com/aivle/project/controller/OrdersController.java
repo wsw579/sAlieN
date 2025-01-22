@@ -1,17 +1,21 @@
 package com.aivle.project.controller;
 
 import com.aivle.project.dto.ContractsDto;
+import com.aivle.project.dto.EmployeeDto;
 import com.aivle.project.dto.OrdersDto;
 import com.aivle.project.dto.ProductsDto;
 import com.aivle.project.entity.*;
 import com.aivle.project.enums.OrderStatus;
 import com.aivle.project.repository.ContractsRepository;
 import com.aivle.project.service.ContractsService;
+import com.aivle.project.service.EmployeeService;
 import com.aivle.project.service.OrdersService;
 import com.aivle.project.service.ProductsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -31,6 +35,7 @@ public class OrdersController {
     private final OrdersService ordersService;
     private final ContractsService contractsService;
     private final ProductsService productsService;
+    private final EmployeeService employeeService;
 
     // Read page
     @GetMapping("/orders")
@@ -132,7 +137,6 @@ public class OrdersController {
     // Create order page (초기값으로 페이지 생성)
     @GetMapping("/orders/detail/create")
     public String ordersCreate(Model model) {
-
         OrdersEntity orders = new OrdersEntity();
 
         // 목록 조회 후 모델에 추가 (드롭다운 메뉴용)

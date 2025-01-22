@@ -1,14 +1,11 @@
 package com.aivle.project.dto;
 
-import com.aivle.project.enums.Dept;
-import com.aivle.project.enums.Position;
-import com.aivle.project.enums.Role;
-import com.aivle.project.enums.Team;
 import lombok.*;
 
 import java.time.LocalDate;
 
 public class EmployeeDto {
+
     @Getter
     @Setter
     @NoArgsConstructor
@@ -64,4 +61,5 @@ public class EmployeeDto {
         private String employeeId;
         private String employeeName; // detail페이지 로딩 속도를 높이기 위해 전체 데이터 조회에서 id와 name만 가져오게 변경
     }
+
 }

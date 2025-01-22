@@ -1,11 +1,14 @@
 package com.aivle.project.service;
 
+import com.aivle.project.dto.EmployeeDto;
 import com.aivle.project.dto.OrdersDto;
 import com.aivle.project.entity.ContractsEntity;
+import com.aivle.project.entity.EmployeeEntity;
 import com.aivle.project.entity.OrdersEntity;
 import com.aivle.project.entity.ProductsEntity;
 import com.aivle.project.enums.OrderStatus;
 import com.aivle.project.repository.ContractsRepository;
+import com.aivle.project.repository.EmployeeRepository;
 import com.aivle.project.repository.OrdersRepository;
 import com.aivle.project.repository.ProductsRepository;
 import jakarta.transaction.Transactional;
@@ -14,6 +17,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -26,12 +31,18 @@ import java.util.stream.IntStream;
 @RequiredArgsConstructor
 public class OrdersService {
 
-    private final ContractsRepository contractsRepository;
     private final OrdersRepository ordersRepository;
-    private final ProductsRepository productsRepository;
+    private final EmployeeRepository employeeRepository;
 
     // Create
     public void createOrder(OrdersDto dto) {
+        // 현재 인증된 사용자 가져오기
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUserId = authentication.getName(); // 기본적으로 username 반환
+        System.out.println("현재 로그인된 사용자 ID: " + currentUserId);
+        // 데이터베이스에서 EmployeeEntity 로드
+        EmployeeEntity employee = employeeRepository.findByEmployeeId(currentUserId);
+
         OrdersEntity orderEntity = new OrdersEntity();
 
         orderEntity.setOrderDate(dto.getOrderDate());
@@ -40,6 +51,7 @@ public class OrdersService {
         orderEntity.setOrderStatus(OrderStatus.valueOf(dto.getOrderStatus()));
         orderEntity.setContractId(dto.getContractId());
         orderEntity.setProductId(dto.getProductId());
+        orderEntity.setEmployeeId(employee);
         ordersRepository.save(orderEntity);
     }
 
