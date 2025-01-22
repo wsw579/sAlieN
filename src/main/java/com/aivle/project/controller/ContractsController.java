@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +18,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
-@RestController
+@Controller
 @RequiredArgsConstructor
 public class ContractsController {
 
@@ -65,6 +66,16 @@ public class ContractsController {
         model.addAttribute("sortDirection", sortDirection);
 
         return "contracts/contracts_read";
+    }
+
+    @GetMapping("/contracts/bar-data")
+    public ResponseEntity<Map<String, List<Integer>>> getBarData() {
+        return ResponseEntity.ok(contractsService.getBarData());
+    }
+
+    @GetMapping("/contracts/chart-data")
+    public ResponseEntity<Map<String, List<Integer>>> getChartData() {
+        return ResponseEntity.ok(contractsService.getChartData());
     }
 
 
