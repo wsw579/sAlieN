@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 import org.springframework.data.domain.Sort;
@@ -115,13 +116,24 @@ public class AccountService {
         return accountRepository.count();
     }
 
+
     // 로그인한 employee 계정 수
     public Long getAccountCountForEmployee(String employeeId) {
         return accountRepository.countAccountsByEmployeeId(employeeId);
     }
 
-
-
+        // detail select를 위한 이름 id 불러오기
+    public List<AccountDto> getAllAccountIdsAndNames() {
+        List<Object[]> results = accountRepository.findAllAccountIdAndAccountName();
+        return results.stream()
+                .map(result -> {
+                    AccountDto dto = new AccountDto();
+                    dto.setAccountId((Long) result[0]);
+                    dto.setAccountName((String) result[1]);
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
 }
 
 
