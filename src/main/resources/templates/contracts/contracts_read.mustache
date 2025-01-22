@@ -186,12 +186,12 @@
                         {{#pagination.contents}}
                             <tr data-index="{{contractId}}">
                                 <td><input type="checkbox" class="select-row" value="{{contractId}}"></td>
+                                <td>{{contractId}}</td>
                                 <td>
                                     <a href="/contracts/detail/{{contractId}}">
-                                        {{contractId}}
+                                    {{accountId.accountName}}
                                     </a>
                                 </td>
-                                <td>{{accountId.accountName}}</td>
                                 <td>{{startDate}}</td>
                                 <td>{{terminationDate}}</td>
                                 <td>{{contractStatus}}</td>

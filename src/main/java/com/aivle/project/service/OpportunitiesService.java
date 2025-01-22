@@ -110,9 +110,14 @@ public class OpportunitiesService {
 
     // Utility Methods
     public List<OpportunitiesDto> getAllOpportunityIdsAndNames() {
-        return opportunitiesRepository.findAllOpportunityIdAndOpportunityName()
-                .stream()
-                .map(result -> new OpportunitiesDto((Long) result[0], (String) result[1]))
+        List<Object[]> results = opportunitiesRepository.findAllOpportunityIdAndOpportunityName();
+        return results.stream()
+                .map(result -> {
+                    OpportunitiesDto dto = new OpportunitiesDto();
+                    dto.setOpportunityId((Long) result[0]);
+                    dto.setOpportunityName((String) result[1]);
+                    return dto;
+                })
                 .collect(Collectors.toList());
     }
 
