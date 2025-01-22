@@ -179,10 +179,10 @@ public class OrdersController {
     }
 
     // Delete detail page
-    @GetMapping("/orders/detail/{orderId}/delete")
-    public String ordersDeleteDetail(@PathVariable("orderId") Long orderId) {
+    @PostMapping("/orders/detail/{orderId}/delete")
+    public ResponseEntity<Void> deleteOrder(@PathVariable("orderId") Long orderId) {
         ordersService.deleteOrder(orderId);
-        return "redirect:/orders";
+        return ResponseEntity.ok().build();
     }
 
     // Delete orders in bulk
