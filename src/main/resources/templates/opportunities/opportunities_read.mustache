@@ -194,12 +194,12 @@
                                 <td>{{opportunityId}}</td>
                                 <td>{{createdDate}}</td>
                                 <td><a href="/opportunities/detail/{{opportunityId}}">{{opportunityName}}</a></td>
-                                <td>{{accountId.accountId}}</td>
+                                <td>{{accountId.accountName}}</td>
                                 <td>{{productId.productName}}</td>
-                                <td>{{expectedRevenue}}</td>
+                                <td data-revenue="{{expectedRevenue}}">{{expectedRevenue}}</td>
                                 <td>{{opportunityStatus}}</td>
                                 <td>{{targetCloseDate}}</td>
-                                <td>{{successRate}}</td>
+                                <td data-success-rate="{{successRate}}">{{successRate}}</td>
                                 <td>{{employeeId.employeeId}}</td>
 
                             </tr>
@@ -238,49 +238,82 @@
 
 
     <script>
-
-    document.addEventListener("DOMContentLoaded", function() {
-        var deleteButton = document.getElementById("deleteButton");
-        if (deleteButton) {
-            deleteButton.addEventListener("click", function() {
-                var selectedCheckboxes = document.querySelectorAll(".select-row:checked");
-                var selectedIds = [];
-
-                selectedCheckboxes.forEach(function(checkbox) {
-                    var opportunityId = checkbox.value;
-                    console.log("Opportunity ID:", opportunityId); // 로그 추가
-                    selectedIds.push(opportunityId);
-                });
-
-                if (selectedIds.length > 0) {
-                    var confirmDelete = confirm("선택한 항목들을 삭제하시겠습니까?");
-
-                    if (confirmDelete) {
-                        console.log("Deleting IDs:", selectedIds); // 로그 추가
-                        fetch("/opportunities/detail/delete", {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json"
-                            },
-                            body: JSON.stringify({ ids: selectedIds })
-                        }).then(response => {
-                            if (response.ok) {
-                                // 서버 응답이 성공적이면 리다이렉트 수행
-                                window.location.href = "/opportunities";
-                            } else {
-                                alert("삭제 중 오류가 발생했습니다.");
-                            }
-                        }).catch(error => {
-                            console.error("Error:", error);
-                            alert("삭제 중 오류가 발생했습니다.");
-                        });
-                    }
-                } else {
-                    alert("삭제할 항목을 선택해 주세요.");
+        document.addEventListener("DOMContentLoaded", function () {
+            // 모든 매출 데이터를 포맷
+            document.querySelectorAll("td[data-revenue]").forEach(function (element) {
+                const rawRevenue = element.textContent.trim(); // 원래 데이터
+                if (!isNaN(rawRevenue)) {
+                    const formattedRevenue = new Intl.NumberFormat('ko-KR', {
+                        style: 'currency',
+                        currency: 'KRW',
+                    }).format(Number(rawRevenue));
+                    element.textContent = formattedRevenue; // 원화로 변환 후 적용
                 }
             });
-        }
-    });
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            // 모든 successRate 데이터를 처리
+            document.querySelectorAll("td[data-success-rate]").forEach(function (element) {
+                const rawRate = parseFloat(element.textContent.trim()); // 서버에서 전달된 원래 값
+                if (!isNaN(rawRate)) {
+                    const percentage = (rawRate * 100).toFixed(0); // 퍼센트 변환
+                    element.textContent = `${percentage}%`; // 퍼센트 기호 추가
+
+                    // 조건부 스타일링
+                    if (rawRate >= 0.5) {
+                        element.style.color = "green"; // 성공률이 50% 이상이면 녹색
+                    } else if (rawRate >= 0.3) {
+                        element.style.color = "orange"; // 성공률이 30% 이상이면 주황색
+                    } else {
+                        element.style.color = "red"; // 성공률이 30% 미만이면 빨간색
+                    }
+                }
+            });
+        });
+
+            document.addEventListener("DOMContentLoaded", function() {
+                var deleteButton = document.getElementById("deleteButton");
+                if (deleteButton) {
+                    deleteButton.addEventListener("click", function() {
+                        var selectedCheckboxes = document.querySelectorAll(".select-row:checked");
+                        var selectedIds = [];
+
+                        selectedCheckboxes.forEach(function(checkbox) {
+                            var opportunityId = checkbox.value;
+                            console.log("Opportunity ID:", opportunityId); // 로그 추가
+                            selectedIds.push(opportunityId);
+                        });
+
+                        if (selectedIds.length > 0) {
+                            var confirmDelete = confirm("선택한 항목들을 삭제하시겠습니까?");
+
+                            if (confirmDelete) {
+                                console.log("Deleting IDs:", selectedIds); // 로그 추가
+                                fetch("/opportunities/detail/delete", {
+                                    method: "POST",
+                                    headers: {
+                                        "Content-Type": "application/json"
+                                    },
+                                    body: JSON.stringify({ ids: selectedIds })
+                                }).then(response => {
+                                    if (response.ok) {
+                                        // 서버 응답이 성공적이면 리다이렉트 수행
+                                        window.location.href = "/opportunities";
+                                    } else {
+                                        alert("삭제 중 오류가 발생했습니다.");
+                                    }
+                                }).catch(error => {
+                                    console.error("Error:", error);
+                                    alert("삭제 중 오류가 발생했습니다.");
+                                });
+                            }
+                        } else {
+                            alert("삭제할 항목을 선택해 주세요.");
+                        }
+                    });
+                }
+            });
 
 
 
