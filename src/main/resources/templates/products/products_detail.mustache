@@ -140,9 +140,9 @@
                                 </a>
 
                                 {{#productId}}
-                                    <a href="/products/detail/{{productId}}/delete" id="deleteButton" class="btn btn-custom-delete btn-sm">
+                                    <button id="deleteButton" class="btn btn-custom-delete btn-sm">
                                         <i class="fas fa-trash-alt"></i> 삭제
-                                    </a>
+                                    </button>
                                 {{/productId}}
                             </div>
 
@@ -207,6 +207,7 @@
                             </div>
                         </form> <!-- 폼 닫기 -->
                         {{/products}}
+                    </form>
                     </table>
                 </div>
             </div>
@@ -215,7 +216,7 @@
         <div class="card mb-4">
             <div class="card-header">
                 <i class="fas fa-table me-1"></i>
-                Orders Status
+                Product Status
             </div>
             <div class="card-body">
                 <table id="products_status">
@@ -239,17 +240,6 @@
 
     <script>
     {{#products}}
-        document.addEventListener("DOMContentLoaded", function() {
-            document.getElementById("deleteButton").addEventListener("click", function(event) {
-                event.preventDefault();
-
-                var confirmDelete = confirm("정말 삭제하시겠습니까?");
-                if (confirmDelete) {
-                    window.location.href = this.href;
-                }
-            });
-        });
-
         document.addEventListener("DOMContentLoaded", function() {
             var productCondition = "{{productCondition}}";
 
@@ -284,6 +274,43 @@
                     }
                 });
             }
+
+        {{#productId}}
+        var deleteButton = document.getElementById("deleteButton");
+        if (deleteButton) {
+            deleteButton.addEventListener("click", function () {
+                // 서버에서 렌더링된 productId 가져오기
+                var productId = "{{productId}}";
+
+                if (productId) {
+                    var confirmDelete = confirm("현재 항목을 삭제하시겠습니까?");
+                    if (confirmDelete) {
+                        fetch(`/products/detail/${productId}/delete`, {
+                            method: "POST", // 서버 엔드포인트가 POST를 지원해야 함
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({ id: productId }), // 올바른 데이터 전송
+                        })
+                            .then((response) => {
+                                if (response.ok) {
+                                    alert("삭제되었습니다.");
+                                    window.location.href = "/products"; // 삭제 후 이동
+                                } else {
+                                    alert("삭제 중 오류가 발생했습니다.");
+                                }
+                            })
+                            .catch((error) => {
+                                console.error("Error:", error);
+                                alert("삭제 중 오류가 발생했습니다.");
+                            });
+                    }
+                } else {
+                    alert("삭제할 ID가 없습니다.");
+                }
+            });
+            }
+    {{/productId}}
         });
     {{/products}}
     </script>

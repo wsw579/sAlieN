@@ -223,43 +223,45 @@
     </main>
 
     <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var deleteButton = document.getElementById("deleteButton");
+        if (deleteButton) {
+            deleteButton.addEventListener("click", function() {
+                var selectedCheckboxes = document.querySelectorAll(".select-row:checked");
+                var selectedIds = [];
 
-            var deleteButton = document.getElementById("deleteButton");
-            if (deleteButton) {
-                deleteButton.addEventListener("click", function() {
-                    var selectedCheckboxes = document.querySelectorAll(".select-row:checked");
-                    var selectedIds = [];
-
-                    selectedCheckboxes.forEach(function(checkbox) {
-                        var orderId = checkbox.value;
-                        selectedIds.push(orderId);
-                    });
-
-                    if (selectedIds.length > 0) {
-                        var confirmDelete = confirm("선택한 항목들을 삭제하시겠습니까?");
-                        if (confirmDelete) {
-                            fetch("/orders/detail/delete", {
-                                method: "POST",
-                                headers: {
-                                    "Content-Type": "application/json"
-                                },
-                                body: JSON.stringify({ ids: selectedIds })
-                            }).then(response => {
-                                if (response.ok) {
-                                    window.location.href = "/orders";
-                                } else {
-                                    alert("삭제 중 오류가 발생했습니다.");
-                                }
-                            }).catch(error => {
-                                console.error("Error:", error);
-                                alert("삭제 중 오류가 발생했습니다.");
-                            });
-                        }
-                    } else {
-                        alert("삭제할 항목을 선택해 주세요.");
-                    }
+                selectedCheckboxes.forEach(function(checkbox) {
+                    var orderId = checkbox.value;
+                    selectedIds.push(orderId);
                 });
-            }
+
+
+                if (selectedIds.length > 0) {
+                    var confirmDelete = confirm("선택한 항목들을 삭제하시겠습니까?");
+                    if (confirmDelete) {
+                        fetch("/orders/detail/delete", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({ ids: selectedIds })
+                        }).then(response => {
+                            if (response.ok) {
+                                window.location.href = "/orders";
+                            } else {
+                                alert("삭제 중 오류가 발생했습니다.");
+                            }
+                        }).catch(error => {
+                            console.error("Error:", error);
+                            alert("삭제 중 오류가 발생했습니다.");
+                        });
+                    }
+                } else {
+                    alert("삭제할 항목을 선택해 주세요.");
+                }
+            });
+        }
+    });
     </script>
 
     <script src="/assets/demo/orders-read-chart.js"></script>

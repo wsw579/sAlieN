@@ -3,10 +3,13 @@ package com.aivle.project.service;
 import com.aivle.project.dto.ContractsDto;
 import com.aivle.project.dto.ProductsDto;
 import com.aivle.project.entity.ContractsEntity;
+import com.aivle.project.entity.EmployeeEntity;
 import com.aivle.project.entity.OrdersEntity;
 import com.aivle.project.entity.ProductsEntity;
 import com.aivle.project.enums.ProductCondition;
+import com.aivle.project.repository.EmployeeRepository;
 import com.aivle.project.repository.ProductsRepository;
+import com.aivle.project.utils.UserContext;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +17,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,11 +35,18 @@ import java.util.stream.IntStream;
 public class ProductsService {
 
     private final ProductsRepository productsRepository;
+    private final EmployeeRepository employeeRepository;
     private static final Logger logger = LoggerFactory.getLogger(ContractsService.class);
 
 
     // Create
     public void createProduct(ProductsDto dto) {
+        // 현재 사용자 정보 가져오기
+        String currentUserId = UserContext.getCurrentUserId();
+        System.out.println("현재 로그인된 사용자 ID: " + currentUserId);
+        // 데이터베이스에서 EmployeeEntity 로드
+        EmployeeEntity employee = employeeRepository.findByEmployeeId(currentUserId);
+
         ProductsEntity productEntity = convertDtoToEntity(dto);
 
         productsRepository.save(productEntity);
