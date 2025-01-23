@@ -109,18 +109,38 @@ public class EmployeeService {
 
     public String editPassword(EmployeeDto.Patch employee) {
         EmployeeEntity findEmployee = employeeRepository.findByEmployeeId(employee.getEmployeeId());
+        if (findEmployee == null) {
+            throw new IllegalArgumentException("사원을 찾을 수 없습니다.");
+        }
 
-        // 평문 비밀번호를 암호화된 비밀번호와 비교
-        if (bCryptPasswordEncoder.matches(employee.getExistPassword(), findEmployee.getPassword())) {
-            // 비밀번호 일치 - 새 비밀번호 저장
-            findEmployee.setPassword(bCryptPasswordEncoder.encode(employee.getNewPassword())); // 새 비밀번호 암호화하여 저장
-            employeeRepository.save(findEmployee);
-            return findEmployee.getEmployeeId();
-        } else {
-            // 비밀번호 불일치
+        if (!bCryptPasswordEncoder.matches(employee.getExistPassword(), findEmployee.getPassword())) {
             throw new IllegalArgumentException("기존 비밀번호가 일치하지 않습니다.");
         }
+
+        // 비밀번호가 일치하면 새 비밀번호 저장
+        findEmployee.setPassword(bCryptPasswordEncoder.encode(employee.getNewPassword()));
+        findEmployee.setPasswordAnswer(employee.getPasswordAnswer());
+        employeeRepository.save(findEmployee);
+        return findEmployee.getEmployeeId();
     }
+
+    public String findPassword(EmployeeDto.Patch employee) {
+        EmployeeEntity findEmployee = employeeRepository.findByEmployeeId(employee.getEmployeeId());
+        if (findEmployee == null) {
+            throw new IllegalArgumentException("사원을 찾을 수 없습니다.");
+        }
+
+        if (!bCryptPasswordEncoder.matches(employee.getExistPassword(), findEmployee.getPassword())) {
+            throw new IllegalArgumentException("기존 비밀번호가 일치하지 않습니다.");
+        }
+
+        // 비밀번호가 일치하면 새 비밀번호 저장
+        findEmployee.setPassword(bCryptPasswordEncoder.encode(employee.getNewPassword()));
+        employeeRepository.save(findEmployee);
+        return findEmployee.getEmployeeId();
+    }
+
+
 
     public EmployeeDto.Get findEmployeeById(String employeeId) {
         EmployeeEntity findEmployee = employeeRepository.findByEmployeeId(employeeId);

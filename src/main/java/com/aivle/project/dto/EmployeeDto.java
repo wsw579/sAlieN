@@ -50,6 +50,7 @@ public class EmployeeDto {
         private String employeeId;
         private String existPassword;
         private String newPassword;
+        private String passwordAnswer;
     }
 
     @Getter

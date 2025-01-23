@@ -177,7 +177,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        {{#orders}}
+                        {{#pagination.contents}}
                             <tr data-index="{{orderId}}">
                                 <td><input type="checkbox" class="select-row" value="{{orderId}}"></td>
                                 <td><a href="/orders/detail/{{orderId}}">{{orderId}}</a></td>
@@ -188,33 +188,33 @@
                                 <td>{{productId.productId}}</td>
                                 <td>{{contractId.contractId}}</td>
                             </tr>
-                        {{/orders}}
+                        {{/pagination.contents}}
                         </tbody>
                     </table>
 
                     <div class="pagination">
                         <!-- 이전 버튼 -->
-                        {{#hasPreviousPage}}
-                            <button onclick="window.location.href='/orders?page={{previousPage}}&size=10&search={{search}}&sortColumn={{sortColumn}}&sortDirection={{sortDirection}}'">
+                        {{#pagination.hasPreviousPage}}
+                            <button onclick="window.location.href='/orders?page={{pagination.previousPage}}&size=10&search={{search}}&sortColumn={{sortColumn}}&sortDirection={{sortDirection}}'">
                             이전
                             </button>
-                        {{/hasPreviousPage}}
+                        {{/pagination.hasPreviousPage}}
 
                         <!-- 페이지 번호 버튼 -->
-                        {{#pageNumbers}}
+                        {{#pagination.pageNumbers}}
                             <button
                                     onclick="window.location.href='/orders?page={{page}}&size=10&search={{search}}&sortColumn={{sortColumn}}&sortDirection={{sortDirection}}'"
                             class="{{#isActive}}active{{/isActive}}">
                             {{displayPage}}
                             </button>
-                        {{/pageNumbers}}
+                        {{/pagination.pageNumbers}}
 
                         <!-- 다음 버튼 -->
-                        {{#hasNextPage}}
-                            <button onclick="window.location.href='/orders?page={{nextPage}}&size=10&search={{search}}&sortColumn={{sortColumn}}&sortDirection={{sortDirection}}'">
+                        {{#pagination.hasNextPage}}
+                            <button onclick="window.location.href='/orders?page={{pagination.nextPage}}&size=10&search={{search}}&sortColumn={{sortColumn}}&sortDirection={{sortDirection}}'">
                             다음
                             </button>
-                        {{/hasNextPage}}
+                        {{/pagination.hasNextPage}}
                     </div>
                 </div>
 
@@ -235,6 +235,31 @@
                     selectedIds.push(orderId);
                 });
 
+                    if (selectedIds.length > 0) {
+                        var confirmDelete = confirm("선택한 항목들을 삭제하시겠습니까?");
+                        if (confirmDelete) {
+                            fetch("/orders/detail/delete", {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json"
+                                },
+                                body: JSON.stringify({ ids: selectedIds })
+                            }).then(response => {
+                                if (response.ok) {
+                                    window.location.href = "/orders";
+                                } else {
+                                    alert("삭제 중 오류가 발생했습니다.");
+                                }
+                            }).catch(error => {
+                                console.error("Error:", error);
+                                alert("삭제 중 오류가 발생했습니다.");
+                            });
+                        }
+                    } else {
+                        alert("삭제할 항목을 선택해 주세요.");
+                    }
+                });
+            }
                 if (selectedIds.length > 0) {
                     var confirmDelete = confirm("선택한 항목들을 삭제하시겠습니까?");
                     if (confirmDelete) {

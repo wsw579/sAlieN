@@ -140,16 +140,16 @@
                                 <!-- 정렬 기준 -->
                                 <label>
                                     <select name="sortColumn">
-                                        <option value="createdDate" {{#isCreatedDateSorted}}selected{{/isCreatedDateSorted}}>Created Date</option>
-                                        <option value="targetCloseDate" {{#isTargetCloseDateSorted}}selected{{/isTargetCloseDateSorted}}>TargetClose Date</option>
+                                        <option value="startDate" {{#sortColumn}} {{.}}=="startDate" ? 'selected' : '' {{/sortColumn}}>Start Date</option>
+                                        <option value="terminationDate" {{#sortColumn}} {{.}}=="terminationDate" ? 'selected' : '' {{/sortColumn}}>Termination Date</option>
                                     </select>
                                 </label>
 
                                 <!-- 정렬 방향 -->
                                 <label>
                                     <select name="sortDirection">
-                                        <option value="asc" {{#isAscSorted}}selected{{/isAscSorted}}>Ascending</option>
-                                        <option value="desc" {{#isDescSorted}}selected{{/isDescSorted}}>Descending</option>
+                                        <option value="asc" {{#sortDirection}} {{.}}=="asc" ? 'selected' : '' {{/sortDirection}}>Ascending</option>
+                                        <option value="desc" {{#sortDirection}} {{.}}=="desc" ? 'selected' : '' {{/sortDirection}}>Descending</option>
                                     </select>
                                 </label>
 
@@ -164,6 +164,7 @@
                             <a href="/opportunities/detail/create" class="btn btn-custom-create btn-sm" id="createButton">
                                 <i class="fas fa-plus-circle"></i> 신규
                             </a>
+
                             <button class="btn btn-custom-delete btn-sm" id="deleteButton">
                                 <i class="fas fa-trash-alt"></i> 삭제
                             </button>
@@ -187,7 +188,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        {{#opportunities}}
+                        {{#pagination.contents}}
                             <tr data-index="{{opportunityId}}">
                                 <td><input type="checkbox" class="select-row" value="{{opportunityId}}" ></td>
                                 <td>{{opportunityId}}</td>
@@ -202,34 +203,33 @@
                                 <td>{{employeeId.employeeId}}</td>
 
                             </tr>
-                        {{/opportunities}}
+                        {{/pagination.contents}}
                         </tbody>
 
                     </table>
 
                     <div class="pagination">
                         <!-- 이전 버튼 -->
-                        {{#hasPreviousPage}}
-                            <button onclick="window.location.href='/opportunities?page={{previousPage}}&size=10&search={{search}}&sortColumn={{sortColumn}}&sortDirection={{sortDirection}}'">
+                        {{#pagination.hasPreviousPage}}
+                            <button onclick="window.location.href='/opportunities?page={{pagination.previousPage}}&size=10&search={{search}}&sortColumn={{sortColumn}}&sortDirection={{sortDirection}}'">
                             이전
                             </button>
-                        {{/hasPreviousPage}}
+                        {{/pagination.hasPreviousPage}}
 
                         <!-- 페이지 번호 버튼 -->
-                        {{#pageNumbers}}
-                            <button
-                                    onclick="window.location.href='/opportunities?page={{page}}&size=10&search={{search}}&sortColumn={{sortColumn}}&sortDirection={{sortDirection}}'"
+                        {{#pagination.pageNumbers}}
+                            <button onclick="window.location.href='/opportunities?page={{page}}&size=10&search={{search}}&sortColumn={{sortColumn}}&sortDirection={{sortDirection}}'"
                             class="{{#isActive}}active{{/isActive}}">
                             {{displayPage}}
                             </button>
-                        {{/pageNumbers}}
+                        {{/pagination.pageNumbers}}
 
                         <!-- 다음 버튼 -->
-                        {{#hasNextPage}}
-                            <button onclick="window.location.href='/opportunities?page={{nextPage}}&size=10&search={{search}}&sortColumn={{sortColumn}}&sortDirection={{sortDirection}}'">
+                        {{#pagination.hasNextPage}}
+                            <button onclick="window.location.href='/opportunities?page={{pagination.nextPage}}&size=10&search={{search}}&sortColumn={{sortColumn}}&sortDirection={{sortDirection}}'">
                             다음
                             </button>
-                        {{/hasNextPage}}
+                        {{/pagination.hasNextPage}}
                     </div>
                 </div>
             </div>
