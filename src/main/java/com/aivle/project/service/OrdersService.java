@@ -6,11 +6,15 @@ import com.aivle.project.entity.ContractsEntity;
 import com.aivle.project.entity.EmployeeEntity;
 import com.aivle.project.entity.OrdersEntity;
 import com.aivle.project.entity.ProductsEntity;
+import com.aivle.project.enums.Dept;
 import com.aivle.project.enums.OrderStatus;
+import com.aivle.project.enums.Team;
 import com.aivle.project.repository.ContractsRepository;
+import com.aivle.project.repository.EmployeeRepository;
 import com.aivle.project.repository.OrdersRepository;
 import com.aivle.project.repository.ProductsRepository;
 import com.aivle.project.utils.UserContext;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
@@ -41,13 +45,6 @@ public class OrdersService {
 
     // Create
     public void createOrder(OrdersDto dto) {
-        // 현재 사용자 정보 가져오기
-        String currentUserId = UserContext.getCurrentUserId();
-        System.out.println("현재 로그인된 사용자 ID: " + currentUserId);
-        // 데이터베이스에서 EmployeeEntity 로드
-        EmployeeEntity employee = employeeRepository.findByEmployeeId(currentUserId);
-
-        OrdersEntity orderEntity = new OrdersEntity();
         OrdersEntity orderEntity = convertDtoToEntity(dto);
         ordersRepository.save(orderEntity);
     }
@@ -61,10 +58,6 @@ public class OrdersService {
         String userteam = employeeRepository.findTeamById(userid);
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortDirection), sortColumn));
 
-        if (search != null && !search.isEmpty()) {
-            return ordersRepository.findByOrderIdLike("%" + search + "%", pageable);
-        }
-        return ordersRepository.findAll(pageable);
         if ("ROLE_ADMIN".equals(userrole)) {
             return findOrdersForAdmin(search, pageable);
         } else if ("ROLE_USER".equals(userrole)) {
@@ -195,12 +188,18 @@ public class OrdersService {
     }
 
     private void updateEntityFromDto(OrdersEntity entity, OrdersDto dto) {
+        // 현재 사용자 정보 가져오기
+        String currentUserId = UserContext.getCurrentUserId();
+        // 데이터베이스에서 EmployeeEntity 로드
+        EmployeeEntity employee = employeeRepository.findByEmployeeId(currentUserId);
+
         entity.setOrderDate(dto.getOrderDate());
         entity.setSalesDate(dto.getSalesDate());
         entity.setOrderAmount(dto.getOrderAmount());
         entity.setOrderStatus(OrderStatus.valueOf(dto.getOrderStatus()));
         entity.setContractId(dto.getContractId());
         entity.setProductId(dto.getProductId());
+        entity.setEmployeeId(employee);
         ordersRepository.save(entity);
     }
 

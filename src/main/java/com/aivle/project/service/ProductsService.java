@@ -3,11 +3,13 @@ package com.aivle.project.service;
 import com.aivle.project.dto.ContractsDto;
 import com.aivle.project.dto.ProductsDto;
 import com.aivle.project.entity.ContractsEntity;
+import com.aivle.project.entity.EmployeeEntity;
 import com.aivle.project.entity.OrdersEntity;
 import com.aivle.project.entity.ProductsEntity;
 import com.aivle.project.enums.ProductCondition;
 import com.aivle.project.repository.EmployeeRepository;
 import com.aivle.project.repository.ProductsRepository;
+import com.aivle.project.utils.UserContext;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +47,6 @@ public class ProductsService {
         // 데이터베이스에서 EmployeeEntity 로드
         EmployeeEntity employee = employeeRepository.findByEmployeeId(currentUserId);
 
-        ProductsEntity productEntity = new ProductsEntity();
         ProductsEntity productEntity = convertDtoToEntity(dto);
 
         productsRepository.save(productEntity);
