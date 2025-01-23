@@ -168,11 +168,11 @@
                         <tr>
                             <th></th>
                             <th>ID</th>
+                            <th>제품명</th>
                             <th>발주일자</th>
                             <th>매출일자</th>
                             <th>상태</th>
                             <th>수량</th>
-                            <th>제품ID</th>
                             <th>계약ID</th>
                         </tr>
                         </thead>
@@ -180,12 +180,12 @@
                         {{#pagination.contents}}
                             <tr data-index="{{orderId}}">
                                 <td><input type="checkbox" class="select-row" value="{{orderId}}"></td>
-                                <td><a href="/orders/detail/{{orderId}}">{{orderId}}</a></td>
+                                <td>{{orderId}}</td>
+                                <td><a href="/orders/detail/{{orderId}}">{{productId.productName}}</a></td>
                                 <td>{{orderDate}}</td>
                                 <td>{{salesDate}}</td>
                                 <td>{{orderStatus}}</td>
                                 <td>{{orderAmount}}</td>
-                                <td>{{productId.productId}}</td>
                                 <td>{{contractId.contractId}}</td>
                             </tr>
                         {{/pagination.contents}}
