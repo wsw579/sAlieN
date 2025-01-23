@@ -1,11 +1,13 @@
 package com.aivle.project.service;
 
+import com.aivle.project.dto.ContractsDto;
 import com.aivle.project.dto.LeadsDto;
 import com.aivle.project.dto.ProductsDto;
+import com.aivle.project.entity.ContractsEntity;
 import com.aivle.project.entity.LeadsEntity;
 import com.aivle.project.entity.OrdersEntity;
 import com.aivle.project.repository.LeadsRepository;
-import jakarta.transaction.Transactional;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -13,6 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -37,66 +40,30 @@ public class LeadsService {
     // Declares a public method named createLeads that takes a LeadsDto object as input
     public void createLeads(LeadsDto dto){
         //Creates a new instance of LeadsEntity to store data that will eventually be saved in the database.
-        LeadsEntity leadsEntity = new LeadsEntity();
-
-        //calls each method(setLeadStatus, setLeadSource...) on the leadsEntity object to assign a value to its field
-        //the value is retrieved from the LeadsDto object using dto.get___()
-        leadsEntity.setLeadStatus(dto.getLeadStatus());
-        leadsEntity.setLeadSource(dto.getLeadSource());
-        leadsEntity.setCreatedDate(dto.getCreatedDate());
-        leadsEntity.setTargetCloseDate(dto.getTargetCloseDate());
-        leadsEntity.setCustomerRequirements(dto.getCustomerRequirements());
-        leadsEntity.setCustomerRepresentitive(dto.getCustomerRepresentitive());
-        leadsEntity.setCompanyName(dto.getCompanyName());
-        leadsEntity.setC_tel(dto.getC_tel());
-        // 외래키 부분
-        leadsEntity.setAccountId(dto.getAccountId());
-        leadsEntity.setEmployeeId(dto.getEmployeeId());
-        //Saves the leadsEntity object to the database using the leadsRepository
+        LeadsEntity leadsEntity = convertDtoToEntity(dto);
         leadsRepository.save(leadsEntity);
     }
 
 
     //Read
+    @Transactional(readOnly = true)
     public Page<LeadsEntity> readLeads(int page, int size, String search, String sortColumn, String sortDirection) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortDirection), sortColumn));
 
         if (search != null && !search.isEmpty()) {
-            try {
-                return leadsRepository.findByLeadIdLike(search, pageable);
-            } catch (NumberFormatException e) {
-                // 숫자가 아닌 경우 빈 페이지 반환
-                return Page.empty(pageable);
-            }
-        } else {
-            return leadsRepository.findAll(pageable);
+            return leadsRepository.findByLeadIdLike("%" + search + "%", pageable);
         }
+        return leadsRepository.findAll(pageable);
     }
 
 
     // Update
     // executes within a database transaction
-    @Transactional
-
     // leadId (type Long) -> input : identifies the specific lead to be updated
     public void  updateLeads(Long leadId, LeadsDto dto){
-        LeadsEntity leadsEntity = leadsRepository.findByLeadId(leadId);
-                // throwing a custom exception:IllegalArgumentException("message to show")
-            if (leadsEntity == null) {
-                throw new IllegalArgumentException("Leads not found");
-            } // .orElseThrow(() -> new IllegalArgumentException("Leads not found"));
-        leadsEntity.setLeadStatus(dto.getLeadStatus());
-        leadsEntity.setLeadSource(dto.getLeadSource());
-        leadsEntity.setCreatedDate(dto.getCreatedDate());
-        leadsEntity.setTargetCloseDate(dto.getTargetCloseDate());
-        leadsEntity.setCustomerRequirements(dto.getCustomerRequirements());
-        leadsEntity.setCustomerRepresentitive(dto.getCustomerRepresentitive());
-        leadsEntity.setCompanyName(dto.getCompanyName());
-        leadsEntity.setC_tel(dto.getC_tel());
-
-        //외래키 부분
-        leadsEntity.setAccountId(dto.getAccountId());
-        leadsEntity.setEmployeeId(dto.getEmployeeId());
+        LeadsEntity leadsEntity = leadsRepository.findById(leadId)
+                .orElseThrow(() -> new IllegalArgumentException("Lead not found"));
+        updateEntityFromDto(leadsEntity, dto);
         leadsRepository.save(leadsEntity);
     }
 
@@ -133,6 +100,7 @@ public class LeadsService {
     }
 
     // 상태 수 가져오기
+    @Transactional(readOnly = true)
     public Map<String, Long> getLeadStatusCounts() {
         Map<String, Long> statusCounts = new HashMap<>();
         List<Object[]> results = leadsRepository.countLeadsByStatus();
@@ -145,75 +113,82 @@ public class LeadsService {
 
         return statusCounts;
     }
-
+    // Bar 및 Chart Data
+    @Transactional(readOnly = true)
     public Map<String, List<Integer>> getBarData() {
-        int currentYear = LocalDate.now().getYear();
-        int lastYear = currentYear - 1;
-
-        // 각 월별 주문 수를 초기화
-        List<Integer> lastYearData = IntStream.range(0, 12).mapToObj(i -> 0).collect(Collectors.toList());
-        List<Integer> currentYearData = IntStream.range(0, 12).mapToObj(i -> 0).collect(Collectors.toList());
-
-        // DB에서 월별 주문 수를 가져옵니다.
-        List<Object[]> lastYearOrders = leadsRepository.getMonthlyLeads(lastYear);
-        List<Object[]> currentYearOrders = leadsRepository.getMonthlyLeads(currentYear);
-
-        // 결과를 리스트에 추가
-        for (Object[] row : lastYearOrders) {
-            int month = ((Number) row[0]).intValue() - 1; // 월 (1월 = 0 인덱스)
-            int count = ((Number) row[1]).intValue(); // 주문 수
-            lastYearData.set(month, count);
-        }
-
-        for (Object[] row : currentYearOrders) {
-            int month = ((Number) row[0]).intValue() - 1; // 월 (1월 = 0 인덱스)
-            int count = ((Number) row[1]).intValue(); // 주문 수
-            currentYearData.set(month, count);
-        }
-
-        // 누적 값 계산
-        for (int i = 1; i < 12; i++) {
-            lastYearData.set(i, lastYearData.get(i) + lastYearData.get(i - 1));
-            currentYearData.set(i, currentYearData.get(i) + currentYearData.get(i - 1));
-        }
-
-        Map<String, List<Integer>> barData = new HashMap<>();
-        barData.put("lastYearData", lastYearData);
-        barData.put("currentYearData", currentYearData);
-
-        return barData;
+        return getYearlyData(true); // 누적 데이터 포함
     }
 
-
+    @Transactional(readOnly = true)
     public Map<String, List<Integer>> getChartData() {
+        return getYearlyData(false); // 누적 데이터 제외
+    }
+
+    private Map<String, List<Integer>> getYearlyData(boolean accumulate) {
         int currentYear = LocalDate.now().getYear();
         int lastYear = currentYear - 1;
 
-        // 각 월별 주문 수를 초기화
-        List<Integer> lastYearData = IntStream.range(0, 12).mapToObj(i -> 0).collect(Collectors.toList());
-        List<Integer> currentYearData = IntStream.range(0, 12).mapToObj(i -> 0).collect(Collectors.toList());
+        List<Integer> lastYearData = initializeMonthlyData();
+        List<Integer> currentYearData = initializeMonthlyData();
 
-        // DB에서 월별 주문 수를 가져옵니다.
-        List<Object[]> lastYearOrders = leadsRepository.getMonthlyLeads(lastYear);
-        List<Object[]> currentYearOrders = leadsRepository.getMonthlyLeads(currentYear);
+        populateMonthlyData(lastYear, lastYearData);
+        populateMonthlyData(currentYear, currentYearData);
 
-        // 결과를 리스트에 추가
-        for (Object[] row : lastYearOrders) {
-            int month = ((Number) row[0]).intValue() - 1; // 월 (1월 = 0 인덱스)
-            int count = ((Number) row[1]).intValue(); // 주문 수
-            lastYearData.set(month, count);
+        if (accumulate) {
+            accumulateMonthlyData(lastYearData);
+            accumulateMonthlyData(currentYearData);
         }
 
-        for (Object[] row : currentYearOrders) {
-            int month = ((Number) row[0]).intValue() - 1; // 월 (1월 = 0 인덱스)
-            int count = ((Number) row[1]).intValue(); // 주문 수
-            currentYearData.set(month, count);
+        Map<String, List<Integer>> yearlyData = new HashMap<>();
+        yearlyData.put("lastYearData", lastYearData);
+        yearlyData.put("currentYearData", currentYearData);
+
+        return yearlyData;
+    }
+
+    private List<Integer> initializeMonthlyData() {
+        return IntStream.range(0, 12).mapToObj(i -> 0).collect(Collectors.toList());
+    }
+
+    private void populateMonthlyData(int year, List<Integer> monthlyData) {
+        List<Object[]> orders = leadsRepository.getMonthlyLeads(year);
+        for (Object[] row : orders) {
+            int month = ((Number) row[0]).intValue() - 1; // 1월 = 0
+            int count = ((Number) row[1]).intValue();
+            monthlyData.set(month, count);
         }
+    }
 
-        Map<String, List<Integer>> chartData = new HashMap<>();
-        chartData.put("lastYearData", lastYearData);
-        chartData.put("currentYearData", currentYearData);
+    private void accumulateMonthlyData(List<Integer> monthlyData) {
+        for (int i = 1; i < monthlyData.size(); i++) {
+            monthlyData.set(i, monthlyData.get(i) + monthlyData.get(i - 1));
+        }
+    }
 
-        return chartData;
+    // 헬퍼 메서드
+    private LeadsEntity convertDtoToEntity(LeadsDto dto) {
+        LeadsEntity leadsEntity = new LeadsEntity();
+        updateEntityFromDto(leadsEntity, dto);
+        return leadsEntity;
+    }
+
+    private void updateEntityFromDto(LeadsEntity entity, LeadsDto dto) {
+        entity.setLeadStatus(dto.getLeadStatus());
+        entity.setLeadSource(dto.getLeadSource());
+        entity.setCreatedDate(dto.getCreatedDate());
+        entity.setTargetCloseDate(dto.getTargetCloseDate());
+        entity.setCustomerRequirements(dto.getCustomerRequirements());
+        entity.setCustomerRepresentitive(dto.getCustomerRepresentitive());
+        entity.setCompanyName(dto.getCompanyName());
+        entity.setC_tel(dto.getC_tel());
+        // 외래키 부분
+        entity.setAccountId(dto.getAccountId());
+        entity.setEmployeeId(dto.getEmployeeId());
+    }
+
+    private LeadsDto convertIdToDto(Long id) {
+        LeadsDto dto = new LeadsDto();
+        dto.setLeadId(id);
+        return dto;
     }
 }

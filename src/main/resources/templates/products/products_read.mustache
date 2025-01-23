@@ -135,89 +135,105 @@
                         </tr>
                         </thead>
                         <tbody>
-                        {{#products}}
+                        {{#pagination.contents}}
                             <tr data-index="{{productId}}">
                                 <td><input type="checkbox" class="select-row" value="{{productId}}"></td>
-                                <td><a href="/products/detail/{{productId}}">{{productId}}</a></td>
-                                <td>{{productName}}</td>
+                                <td>{{productId}}</td>
+                                <td><a href="/products/detail/{{productId}}">{{productName}}</a></td>
                                 <td>{{productFamily}}</td>
-                                <td>{{fixedPrice}}</td>
-                                <td>{{dealerPrice}}</td>
-                                <td>{{costPrice}}</td>
+                                <td data-price="{{fixedPrice}}">{{fixedPrice}}</td>
+                                <td data-price="{{dealerPrice}}">{{dealerPrice}}</td>
+                                <td data-price="{{costPrice}}">{{costPrice}}</td>
                                 <td>{{productCondition}}</td>
                             </tr>
-                        {{/products}}
+                        {{/pagination.contents}}
                         </tbody>
                     </table>
                 </div>
 
                 <div class="pagination">
                     <!-- 이전 버튼 -->
-                    {{#hasPreviousPage}}
-                        <button onclick="window.location.href='/products?page={{previousPage}}&size=10&search={{search}}&sortColumn={{sortColumn}}&sortDirection={{sortDirection}}'">
+                    {{#pagination.hasPreviousPage}}
+                        <button onclick="window.location.href='/products?page={{pagination.previousPage}}&size=10&search={{search}}&sortColumn={{sortColumn}}&sortDirection={{sortDirection}}'">
                         이전
                         </button>
-                    {{/hasPreviousPage}}
+                    {{/pagination.hasPreviousPage}}
 
                     <!-- 페이지 번호 버튼 -->
-                    {{#pageNumbers}}
+                    {{#pagination.pageNumbers}}
                         <button
                                 onclick="window.location.href='/products?page={{page}}&size=10&search={{search}}&sortColumn={{sortColumn}}&sortDirection={{sortDirection}}'"
                         class="{{#isActive}}active{{/isActive}}">
                         {{displayPage}}
                         </button>
-                    {{/pageNumbers}}
+                    {{/pagination.pageNumbers}}
 
                     <!-- 다음 버튼 -->
-                    {{#hasNextPage}}
-                        <button onclick="window.location.href='/orders?page={{nextPage}}&size=10&search={{search}}&sortColumn={{sortColumn}}&sortDirection={{sortDirection}}'">
+                    {{#pagination.hasNextPage}}
+                        <button onclick="window.location.href='/orders?page={{pagination.nextPage}}&size=10&search={{search}}&sortColumn={{sortColumn}}&sortDirection={{sortDirection}}'">
                         다음
                         </button>
-                    {{/hasNextPage}}
+                    {{/pagination.hasNextPage}}
                 </div>
             </div>
         </div>
     </main>
 
     <script>
+        document.addEventListener("DOMContentLoaded", function () {
+     // 모든 data-price 요소 처리
+     document.querySelectorAll("td[data-price]").forEach(function (element) {
+         const rawPrice = element.getAttribute("data-price"); // data-price 속성에서 데이터 읽기
+         if (rawPrice) {
+             const parsedPrice = parseFloat(rawPrice); // 지수 표기법 숫자로 변환
+             if (!isNaN(parsedPrice)) {
+                 // 원화 포맷 적용
+                 const formattedPrice = new Intl.NumberFormat('ko-KR', {
+                     style: 'currency',
+                     currency: 'KRW',
+                 }).format(parsedPrice);
 
-            var deleteButton = document.getElementById("deleteButton");
-            if (deleteButton) {
-                deleteButton.addEventListener("click", function() {
-                    var selectedCheckboxes = document.querySelectorAll(".select-row:checked");
-                    var selectedIds = [];
+                 element.textContent = formattedPrice; // 변환된 값 적용
+             }
+         }
+     });
+                             var deleteButton = document.getElementById("deleteButton");
+                             if (deleteButton) {
+                                 deleteButton.addEventListener("click", function() {
+                                     var selectedCheckboxes = document.querySelectorAll(".select-row:checked");
+                                     var selectedIds = [];
 
-                    selectedCheckboxes.forEach(function(checkbox) {
-                        var productId = checkbox.value;
-                        selectedIds.push(productId);
-                    });
+                                     selectedCheckboxes.forEach(function(checkbox) {
+                                         var productId = checkbox.value;
+                                         selectedIds.push(productId);
+                                     });
 
-                    if (selectedIds.length > 0) {
-                        var confirmDelete = confirm("선택한 항목들을 삭제하시겠습니까?");
-                        if (confirmDelete) {
-                            fetch("/products/detail/delete", {
-                                method: "POST",
-                                headers: {
-                                    "Content-Type": "application/json"
-                                },
-                                body: JSON.stringify({ ids: selectedIds })
-                            }).then(response => {
-                                if (response.ok) {
-                                    window.location.href = "/products";
-                                } else {
-                                    alert("삭제 중 오류가 발생했습니다.");
-                                }
-                            }).catch(error => {
-                                console.error("Error:", error);
-                                alert("삭제 중 오류가 발생했습니다.");
-                            });
-                        }
-                    } else {
-                        alert("삭제할 항목을 선택해 주세요.");
-                    }
-                });
-            }
-        });
+                                     if (selectedIds.length > 0) {
+                                         var confirmDelete = confirm("선택한 항목들을 삭제하시겠습니까?");
+                                         if (confirmDelete) {
+                                             fetch("/products/detail/delete", {
+                                                 method: "POST",
+                                                 headers: {
+                                                     "Content-Type": "application/json"
+                                                 },
+                                                 body: JSON.stringify({ ids: selectedIds })
+                                             }).then(response => {
+                                                 if (response.ok) {
+                                                     window.location.href = "/products";
+                                                 } else {
+                                                     alert("삭제 중 오류가 발생했습니다.");
+                                                 }
+                                             }).catch(error => {
+                                                 console.error("Error:", error);
+                                                 alert("삭제 중 오류가 발생했습니다.");
+                                             });
+                                         }
+                                     } else {
+                                         alert("삭제할 항목을 선택해 주세요.");
+                                     }
+                                 });
+                             }
+                         });
     </script>
 
     <script src="/assets/demo/products-read-chart.js"></script>

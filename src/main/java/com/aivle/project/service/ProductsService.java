@@ -1,22 +1,28 @@
 package com.aivle.project.service;
 
+import com.aivle.project.dto.ContractsDto;
 import com.aivle.project.dto.ProductsDto;
+import com.aivle.project.entity.ContractsEntity;
 import com.aivle.project.entity.OrdersEntity;
 import com.aivle.project.entity.ProductsEntity;
 import com.aivle.project.enums.ProductCondition;
 import com.aivle.project.repository.ProductsRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 @Transactional
@@ -24,50 +30,33 @@ import java.util.stream.Collectors;
 public class ProductsService {
 
     private final ProductsRepository productsRepository;
+    private static final Logger logger = LoggerFactory.getLogger(ContractsService.class);
+
 
     // Create
     public void createProduct(ProductsDto dto) {
-        ProductsEntity productEntity = new ProductsEntity();
+        ProductsEntity productEntity = convertDtoToEntity(dto);
 
-        productEntity.setProductName(dto.getProductName());
-        productEntity.setFixedPrice(dto.getFixedPrice());
-        productEntity.setDealerPrice(dto.getDealerPrice());
-        productEntity.setCostPrice(dto.getCostPrice());
-        productEntity.setProductCondition(ProductCondition.valueOf(dto.getProductCondition()));
-        productEntity.setProductDescription(dto.getProductDescription());
-        productEntity.setProductFamily(dto.getProductFamily());
         productsRepository.save(productEntity);
     }
 
     // Read
+    @Transactional(readOnly = true)
     public Page<ProductsEntity> readProducts(int page, int size, String search, String sortColumn, String sortDirection) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortDirection), sortColumn));
 
         if (search != null && !search.isEmpty()) {
-            try {
-                return productsRepository.findByProductIdLike(search, pageable);
-            } catch (NumberFormatException e) {
-                // 숫자가 아닌 경우 빈 페이지 반환
-                return Page.empty(pageable);
-            }
-        } else {
-            return productsRepository.findAll(pageable);
+            return productsRepository.findByProductIdLike("%" + search + "%", pageable);
         }
+        return productsRepository.findAll(pageable);
     }
 
     // Update
-    @Transactional
     public void updateProduct(Long productId, ProductsDto dto) {
         ProductsEntity productEntity = productsRepository.findById(productId)
                 .orElseThrow(() -> new IllegalArgumentException("Product not found"));
 
-        productEntity.setProductName(dto.getProductName());
-        productEntity.setFixedPrice(dto.getFixedPrice());
-        productEntity.setDealerPrice(dto.getDealerPrice());
-        productEntity.setCostPrice(dto.getCostPrice());
-        productEntity.setProductCondition(ProductCondition.valueOf(dto.getProductCondition()));
-        productEntity.setProductDescription(dto.getProductDescription());
-        productEntity.setProductFamily(dto.getProductFamily());
+        updateEntityFromDto(productEntity, dto);
         productsRepository.save(productEntity);
     }
 
@@ -103,7 +92,22 @@ public class ProductsService {
                 .collect(Collectors.toList());
     }
 
+    // 테이블 데이터 전달
+    @Transactional(readOnly = true)
+    public Map<String, Object> getProductPageData(int page, int size, String search, String sortColumn, String sortDirection) {
+        Page<ProductsEntity> productsPage = readProducts(page, size, search, sortColumn, sortDirection);
+        Map<String, Long> conditionCounts = getProductConditionCounts();
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("productsPage", productsPage);
+        data.put("conditionCounts", conditionCounts);
+        data.put("totalCount", conditionCounts.values().stream().mapToLong(Long::longValue).sum());
+
+        return data;
+    }
+
     // 상태 수 세기
+    @Transactional(readOnly = true)
     public Map<String, Long> getProductConditionCounts() {
         Map<String, Long> conditionCounts = new HashMap<>();
         List<Object[]> results = productsRepository.countProductsByCondition();
@@ -115,5 +119,29 @@ public class ProductsService {
         }
 
         return conditionCounts;
+    }
+
+    // 헬퍼 메서드
+    private ProductsEntity convertDtoToEntity(ProductsDto dto) {
+        ProductsEntity productsEntity = new ProductsEntity();
+        updateEntityFromDto(productsEntity, dto);
+        return productsEntity;
+    }
+
+    private void updateEntityFromDto(ProductsEntity entity, ProductsDto dto) {
+        entity.setProductName(dto.getProductName());
+        entity.setFixedPrice(dto.getFixedPrice());
+        entity.setDealerPrice(dto.getDealerPrice());
+        entity.setCostPrice(dto.getCostPrice());
+        entity.setProductCondition(ProductCondition.valueOf(dto.getProductCondition()));
+        entity.setProductDescription(dto.getProductDescription());
+        entity.setProductFamily(dto.getProductFamily());
+        productsRepository.save(entity);
+    }
+
+    private ProductsDto convertIdToDto(Long id) {
+        ProductsDto dto = new ProductsDto();
+        dto.setProductId(id);
+        return dto;
     }
 }

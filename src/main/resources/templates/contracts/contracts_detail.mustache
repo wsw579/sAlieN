@@ -55,6 +55,9 @@
     margin: 20px 0;
 }
 
+/* 바(—):
+   - 지름 20px 원에 맞춰, 양쪽 10px 띄움
+   - 따라서 "왼쪽 원 중심" ~ "오른쪽 원 중심"까지가 바 */
 .progress-bar {
     position: absolute;
     top: 50%;
@@ -67,7 +70,6 @@
     transition: width 0.4s ease;
     z-index: 0;
 }
-
 
 /* 각 스텝(원 + 텍스트) 가로로 균등 분배 */
 .progress-steps {
@@ -119,70 +121,6 @@
 
 
 
-
-
-
-
-
-
-        .comment-section {
-            max-height: 300px;
-            overflow-y: auto;
-            border: 1px solid #ccc;
-            padding: 10px;
-            width: 100%;
-        }
-        .comment {
-            margin-bottom: 10px;
-            padding: 10px;
-            border-radius: 10px;
-            background-color: #f1f1f1;
-            position: relative;
-            width: calc(100% - 20px);
-        }
-        .comment .author {
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        .comment .timestamp {
-            font-size: 0.8em;
-            color: #888;
-            position: absolute;
-            bottom: 5px;
-            right: 10px;
-        }
-        .comment-form {
-            display: flex;
-            width: 100%;
-            align-items: center;
-            margin-top: 10px;
-            background-color: #f9f9f9;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        .comment-form input[type="text"] {
-            flex: 1;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            margin-right: 10px;
-            font-size: 16px;
-        }
-        .comment-form button {
-            padding: 10px 10px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        .comment-form button:hover {
-            background-color: #0056b3;
-        }
-
 </style>
 
 
@@ -212,17 +150,20 @@
 
 
                         {{#contracts}}
-                            <tbody>
                             <div class="progress-container">
                                 <div class="progress-bar" id="progressBar"></div>
                                 <div class="progress-steps">
-                                    <div class="step" data-step="Draft">Draft</div>
-                                    <div class="step" data-step="In Approval Process">In Approval Progress</div>
-                                    <div class="step" data-step="Activated">Activated</div>
+                                    <div class="step" data-step="Draft">
+                                        <span>Draft</span>
+                                    </div>
+                                    <div class="step" data-step="In Approval Process">
+                                        <span>In Approval Process</span>
+                                    </div>
+                                    <div class="step" data-step="Activated">
+                                        <span>Activated</span>
+                                    </div>
                                 </div>
                             </div>
-
-                            </tbody>
                         {{/contracts}}
 
 
@@ -307,18 +248,17 @@
                                     <label for="opportunityId" class="col-sm-2 col-form-label">기회명:</label>
                                     <div class="col-sm-10">
                                         <select id="opportunityId" name="opportunityId" required>
-
                                             <option value="">-- 기회 선택 --</option>
                                             {{#opportunities}}
                                                 <option value="{{opportunityId}}">
                                                     {{opportunityName}} (ID: {{opportunityId}})
                                                 </option>
                                             {{/opportunities}}
-
                                         </select>
                                     </div>
                                 </div>
-                                <div class="mb-3 row">
+
+                            <div class="mb-3 row">
                                     <label for="productId" class="col-sm-2 col-form-label">계약 제품:</label>
                                     <div class="col-sm-10">
                                         <select id="productId" name="productId" required>
@@ -342,7 +282,8 @@
                             <div class="mb-3 row">
                                 <label for="contractSales" class="col-sm-2 col-form-label">계약 가격:</label>
                                 <div class="col-sm-10">
-                                    <input type="number" step="0.01" class="form-control" id="contractSales" name="contractSales" value="{{contractSales}}" required>
+                                    <input type="text" class="form-control" id="contractSalesDisplay" name="contractSalesDisplay" value="" placeholder="₩0" required>
+                                    <input type="hidden" id="contractSales" name="contractSales" value="{{contractSales}}">
                                 </div>
                             </div>
                             <div class="mb-3 row">
@@ -451,8 +392,31 @@
 
 
     <script>
+        document.addEventListener("DOMContentLoaded", function () {
+    const displayInput = document.getElementById("contractSalesDisplay");
+    const hiddenInput = document.getElementById("contractSales");
 
-        // Form 부분 기회상태 초기값 연동 JS (select Form은 html로 초기 value 지정이 안되어서 JS로 처리)
+    // 초기값 설정: 서버에서 전달된 값을 원화 형식으로 변환
+    if (hiddenInput.value) {
+        displayInput.value = formatCurrency(hiddenInput.value);
+    }
+
+    // 입력 시 원화 형식으로 변환
+    displayInput.addEventListener("input", function () {
+        const rawValue = displayInput.value.replace(/[^\d]/g, ""); // 숫자 이외의 문자 제거
+        const formattedValue = formatCurrency(rawValue); // 원화 형식 변환
+        displayInput.value = formattedValue; // 포맷된 값 표시
+        hiddenInput.value = rawValue; // 실제 숫자 값을 hidden 필드에 저장
+    });
+
+    // 원화 형식으로 변환하는 함수
+    function formatCurrency(value) {
+        if (!value) return "₩0";
+        return `₩${parseInt(value, 10).toLocaleString("ko-KR")}`;
+    }
+});
+
+            // Form 부분 기회상태 초기값 연동 JS (select Form은 html로 초기 value 지정이 안되어서 JS로 처리)
 
         {{#contracts}}
             {{#contractId}}
