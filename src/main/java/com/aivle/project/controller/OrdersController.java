@@ -49,12 +49,14 @@ public class OrdersController {
     ) {
         // 서비스에서 페이지 데이터 가져오기
         Page<OrdersEntity> ordersPage = ordersService.readOrders(page, size, search, sortColumn, sortDirection);
-
+        long numberOfElements = ordersPage.getTotalElements();
+        System.out.println(numberOfElements); // 테스트 용
         // 상태별 주문 개수 가져오기
         Map<String, Long> statusCounts = ordersService.getOrderStatusCounts();
 
         // 총 페이지 수 및 표시할 페이지 범위 계산
         int totalPages = ordersPage.getTotalPages();
+        System.out.println(totalPages);
         int displayRange = 5; // 표시할 페이지 버튼 수
         int startPage = Math.max(0, page - displayRange / 2); // 시작 페이지
         int endPage = Math.min(totalPages, startPage + displayRange); // 종료 페이지

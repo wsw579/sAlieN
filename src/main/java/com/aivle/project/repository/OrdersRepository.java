@@ -2,7 +2,9 @@ package com.aivle.project.repository;
 
 import com.aivle.project.entity.ContractsEntity;
 import com.aivle.project.entity.OrdersEntity;
-import com.aivle.project.enums.OrderStatus;
+import com.aivle.project.enums.Dept;
+import com.aivle.project.enums.Role;
+import com.aivle.project.enums.Team;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,11 +15,47 @@ import java.util.List;
 
 public interface OrdersRepository extends JpaRepository<OrdersEntity, Long> {
     List<OrdersEntity> findByContractId(ContractsEntity contractId);
-    @Query("SELECT o FROM OrdersEntity o WHERE CAST(o.orderId AS string) LIKE %:orderId%")
-    Page<OrdersEntity> findByOrderIdLike(@Param("orderId") String orderId, Pageable pageable);
 
-    @Query("SELECT CAST(o.orderStatus AS string), COUNT(o) FROM OrdersEntity o GROUP BY o.orderStatus")
-    List<Object[]> countOrdersByStatus();
+    @Query("SELECT o FROM OrdersEntity o WHERE CAST(o.orderId AS string) LIKE %:orderId%")
+    Page<OrdersEntity> findByOrderIdLikeAdmin(@Param("orderId") String orderId, Pageable pageable);
+
+    @Query("SELECT o FROM OrdersEntity o " +
+            "LEFT JOIN o.employeeId e " +
+            "WHERE (e.position = 'GENERAL_MANAGER' " +
+            "       OR (e.position = 'DEPARTMENT_HEAD' AND e.departmentId = :departmentId) " +
+            "       OR (e.position NOT IN ('GENERAL_MANAGER', 'DEPARTMENT_HEAD') AND e.teamId = :teamId)) " +
+            "AND CAST(o.orderId AS string) LIKE %:orderId%")
+    Page<OrdersEntity> findByOrderIdLikeUser(
+            @Param("orderId") String orderId,
+            @Param("departmentId") Dept departmentId,
+            @Param("teamId") Team teamId,
+            Pageable pageable);
+
+    @Query("SELECT o FROM OrdersEntity o " +
+            "LEFT JOIN o.employeeId e " +
+            "WHERE (e.position = 'GENERAL_MANAGER' " +
+            "       OR (e.position = 'DEPARTMENT_HEAD' AND e.departmentId = :departmentId) " +
+            "       OR (e.position NOT IN ('GENERAL_MANAGER', 'DEPARTMENT_HEAD') AND e.teamId = :teamId)) ")
+    Page<OrdersEntity> findByDepartmentAndTeam(
+            @Param("departmentId") Dept departmentId,
+            @Param("teamId") Team teamId,
+            Pageable pageable);
+
+    @Query("SELECT CAST(o.orderStatus AS string), COUNT(o) " +
+            "FROM OrdersEntity o " +
+            "JOIN o.employeeId e " +
+            "WHERE e.employeeId = :currentEmployeeId " +
+            "   AND ((e.accessPermission = 'ROLE_ADMIN') " +
+            "        OR (e.accessPermission = 'ROLE_USER' AND " +
+            "            (e.position = 'GENERAL_MANAGER' " +
+            "             OR (e.position = 'DEPARTMENT_HEAD' AND e.departmentId = :departmentId) " +
+            "             OR (e.position NOT IN ('GENERAL_MANAGER', 'DEPARTMENT_HEAD') AND e.teamId = :teamId)))) " +
+            "GROUP BY o.orderStatus")
+    List<Object[]> countOrdersByStatusForCurrentUser(
+            @Param("currentEmployeeId") String currentEmployeeId,
+            @Param("departmentId") Dept departmentId,
+            @Param("teamId") Team teamId);
+
 
     // 차트 그래프
     @Query("SELECT MONTH(o.orderDate), COUNT(o) " +

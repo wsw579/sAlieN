@@ -7,6 +7,7 @@ import com.aivle.project.entity.ProductsEntity;
 import com.aivle.project.enums.ProductCondition;
 import com.aivle.project.repository.EmployeeRepository;
 import com.aivle.project.repository.ProductsRepository;
+import com.aivle.project.utils.UserContext;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -32,9 +33,8 @@ public class ProductsService {
 
     // Create
     public void createProduct(ProductsDto dto) {
-        // 현재 인증된 사용자 가져오기
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentUserId = authentication.getName(); // 기본적으로 username 반환
+        // 현재 사용자 정보 가져오기
+        String currentUserId = UserContext.getCurrentUserId();
         System.out.println("현재 로그인된 사용자 ID: " + currentUserId);
         // 데이터베이스에서 EmployeeEntity 로드
         EmployeeEntity employee = employeeRepository.findByEmployeeId(currentUserId);
