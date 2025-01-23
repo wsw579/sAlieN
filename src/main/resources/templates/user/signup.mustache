@@ -20,6 +20,13 @@
             color: red;
             font-size: 0.875em;
         }
+        .scrollable-box {
+            border: 1px solid #ccc;
+            padding: 10px;
+            height: 150px;
+            overflow-y: scroll;
+            background-color: #fff;
+        }
     </style>
 </head>
 <body>
@@ -30,6 +37,42 @@
             <li class="breadcrumb-item active">sign up</li>
         </ol>
         <form id="signupForm" action="/signup" method="POST">
+            <!-- 개인정보 동의 섹션 -->
+            <div class="card mb-4">
+                <div class="card-header mb-3">
+                <i class="fas fa-lock me-1"></i>
+                개인정보 동의
+            </div>
+                <div class="mb-3 row px-3 ms-4">
+                    <label for="privacyConsent" class="col-sm-8 col-form-label">개인정보 수집 및 이용에 대한 동의(필수)</label>
+                    <div class="col-sm-2">
+                        <input type="checkbox" class="form-check-input" id="privacyConsent" name="privacyConsent" required>
+                    </div>
+                </div>
+                <div class="scrollable-box mb-3 mx-4">
+                    <p>1. 개인정보 수집 목적: 회원가입 및 서비스 제공</p>
+                    <p>2. 수집하는 개인정보 항목: 이름, 부서, 직급, 아이디, 비밀번호</p>
+                    <p>3. 개인정보 보유 및 이용기간: 회원 탈퇴 시까지</p>
+                    <p>4. 개인정보는 서비스 운영 이외의 목적으로 사용되지 않습니다.</p>
+                    <p>...</p>
+                </div>
+
+                <hr/>
+                <div class="mb-3 row px-3 ms-4">
+                    <label for="privacyConsent" class="col-sm-8 col-form-label">개인정보 수집 및 이용에 대한 동의(필수)</label>
+                    <div class="col-sm-2">
+                        <input type="checkbox" class="form-check-input" id="privacyConsent" name="privacyConsent" required>
+                    </div>
+                </div>
+                <div class="scrollable-box mb-3 mx-4">
+                    <p>1. 개인정보 수집 목적: 회원가입 및 서비스 제공</p>
+                    <p>2. 수집하는 개인정보 항목: 이름, 부서, 직급, 아이디, 비밀번호</p>
+                    <p>3. 개인정보 보유 및 이용기간: 회원 탈퇴 시까지</p>
+                    <p>4. 개인정보는 서비스 운영 이외의 목적으로 사용되지 않습니다.</p>
+                    <p>...</p>
+                </div>
+            </div>
+
             <!-- 기본정보 섹션 -->
             <div class="card mb-4">
                 <div class="card-header mb-3">
@@ -166,6 +209,14 @@
                     console.error("아이디 생성 중 오류:", error);
                     alert("아이디 생성에 실패했습니다. 다시 시도해 주세요.");
                 });
+    });
+
+    document.getElementById("signupForm").addEventListener("submit", function (e) {
+        const privacyConsent = document.getElementById("privacyConsent");
+        if (!privacyConsent.checked) {
+            e.preventDefault();
+            alert("개인정보 동의 체크를 선택하시오.");
+        }
     });
 </script>
 
