@@ -282,7 +282,8 @@
                             <div class="mb-3 row">
                                 <label for="contractSales" class="col-sm-2 col-form-label">계약 가격:</label>
                                 <div class="col-sm-10">
-                                    <input type="number" step="0.01" class="form-control" id="contractSales" name="contractSales" value="{{contractSales}}" required>
+                                    <input type="text" class="form-control" id="contractSalesDisplay" name="contractSalesDisplay" value="" placeholder="₩0" required>
+                                    <input type="hidden" id="contractSales" name="contractSales" value="{{contractSales}}">
                                 </div>
                             </div>
                             <div class="mb-3 row">
@@ -391,6 +392,29 @@
 
 
     <script>
+        document.addEventListener("DOMContentLoaded", function () {
+    const displayInput = document.getElementById("contractSalesDisplay");
+    const hiddenInput = document.getElementById("contractSales");
+
+    // 초기값 설정: 서버에서 전달된 값을 원화 형식으로 변환
+    if (hiddenInput.value) {
+        displayInput.value = formatCurrency(hiddenInput.value);
+    }
+
+    // 입력 시 원화 형식으로 변환
+    displayInput.addEventListener("input", function () {
+        const rawValue = displayInput.value.replace(/[^\d]/g, ""); // 숫자 이외의 문자 제거
+        const formattedValue = formatCurrency(rawValue); // 원화 형식 변환
+        displayInput.value = formattedValue; // 포맷된 값 표시
+        hiddenInput.value = rawValue; // 실제 숫자 값을 hidden 필드에 저장
+    });
+
+    // 원화 형식으로 변환하는 함수
+    function formatCurrency(value) {
+        if (!value) return "₩0";
+        return `₩${parseInt(value, 10).toLocaleString("ko-KR")}`;
+    }
+});
 
             // Form 부분 기회상태 초기값 연동 JS (select Form은 html로 초기 value 지정이 안되어서 JS로 처리)
 
