@@ -44,8 +44,6 @@
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                <li><a class="dropdown-item" href="#!">Settings</a></li>
-                <li><a class="dropdown-item" href="#!">Activity Log</a></li>
                 <li><a class="dropdown-item" href="/mypage/{{id}}">MyPage</a></li>
                 <li><hr class="dropdown-divider" /></li>
                 <li><a class="dropdown-item" href="/logout">Logout</a></li>
@@ -101,6 +99,7 @@
                             <a class="nav-link" href="/opportunities">Opportunities</a>
                             <a class="nav-link" href="/contracts">Contracts</a>
                             <a class="nav-link" href="/orders">Orders</a>
+                            <a class="nav-link" href="/calendar">Calendar</a>
 
                         </nav>
                     </div>
@@ -389,7 +388,7 @@
             document.getElementById('chatbotMessages').scrollTop = document.getElementById('chatbotMessages').scrollHeight;
 
             // API 호출 부분
-            fetch('http://127.0.0.1:8000/chatbot', {
+            fetch('https://saiescrm.api.jyds.synology.me/chatbot', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
