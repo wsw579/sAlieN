@@ -4,6 +4,7 @@ import com.aivle.project.dto.HistoryDto;
 import com.aivle.project.dto.OpportunitiesDto;
 import com.aivle.project.dto.ProductsDto;
 import com.aivle.project.entity.*;
+import com.aivle.project.repository.EmployeeRepository;
 import com.aivle.project.repository.HistoryRepository;
 import com.aivle.project.repository.OpportunitiesCommentRepository;
 import com.aivle.project.repository.OpportunitiesRepository;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +37,7 @@ public class OpportunitiesService {
     private final OpportunitiesRepository opportunitiesRepository;
     private final OpportunitiesCommentRepository opportunitiesCommentRepository;
     private final HistoryRepository historyRepository;
+    private final EmployeeRepository employeeRepository;
     private static final Logger logger = LoggerFactory.getLogger(OpportunitiesService.class);
 
     // Create
@@ -90,6 +93,22 @@ public class OpportunitiesService {
     public List<HistoryEntity> getHistoryByOpportunityId(Long opportunityId) {
         OpportunitiesEntity opportunity = searchOpportunities(opportunityId);
         return historyRepository.findByOpportunityOrderByDateTimeDesc(opportunity);
+    }
+
+    // History calendar
+    public List<HistoryEntity> getHistoriesByEmployeeId(String employeeId) {
+        EmployeeEntity employee = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid employeeId: " + employeeId));
+        List<OpportunitiesEntity> opportunities = opportunitiesRepository.findByEmployeeId(employee);
+
+        List<HistoryEntity> histories = new ArrayList<>();
+        for (OpportunitiesEntity opportunity : opportunities) {
+            List<HistoryEntity> opportunityHistories = historyRepository.findByOpportunity(opportunity);
+            histories.addAll(opportunityHistories);
+        }
+
+        return histories;
+
     }
 
     public void createHistory(HistoryDto dto) {
