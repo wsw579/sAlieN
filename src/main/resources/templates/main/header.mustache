@@ -27,18 +27,22 @@
     <a class="navbar-brand ps-3" href="/">sAIes CRM - KT</a>
     <!-- Sidebar Toggle-->
     <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
+
+    {{#id}}
+        <div class="navbar-text text-light me-3">
+            {{id}}님 오늘 하루도 화이팅 하세요.
+        </div>
+    {{/id}}
+
+
     <!-- Navbar Search-->
     <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
         <div class="input-group">
-            <input class="form-control" type="text" placeholder="Search for..." aria-label="Search for..." aria-describedby="btnNavbarSearch" />
-            <button class="btn btn-primary" id="btnNavbarSearch" type="button"><i class="fas fa-search"></i></button>
+<!--            <input class="form-control" type="text" placeholder="Search for..." aria-label="Search for..." aria-describedby="btnNavbarSearch" />-->
+<!--            <button class="btn btn-primary" id="btnNavbarSearch" type="button"><i class="fas fa-search"></i></button>-->
         </div>
     </form>
-    {{#id}}
-        <div class="navbar-text text-light me-3">
-            {{id}}님 반갑습니다.
-        </div>
-    {{/id}}
+
     <!-- Navbar-->
     <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
         <li class="nav-item dropdown">
@@ -293,8 +297,18 @@
         </div>
     </div>
 
+    <!-- HTML 구조 -->
+    <div id="chatbotModal" class="modal">
+        <div class="modal-content" style="min-height: 300px;"> <!-- min-height 속성을 추가하여 초기 크기 설정 -->
+            <span class="close">&times;</span>
+            <div id="chatbotMessages"></div>
+            <input type="text" id="chatbotInput" placeholder="Type your message here...">
+            <button id="voiceInputButton">Voice Input</button>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
     <script>
-        // Add this JavaScript to your main JS file
         document.addEventListener("DOMContentLoaded", function() {
             var chatbotButton = document.getElementById('chatbotButton');
             var chatbotModal = document.getElementById('chatbotModal');
@@ -304,6 +318,7 @@
 
             chatbotButton.onclick = function() {
                 chatbotModal.style.display = "block";
+                initializeChat(); // 모달이 열릴 때 초기 메시지 추가
             }
 
             closeModal.onclick = function() {
@@ -367,63 +382,70 @@
                 console.log('Speech recognition not supported');
             }
 
-        var sendChatbotMessage = function() {
-            if (recognizing) {
-                recognition.stop();
-            }
-            var message = document.getElementById('chatbotInput').value;
-            var currentTime = new Date().toLocaleTimeString();
+            var sendChatbotMessage = function() {
+                if (recognizing) {
+                    recognition.stop();
+                }
+                var message = document.getElementById('chatbotInput').value;
+                var currentTime = new Date().toLocaleTimeString();
 
-            {{#id}}
-            var userMessage = "<div class='chat-container'><div class='user-info message-info'>{{id}}</div><div class='user-message'>" + message + "<br><span class='message-info'>" + currentTime + "</span></div></div>";
-            {{/id}}
+                var userMessage = "<div class='chat-container'><div class='user-info message-info'>User</div><div class='user-message'>" + message + "<br><span class='message-info'>" + currentTime + "</span></div></div>";
 
-            {{^id}}
-            var userMessage = "<div class='chat-container'><div class='user-info message-info'>User</div><div class='user-message'>" + message + "<br><span class='message-info'>" + currentTime + "</span></div></div>";
-            {{/id}}
+                document.getElementById('chatbotMessages').innerHTML += userMessage;
+                document.getElementById('chatbotInput').value = "";
+                finalTranscript = ''; // Reset the final transcript after sending the message
 
-            document.getElementById('chatbotMessages').innerHTML += userMessage;
-            document.getElementById('chatbotInput').value = "";
-            finalTranscript = ''; // Reset the final transcript after sending the message
-            document.getElementById('chatbotMessages').scrollTop = document.getElementById('chatbotMessages').scrollHeight;
-
-            // API 호출 부분
-            fetch('https://saiescrm.api.jyds.synology.me/chatbot', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ request: message })
-            })
-            .then(response => response.json())
-            .then(data => {
-                // \n 문자를 <br> 태그로 대체
-                var formattedResponse = data.response.replace(/\\n/g, '<br>');
-                var botMessage = "<div class='chat-container'><div class='bot-info message-info'>sAIes CRM</div><div class='bot-message'>" + formattedResponse + "<br><span class='message-info'>" + currentTime + "</span></div></div>";
-                document.getElementById('chatbotMessages').innerHTML += botMessage;
-                // 모달 창 내의 스크롤 최하단으로 내리기
-                var chatContainer = document.getElementById('chatbotMessages');
-                chatContainer.scrollTop = chatContainer.scrollHeight;
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                var botMessage = "<div class='chat-container'><div class='bot-info message-info'>sAIes CRM</div><div class='bot-message'>API 호출 오류: " + error.message + "<br><span class='message-info'>" + currentTime + "</span></div></div>";
-                document.getElementById('chatbotMessages').innerHTML += botMessage;
-                // 모달 창 내의 스크롤 최하단으로 내리기 (오류 메시지 경우에도)
-                var chatContainer = document.getElementById('chatbotMessages');
-                chatContainer.scrollTop = chatContainer.scrollHeight;
-            });
-        }
-
-        document.getElementById('chatbotInput').onkeydown = function(event) {
-            if (event.key === 'Enter') {
-                sendChatbotMessage();
                 setTimeout(function() {
                     document.getElementById('chatbotMessages').scrollTop = document.getElementById('chatbotMessages').scrollHeight;
-                }, 100); // Adjust the delay as needed
+                }, 100); // 딜레이 조정 가능
+
+                // API 호출 부분
+                fetch('http://127.0.0.1:8000/chatbot', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ request: message })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // \n 문자를 <br> 태그로 대체
+                    var formattedResponse = data.response.replace(/\\n/g, '<br>');
+                    var botMessage = "<div class='chat-container'><div class='bot-info message-info'>sAIes CRM</div><div class='bot-message'>" + formattedResponse + "<br><span class='message-info'>" + currentTime + "</span></div></div>";
+                    document.getElementById('chatbotMessages').innerHTML += botMessage;
+
+                    // 모달 창 내의 스크롤 최하단으로 내리기
+                    setTimeout(function() {
+                        document.getElementById('chatbotMessages').scrollTop = document.getElementById('chatbotMessages').scrollHeight;
+                    }, 100); // 딜레이 조정 가능
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    var botMessage = "<div class='chat-container'><div class='bot-info message-info'>sAIes CRM</div><div class='bot-message'>API 호출 오류: " + error.message + "<br><span class='message-info'>" + currentTime + "</span></div></div>";
+                    document.getElementById('chatbotMessages').innerHTML += botMessage;
+
+                    // 모달 창 내의 스크롤 최하단으로 내리기 (오류 메시지 경우에도)
+                    setTimeout(function() {
+                        document.getElementById('chatbotMessages').scrollTop = document.getElementById('chatbotMessages').scrollHeight;
+                    }, 100); // 딜레이 조정 가능
+                });
             }
-        };
-    });
+
+            document.getElementById('chatbotInput').onkeydown = function(event) {
+                if (event.key === 'Enter') {
+                    sendChatbotMessage();
+                    setTimeout(function() {
+                        document.getElementById('chatbotMessages').scrollTop = document.getElementById('chatbotMessages').scrollHeight;
+                    }, 100); // Adjust the delay as needed
+                }
+            };
+
+            // 초기 메시지를 설정하는 함수
+            var initializeChat = function() {
+                var initialMessage = "<div class='chat-container'><div class='bot-info message-info'>sAIes CRM</div><div class='bot-message'>안녕하세요. CRM 어시스던트 입니다. 무엇을 도와드릴까요?<br><span class='message-info'>" + new Date().toLocaleTimeString() + "</span></div></div>";
+                document.getElementById('chatbotMessages').innerHTML = initialMessage;
+            };
+        });
     </script>
 
 
