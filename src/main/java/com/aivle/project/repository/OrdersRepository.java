@@ -63,4 +63,28 @@ public interface OrdersRepository extends JpaRepository<OrdersEntity, Long> {
             "WHERE YEAR(o.orderDate) = :year AND o.orderStatus = 'activated' " +
             "GROUP BY MONTH(o.orderDate)")
     List<Object[]> getMonthlyOrders(@Param("year") int year);
+
+    // 영업 실적 그래프
+    @Query("SELECT e.employeeId AS employeeId, e.employeeName AS employeeName, " +
+            "SUM(o.orderAmount * p.fixedPrice) AS totalSales " +
+            "FROM OrdersEntity o " +
+            "JOIN o.productId p " +
+            "JOIN o.employeeId e " +
+            "WHERE e.teamId = :teamId " +
+            "GROUP BY e.employeeId, e.employeeName " +
+            "ORDER BY totalSales DESC")
+    List<Object[]> getSalesByEmployeeWithNames(@Param("teamId") Team teamId);
+
+    // 이번달 주문 현황 퍼센트 표시
+    @Query("SELECT COUNT(o) FROM OrdersEntity o " +
+            "WHERE EXTRACT(MONTH FROM o.salesDate) = EXTRACT(MONTH FROM CURRENT_DATE) " +
+            "AND EXTRACT(YEAR FROM o.salesDate) = EXTRACT(YEAR FROM CURRENT_DATE) " +
+            "AND o.orderStatus IN ('draft', 'completed', 'activated')")
+    long countTotalSalesThisMonth();
+
+    @Query("SELECT COUNT(o) FROM OrdersEntity o " +
+            "WHERE EXTRACT(MONTH FROM o.salesDate) = EXTRACT(MONTH FROM CURRENT_DATE) " +
+            "AND EXTRACT(YEAR FROM o.salesDate) = EXTRACT(YEAR FROM CURRENT_DATE) " +
+            "AND o.orderStatus = 'draft'")
+    long countDraftSalesThisMonth();
 }

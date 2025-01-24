@@ -218,4 +218,31 @@ public class OrdersService {
         }
         return ordersRepository.findByDepartmentAndTeam(Dept.valueOf(departmentId), Team.valueOf(teamId), pageable);
     }
+
+    // 영업 실적 그래프
+    public List<Map<String, Object>> getEmployeeSalesPerformanceWithNames() {
+        String userid = UserContext.getCurrentUserId();
+        String userteam = employeeRepository.findTeamById(userid);
+        List<Object[]> data = ordersRepository.getSalesByEmployeeWithNames(Team.valueOf(userteam));
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (Object[] row : data) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("employeeId", row[0]);
+            map.put("employeeName", row[1]);
+            map.put("totalSales", row[2]);
+            result.add(map);
+        }
+        return result;
+    }
+
+    // 주문현황 퍼센트 표시
+    public double calculateDraftPercentage() {
+        long totalSalesThisMonth = ordersRepository.countTotalSalesThisMonth();
+        long draftSalesThisMonth = ordersRepository.countDraftSalesThisMonth();
+        if (totalSalesThisMonth == 0) {
+            return 100.0; // 분모가 0인 경우 비율은 0
+        }
+
+        return (double) draftSalesThisMonth / totalSalesThisMonth * 100;
+    }
 }

@@ -170,4 +170,20 @@ public class OrdersController {
         ordersService.deleteOrdersByIds(ids);
         return ResponseEntity.ok().build(); // 상태 코드 200 반환
     }
+
+    @GetMapping("/api/sales-performance")
+    public ResponseEntity<List<Map<String, Object>>> getSalesPerformanceWithNames() {
+        List<Map<String, Object>> salesPerformance = ordersService.getEmployeeSalesPerformanceWithNames();
+        return ResponseEntity.ok(salesPerformance);
+    }
+
+    @GetMapping("/api/draft-percentage")
+    public ResponseEntity<Map<String, Double>> getDraftPercentage() {
+        double percentage = 100.0 - ordersService.calculateDraftPercentage();
+        System.out.println(percentage);
+        Map<String, Double> response = new HashMap<>();
+        response.put("draftPercentage", percentage);
+        return ResponseEntity.ok(response);
+    }
+
 }
