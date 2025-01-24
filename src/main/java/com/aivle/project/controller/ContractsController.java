@@ -42,7 +42,7 @@ public class ContractsController {
         int size = Integer.parseInt(params.getOrDefault("size", "10"));
         String search = params.getOrDefault("search", "");
         String sortColumn = params.getOrDefault("sortColumn", "startDate");
-        String sortDirection = params.getOrDefault("sortDirection", "asc");
+        String sortDirection = params.getOrDefault("sortDirection", "desc");
 
         // 데이터 조회
         Page<ContractsEntity> contractsPage = contractsService.readContracts(page, size, search, sortColumn, sortDirection);

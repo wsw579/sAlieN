@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -38,7 +39,7 @@ public class OpportunitiesController {
         int size = Integer.parseInt(params.getOrDefault("size", "10"));
         String search = params.getOrDefault("search", "");
         String sortColumn = params.getOrDefault("sortColumn", "createdDate");
-        String sortDirection = params.getOrDefault("sortDirection", "asc");
+        String sortDirection = params.getOrDefault("sortDirection", "desc");
 
         Page<OpportunitiesEntity> opportunitiesPage = opportunitiesService.readOpportunities(page, size, search, sortColumn, sortDirection);
         PaginationDto<OpportunitiesEntity> paginationDto = paginationService.createPaginationData(opportunitiesPage, page, 5);
@@ -97,8 +98,26 @@ public class OpportunitiesController {
     @GetMapping("/opportunities/detail/create")
     public String opportunitiesCreate(Model model) {
         OpportunitiesEntity opportunities = new OpportunitiesEntity();
+
+        opportunities.setOpportunityName("");
+        opportunities.setRegion("");
+        opportunities.setCompanySize(0);
+        opportunities.setOpportunityInquiries("");
+        opportunities.setCustomerEmployee("");
+        opportunities.setQuantity(0);
+        opportunities.setExpectedRevenue(0);
+        opportunities.setCompanyRevenue(0);
+        opportunities.setOpportunityNotes("");
         opportunities.setCreatedDate(LocalDate.now());
         opportunities.setTargetCloseDate(LocalDate.now());
+        opportunities.setOpportunityStatus("");
+        opportunities.setSuccessRate("");
+
+        //외래키 부분
+        opportunities.setLeadId(new LeadsEntity());
+        opportunities.setAccountId(new AccountEntity());
+        opportunities.setProductId(new ProductsEntity());
+        opportunities.setEmployeeId(new EmployeeEntity());
 
         model.addAttribute("opportunities", opportunities);
         model.addAttribute("products", productsService.getAllProductIdsAndNames());
@@ -150,6 +169,16 @@ public class OpportunitiesController {
     public ResponseEntity<Void> deleteOpportunities(@RequestBody Map<String, List<Long>> request) {
         opportunitiesService.deleteOpportunitiesByIds(request.get("ids"));
         return ResponseEntity.ok().build();
+    }
+
+    // 오늘 마감인 Leads 수 반환
+    @GetMapping("/api/opportunities/card-value")
+    public ResponseEntity<Map<String, Object>> countStatusCardValue() {
+        Map<String, Long> statusCounts = opportunitiesService.getOpportunitiesStatusCountsTeam();
+        System.out.println(statusCounts);
+        Map<String, Object> response = new HashMap<>();
+        response.put("statusCounts", statusCounts);
+        return ResponseEntity.ok(response);
     }
 }
 

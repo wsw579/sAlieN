@@ -67,15 +67,15 @@
                     <div class="card h-100">
                         <div class="card-header">
                             <i class="fas fa-chart-bar me-1"></i>
-                            정체중인 기회
+                            기회 목록
                         </div>
                         <div class="card-body">
                             <div class="row g-3 mb-3">
                                 <div class="col-6 col-md-3">
                                     <div class="card bg-primary text-white h-100">
-                                        <div class="card-body">Primary Card</div>
+                                        <div class="card-body">진행중</div>
                                         <div class="card-footer d-flex align-items-center justify-content-between">
-                                            <h3 id="Count1">0 건</h3>
+                                            <h3 id="ongoingCountTeam">0 건</h3>
                                             <div class="small text-white">
                                                 <a href="/opportunities" class="text-white">
                                                     <i class="fas fa-angle-right"></i>
@@ -86,9 +86,9 @@
                                 </div>
                                 <div class="col-6 col-md-3">
                                     <div class="card bg-warning text-white h-100">
-                                        <div class="card-body">Warning Card</div>
+                                        <div class="card-body">마감일자 초과</div>
                                         <div class="card-footer d-flex align-items-center justify-content-between">
-                                            <h3 id="Count2">0 건</h3>
+                                            <h3 id="overdueCountTeam">0 건</h3>
                                             <div class="small text-white">
                                                 <a href="/opportunities" class="text-white">
                                                     <i class="fas fa-angle-right"></i>
@@ -99,9 +99,9 @@
                                 </div>
                                 <div class="col-6 col-md-3">
                                     <div class="card bg-success text-white h-100">
-                                        <div class="card-body">Success Card</div>
+                                        <div class="card-body">계약전환 성공</div>
                                         <div class="card-footer d-flex align-items-center justify-content-between">
-                                            <h3 id="Count3">0 건</h3>
+                                            <h3 id="closedCountTeam">0 건</h3>
                                             <div class="small text-white">
                                                 <a href="/opportunities" class="text-white">
                                                     <i class="fas fa-angle-right"></i>
@@ -112,9 +112,9 @@
                                 </div>
                                 <div class="col-6 col-md-3">
                                     <div class="card bg-danger text-white h-100">
-                                        <div class="card-body">Danger Card</div>
+                                        <div class="card-body">보류</div>
                                         <div class="card-footer d-flex align-items-center justify-content-between">
-                                            <h3 id="Count4">0 건</h3>
+                                            <h3 id="pendingCountTeam">0 건</h3>
                                             <div class="small text-white">
                                                 <a href="/opportunities" class="text-white">
                                                     <i class="fas fa-angle-right"></i>
@@ -186,7 +186,7 @@
                     <div class="card h-100">
                         <div class="card-header">
                             <i class="fas fa-chart-bar me-1"></i>
-                            영업 실적
+                            상위 5명 영업 실적
                         </div>
                         <canvas id="topSalesChart"></canvas>
                     </div>
@@ -196,7 +196,7 @@
                     <div class="card h-100">
                         <div class="card-header">
                             <i class="fas fa-chart-bar me-1"></i>
-                            영업 실적
+                            하위 5명 영업 실적
                         </div>
                         <canvas id="bottomSalesChart"></canvas>
                     </div>
@@ -209,4 +209,5 @@
     <script src="/assets/demo/today-review-status.js"></script>
     <script src="/assets/demo/sales-performance.js"></script>
     <script src="/assets/demo/draft-percentage.js"></script>
+    <script src="/assets/demo/opportunities-status-card-value.js"></script>
 {{>main/footer}}
