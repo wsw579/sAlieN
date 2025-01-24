@@ -168,53 +168,53 @@
                         <tr>
                             <th></th>
                             <th>ID</th>
+                            <th>제품명</th>
                             <th>발주일자</th>
                             <th>매출일자</th>
                             <th>상태</th>
                             <th>수량</th>
-                            <th>제품ID</th>
                             <th>계약ID</th>
                         </tr>
                         </thead>
                         <tbody>
-                        {{#orders}}
+                        {{#pagination.contents}}
                             <tr data-index="{{orderId}}">
                                 <td><input type="checkbox" class="select-row" value="{{orderId}}"></td>
-                                <td><a href="/orders/detail/{{orderId}}">{{orderId}}</a></td>
+                                <td>{{orderId}}</td>
+                                <td><a href="/orders/detail/{{orderId}}">{{productId.productName}}</a></td>
                                 <td>{{orderDate}}</td>
                                 <td>{{salesDate}}</td>
                                 <td>{{orderStatus}}</td>
                                 <td>{{orderAmount}}</td>
-                                <td>{{productId.productId}}</td>
                                 <td>{{contractId.contractId}}</td>
                             </tr>
-                        {{/orders}}
+                        {{/pagination.contents}}
                         </tbody>
                     </table>
 
                     <div class="pagination">
                         <!-- 이전 버튼 -->
-                        {{#hasPreviousPage}}
-                            <button onclick="window.location.href='/orders?page={{previousPage}}&size=10&search={{search}}&sortColumn={{sortColumn}}&sortDirection={{sortDirection}}'">
+                        {{#pagination.hasPreviousPage}}
+                            <button onclick="window.location.href='/orders?page={{pagination.previousPage}}&size=10&search={{search}}&sortColumn={{sortColumn}}&sortDirection={{sortDirection}}'">
                             이전
                             </button>
-                        {{/hasPreviousPage}}
+                        {{/pagination.hasPreviousPage}}
 
                         <!-- 페이지 번호 버튼 -->
-                        {{#pageNumbers}}
+                        {{#pagination.pageNumbers}}
                             <button
                                     onclick="window.location.href='/orders?page={{page}}&size=10&search={{search}}&sortColumn={{sortColumn}}&sortDirection={{sortDirection}}'"
                             class="{{#isActive}}active{{/isActive}}">
                             {{displayPage}}
                             </button>
-                        {{/pageNumbers}}
+                        {{/pagination.pageNumbers}}
 
                         <!-- 다음 버튼 -->
-                        {{#hasNextPage}}
-                            <button onclick="window.location.href='/orders?page={{nextPage}}&size=10&search={{search}}&sortColumn={{sortColumn}}&sortDirection={{sortDirection}}'">
+                        {{#pagination.hasNextPage}}
+                            <button onclick="window.location.href='/orders?page={{pagination.nextPage}}&size=10&search={{search}}&sortColumn={{sortColumn}}&sortDirection={{sortDirection}}'">
                             다음
                             </button>
-                        {{/hasNextPage}}
+                        {{/pagination.hasNextPage}}
                     </div>
                 </div>
 
@@ -223,44 +223,45 @@
     </main>
 
     <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var deleteButton = document.getElementById("deleteButton");
+        if (deleteButton) {
+            deleteButton.addEventListener("click", function() {
+                var selectedCheckboxes = document.querySelectorAll(".select-row:checked");
+                var selectedIds = [];
 
-            var deleteButton = document.getElementById("deleteButton");
-            if (deleteButton) {
-                deleteButton.addEventListener("click", function() {
-                    var selectedCheckboxes = document.querySelectorAll(".select-row:checked");
-                    var selectedIds = [];
-
-                    selectedCheckboxes.forEach(function(checkbox) {
-                        var orderId = checkbox.value;
-                        selectedIds.push(orderId);
-                    });
-
-                    if (selectedIds.length > 0) {
-                        var confirmDelete = confirm("선택한 항목들을 삭제하시겠습니까?");
-                        if (confirmDelete) {
-                            fetch("/orders/detail/delete", {
-                                method: "POST",
-                                headers: {
-                                    "Content-Type": "application/json"
-                                },
-                                body: JSON.stringify({ ids: selectedIds })
-                            }).then(response => {
-                                if (response.ok) {
-                                    window.location.href = "/orders";
-                                } else {
-                                    alert("삭제 중 오류가 발생했습니다.");
-                                }
-                            }).catch(error => {
-                                console.error("Error:", error);
-                                alert("삭제 중 오류가 발생했습니다.");
-                            });
-                        }
-                    } else {
-                        alert("삭제할 항목을 선택해 주세요.");
-                    }
+                selectedCheckboxes.forEach(function(checkbox) {
+                    var orderId = checkbox.value;
+                    selectedIds.push(orderId);
                 });
-            }
-        });
+
+
+                if (selectedIds.length > 0) {
+                    var confirmDelete = confirm("선택한 항목들을 삭제하시겠습니까?");
+                    if (confirmDelete) {
+                        fetch("/orders/detail/delete", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({ ids: selectedIds })
+                        }).then(response => {
+                            if (response.ok) {
+                                window.location.href = "/orders";
+                            } else {
+                                alert("삭제 중 오류가 발생했습니다.");
+                            }
+                        }).catch(error => {
+                            console.error("Error:", error);
+                            alert("삭제 중 오류가 발생했습니다.");
+                        });
+                    }
+                } else {
+                    alert("삭제할 항목을 선택해 주세요.");
+                }
+            });
+        }
+    });
     </script>
 
     <script src="/assets/demo/orders-read-chart.js"></script>

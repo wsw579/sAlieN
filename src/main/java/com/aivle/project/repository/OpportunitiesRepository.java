@@ -1,5 +1,6 @@
 package com.aivle.project.repository;
 
+import com.aivle.project.entity.EmployeeEntity;
 import com.aivle.project.entity.OpportunitiesEntity;
 import com.aivle.project.entity.OrdersEntity;
 import org.springframework.data.domain.Page;
@@ -43,11 +44,17 @@ public interface OpportunitiesRepository extends JpaRepository<OpportunitiesEnti
 
 
 
-
     // 차트 그래프
     @Query("SELECT MONTH(o.createdDate), COUNT(o) " +
             "FROM OpportunitiesEntity o " +
             "WHERE YEAR(o.createdDate) = :year AND o.opportunityStatus = 'Closed(won)' " +
             "GROUP BY MONTH(o.createdDate)")
     List<Object[]> getMonthlyOpportunities(@Param("year") int year);
+
+
+    // calendar
+    List<OpportunitiesEntity> findByEmployeeId(EmployeeEntity employeeId);
+
+
+
 }

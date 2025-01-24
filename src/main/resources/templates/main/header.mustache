@@ -9,8 +9,15 @@
     <title>sAIes CRM</title>
     <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
     <link href="/css/main_style.css" rel="stylesheet" />
+    <!-- jQuery 라이브러리 추가 -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- Selectize CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/css/selectize.default.min.css" rel="stylesheet">
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
 
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
 </head>
@@ -37,8 +44,6 @@
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                <li><a class="dropdown-item" href="#!">Settings</a></li>
-                <li><a class="dropdown-item" href="#!">Activity Log</a></li>
                 <li><a class="dropdown-item" href="/mypage/{{id}}">MyPage</a></li>
                 <li><hr class="dropdown-divider" /></li>
                 <li><a class="dropdown-item" href="/logout">Logout</a></li>
@@ -94,6 +99,7 @@
                             <a class="nav-link" href="/opportunities">Opportunities</a>
                             <a class="nav-link" href="/contracts">Contracts</a>
                             <a class="nav-link" href="/orders">Orders</a>
+                            <a class="nav-link" href="/calendar">Calendar</a>
 
                         </nav>
                     </div>
@@ -382,7 +388,7 @@
             document.getElementById('chatbotMessages').scrollTop = document.getElementById('chatbotMessages').scrollHeight;
 
             // API 호출 부분
-            fetch('http://127.0.0.1:8000/chatbot', {
+            fetch('https://saiescrm.api.jyds.synology.me/chatbot', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

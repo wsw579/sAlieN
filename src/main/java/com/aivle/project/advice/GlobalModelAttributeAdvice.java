@@ -1,5 +1,6 @@
 package com.aivle.project.advice;
 
+import jakarta.servlet.http.HttpSession;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,7 +23,7 @@ public class GlobalModelAttributeAdvice {
 //        }
 //    }
     @ModelAttribute
-    public void addUserIdAndAuthoritiesToModel(Model model) {
+    public void addUserIdAndAuthoritiesToModel(HttpSession session, Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated() && !authentication.getName().equals("anonymousUser")) {
             // 인증된 사용자 ID 전달

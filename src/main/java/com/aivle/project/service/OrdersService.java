@@ -1,15 +1,25 @@
 package com.aivle.project.service;
 
+import com.aivle.project.dto.ContractsDto;
 import com.aivle.project.dto.OrdersDto;
 import com.aivle.project.entity.ContractsEntity;
+import com.aivle.project.entity.EmployeeEntity;
 import com.aivle.project.entity.OrdersEntity;
 import com.aivle.project.entity.ProductsEntity;
+import com.aivle.project.enums.Dept;
 import com.aivle.project.enums.OrderStatus;
+import com.aivle.project.enums.Team;
 import com.aivle.project.repository.ContractsRepository;
+import com.aivle.project.repository.EmployeeRepository;
 import com.aivle.project.repository.OrdersRepository;
 import com.aivle.project.repository.ProductsRepository;
-import jakarta.transaction.Transactional;
+import com.aivle.project.utils.UserContext;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.transaction.annotation.Transactional;
+
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -29,33 +39,31 @@ public class OrdersService {
     private final ContractsRepository contractsRepository;
     private final OrdersRepository ordersRepository;
     private final ProductsRepository productsRepository;
+    private static final Logger logger = LoggerFactory.getLogger(OrdersService.class);
+
+    private final EmployeeRepository employeeRepository;
 
     // Create
     public void createOrder(OrdersDto dto) {
-        OrdersEntity orderEntity = new OrdersEntity();
-
-        orderEntity.setOrderDate(dto.getOrderDate());
-        orderEntity.setSalesDate(dto.getSalesDate());
-        orderEntity.setOrderAmount(dto.getOrderAmount());
-        orderEntity.setOrderStatus(OrderStatus.valueOf(dto.getOrderStatus()));
-        orderEntity.setContractId(dto.getContractId());
-        orderEntity.setProductId(dto.getProductId());
+        OrdersEntity orderEntity = convertDtoToEntity(dto);
         ordersRepository.save(orderEntity);
     }
 
     // Read
+    @Transactional(readOnly = true)
     public Page<OrdersEntity> readOrders(int page, int size, String search, String sortColumn, String sortDirection) {
+        String userid = UserContext.getCurrentUserId();
+        String userrole = UserContext.getCurrentUserRole();
+        String userdept = employeeRepository.findDeptById(userid);
+        String userteam = employeeRepository.findTeamById(userid);
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortDirection), sortColumn));
 
-        if (search != null && !search.isEmpty()) {
-            try {
-                return ordersRepository.findByOrderIdLike(search, pageable);
-            } catch (NumberFormatException e) {
-                // 숫자가 아닌 경우 빈 페이지 반환
-                return Page.empty(pageable);
-            }
+        if ("ROLE_ADMIN".equals(userrole)) {
+            return findOrdersForAdmin(search, pageable);
+        } else if ("ROLE_USER".equals(userrole)) {
+            return findOrdersForUser(search, userdept, userteam, pageable);
         } else {
-            return ordersRepository.findAll(pageable);
+            throw new AccessDeniedException("권한이 없습니다.");
         }
     }
 
@@ -63,17 +71,11 @@ public class OrdersService {
     // Update
     @Transactional
     public void updateOrder(Long orderId, OrdersDto dto) {
-        OrdersEntity order = ordersRepository.findById(orderId)
+        OrdersEntity ordersEntity = ordersRepository.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid order ID"));
-        System.out.println("Before update: " + order);
+        updateEntityFromDto(ordersEntity, dto);
 
-        order.setOrderDate(dto.getOrderDate());
-        order.setSalesDate(dto.getSalesDate());
-        order.setOrderAmount(dto.getOrderAmount());
-        order.setOrderStatus(OrderStatus.valueOf(dto.getOrderStatus()));
-        order.setContractId(dto.getContractId());
-        order.setProductId(dto.getProductId());
-        ordersRepository.save(order);
+        ordersRepository.save(ordersEntity);
     }
 
     // Delete
@@ -96,10 +98,29 @@ public class OrdersService {
                 .orElseThrow(() -> new IllegalArgumentException("Order not found"));
     }
 
+    // 테이블 데이터 전달
+    @Transactional(readOnly = true)
+    public Map<String, Object> getOrderPageData(int page, int size, String search, String sortColumn, String sortDirection) {
+        Page<OrdersEntity> ordersPage = readOrders(page, size, search, sortColumn, sortDirection);
+        Map<String, Long> statusCounts = getOrderStatusCounts();
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("ordersPage", ordersPage);
+        data.put("statusCounts", statusCounts);
+        data.put("totalCount", statusCounts.values().stream().mapToLong(Long::longValue).sum());
+
+        return data;
+    }
+
     // 상태 수 가져오기
+    @Transactional(readOnly = true)
     public Map<String, Long> getOrderStatusCounts() {
+        String userid = UserContext.getCurrentUserId();
+        String userdept = employeeRepository.findDeptById(userid);
+        String userteam = employeeRepository.findTeamById(userid);
+
         Map<String, Long> statusCounts = new HashMap<>();
-        List<Object[]> results = ordersRepository.countOrdersByStatus();
+        List<Object[]> results = ordersRepository.countOrdersByStatusForCurrentUser(userid, Dept.valueOf(userdept), Team.valueOf(userteam));
 
         for (Object[] result : results) {
             String status = (String) result[0];
@@ -110,74 +131,91 @@ public class OrdersService {
         return statusCounts;
     }
 
+    // Bar 및 Chart Data
     public Map<String, List<Integer>> getBarData() {
-        int currentYear = LocalDate.now().getYear();
-        int lastYear = currentYear - 1;
-
-        // 각 월별 주문 수를 초기화
-        List<Integer> lastYearData = IntStream.range(0, 12).mapToObj(i -> 0).collect(Collectors.toList());
-        List<Integer> currentYearData = IntStream.range(0, 12).mapToObj(i -> 0).collect(Collectors.toList());
-
-        // DB에서 월별 주문 수를 가져옵니다.
-        List<Object[]> lastYearOrders = ordersRepository.getMonthlyOrders(lastYear);
-        List<Object[]> currentYearOrders = ordersRepository.getMonthlyOrders(currentYear);
-
-        // 결과를 리스트에 추가
-        for (Object[] row : lastYearOrders) {
-            int month = ((Number) row[0]).intValue() - 1; // 월 (1월 = 0 인덱스)
-            int count = ((Number) row[1]).intValue(); // 주문 수
-            lastYearData.set(month, count);
-        }
-
-        for (Object[] row : currentYearOrders) {
-            int month = ((Number) row[0]).intValue() - 1; // 월 (1월 = 0 인덱스)
-            int count = ((Number) row[1]).intValue(); // 주문 수
-            currentYearData.set(month, count);
-        }
-
-        // 누적 값 계산
-        for (int i = 1; i < 12; i++) {
-            lastYearData.set(i, lastYearData.get(i) + lastYearData.get(i - 1));
-            currentYearData.set(i, currentYearData.get(i) + currentYearData.get(i - 1));
-        }
-
-        Map<String, List<Integer>> barData = new HashMap<>();
-        barData.put("lastYearData", lastYearData);
-        barData.put("currentYearData", currentYearData);
-
-        return barData;
+        return getYearlyData(true);
     }
 
-
     public Map<String, List<Integer>> getChartData() {
+        return getYearlyData(false);
+    }
+
+    private Map<String, List<Integer>> getYearlyData(boolean accumulate) {
         int currentYear = LocalDate.now().getYear();
         int lastYear = currentYear - 1;
 
-        // 각 월별 주문 수를 초기화
-        List<Integer> lastYearData = IntStream.range(0, 12).mapToObj(i -> 0).collect(Collectors.toList());
-        List<Integer> currentYearData = IntStream.range(0, 12).mapToObj(i -> 0).collect(Collectors.toList());
+        List<Integer> lastYearData = initializeMonthlyData();
+        List<Integer> currentYearData = initializeMonthlyData();
 
-        // DB에서 월별 주문 수를 가져옵니다.
-        List<Object[]> lastYearOrders = ordersRepository.getMonthlyOrders(lastYear);
-        List<Object[]> currentYearOrders = ordersRepository.getMonthlyOrders(currentYear);
+        populateMonthlyData(lastYear, lastYearData);
+        populateMonthlyData(currentYear, currentYearData);
 
-        // 결과를 리스트에 추가
-        for (Object[] row : lastYearOrders) {
-            int month = ((Number) row[0]).intValue() - 1; // 월 (1월 = 0 인덱스)
-            int count = ((Number) row[1]).intValue(); // 주문 수
-            lastYearData.set(month, count);
+        if (accumulate) {
+            accumulateMonthlyData(lastYearData);
+            accumulateMonthlyData(currentYearData);
         }
 
-        for (Object[] row : currentYearOrders) {
-            int month = ((Number) row[0]).intValue() - 1; // 월 (1월 = 0 인덱스)
-            int count = ((Number) row[1]).intValue(); // 주문 수
-            currentYearData.set(month, count);
+        Map<String, List<Integer>> yearlyData = new HashMap<>();
+        yearlyData.put("lastYearData", lastYearData);
+        yearlyData.put("currentYearData", currentYearData);
+        return yearlyData;
+    }
+
+    private List<Integer> initializeMonthlyData() {
+        return IntStream.range(0, 12).mapToObj(i -> 0).collect(Collectors.toList());
+    }
+
+    private void populateMonthlyData(int year, List<Integer> monthlyData) {
+        ordersRepository.getMonthlyOrders(year)
+                .forEach(row -> {
+                    int month = ((Number) row[0]).intValue() - 1;
+                    int count = ((Number) row[1]).intValue();
+                    monthlyData.set(month, count);
+                });
+    }
+
+    private void accumulateMonthlyData(List<Integer> monthlyData) {
+        for (int i = 1; i < monthlyData.size(); i++) {
+            monthlyData.set(i, monthlyData.get(i) + monthlyData.get(i - 1));
         }
+    }
 
-        Map<String, List<Integer>> chartData = new HashMap<>();
-        chartData.put("lastYearData", lastYearData);
-        chartData.put("currentYearData", currentYearData);
+    // 헬퍼 메서드
+    private OrdersEntity convertDtoToEntity(OrdersDto dto) {
+        OrdersEntity ordersEntity = new OrdersEntity();
+        updateEntityFromDto(ordersEntity, dto);
+        return ordersEntity;
+    }
 
-        return chartData;
+    private void updateEntityFromDto(OrdersEntity entity, OrdersDto dto) {
+        // 현재 사용자 정보 가져오기
+        String currentUserId = UserContext.getCurrentUserId();
+        // 데이터베이스에서 EmployeeEntity 로드
+        EmployeeEntity employee = employeeRepository.findByEmployeeId(currentUserId);
+
+        entity.setOrderDate(dto.getOrderDate());
+        entity.setSalesDate(dto.getSalesDate());
+        entity.setOrderAmount(dto.getOrderAmount());
+        entity.setOrderStatus(OrderStatus.valueOf(dto.getOrderStatus()));
+        entity.setContractId(dto.getContractId());
+        entity.setProductId(dto.getProductId());
+        entity.setEmployeeId(employee);
+        ordersRepository.save(entity);
+    }
+
+    private Page<OrdersEntity> findOrdersForAdmin(String search, Pageable pageable) {
+        // Admin 전용 로직
+        if (search != null && !search.isEmpty()) {
+            return ordersRepository.findByOrderIdLikeAdmin("%" + search + "%", pageable);
+        }
+        return ordersRepository.findAll(pageable);
+    }
+
+    private Page<OrdersEntity> findOrdersForUser(String search, String departmentId, String teamId, Pageable pageable) {
+        // User 전용 로직
+        if (search != null && !search.isEmpty()) {
+            return ordersRepository.findByOrderIdLikeUser("%" + search + "%", Dept.valueOf(departmentId), Team.valueOf(teamId), pageable);
+        }
+        return ordersRepository.findByDepartmentAndTeam(Dept.valueOf(departmentId), Team.valueOf(teamId), pageable);
     }
 }
