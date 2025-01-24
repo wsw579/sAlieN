@@ -139,10 +139,11 @@ public class OpportunitiesController {
         return "redirect:/opportunities/detail/" + opportunityId;
     }
 
-    @GetMapping("/opportunities/detail/{opportunityId}/delete")
-    public String opportunitiesDelete(@PathVariable("opportunityId") Long opportunityId) {
+
+    @PostMapping("/opportunities/detail/{opportunityId}/delete")
+    public ResponseEntity<Void> deleteOpportunity(@PathVariable("opportunityId") Long opportunityId) {
         opportunitiesService.deleteOpportunities(opportunityId);
-        return "redirect:/opportunities";
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/opportunities/detail/delete")

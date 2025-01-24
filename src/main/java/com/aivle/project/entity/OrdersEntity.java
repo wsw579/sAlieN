@@ -50,4 +50,8 @@ public class OrdersEntity implements Serializable {
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false, foreignKey = @ForeignKey(name = "fk_orders_product_Id"))
     private ProductsEntity productId;
+
+    @ManyToOne
+    @JoinColumn(name = "employee_id", nullable = false, foreignKey = @ForeignKey(name = "fk_orders_employee_Id"))
+    private EmployeeEntity employeeId;
 }

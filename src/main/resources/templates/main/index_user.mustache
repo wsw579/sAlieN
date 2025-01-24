@@ -1,0 +1,176 @@
+{{>main/header}}
+
+<div id="layoutSidenav_content">
+    <main>
+        <div class="container-fluid px-4 mt-4">
+            <!-- 첫 번째 행 -->
+            <div class="row mb-4 align-items-stretch">
+                <!-- 첫 번째 열: 두 개의 카드로 나누기 -->
+                <div class="col-xl-4 col-md-8">
+                    <div class="row h-100">
+                        <!-- 첫 번째 작은 카드 -->
+                        <div class="col-12 mb-3">
+                            <div class="card h-100">
+                                <div class="card-header">
+                                    <i class="fas fa-chart-bar me-1"></i>
+                                    오늘 배정된 리드
+                                </div>
+                                <p>28</p>
+                            </div>
+                        </div>
+                        <!-- 두 번째 작은 카드 -->
+                        <div class="col-12">
+                            <div class="card h-100">
+                                <div class="card-header">
+                                    <i class="fas fa-chart-bar me-1"></i>
+                                    오늘 배정된 리드
+                                </div>
+                                <p>1</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 두 번째 열: 카드 + 테이블 -->
+                <div class="col-xl-8 col-md-6">
+                    <div class="card h-600">
+                        <div class="card-header">
+                            <i class="fas fa-chart-bar me-1"></i>
+                            정체중인 기회
+                        </div>
+                        <div class="card-body">
+                            <!-- 카드 -->
+                            <div class="row g-3 mb-3"> <!-- 간격 조정 -->
+                                <div class="col-6 col-md-3">
+                                    <div class="card bg-primary text-white h-60">
+                                        <div class="card-body">Primary Card</div>
+                                        <div class="card-footer d-flex align-items-center justify-content-between">
+                                            <h3 id="Count1">0 건</h3>
+                                            <div class="small text-white">
+                                                <a href="/opportunities" class="text-white">
+                                                    <i class="fas fa-angle-right"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <div class="card bg-warning text-white h-60">
+                                        <div class="card-body">Warning Card</div>
+                                        <div class="card-footer d-flex align-items-center justify-content-between">
+                                            <h3 id="Count2">0 건</h3>
+                                            <div class="small text-white">
+                                                <a href="/opportunities" class="text-white">
+                                                    <i class="fas fa-angle-right"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <div class="card bg-success text-white h-60">
+                                        <div class="card-body">Success Card</div>
+                                        <div class="card-footer d-flex align-items-center justify-content-between">
+                                            <h3 id="Count3">0 건</h3>
+                                            <div class="small text-white">
+                                                <a href="/opportunities" class="text-white">
+                                                    <i class="fas fa-angle-right"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <div class="card bg-danger text-white h-60">
+                                        <div class="card-body">Danger Card</div>
+                                        <div class="card-footer d-flex align-items-center justify-content-between">
+                                            <h3 id="Count4">0 건</h3>
+                                            <div class="small text-white">
+                                                <a href="/opportunities" class="text-white">
+                                                    <i class="fas fa-angle-right"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- 테이블 -->
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th>기회 번호</th>
+                                        <th>계정 이름</th>
+                                        <th>기회 생성 날짜</th>
+                                        <th>기회 마감 날짜</th>
+                                        <th>상태</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td>000000101</td>
+                                        <td>삼성 SDS</td>
+                                        <td>2025-01-01</td>
+                                        <td>2025-12-31</td>
+                                        <td>In Approval Process</td>
+                                    </tr>
+                                    <!-- 추가 데이터 -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 두 번째 행 -->
+            <div class="row mb-4 align-items-stretch">
+                <!-- 첫 번째 열: 이번달 Order Close 현황 -->
+                <div class="col-xl-4 col-md-6">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <i class="fas fa-chart-bar me-1"></i>
+                            이번달 Order Close 현황
+                        </div>
+                        <p>8</p>
+                    </div>
+                </div>
+
+                <!-- 두 번째 열: 이번달 오더 현황 -->
+                <div class="col-xl-8 col-md-12">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <i class="fas fa-chart-bar me-1"></i>
+                            이번달 오더 현황
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th>주문 번호</th>
+                                        <th>계정 이름</th>
+                                        <th>주문 시작 날짜</th>
+                                        <th>주문 금액</th>
+                                        <th>상태</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td>000000101</td>
+                                        <td>삼성 SDS</td>
+                                        <td>2025-01-01</td>
+                                        <td>100000</td>
+                                        <td>Draft</td>
+                                    </tr>
+                                    <!-- 추가 데이터 -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+{{>main/footer}}
