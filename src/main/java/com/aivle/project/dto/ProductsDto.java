@@ -1,5 +1,6 @@
 package com.aivle.project.dto;
 
+import com.aivle.project.entity.EmployeeEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,4 +19,7 @@ public class ProductsDto {
     private String productCondition; // Enum 대신 String으로 변환
     private String productDescription;
     private String productFamily;
+
+    // 외래키
+    private EmployeeEntity employeeId;
 }

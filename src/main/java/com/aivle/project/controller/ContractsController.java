@@ -15,8 +15,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.IntStream;
 
 @Controller
 @RequiredArgsConstructor
@@ -147,7 +149,9 @@ public class ContractsController {
 
     @PostMapping("/contracts/detail/create")
     public String contractsCreateNew(@ModelAttribute ContractsDto contractsDto) {
+
         contractsService.createContracts(contractsDto);
+
         return "redirect:/contracts";
     }
 
@@ -157,10 +161,10 @@ public class ContractsController {
         return "redirect:/contracts/detail/" + contractId;
     }
 
-    @GetMapping("/contracts/detail/{contractId}/delete")
-    public String deleteContract(@PathVariable("contractId") Long contractId) {
+    @PostMapping("/contracts/detail/{contractId}/delete")
+    public ResponseEntity<Void> deleteContract(@PathVariable("contractId") Long contractId) {
         contractsService.deleteContracts(contractId);
-        return "redirect:/contracts";
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/contracts/detail/delete")

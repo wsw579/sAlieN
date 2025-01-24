@@ -1,0 +1,121 @@
+{{>main/header}}
+
+<!-- FullCalendar CSS -->
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css" rel="stylesheet" />
+
+<!-- FullCalendar JS -->
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js"></script>
+
+
+<div id="layoutSidenav_content">
+    <main>
+        <div class="container-fluid px-4">
+            <h1 class="mt-4">My Sales Calendar</h1>
+            <ol class="breadcrumb mb-4">
+                <li class="breadcrumb-item active">Calendar for Opportunity History</li>
+            </ol>
+            <div class="row"><div>
+
+            <!-- 상단 데이터 요약 카드 바 -->
+            <div class="row">
+                <div class="col-xl-3 col-md-6">
+                    <div class="card bg-primary text-white mb-4">
+                        <div class="card-body">이번 달 미팅 일정</div>
+                        <div class="card-footer d-flex align-items-center justify-content-between">
+                            <h3 id="ongoingCount">건</h3>
+                            <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="card bg-warning text-white mb-4">
+                        <div class="card-body">이번 달 초기 미팅</div>
+                        <div class="card-footer d-flex align-items-center justify-content-between">
+                            <h3 id="overdueCount">건</h3>
+                            <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="card bg-success text-white mb-4">
+                        <div class="card-body">이번 달 최종 제안 미팅</div>
+                        <div class="card-footer d-flex align-items-center justify-content-between">
+                            <h3 id="closedCount"> 건</h3>
+                            <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="card bg-danger text-white mb-4">
+                        <div class="card-body">이번 달 영업 활동 수</div>
+                        <div class="card-footer d-flex align-items-center justify-content-between">
+                            <h3 id="pendingCount"> 건</h3>
+                            <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+
+
+            <!-- 켈린더 상세내용 부분 -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-table me-1"></i>
+                    My Sales Calendar
+                </div>
+                <div class="card-body">
+                    <table id="my_sales_calendar">
+                        <div id="calendar"></div>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+
+
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        var calendarEl = document.getElementById('calendar');
+
+                        var calendar = new FullCalendar.Calendar(calendarEl, {
+                            initialView: 'dayGridMonth',
+                            events: [
+                    {{#history}}
+                        {
+                            title: '{{historyTitle}}',
+                    start: '{{historyDate}}T{{historyTime}}',
+                    description: '{{actionTaken}}',
+                    customerRepresentative: '{{customerRepresentative}}',
+                    meetingPlace: '{{meetingPlace}}',
+                    customerRequirements: '{{customerRequirements}}'
+                },
+                    {{/history}}
+                    ],
+                    eventClick: function(info) {
+                        alert(
+                            '일정명: ' + info.event.title +
+                            '\n영업분류: ' + info.event.extendedProps.description +
+                            '\n고객담당자: ' + info.event.extendedProps.customerRepresentative +
+                            '\n미팅장소: ' + info.event.extendedProps.meetingPlace +
+                            '\n고객요청사항: ' + info.event.extendedProps.customerRequirements
+                        );
+                    }
+                });
+
+                calendar.render();
+            });
+                </script>
+
+
+
+
+
+    </main>
+
+
+
+
+
+{{>main/footer}}

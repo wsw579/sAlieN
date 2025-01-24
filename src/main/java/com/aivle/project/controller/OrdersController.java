@@ -1,6 +1,7 @@
 package com.aivle.project.controller;
 
 import com.aivle.project.dto.ContractsDto;
+import com.aivle.project.dto.EmployeeDto;
 import com.aivle.project.dto.OrdersDto;
 import com.aivle.project.dto.PaginationDto;
 import com.aivle.project.dto.ProductsDto;
@@ -8,6 +9,7 @@ import com.aivle.project.entity.*;
 import com.aivle.project.enums.OrderStatus;
 import com.aivle.project.repository.ContractsRepository;
 import com.aivle.project.service.ContractsService;
+import com.aivle.project.service.EmployeeService;
 import com.aivle.project.service.OrdersService;
 import com.aivle.project.service.PaginationService;
 import com.aivle.project.service.ProductsService;
@@ -16,6 +18,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -38,6 +42,7 @@ public class OrdersController {
     private final OrdersService ordersService;
     private final ContractsService contractsService;
     private final ProductsService productsService;
+    private final EmployeeService employeeService;
 
     private final PaginationService paginationService;
 
@@ -52,7 +57,8 @@ public class OrdersController {
 
         // 서비스에서 페이지 데이터 가져오기
         Page<OrdersEntity> ordersPage = ordersService.readOrders(page, size, search, sortColumn, sortDirection);
-
+        long numberOfElements = ordersPage.getTotalElements();
+        System.out.println(numberOfElements); // 테스트 용
         // 페이지네이션 데이터 생성
         PaginationDto<OrdersEntity> paginationDto = paginationService.createPaginationData(ordersPage, page, 5);
 
@@ -150,10 +156,10 @@ public class OrdersController {
     }
 
     // Delete detail page
-    @GetMapping("/orders/detail/{orderId}/delete")
-    public String ordersDeleteDetail(@PathVariable("orderId") Long orderId) {
+    @PostMapping("/orders/detail/{orderId}/delete")
+    public ResponseEntity<Void> deleteOrder(@PathVariable("orderId") Long orderId) {
         ordersService.deleteOrder(orderId);
-        return "redirect:/orders";
+        return ResponseEntity.ok().build();
     }
 
     // Delete orders in bulk

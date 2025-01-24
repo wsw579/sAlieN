@@ -3,12 +3,18 @@ package com.aivle.project.service;
 import com.aivle.project.dto.ContractsDto;
 import com.aivle.project.dto.OrdersDto;
 import com.aivle.project.entity.ContractsEntity;
+import com.aivle.project.entity.EmployeeEntity;
 import com.aivle.project.entity.OrdersEntity;
 import com.aivle.project.entity.ProductsEntity;
+import com.aivle.project.enums.Dept;
 import com.aivle.project.enums.OrderStatus;
+import com.aivle.project.enums.Team;
 import com.aivle.project.repository.ContractsRepository;
+import com.aivle.project.repository.EmployeeRepository;
 import com.aivle.project.repository.OrdersRepository;
 import com.aivle.project.repository.ProductsRepository;
+import com.aivle.project.utils.UserContext;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
@@ -35,6 +41,7 @@ public class OrdersService {
     private final ProductsRepository productsRepository;
     private static final Logger logger = LoggerFactory.getLogger(OrdersService.class);
 
+    private final EmployeeRepository employeeRepository;
 
     // Create
     public void createOrder(OrdersDto dto) {
@@ -45,12 +52,19 @@ public class OrdersService {
     // Read
     @Transactional(readOnly = true)
     public Page<OrdersEntity> readOrders(int page, int size, String search, String sortColumn, String sortDirection) {
+        String userid = UserContext.getCurrentUserId();
+        String userrole = UserContext.getCurrentUserRole();
+        String userdept = employeeRepository.findDeptById(userid);
+        String userteam = employeeRepository.findTeamById(userid);
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortDirection), sortColumn));
 
-        if (search != null && !search.isEmpty()) {
-            return ordersRepository.findByOrderIdLike("%" + search + "%", pageable);
+        if ("ROLE_ADMIN".equals(userrole)) {
+            return findOrdersForAdmin(search, pageable);
+        } else if ("ROLE_USER".equals(userrole)) {
+            return findOrdersForUser(search, userdept, userteam, pageable);
+        } else {
+            throw new AccessDeniedException("권한이 없습니다.");
         }
-        return ordersRepository.findAll(pageable);
     }
 
 
@@ -101,8 +115,12 @@ public class OrdersService {
     // 상태 수 가져오기
     @Transactional(readOnly = true)
     public Map<String, Long> getOrderStatusCounts() {
+        String userid = UserContext.getCurrentUserId();
+        String userdept = employeeRepository.findDeptById(userid);
+        String userteam = employeeRepository.findTeamById(userid);
+
         Map<String, Long> statusCounts = new HashMap<>();
-        List<Object[]> results = ordersRepository.countOrdersByStatus();
+        List<Object[]> results = ordersRepository.countOrdersByStatusForCurrentUser(userid, Dept.valueOf(userdept), Team.valueOf(userteam));
 
         for (Object[] result : results) {
             String status = (String) result[0];
@@ -170,12 +188,34 @@ public class OrdersService {
     }
 
     private void updateEntityFromDto(OrdersEntity entity, OrdersDto dto) {
+        // 현재 사용자 정보 가져오기
+        String currentUserId = UserContext.getCurrentUserId();
+        // 데이터베이스에서 EmployeeEntity 로드
+        EmployeeEntity employee = employeeRepository.findByEmployeeId(currentUserId);
+
         entity.setOrderDate(dto.getOrderDate());
         entity.setSalesDate(dto.getSalesDate());
         entity.setOrderAmount(dto.getOrderAmount());
         entity.setOrderStatus(OrderStatus.valueOf(dto.getOrderStatus()));
         entity.setContractId(dto.getContractId());
         entity.setProductId(dto.getProductId());
+        entity.setEmployeeId(employee);
         ordersRepository.save(entity);
+    }
+
+    private Page<OrdersEntity> findOrdersForAdmin(String search, Pageable pageable) {
+        // Admin 전용 로직
+        if (search != null && !search.isEmpty()) {
+            return ordersRepository.findByOrderIdLikeAdmin("%" + search + "%", pageable);
+        }
+        return ordersRepository.findAll(pageable);
+    }
+
+    private Page<OrdersEntity> findOrdersForUser(String search, String departmentId, String teamId, Pageable pageable) {
+        // User 전용 로직
+        if (search != null && !search.isEmpty()) {
+            return ordersRepository.findByOrderIdLikeUser("%" + search + "%", Dept.valueOf(departmentId), Team.valueOf(teamId), pageable);
+        }
+        return ordersRepository.findByDepartmentAndTeam(Dept.valueOf(departmentId), Team.valueOf(teamId), pageable);
     }
 }

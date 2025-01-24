@@ -110,10 +110,10 @@ public class ProductsController {
     }
 
     // Delete detail page
-    @GetMapping("/products/detail/{productId}/delete")
-    public String productsDeleteDetail(@PathVariable("productId") Long productId) {
+    @PostMapping("/products/detail/{productId}/delete")
+    public ResponseEntity<Void> deleteProduct(@PathVariable("productId") Long productId) {
         productsService.deleteProduct(productId);
-        return "redirect:/products";
+        return ResponseEntity.ok().build();
     }
 
     // Delete products in bulk
