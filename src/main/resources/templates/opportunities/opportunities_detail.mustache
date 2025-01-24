@@ -17,6 +17,13 @@
         border-color: #f5c6cb;
         color: #721c24;
     }
+
+    .btn-custom-proposal {
+    background-color: #cce5ff; /* 연한 파란색 */
+    color: #004085;
+    border: 1px solid #b8daff;
+}
+
     .btn-custom-create:hover {
         background-color: #c3e6cb; /* 약간 어두운 그린 */
         border-color: #b1dfbb;
@@ -367,11 +374,19 @@
                                 </div>
                             </div>
 
-                            <div class="d-flex justify-content-end">
+
+                            <div class="button-container d-flex justify-content-end gap-2 mb-3">
+                                <!-- 저장 버튼 -->
                                 <button type="submit" id="updateButton" class="btn btn-custom-create btn-sm">
                                     <i class="fas fa-plus-circle"></i> 저장
                                 </button>
+
+                                <!-- 제안서 생성 버튼 -->
+                                <button type="button" id="proposalButton" class="btn btn-custom-proposal btn-sm">
+                                    <i class="fas fa-plus-circle"></i> 제안서 생성
+                                </button>
                             </div>
+
                         </form>
 
                         {{/opportunities}}
@@ -512,11 +527,6 @@
 
 
 
-
-
-
-
-
         </div>
     </main>
 
@@ -548,6 +558,7 @@
             {{#leadId.leadId}}
                 document.getElementById("leadId").value = leadId;
             {{/leadId.leadId}}
+
 
         });
         {{/opportunityId}}
@@ -608,6 +619,7 @@
 
     // Form 삭제버튼 클릭 시 현 주소가 create인경우 create로 action주소 변경.
 
+
     document.addEventListener("DOMContentLoaded", function() {
         var form = document.getElementById("opportunityForm");
         var currentUrl = window.location.pathname;
@@ -627,7 +639,6 @@
             }
         });
     });
-
 
 
 
@@ -664,6 +675,9 @@
     });
 
 
+
+
+
         // 페이지 로드 시 댓글 섹션 스크롤 최하단으로 이동
         window.onload = function() {
             var commentSection = document.getElementById("commentSection");
@@ -671,8 +685,73 @@
         };
 
 
-        {{/opportunities}}
-    </script>
+
+  document.getElementById('proposalButton').addEventListener('click', function() {
+    try {
+        const employeeSelect = document.querySelector('#employeeId');
+        const productSelect = document.querySelector('#productId');
+        const employeeName = employeeSelect.options[employeeSelect.selectedIndex].textContent.split(' (')[0];
+        const productName = productSelect.options[productSelect.selectedIndex].textContent.split(' (')[0];
+        const opportunityInquiries = document.getElementById('opportunityInquiries').value;
+        const opportunityName = document.getElementById('opportunityName').value;
+
+        // 부서 정보 가져오기
+        const employeeId = employeeSelect.value;
+        const employeeDepartments = JSON.parse(document.getElementById('employeeDepartments').value);
+        const department = employeeDepartments[employeeId];
+
+        // 전송할 데이터 객체 생성
+        const dataToSend = {
+            담당자: employeeName,
+            부서: department,
+            제품: productName,
+            고객요구사항: opportunityInquiries
+        };
+
+        // 전송할 데이터 출력
+        console.log('전송할 데이터:', dataToSend);
+
+        // PDF 생성 요청
+        fetch('http://127.0.0.1:8000/generate-pdf', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(dataToSend)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.blob();
+        })
+        .then(blob => {
+            // PDF 파일을 사용자 PC에 다운로드
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `${opportunityName}_proposal.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            window.URL.revokeObjectURL(url);
+            link.remove();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('제안서 생성 중 오류가 발생했습니다. 다시 시도해 주세요.');
+        });
+    } catch (error) {
+        console.error('Error:', error);
+        alert('입력 정보를 확인할 수 없습니다. 모든 필드가 올바르게 입력되었는지 확인해 주세요.');
+    }
+});
+
+
+
+
+    {{/opportunities}}
+
+</script>
 
 
 {{>main/footer}}

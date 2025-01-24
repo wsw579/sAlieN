@@ -20,6 +20,7 @@ import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.IntStream;
 
 @Controller
@@ -122,6 +123,20 @@ public class OpportunitiesController {
         List<AccountDto> accounts = accountService.getAllAccountIdsAndNames();
         List<EmployeeDto.GetId> employee = employeeService.getAllEmployeeIdsAndNames();
         List<LeadsDto> leads = leadsService.getAllLeadIdsAndCompanyNames();
+
+
+        // ai 제안서
+        List<EmployeeEntity> allEmployees = employeeService.getAllEmployees();
+        Map<String, String> employeeDepartments = new HashMap<>();
+        for (EmployeeEntity emp : allEmployees) {
+            String departmentStr = Optional.ofNullable(emp.getDepartmentId())
+                    .map(Enum::toString)
+                    .orElse("Unknown");
+            employeeDepartments.put(emp.getEmployeeId(), departmentStr);
+        }
+
+        model.addAttribute("employeeDepartments", employeeDepartments);
+
 
 
         // 디버깅을 위해 로그 출력

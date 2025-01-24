@@ -245,4 +245,8 @@ public class EmployeeService {
                 })
                 .collect(Collectors.toList());
     }
+
+    public List<EmployeeEntity> getAllEmployees() {
+        return employeeRepository.findAll();
+    }
 }
