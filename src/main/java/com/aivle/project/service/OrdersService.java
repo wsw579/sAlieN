@@ -133,22 +133,31 @@ public class OrdersService {
 
     // Bar 및 Chart Data
     public Map<String, List<Integer>> getBarData() {
-        return getYearlyData(true);
+        return getYearlyData(true, false);
     }
 
     public Map<String, List<Integer>> getChartData() {
-        return getYearlyData(false);
+        return getYearlyData(false, false);
     }
 
-    private Map<String, List<Integer>> getYearlyData(boolean accumulate) {
+    public Map<String, List<Integer>> getChartRevenueData() {
+        return getYearlyData(false, true);
+    }
+
+    private Map<String, List<Integer>> getYearlyData(boolean accumulate, boolean revenue) {
         int currentYear = LocalDate.now().getYear();
         int lastYear = currentYear - 1;
 
         List<Integer> lastYearData = initializeMonthlyData();
         List<Integer> currentYearData = initializeMonthlyData();
 
-        populateMonthlyData(lastYear, lastYearData);
-        populateMonthlyData(currentYear, currentYearData);
+        if (revenue){
+            revenueMonthlyData(lastYear, lastYearData);
+            revenueMonthlyData(currentYear, currentYearData);
+        } else{
+            populateMonthlyData(lastYear, lastYearData);
+            populateMonthlyData(currentYear, currentYearData);
+        }
 
         if (accumulate) {
             accumulateMonthlyData(lastYearData);
@@ -171,6 +180,17 @@ public class OrdersService {
                     int month = ((Number) row[0]).intValue() - 1;
                     int count = ((Number) row[1]).intValue();
                     monthlyData.set(month, count);
+                });
+    }
+
+    private void revenueMonthlyData(int year, List<Integer> monthlyData) {
+        String userid = UserContext.getCurrentUserId();
+        String userteam = employeeRepository.findTeamById(userid);
+        ordersRepository.getMonthlyRevenue(year, Team.valueOf(userteam))
+                .forEach(row -> {
+                    int month = ((Number) row[0]).intValue() - 1;
+                    int revenue = ((Number) row[1]).intValue();
+                    monthlyData.set(month, revenue);
                 });
     }
 

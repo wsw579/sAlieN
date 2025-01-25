@@ -175,7 +175,6 @@ public class OpportunitiesController {
     @GetMapping("/api/opportunities/card-value")
     public ResponseEntity<Map<String, Object>> countStatusCardValue() {
         Map<String, Long> statusCounts = opportunitiesService.getOpportunitiesStatusCountsTeam();
-        System.out.println(statusCounts);
         Map<String, Object> response = new HashMap<>();
         response.put("statusCounts", statusCounts);
         return ResponseEntity.ok(response);

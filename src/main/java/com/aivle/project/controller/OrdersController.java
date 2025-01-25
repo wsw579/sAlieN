@@ -93,6 +93,11 @@ public class OrdersController {
         return ResponseEntity.ok(ordersService.getChartData());
     }
 
+    @GetMapping("/orders/revenue-chart-data")
+    public ResponseEntity<Map<String, List<Integer>>> getRevenueChartData() {
+        return ResponseEntity.ok(ordersService.getChartRevenueData());
+    }
+
 
     // Detail page
     @GetMapping("/orders/detail/{orderId}")
@@ -180,7 +185,6 @@ public class OrdersController {
     @GetMapping("/api/draft-percentage")
     public ResponseEntity<Map<String, Double>> getDraftPercentage() {
         double percentage = 100.0 - ordersService.calculateDraftPercentage();
-        System.out.println(percentage);
         Map<String, Double> response = new HashMap<>();
         response.put("draftPercentage", percentage);
         return ResponseEntity.ok(response);

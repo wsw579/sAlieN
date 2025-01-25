@@ -43,7 +43,7 @@
                     <div class="card h-100 w-100">
                         <div class="card-header">
                             <i class="fas fa-chart-bar me-1"></i>
-                            오늘 배정된 리드
+                            금일 배정된 리드
                         </div>
                         <div class="lead-stats d-flex justify-content-around align-items-center h-100">
                             <div class="stat">
@@ -67,7 +67,7 @@
                     <div class="card h-100">
                         <div class="card-header">
                             <i class="fas fa-chart-bar me-1"></i>
-                            기회 목록
+                            이달의 기회 목록
                         </div>
                         <div class="card-body">
                             <div class="row g-3 mb-3">
@@ -136,7 +136,7 @@
                     <div class="card h-100 w-100">
                         <div class="card-header text-center">
                             <i class="fas fa-chart-bar me-1"></i>
-                            이번달 Order Close 현황
+                            이달의 Order Close 현황
                         </div>
                         <div style="position: relative; width: 250px; height: 250px; margin: 0 auto;">
                             <canvas id="draftChart" width="200" height="200"></canvas>
@@ -149,31 +149,10 @@
                     <div class="card h-100">
                         <div class="card-header">
                             <i class="fas fa-chart-bar me-1"></i>
-                            이번달 오더 현황
+                            올해 매출 현황
                         </div>
                         <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-striped">
-                                    <thead>
-                                    <tr>
-                                        <th>주문 번호</th>
-                                        <th>계정 이름</th>
-                                        <th>주문 시작 날짜</th>
-                                        <th>주문 금액</th>
-                                        <th>상태</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr>
-                                        <td>000000101</td>
-                                        <td>삼성 SDS</td>
-                                        <td>2025-01-01</td>
-                                        <td>100000</td>
-                                        <td>Draft</td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                            <canvas id="ordersRevenueChart" width="100%" height="40"></canvas>
                         </div>
                     </div>
                 </div>
@@ -210,4 +189,5 @@
     <script src="/assets/demo/sales-performance.js"></script>
     <script src="/assets/demo/draft-percentage.js"></script>
     <script src="/assets/demo/opportunities-status-card-value.js"></script>
+    <script src="/assets/demo/orders-revenue-chart.js"></script>
 {{>main/footer}}

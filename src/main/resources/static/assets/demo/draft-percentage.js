@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     ctx.textBaseline = 'middle';
                     ctx.fillStyle = '#000'; // 글씨 색상
                     const textX = Math.round((width - ctx.measureText(percentText).width) / 2);
-                    const textY = height / 2 - 10; // 위로 약간 올림
+                    const textY = height / 2 + 20; // 위로 약간 올림
                     ctx.fillText(percentText, textX, textY);
 
                     // 두 번째 줄 (설명 텍스트)
@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     ctx.font = '14px Arial';
                     ctx.fillStyle = '#666';
                     const labelX = Math.round((width - ctx.measureText(labelText).width) / 2);
-                    const labelY = height / 2 + 15; // 아래로 약간 내림
+                    const labelY = height / 2 + 50; // 아래로 약간 내림
                     ctx.fillText(labelText, labelX, labelY);
 
                     ctx.save();
@@ -41,6 +41,7 @@ document.addEventListener("DOMContentLoaded", function () {
             new Chart(ctx, {
                 type: 'doughnut',
                 data: {
+                    labels: ['Completed', 'Draft'], // 항목 이름 추가
                     datasets: [{
                         data: [draftPercentage, 100 - draftPercentage],
                         backgroundColor: ['#17a2b8', '#d4f1f9'], // 도넛 색상
@@ -49,13 +50,30 @@ document.addEventListener("DOMContentLoaded", function () {
                 },
                 options: {
                     responsive: true,
-                    cutout: '50%', // 도넛 두께 조정
-                    plugins: {
-                        legend: {
-                            display: false // 범례 숨김
-                        },
-                        tooltip: {
-                            enabled: false // 툴팁 숨김
+                    cutoutPercentage: 60, // 도넛 두께 조정
+
+                    legend: {
+                        display: true, // 범례 활성화
+                        labels: {
+                            boxWidth: 15, // 범례 상자 크기
+                            padding: 30, // 범례와 그래프 간의 간격
+                            fontSize: 14 // 범례 텍스트 크기
+                        }
+                    },
+                    tooltips: {
+                        enabled: true, // 툴팁 활성화
+                        callbacks: {
+                            label: function (tooltipItem, data) {
+                                const dataset = data.datasets[tooltipItem.datasetIndex]; // 현재 데이터셋 가져오기
+                                const value = dataset.data[tooltipItem.index]; // 현재 데이터 가져오기
+                                const label = data.labels[tooltipItem.index]; // 레이블 가져오기
+
+                                if (label === 'Draft') {
+                                    return `Draft: ${value.toFixed(0)}%`; // Draft 데이터
+                                } else {
+                                    return `Remaining: ${value.toFixed(0)}%`; // Remaining 데이터
+                                }
+                            }
                         }
                     }
                 },

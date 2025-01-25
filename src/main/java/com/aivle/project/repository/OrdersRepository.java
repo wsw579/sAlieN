@@ -71,6 +71,8 @@ public interface OrdersRepository extends JpaRepository<OrdersEntity, Long> {
             "JOIN o.productId p " +
             "JOIN o.employeeId e " +
             "WHERE e.teamId = :teamId " +
+            "AND MONTH(o.salesDate) = MONTH(CURRENT_DATE) " + // 같은 달 조건
+            "AND YEAR(o.salesDate) = YEAR(CURRENT_DATE) " +   // 같은 연도 조건
             "GROUP BY e.employeeId, e.employeeName " +
             "ORDER BY totalSales DESC")
     List<Object[]> getSalesByEmployeeWithNames(@Param("teamId") Team teamId);
@@ -87,4 +89,17 @@ public interface OrdersRepository extends JpaRepository<OrdersEntity, Long> {
             "AND EXTRACT(YEAR FROM o.salesDate) = EXTRACT(YEAR FROM CURRENT_DATE) " +
             "AND o.orderStatus = 'draft'")
     long countDraftSalesThisMonth();
+
+    // 연도별 팀 매출 합
+    @Query(value = "SELECT MONTH(o.salesDate) AS month, " +
+            "SUM(o.orderAmount * p.fixedPrice) AS revenue " +
+            "FROM OrdersEntity o " +
+            "JOIN o.productId p " +
+            "JOIN o.employeeId e " +
+            "WHERE YEAR(o.salesDate) = :year " +
+            "AND o.orderStatus = 'activated' " +
+            "AND e.teamId = :teamId " +
+            "GROUP BY MONTH(o.salesDate)")
+    List<Object[]> getMonthlyRevenue(@Param("year") int year,
+                                     @Param("teamId") Team teamId);
 }
