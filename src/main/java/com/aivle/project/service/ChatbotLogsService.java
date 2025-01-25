@@ -24,6 +24,7 @@ public class ChatbotLogsService {
 
     // Read
     public List<ChatbotLogsEntity> readChatbotLogs() {
-        return chatbotLogsRepository.findAll();
+        return chatbotLogsRepository.findAllByOrderByLogsIdDesc(); // 내림차순으로 로그 가져오기
     }
 }
+
