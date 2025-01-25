@@ -1,48 +1,7 @@
 {{>main/header}}
 
 <style>
-    .button-container {
-        display: flex;
-        justify-content: flex-end;
-        gap: 10px;
-    }
-    .btn-custom-create {
-        background-color: #d4edda;
-        border-color: #c3e6cb;
-        color: #155724;
-    }
-    .btn-custom-delete {
-        background-color: #f8d7da;
-        border-color: #f5c6cb;
-        color: #721c24;
-    }
-    .btn-custom-create:hover {
-        background-color: #c3e6cb;
-        border-color: #b1dfbb;
-    }
-    .btn-custom-delete:hover {
-        background-color: #f5c6cb;
-        border-color: #f1b0b7;
-    }
-    .btn-sm {
-        font-size: 0.875rem;
-        padding: 0.25rem 0.5rem;
-    }
-    .container {
-        background-color: #f8f9fa;
-        padding: 20px;
-        border-radius: 10px;
-    }
-    .col-form-label {
-        font-weight: bold;
-    }
-    .btn-primary {
-        background-color: #6c757d;
-        border: none;
-    }
-    .btn-primary:hover {
-        background-color: #5a6268;
-    }
+
 </style>
 
 <div id="layoutSidenav_content">
@@ -124,30 +83,30 @@
                 </div>
                 <div class="card-body">
                     <div class="button-container mb-3" style="display: flex; align-items: center; gap: 10px;">
-                        <div style="flex: 1; display: flex; align-items: center; gap: 10px;">
+                        <div style="flex: 1; display: flex; align-items: center; gap: 10px; justify-content: flex-end;">
                             <form method="GET" action="/orders" style="display: flex; align-items: center; gap: 5px;">
                                 <!-- 검색어 -->
-                                <input type="text" name="search" id="customSearch" placeholder="검색어를 입력하세요"
+                                <input type="text" class="form-control" name="search" id="customSearch" placeholder="검색어를 입력하세요"
                                        style="padding: 5px; width: 200px;" value="{{search}}">
 
-                                <!-- 정렬 기준 -->
-                                <label>
-                                    <select name="sortColumn">
-                                        <option value="orderDate" {{#isOrderDateSorted}}selected{{/isOrderDateSorted}}>Order Date</option>
-                                        <option value="orderAmount" {{#isOrderAmountSorted}}selected{{/isOrderAmountSorted}}>Amount</option>
-                                    </select>
-                                </label>
+<!--                                &lt;!&ndash; 정렬 기준 &ndash;&gt;-->
+<!--                                <label>-->
+<!--                                    <select name="sortColumn">-->
+<!--                                        <option value="orderDate" {{#isOrderDateSorted}}selected{{/isOrderDateSorted}}>Order Date</option>-->
+<!--                                        <option value="orderAmount" {{#isOrderAmountSorted}}selected{{/isOrderAmountSorted}}>Amount</option>-->
+<!--                                    </select>-->
+<!--                                </label>-->
 
-                                <!-- 정렬 방향 -->
-                                <label>
-                                    <select name="sortDirection">
-                                        <option value="asc" {{#isAscSorted}}selected{{/isAscSorted}}>Ascending</option>
-                                        <option value="desc" {{#isDescSorted}}selected{{/isDescSorted}}>Descending</option>
-                                    </select>
-                                </label>
+<!--                                &lt;!&ndash; 정렬 방향 &ndash;&gt;-->
+<!--                                <label>-->
+<!--                                    <select name="sortDirection">-->
+<!--                                        <option value="asc" {{#isAscSorted}}selected{{/isAscSorted}}>Ascending</option>-->
+<!--                                        <option value="desc" {{#isDescSorted}}selected{{/isDescSorted}}>Descending</option>-->
+<!--                                    </select>-->
+<!--                                </label>-->
 
                                 <!-- 제출 버튼 -->
-                                <button type="submit">검색 및 정렬</button>
+                                <button type="submit" class = "btn btn-custom-select btn-sm">검색</button>
                             </form>
 
                         </div>
@@ -192,7 +151,7 @@
                         </tbody>
                     </table>
 
-                    <div class="pagination">
+                    <div class="pagination justify-content-center">
                         <!-- 이전 버튼 -->
                         {{#pagination.hasPreviousPage}}
                             <button onclick="window.location.href='/orders?page={{pagination.previousPage}}&size=10&search={{search}}&sortColumn={{sortColumn}}&sortDirection={{sortDirection}}'">
