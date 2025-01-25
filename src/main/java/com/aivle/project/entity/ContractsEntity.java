@@ -46,6 +46,21 @@ public class ContractsEntity implements Serializable {
     @Column(nullable = true)
     private String contractClassification;
 
+    @Lob
+    @Column(name = "file_data", columnDefinition = "bytea")
+    private byte[] fileData;
+
+    // 업로드된 파일의 이름
+    @Column(name = "file_name", nullable = true)
+    private String fileName;
+
+    // 업로드된 파일의 MIME 타입
+    @Column(name = "mime_type", nullable = true)
+    private String mimeType;
+
+//    @Column(nullable = true)
+//    private String uploadedFilePath;
+
 
     // 외래키 부분
 
@@ -65,8 +80,8 @@ public class ContractsEntity implements Serializable {
     @JoinColumn(name = "opportunity_id", nullable = true)
     private OpportunitiesEntity opportunityId;
 
-    @OneToMany(mappedBy = "contractId", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
-    private List<OrdersEntity> orders;
+//    @OneToMany(mappedBy = "contractId", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+//    private List<OrdersEntity> orders;
 
 
 
