@@ -103,18 +103,32 @@
 
                         <thead>
                         <tr>
-                            <th>로그ID</th>
-                            <th>로그일시</th>
-                            <th>사용자 ID</th>
-                            <th>CRUD 분류</th>
-                            <th>테이블명</th>
-                            <th>CRUD 대상 ID</th>
-                            <th>성공여부</th>
-                            <th>오류메시지</th>
+                            <th>Id</th>
+                            <th>Date</th>
+                            <th>User_Id</th>
+                            <th>Classification</th>
+                            <th>Table</th>
+                            <th>Content_Id</th>
+                            <th>Is Success</th>
+                            <th>Log Message</th>
                         </tr>
                         </thead>
                         <tbody>
+                        {{#logs}}
+                            <tr data-index="{{logsId}}">
+                                <td>{{logsId}}</td>
+                                <td>{{logDate}}</td>
+                                <td>{{userId}}</td>
+                                <td>{{crudOperations}}</td>
+                                <td>{{tableName}}</td>
+                                <td>{{contentId}}</td>
+                                <td>{{isSuccess}}</td>
+                                <td>{{logMessage}}</td>
+                            </tr>
+                        {{/logs}}
+                        {{^logs}}
 
+                        {{/logs}}
                         </tbody>
 
                     </table>

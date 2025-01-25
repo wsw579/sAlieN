@@ -8,11 +8,7 @@ import com.aivle.project.dto.ProductsDto;
 import com.aivle.project.entity.*;
 import com.aivle.project.enums.OrderStatus;
 import com.aivle.project.repository.ContractsRepository;
-import com.aivle.project.service.ContractsService;
-import com.aivle.project.service.EmployeeService;
-import com.aivle.project.service.OrdersService;
-import com.aivle.project.service.PaginationService;
-import com.aivle.project.service.ProductsService;
+import com.aivle.project.service.*;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +41,7 @@ public class OrdersController {
     private final EmployeeService employeeService;
 
     private final PaginationService paginationService;
+    private final CrudLogsService crudLogsService;
 
     // Read page
     @GetMapping("/orders")
@@ -143,6 +140,9 @@ public class OrdersController {
         // OrdersEntity 생성 및 저장
         ordersService.createOrder(ordersDto);
 
+        // CRUD 작업 로깅
+        crudLogsService.logCrudOperation("create", "orders", "", "True", "Success");
+
         return "redirect:/orders";
     }
 
@@ -152,6 +152,10 @@ public class OrdersController {
     @PostMapping("/orders/detail/{orderId}/update")
     public String ordersUpdate(@PathVariable("orderId") Long orderId, @ModelAttribute OrdersDto ordersDto) {
         ordersService.updateOrder(orderId, ordersDto);
+
+        // CRUD 작업 로깅
+        crudLogsService.logCrudOperation("update", "orders", "", "True", "Success");
+
         return "redirect:/orders/detail/" + orderId;
     }
 
@@ -159,6 +163,10 @@ public class OrdersController {
     @PostMapping("/orders/detail/{orderId}/delete")
     public ResponseEntity<Void> deleteOrder(@PathVariable("orderId") Long orderId) {
         ordersService.deleteOrder(orderId);
+
+        // CRUD 작업 로깅
+        crudLogsService.logCrudOperation("delete", "orders", "", "True", "Success");
+
         return ResponseEntity.ok().build();
     }
 
@@ -168,6 +176,10 @@ public class OrdersController {
         List<Long> ids = request.get("ids");
         logger.info("Deleting orders with IDs: {}", ids); // 로그 추가
         ordersService.deleteOrdersByIds(ids);
+
+        // CRUD 작업 로깅
+        crudLogsService.logCrudOperation("delete", "orders", "", "True", "Success");
+
         return ResponseEntity.ok().build(); // 상태 코드 200 반환
     }
 }

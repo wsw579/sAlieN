@@ -5,6 +5,7 @@ import com.aivle.project.dto.ProductsDto;
 import com.aivle.project.entity.ContractsEntity;
 import com.aivle.project.entity.ProductsEntity;
 import com.aivle.project.enums.ProductCondition;
+import com.aivle.project.service.CrudLogsService;
 import com.aivle.project.service.PaginationService;
 import com.aivle.project.service.ProductsService;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,8 @@ public class ProductsController {
 
     private final ProductsService productsService;
     private final PaginationService paginationService;
+
+    private final CrudLogsService crudLogsService;
 
     // Read page
     @GetMapping("/products")
@@ -99,6 +102,10 @@ public class ProductsController {
     @PostMapping("/products/detail/create")
     public String productsCreateNew(@ModelAttribute ProductsDto productsDto) {
         productsService.createProduct(productsDto);
+
+        // CRUD 작업 로깅
+        crudLogsService.logCrudOperation("create", "products", "", "True", "Success");
+
         return "redirect:/products";
     }
 
@@ -106,6 +113,10 @@ public class ProductsController {
     @PostMapping("/products/detail/{productId}/update")
     public String productsUpdate(@PathVariable("productId") Long productId, @ModelAttribute ProductsDto productsDto) {
         productsService.updateProduct(productId, productsDto);
+
+        // CRUD 작업 로깅
+        crudLogsService.logCrudOperation("update", "products", "", "True", "Success");
+
         return "redirect:/products/detail/" + productId;
     }
 
@@ -113,6 +124,10 @@ public class ProductsController {
     @PostMapping("/products/detail/{productId}/delete")
     public ResponseEntity<Void> deleteProduct(@PathVariable("productId") Long productId) {
         productsService.deleteProduct(productId);
+
+        // CRUD 작업 로깅
+        crudLogsService.logCrudOperation("delete", "products", "", "True", "Success");
+
         return ResponseEntity.ok().build();
     }
 
@@ -122,6 +137,10 @@ public class ProductsController {
         List<Long> ids = request.get("ids");
         logger.info("Deleting products with IDs: {}", ids); // 로그 추가
         productsService.deleteProductsByIds(ids);
+
+        // CRUD 작업 로깅
+        crudLogsService.logCrudOperation("delete", "products", "", "True", "Success");
+
         return ResponseEntity.ok().build(); // 상태 코드 200 반환
     }
 }
