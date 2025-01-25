@@ -63,4 +63,43 @@ public interface OrdersRepository extends JpaRepository<OrdersEntity, Long> {
             "WHERE YEAR(o.orderDate) = :year AND o.orderStatus = 'activated' " +
             "GROUP BY MONTH(o.orderDate)")
     List<Object[]> getMonthlyOrders(@Param("year") int year);
+
+    // 영업 실적 그래프
+    @Query("SELECT e.employeeId AS employeeId, e.employeeName AS employeeName, " +
+            "SUM(o.orderAmount * p.fixedPrice) AS totalSales " +
+            "FROM OrdersEntity o " +
+            "JOIN o.productId p " +
+            "JOIN o.employeeId e " +
+            "WHERE e.teamId = :teamId " +
+            "AND MONTH(o.salesDate) = MONTH(CURRENT_DATE) " + // 같은 달 조건
+            "AND YEAR(o.salesDate) = YEAR(CURRENT_DATE) " +   // 같은 연도 조건
+            "GROUP BY e.employeeId, e.employeeName " +
+            "ORDER BY totalSales DESC")
+    List<Object[]> getSalesByEmployeeWithNames(@Param("teamId") Team teamId);
+
+    // 이번달 주문 현황 퍼센트 표시
+    @Query("SELECT COUNT(o) FROM OrdersEntity o " +
+            "WHERE EXTRACT(MONTH FROM o.salesDate) = EXTRACT(MONTH FROM CURRENT_DATE) " +
+            "AND EXTRACT(YEAR FROM o.salesDate) = EXTRACT(YEAR FROM CURRENT_DATE) " +
+            "AND o.orderStatus IN ('draft', 'completed', 'activated')")
+    long countTotalSalesThisMonth();
+
+    @Query("SELECT COUNT(o) FROM OrdersEntity o " +
+            "WHERE EXTRACT(MONTH FROM o.salesDate) = EXTRACT(MONTH FROM CURRENT_DATE) " +
+            "AND EXTRACT(YEAR FROM o.salesDate) = EXTRACT(YEAR FROM CURRENT_DATE) " +
+            "AND o.orderStatus = 'draft'")
+    long countDraftSalesThisMonth();
+
+    // 연도별 팀 매출 합
+    @Query(value = "SELECT MONTH(o.salesDate) AS month, " +
+            "SUM(o.orderAmount * p.fixedPrice) AS revenue " +
+            "FROM OrdersEntity o " +
+            "JOIN o.productId p " +
+            "JOIN o.employeeId e " +
+            "WHERE YEAR(o.salesDate) = :year " +
+            "AND o.orderStatus = 'activated' " +
+            "AND e.teamId = :teamId " +
+            "GROUP BY MONTH(o.salesDate)")
+    List<Object[]> getMonthlyRevenue(@Param("year") int year,
+                                     @Param("teamId") Team teamId);
 }
