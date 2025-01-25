@@ -151,6 +151,18 @@
                         </nav>
                     </div>
 
+                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLogs" aria-expanded="false" aria-controls="collapseLogs">
+                        <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                        Logs
+                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                    </a>
+                    <div class="collapse" id="collapseLogs" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                        <nav class="sb-sidenav-menu-nested nav">
+                            <a class="nav-link" href="/chatbot_logs">Chatbot Logs</a>
+                            <a class="nav-link" href="/crud_logs">CRUD Logs</a>
+                        </nav>
+                    </div>
+
 
                 </div>
             </div>
@@ -458,6 +470,7 @@
                 if (recognizing) {
                     recognition.stop();
                 }
+                var user_id = '{{#id}}{{id}}{{/id}}{{^id}}null{{/id}}';
                 var message = document.getElementById('chatbotInput').value;
                 var currentTime = new Date().toLocaleTimeString();
 
@@ -478,7 +491,7 @@
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ request: message })
+                    body: JSON.stringify({ request: message, user_id: user_id})
                 })
                 .then(response => response.json())
                 .then(data => {
