@@ -5,10 +5,7 @@ import com.aivle.project.dto.EmployeeDto;
 import com.aivle.project.dto.LeadsDto;
 import com.aivle.project.dto.PaginationDto;
 import com.aivle.project.entity.*;
-import com.aivle.project.service.AccountService;
-import com.aivle.project.service.EmployeeService;
-import com.aivle.project.service.LeadsService;
-import com.aivle.project.service.PaginationService;
+import com.aivle.project.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +29,7 @@ public class LeadsController {
     private final AccountService accountService;
     private final EmployeeService employeeService;
     private final PaginationService paginationService;
+    private final CrudLogsService crudLogsService;
 
     // Read Page
     @GetMapping("/leads")
@@ -137,6 +135,10 @@ public class LeadsController {
     public String leadsCreateNew(@ModelAttribute LeadsDto leadsDto){
         // createLeads method in the LeadsService -> passing the leadsDto as an argument
         leadsService.createLeads(leadsDto);
+
+        // CRUD 작업 로깅
+        crudLogsService.logCrudOperation("create", "leads", "", "True", "Success");
+
         return "redirect:/leads";
     }
 
@@ -144,6 +146,10 @@ public class LeadsController {
     @PostMapping("/leads/detail/{leadId}/update")
     public String leadsUpdate(@PathVariable("leadId") Long leadId, @ModelAttribute LeadsDto leadsDto) {
         leadsService.updateLeads(leadId, leadsDto);
+
+        // CRUD 작업 로깅
+        crudLogsService.logCrudOperation("update", "leads", "", "True", "Success");
+
         return "redirect:/leads/detail/" + leadId;
     }
 
@@ -151,6 +157,10 @@ public class LeadsController {
     @PostMapping("/leads/detail/{leadId}/delete")
     public ResponseEntity<Void> deleteLead(@PathVariable("leadId") Long leadId) {
         leadsService.deleteLeads(leadId);
+
+        // CRUD 작업 로깅
+        crudLogsService.logCrudOperation("delete", "leads", "", "True", "Success");
+
         return ResponseEntity.ok().build();
     }
 
@@ -160,6 +170,10 @@ public class LeadsController {
         List<Long> ids = request.get("ids");
         System.out.println("deleteLeads Received IDs: " + ids); // 로그 추가
         leadsService.deleteLeadsByIds(ids);
+
+        // CRUD 작업 로깅
+        crudLogsService.logCrudOperation("delete", "leads", "", "True", "Success");
+
         return ResponseEntity.ok().build(); // 상태 코드 200 반환
     }
 

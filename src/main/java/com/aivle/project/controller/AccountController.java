@@ -6,6 +6,7 @@ import com.aivle.project.entity.EmployeeEntity;
 import com.aivle.project.repository.AccountRepository;
 import com.aivle.project.repository.EmployeeRepository;
 import com.aivle.project.service.AccountService;
+import com.aivle.project.service.CrudLogsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -30,7 +31,7 @@ public class AccountController {
     private final AccountService accountService;
     private final AccountRepository accountRepository;
     private final EmployeeRepository employeeRepository;
-
+    private final CrudLogsService crudLogsService;
 
     @GetMapping("/account")
     public String account(Model model,
@@ -173,9 +174,12 @@ public class AccountController {
     // 새 계정 생성
     @PostMapping("/account/detail/create")
     public String accountCreateNew(@ModelAttribute AccountDto accountDto) {
-            accountService.createAccount(accountDto);
+        accountService.createAccount(accountDto);
 
-            return "redirect:/account";
+        // CRUD 작업 로깅
+        crudLogsService.logCrudOperation("create", "accounts", "", "True", "Success");
+
+        return "redirect:/account";
     }
 
 
@@ -183,6 +187,10 @@ public class AccountController {
     @PostMapping("/account/detail/{accountId}/update")
     public String accountUpdate(@PathVariable("accountId") Long accountId,  @ModelAttribute AccountDto accountDto) {
         accountService.updateAccount(accountId, accountDto);
+
+        // CRUD 작업 로깅
+        crudLogsService.logCrudOperation("update", "accounts", "", "True", "Success");
+
         return "redirect:/account";
     }
 
@@ -190,6 +198,10 @@ public class AccountController {
     @GetMapping("/account/detail/{accountId}/delete")
     public String accountDeleteDetail(@PathVariable("accountId") Long accountId) {
         accountService.delete(accountId);
+
+        // CRUD 작업 로깅
+        crudLogsService.logCrudOperation("delete", "accounts", "", "True", "Success");
+
         return "redirect:/account";
     }
 
@@ -199,6 +211,10 @@ public class AccountController {
         List<Long> ids = request.get("ids");
         System.out.println("deleteAccounts Received IDs: " + ids);
         accountService.deleteByIds(ids);
+
+        // CRUD 작업 로깅
+        crudLogsService.logCrudOperation("delete", "accounts", "[]", "True", "Success");
+
         return ResponseEntity.ok().build();
     }
 
