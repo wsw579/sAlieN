@@ -177,6 +177,34 @@ public class LeadsController {
         return ResponseEntity.ok().build(); // 상태 코드 200 반환
     }
 
+    // 오늘 추가된 Leads 수 반환
+    @GetMapping("/api/leads/today")
+    public ResponseEntity<Map<String, Object>> getTodayLeads() {
+        long count = leadsService.getTodayLeadsForTeam();
+        Map<String, Object> response = new HashMap<>();
+        response.put("todayLeads", count);
+        return ResponseEntity.ok(response);
+    }
+
+    // 특정 상태의 Leads 수 반환
+    @GetMapping("/api/leads/status")
+    public ResponseEntity<Map<String, Object>> countLeadsByStatus(@RequestParam String leadStatus) {
+        long count = leadsService.countLeadsByStatusAndTeam(leadStatus);
+        Map<String, Object> response = new HashMap<>();
+        response.put("leadStatus", leadStatus);
+        response.put("leadCount", count);
+        return ResponseEntity.ok(response);
+    }
+
+    // 오늘 마감인 Leads 수 반환
+    @GetMapping("/api/leads/target-close-today")
+    public ResponseEntity<Map<String, Object>> countLeadsWithTargetCloseDateToday() {
+        long count = leadsService.countLeadsWithTargetCloseDateTodayForTeam();
+        Map<String, Object> response = new HashMap<>();
+        response.put("targetCloseDate", "Today");
+        response.put("leadCount", count);
+        return ResponseEntity.ok(response);
+    }
 }
 
 

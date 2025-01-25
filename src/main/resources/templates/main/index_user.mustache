@@ -1,51 +1,81 @@
 {{>main/header}}
 
+<style>
+    .lead-stats {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        margin-top: 20px;
+    }
+
+    .stat {
+        text-align: center;
+        font-family: Arial, sans-serif;
+    }
+
+    .circle {
+        width: 60px;
+        height: 60px;
+        background-color: #e0e0e0;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 24px;
+        font-weight: bold;
+        margin: 0 auto;
+    }
+
+    .stat p {
+        margin-top: 10px;
+        font-size: 14px;
+        line-height: 1.4;
+    }
+</style>
+
 <div id="layoutSidenav_content">
     <main>
         <div class="container-fluid px-4 mt-4">
             <!-- 첫 번째 행 -->
             <div class="row mb-4 align-items-stretch">
-                <!-- 첫 번째 열: 두 개의 카드로 나누기 -->
-                <div class="col-xl-4 col-md-8">
-                    <div class="row h-100">
-                        <!-- 첫 번째 작은 카드 -->
-                        <div class="col-12 mb-3">
-                            <div class="card h-100">
-                                <div class="card-header">
-                                    <i class="fas fa-chart-bar me-1"></i>
-                                    오늘 배정된 리드
-                                </div>
-                                <p>28</p>
-                            </div>
+                <!-- 1행 1열 -->
+                <div class="col-xl-4 col-md-6 d-flex">
+                    <div class="card h-100 w-100">
+                        <div class="card-header">
+                            <i class="fas fa-chart-bar me-1"></i>
+                            금일 배정된 리드
                         </div>
-                        <!-- 두 번째 작은 카드 -->
-                        <div class="col-12">
-                            <div class="card h-100">
-                                <div class="card-header">
-                                    <i class="fas fa-chart-bar me-1"></i>
-                                    오늘 배정된 리드
-                                </div>
-                                <p>1</p>
+                        <div class="lead-stats d-flex justify-content-around align-items-center h-100">
+                            <div class="stat">
+                                <div class="circle" id="todayLeads"></div>
+                                <p>새로운<br>리드</p>
+                            </div>
+                            <div class="stat">
+                                <div class="circle" id="underReviewLeads"></div>
+                                <p>검토중<br>리드</p>
+                            </div>
+                            <div class="stat">
+                                <div class="circle" id="closedLeads"></div>
+                                <p>오늘 마감<br>리드</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- 두 번째 열: 카드 + 테이블 -->
+                <!-- 1행 2열 -->
                 <div class="col-xl-8 col-md-6">
-                    <div class="card h-600">
+                    <div class="card h-100">
                         <div class="card-header">
                             <i class="fas fa-chart-bar me-1"></i>
-                            정체중인 기회
+                            이달의 기회 목록
                         </div>
                         <div class="card-body">
-                            <!-- 카드 -->
-                            <div class="row g-3 mb-3"> <!-- 간격 조정 -->
+                            <div class="row g-3 mb-3">
                                 <div class="col-6 col-md-3">
-                                    <div class="card bg-primary text-white h-60">
-                                        <div class="card-body">Primary Card</div>
+                                    <div class="card bg-primary text-white h-100">
+                                        <div class="card-body">진행중</div>
                                         <div class="card-footer d-flex align-items-center justify-content-between">
-                                            <h3 id="Count1">0 건</h3>
+                                            <h3 id="ongoingCountTeam">0 건</h3>
                                             <div class="small text-white">
                                                 <a href="/opportunities" class="text-white">
                                                     <i class="fas fa-angle-right"></i>
@@ -55,10 +85,10 @@
                                     </div>
                                 </div>
                                 <div class="col-6 col-md-3">
-                                    <div class="card bg-warning text-white h-60">
-                                        <div class="card-body">Warning Card</div>
+                                    <div class="card bg-warning text-white h-100">
+                                        <div class="card-body">마감일자 초과</div>
                                         <div class="card-footer d-flex align-items-center justify-content-between">
-                                            <h3 id="Count2">0 건</h3>
+                                            <h3 id="overdueCountTeam">0 건</h3>
                                             <div class="small text-white">
                                                 <a href="/opportunities" class="text-white">
                                                     <i class="fas fa-angle-right"></i>
@@ -68,10 +98,10 @@
                                     </div>
                                 </div>
                                 <div class="col-6 col-md-3">
-                                    <div class="card bg-success text-white h-60">
-                                        <div class="card-body">Success Card</div>
+                                    <div class="card bg-success text-white h-100">
+                                        <div class="card-body">계약전환 성공</div>
                                         <div class="card-footer d-flex align-items-center justify-content-between">
-                                            <h3 id="Count3">0 건</h3>
+                                            <h3 id="closedCountTeam">0 건</h3>
                                             <div class="small text-white">
                                                 <a href="/opportunities" class="text-white">
                                                     <i class="fas fa-angle-right"></i>
@@ -81,10 +111,10 @@
                                     </div>
                                 </div>
                                 <div class="col-6 col-md-3">
-                                    <div class="card bg-danger text-white h-60">
-                                        <div class="card-body">Danger Card</div>
+                                    <div class="card bg-danger text-white h-100">
+                                        <div class="card-body">보류</div>
                                         <div class="card-footer d-flex align-items-center justify-content-between">
-                                            <h3 id="Count4">0 건</h3>
+                                            <h3 id="pendingCountTeam">0 건</h3>
                                             <div class="small text-white">
                                                 <a href="/opportunities" class="text-white">
                                                     <i class="fas fa-angle-right"></i>
@@ -93,30 +123,6 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <!-- 테이블 -->
-                            <div class="table-responsive">
-                                <table class="table table-striped">
-                                    <thead>
-                                    <tr>
-                                        <th>기회 번호</th>
-                                        <th>계정 이름</th>
-                                        <th>기회 생성 날짜</th>
-                                        <th>기회 마감 날짜</th>
-                                        <th>상태</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr>
-                                        <td>000000101</td>
-                                        <td>삼성 SDS</td>
-                                        <td>2025-01-01</td>
-                                        <td>2025-12-31</td>
-                                        <td>In Approval Process</td>
-                                    </tr>
-                                    <!-- 추가 데이터 -->
-                                    </tbody>
-                                </table>
                             </div>
                         </div>
                     </div>
@@ -125,52 +131,63 @@
 
             <!-- 두 번째 행 -->
             <div class="row mb-4 align-items-stretch">
-                <!-- 첫 번째 열: 이번달 Order Close 현황 -->
-                <div class="col-xl-4 col-md-6">
-                    <div class="card h-100">
-                        <div class="card-header">
+                <!-- 2행 1열 -->
+                <div class="col-xl-4 col-md-6 d-flex">
+                    <div class="card h-100 w-100">
+                        <div class="card-header text-center">
                             <i class="fas fa-chart-bar me-1"></i>
-                            이번달 Order Close 현황
+                            이달의 Order Close 현황
                         </div>
-                        <p>8</p>
+                        <div style="position: relative; width: 250px; height: 250px; margin: 0 auto;">
+                            <canvas id="draftChart" width="200" height="200"></canvas>
+                        </div>
                     </div>
                 </div>
 
-                <!-- 두 번째 열: 이번달 오더 현황 -->
+                <!-- 2행 2열 -->
                 <div class="col-xl-8 col-md-12">
                     <div class="card h-100">
                         <div class="card-header">
                             <i class="fas fa-chart-bar me-1"></i>
-                            이번달 오더 현황
+                            올해 매출 현황
                         </div>
                         <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-striped">
-                                    <thead>
-                                    <tr>
-                                        <th>주문 번호</th>
-                                        <th>계정 이름</th>
-                                        <th>주문 시작 날짜</th>
-                                        <th>주문 금액</th>
-                                        <th>상태</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr>
-                                        <td>000000101</td>
-                                        <td>삼성 SDS</td>
-                                        <td>2025-01-01</td>
-                                        <td>100000</td>
-                                        <td>Draft</td>
-                                    </tr>
-                                    <!-- 추가 데이터 -->
-                                    </tbody>
-                                </table>
-                            </div>
+                            <canvas id="ordersRevenueChart" width="100%" height="40"></canvas>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!--            세번째 행-->
+            <div class="row mb-4 align-items-stretch">
+                <div class="col-6">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <i class="fas fa-chart-bar me-1"></i>
+                            상위 5명 영업 실적
+                        </div>
+                        <canvas id="topSalesChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="col-6">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <i class="fas fa-chart-bar me-1"></i>
+                            하위 5명 영업 실적
+                        </div>
+                        <canvas id="bottomSalesChart"></canvas>
                     </div>
                 </div>
             </div>
         </div>
     </main>
+    <script src="/assets/demo/today-leads.js"></script>
+    <script src="/assets/demo/today-close-leads.js"></script>
+    <script src="/assets/demo/today-review-status.js"></script>
+    <script src="/assets/demo/sales-performance.js"></script>
+    <script src="/assets/demo/draft-percentage.js"></script>
+    <script src="/assets/demo/opportunities-status-card-value.js"></script>
+    <script src="/assets/demo/orders-revenue-chart.js"></script>
 {{>main/footer}}

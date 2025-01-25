@@ -6,8 +6,11 @@ import com.aivle.project.dto.ProductsDto;
 import com.aivle.project.entity.ContractsEntity;
 import com.aivle.project.entity.LeadsEntity;
 import com.aivle.project.entity.OrdersEntity;
+import com.aivle.project.enums.Team;
+import com.aivle.project.repository.EmployeeRepository;
 import com.aivle.project.repository.LeadsRepository;
 
+import com.aivle.project.utils.UserContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -33,6 +36,7 @@ import java.util.stream.IntStream;
 public class LeadsService {
     // Dependency Injection
     private final LeadsRepository leadsRepository;
+    private final EmployeeRepository employeeRepository;
 
     // Create
     // by mapping data from a LeadsDto to a LeadsEntity
@@ -190,5 +194,33 @@ public class LeadsService {
         LeadsDto dto = new LeadsDto();
         dto.setLeadId(id);
         return dto;
+    }
+    // 오늘 추가된 lead의 수
+    public long getTodayLeadsForTeam() {
+        String userid = UserContext.getCurrentUserId();
+        String userteam = employeeRepository.findTeamById(userid);
+        // 오늘 날짜 가져오기
+        LocalDate today = LocalDate.now();
+
+        // Repository 호출하여 데이터 가져오기
+        return leadsRepository.countTodayLeadsForTeam(today, Team.valueOf(userteam));
+    }
+
+    // Under Review 상태 세기
+    public long countLeadsByStatusAndTeam(String leadStatus) {
+        String userid = UserContext.getCurrentUserId();
+        String userteam = employeeRepository.findTeamById(userid);
+        return leadsRepository.countLeadsByStatusForTeam(leadStatus, Team.valueOf(userteam));
+    }
+
+    // 오늘 마감인 leads 수 세기
+    public long countLeadsWithTargetCloseDateTodayForTeam() {
+        String userid = UserContext.getCurrentUserId();
+        String userteam = employeeRepository.findTeamById(userid);
+        // 오늘 날짜 가져오기
+        LocalDate today = LocalDate.now();
+
+        // Repository 메서드 호출
+        return leadsRepository.countLeadsWithTargetCloseDateTodayForTeam(today, Team.valueOf(userteam));
     }
 }

@@ -247,4 +247,8 @@ public class EmployeeService {
                 })
                 .collect(Collectors.toList());
     }
+
+    public String getPositionByUserId(String userId) {
+        return employeeRepository.findPositionById(userId);
+    }
 }
