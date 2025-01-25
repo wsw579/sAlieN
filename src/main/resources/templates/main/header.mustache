@@ -43,7 +43,40 @@
         </div>
     </form>
 
-    <!-- Navbar-->
+    <!-- notification-->
+    <style>
+        .badge {
+            position: absolute;
+            top: 5px;
+            padding: 5px 10px;
+            border-radius: 50%;
+            background-color: red;
+            color: white;
+            font-size: 9px;
+            display: inline; /* 기본적으로 표시 */
+        }
+    </style>
+
+    <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+        <li class="nav-item">
+            <a class="nav-link" id="navbarDropdown" href="/alarm" role="button">
+                <i class="fas fa-bell"></i>
+
+                    <!-- 안읽은 알림이 있다면 알림 수 아이콘으로 추가 표시-->
+                    {{#alarm}}
+                        <span class="badge">{{count}}</span>
+                    {{/alarm}}
+                    <!-- 테스트로 2개 띄워보기, 삭제예정-->
+                    {{^alarm}}
+                        <span class="badge">2</span>
+                    {{/alarm}}
+
+            </a>
+        </li>
+    </ul>
+
+
+    <!-- profile-->
     <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
@@ -54,6 +87,10 @@
             </ul>
         </li>
     </ul>
+
+
+
+
 </nav>
 
 
@@ -365,6 +402,11 @@
         💬
     </div>
 
+    <!-- 효과음 -->
+    <audio id="dingup" src="/assets/mp3/dingup.mp3"></audio>
+    <audio id="dingdown" src="/assets/mp3/dingdown.mp3"></audio>
+
+
     <!-- Chatbot Modal -->
     <div id="chatbotModal" class="chatbot-modal">
         <div class="chatbot-modal-content">
@@ -374,26 +416,18 @@
             </div>
             <div id="chatbotMessages" class="chat-container"></div>
             <div class="input-container">
-                <input type="text" id="chatbotInput" placeholder="Type a message..." onkeydown="if (event.key === 'Enter') sendChatbotMessage();">
-                <button id="voiceInputButton">🎤</button>
+                <input type="text" id="chatbotInput" placeholder="메시지를 입력하세요..." onkeydown="if (event.key === 'Enter') sendChatbotMessage();">
+                <button id="voiceInputButton", class= "btn btn-custom-select btn-sm"><i class="fas fa-microphone"></i></button>
                 <button id="sendChatbotMessage">Send</button>
             </div>
         </div>
-    </div>
+    </div>️
 
-    <!-- HTML 구조 -->
-    <div id="chatbotModal" class="modal">
-        <div class="modal-content" style="min-height: 300px;"> <!-- min-height 속성을 추가하여 초기 크기 설정 -->
-            <span class="close">&times;</span>
-            <div id="chatbotMessages"></div>
-            <input type="text" id="chatbotInput" placeholder="Type your message here...">
-            <button id="voiceInputButton">Voice Input</button>
-        </div>
-    </div>
 
-    <!-- JavaScript -->
+<!-- JavaScript -->
     <script>
         document.addEventListener("DOMContentLoaded", function() {
+
             var chatbotButton = document.getElementById('chatbotButton');
             var chatbotModal = document.getElementById('chatbotModal');
             var closeModal = document.getElementsByClassName('close')[0];
@@ -422,6 +456,7 @@
 
                 recognition.onstart = function() {
                     recognizing = true;
+                    document.getElementById('dingup').play();
                     console.log('Speech recognition started');
                 };
 
@@ -440,7 +475,7 @@
                         if (recognizing) {
                             recognition.stop();
                         }
-                    }, 5000); // Stop recognition after 5 seconds of silence
+                    }, 1000); // Stop recognition after 1 seconds of silence
                 };
 
                 recognition.onerror = function(event) {
@@ -451,10 +486,18 @@
                 recognition.onend = function() {
                     recognizing = false;
                     document.getElementById('chatbotInput').value = finalTranscript; // Ensure the final transcript remains
+                    document.getElementById('dingdown').play();
                     console.log('Speech recognition ended');
+
+                    //음성 인식 메시지 자동 전송
+                    sendChatbotMessage();
+
+
                 };
 
+                //음성인식버튼 클릭
                 document.getElementById('voiceInputButton').onclick = function() {
+
                     if (recognizing) {
                         recognition.stop();
                     } else {
@@ -531,6 +574,17 @@
                 var initialMessage = "<div class='chat-container'><div class='bot-info message-info'>sAIes CRM</div><div class='bot-message'>안녕하세요. CRM 어시스던트 입니다. 무엇을 도와드릴까요?<br><span class='message-info'>" + new Date().toLocaleTimeString() + "</span></div></div>";
                 document.getElementById('chatbotMessages').innerHTML = initialMessage;
             };
+
+
+
+
+
+
+
+
+
+
+
         });
     </script>
 
