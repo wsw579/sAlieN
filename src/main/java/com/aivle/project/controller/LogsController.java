@@ -20,6 +20,17 @@ public class LogsController {
     private final ChatbotLogsService chatbotLogsService;
     private final CrudLogsService crudLogsService;
 
+    // 알람 표시
+    @GetMapping("/alarm")
+    public String alarmLogs(@ModelAttribute("id") String employeeId, Model model) {
+        // 세션에서 employeeId 가져오기
+        if (employeeId == null) {
+            throw new IllegalArgumentException("Invalid employeeId: " + employeeId);
+        }
+
+        return "logs/alarm"; // 뷰 파일로 이동
+    }
+
 
     @GetMapping("/chatbot_logs")
     public String chatbotLogs(@ModelAttribute("id") String employeeId, Model model) {
