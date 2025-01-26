@@ -39,13 +39,13 @@ public class EmployeeController {
     }
 
     @PostMapping("/signup")
-    public String user(EmployeeDto.Post memberDto){
+    public String user(EmployeeDto.Post memberDto) {
         employeeService.join(memberDto);
         return "redirect:/";
     }
 
     @GetMapping("/signup")
-    public String signup(){
+    public String signup() {
         return "user/signup";
     }
 
@@ -53,14 +53,14 @@ public class EmployeeController {
     public String logout(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if(authentication != null) {
+        if (authentication != null) {
             new SecurityContextLogoutHandler().logout(request, response, authentication);
         }
         return "redirect:/";
     }
 
     @GetMapping("/mypage")
-    public String mypage(){
+    public String mypage() {
         return "user/mypage";
     }
 
@@ -90,9 +90,8 @@ public class EmployeeController {
     }
 
 
-
     @GetMapping("/mypage/{employeeId}")
-    public String mypage(@PathVariable("employeeId") String employeeId, Model model){
+    public String mypage(@PathVariable("employeeId") String employeeId, Model model) {
         EmployeeDto.Get employee = employeeService.findEmployeeById(employeeId);
         model.addAttribute("employee", employee);
         return "user/mypage";
@@ -103,32 +102,32 @@ public class EmployeeController {
     @ResponseBody // 반환값을 JSON으로 처리
     public ResponseEntity<Map<String, String>> generateUserId(@RequestParam("year") int year) {
         Map<String, String> response = new HashMap<>();
-        String employeeId = employeeService.makeNewEmployeeId(year+"");
+        String employeeId = employeeService.makeNewEmployeeId(year + "");
         response.put("employeeId", employeeId); // 예시 응답
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/employee-list")
-    public String employeeList(Model model){
+    public String employeeList(Model model) {
         List<EmployeeDto.Get> empList = employeeService.findAllEmployee();
         model.addAttribute("employeeList", empList);
         return "user/employee_list";
     }
 
     @GetMapping("/admin/employee-signup")
-    public String adminEmployeeSignup(Model model){
+    public String adminEmployeeSignup(Model model) {
         return "admin/signup";
     }
 
     @PostMapping("/admin/signup")
-    public String adminEmployeeSignup(EmployeeDto.Post memberDto){
+    public String adminEmployeeSignup(EmployeeDto.Post memberDto) {
         employeeService.join(memberDto);
         return "redirect:/admin/employee-signup";
     }
 
 
     @GetMapping("/admin/employee-detail/{employeeId}")
-    public String employeeDetail(@PathVariable("employeeId") String employeeId, Model model){
+    public String employeeDetail(@PathVariable("employeeId") String employeeId, Model model) {
         EmployeeDto.Get employee = employeeService.findEmployeeById(employeeId);
         model.addAttribute("employee", employee);
         return "admin/employee_detail";
@@ -196,15 +195,17 @@ public class EmployeeController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류: " + e.getMessage());
         }
+    }
 
-    // 부서 정보 추가
-    @GetMapping("/employees")
-    public String listEmployees(Model model) {
-        List<EmployeeDto.GetId> employees = employeeService.getAllEmployeeIdsAndNamesAndDepartmentIds();
-        System.out.println("Controller: Employees size = " + employees.size());
-        model.addAttribute("employees", employees);
-        return "employeeList";
+        // 부서 정보 추가
+        @GetMapping("/employees")
+        public String listEmployees (Model model){
+            List<EmployeeDto.GetId> employees = employeeService.getAllEmployeeIdsAndNamesAndDepartmentIds();
+            System.out.println("Controller: Employees size = " + employees.size());
+            model.addAttribute("employees", employees);
+            return "employeeList";
+
+        }
 
     }
 
-}
