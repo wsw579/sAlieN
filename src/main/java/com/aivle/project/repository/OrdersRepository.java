@@ -41,29 +41,42 @@ public interface OrdersRepository extends JpaRepository<OrdersEntity, Long> {
             @Param("teamId") Team teamId,
             Pageable pageable);
 
+    // 일반 사원을 위한 팀의 상태 수 세기
     @Query("SELECT CAST(o.orderStatus AS string), COUNT(o) " +
             "FROM OrdersEntity o " +
             "JOIN o.employeeId e " +
-            "WHERE e.employeeId = :currentEmployeeId " +
-            "   AND ((e.accessPermission = 'ROLE_ADMIN') " +
-            "        OR (e.accessPermission = 'ROLE_USER' AND " +
-            "            (e.position = 'GENERAL_MANAGER' " +
-            "             OR (e.position = 'DEPARTMENT_HEAD' AND e.departmentId = :departmentId) " +
-            "             OR (e.position NOT IN ('GENERAL_MANAGER', 'DEPARTMENT_HEAD') AND e.teamId = :teamId)))) " +
+            "WHERE e.teamId = :teamId " +
             "GROUP BY o.orderStatus")
-    List<Object[]> countOrdersByStatusForCurrentUser(
-            @Param("currentEmployeeId") String currentEmployeeId,
-            @Param("departmentId") Dept departmentId,
-            @Param("teamId") Team teamId);
+    List<Object[]> countOrdersByStatusForCurrentUser(@Param("teamId") Team teamId);
+
+    // 관리자들을 위한 전체 상태의 수 세기
+    @Query("SELECT CAST(o.orderStatus AS string), COUNT(o) " +
+            "FROM OrdersEntity o " +
+            "GROUP BY o.orderStatus")
+    List<Object[]> countOrdersByStatusForCurrentAdmin();
 
 
-    // 차트 그래프
+    // 차트 그래프 - 일반 사원
+    @Query("SELECT MONTH(o.orderDate), COUNT(o) " +
+            "FROM OrdersEntity o " +
+            "JOIN o.employeeId e " +
+            "WHERE YEAR(o.orderDate) = :year AND o.orderStatus = 'activated' " +
+            "AND e.teamId = :teamId " +
+            "GROUP BY MONTH(o.orderDate)")
+    List<Object[]> getMonthlyOrdersUser(@Param("year") int year,
+                                        @Param("teamId") Team teamId);
+
+    // 차트 그래프 - 관리자
     @Query("SELECT MONTH(o.orderDate), COUNT(o) " +
             "FROM OrdersEntity o " +
             "WHERE YEAR(o.orderDate) = :year AND o.orderStatus = 'activated' " +
             "GROUP BY MONTH(o.orderDate)")
-    List<Object[]> getMonthlyOrders(@Param("year") int year);
+    List<Object[]> getMonthlyOrdersAdmin(@Param("year") int year);
 
+
+
+
+    // 메인화면
     // 영업 실적 그래프
     @Query("SELECT e.employeeId AS employeeId, e.employeeName AS employeeName, " +
             "SUM(o.orderAmount * p.fixedPrice) AS totalSales " +
