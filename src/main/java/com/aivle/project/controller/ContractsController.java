@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -215,20 +216,45 @@ public class ContractsController {
         }
     }
 
-    // 파일 다운로드
     @GetMapping("/contracts/detail/{contractId}/file")
     public ResponseEntity<byte[]> downloadFile(@PathVariable Long contractId) {
-        ContractsEntity contract = contractsRepository.findById(contractId)
-                .orElseThrow(() -> new IllegalArgumentException("Contract not found"));
+        logger.info("Downloading file for contract ID: {}", contractId);
 
-        byte[] fileData = contract.getFileData();
-        if (fileData == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        ContractsEntity contract = contractsRepository.findById(contractId)
+                .orElseThrow(() -> new IllegalArgumentException("계약을 찾을 수 없습니다."));
+
+        if (contract.getFileData() == null) {
+            logger.warn("File not found for contract ID: {}", contractId);
+            throw new IllegalArgumentException("파일이 존재하지 않습니다.");
         }
 
+        logger.info("File found: {}, size: {}", contract.getFileName(), contract.getFileData().length);
+
         return ResponseEntity.ok()
-                .header("Content-Disposition", "attachment; filename=\"" + contract.getFileName() + "\"")
-                .header("Content-Type", contract.getMimeType())
-                .body(fileData);
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + contract.getFileName() + "\"")
+                .header(HttpHeaders.CONTENT_TYPE, contract.getMimeType())
+                .body(contract.getFileData());
+    }
+
+    @DeleteMapping("/contracts/detail/{contractId}/file")
+    public ResponseEntity<String> deleteFile(@PathVariable Long contractId) {
+        logger.info("파일 삭제 요청 - Contract ID: {}", contractId);
+
+        ContractsEntity contract = contractsRepository.findById(contractId)
+                .orElseThrow(() -> new IllegalArgumentException("계약을 찾을 수 없습니다."));
+
+        if (contract.getFileData() == null) {
+            logger.warn("Contract ID {}에 파일이 없습니다.", contractId);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("파일이 존재하지 않습니다.");
+        }
+
+        contract.setFileData(null);
+        contract.setFileName(null);
+        contract.setMimeType(null);
+
+        contractsRepository.save(contract);
+
+        logger.info("파일이 성공적으로 삭제되었습니다 - Contract ID: {}", contractId);
+        return ResponseEntity.ok("파일이 성공적으로 삭제되었습니다.");
     }
 }

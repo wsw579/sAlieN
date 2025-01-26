@@ -8,6 +8,7 @@ import com.aivle.project.repository.OrdersRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
@@ -111,7 +113,6 @@ public class ContractsService {
 
 
     // 파일 가져오기
-    @Transactional(readOnly = true)
     public ResponseEntity<byte[]> getFileFromContract(Long contractId) {
         ContractsEntity contract = contractsRepository.findById(contractId)
                 .orElseThrow(() -> new IllegalArgumentException("계약을 찾을 수 없습니다."));
@@ -119,6 +120,8 @@ public class ContractsService {
         if (contract.getFileData() == null) {
             throw new IllegalArgumentException("파일이 존재하지 않습니다.");
         }
+
+        logger.info("파일 데이터 크기: {}", contract.getFileData().length);
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + contract.getFileName() + "\"")

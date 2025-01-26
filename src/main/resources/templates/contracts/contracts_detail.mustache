@@ -293,44 +293,26 @@
                 <div class="card-header">
                     <i class="fas fa-file-upload me-1"></i> 파일 업로드
                 </div>
-                <div class="card-body">
-                    <!-- 파일 업로드 폼 -->
-                    {{#contractId}}
-                    <form id="fileUploadForm" action="/contracts/detail/{{contractId}}/upload" method="POST" enctype="multipart/form-data">
-                    {{/contractId}}
-                    {{^contractId}}
-                    <form id="fileUploadForm" action="/contracts/detail/create" method="POST" enctype="multipart/form-data">
-                    {{/contractId}}
-
-                        <div class="mb-3">
-                            <label for="file" class="form-label">PDF 파일 업로드:</label>
-                            <input type="file" id="file" name="file" class="form-control" accept="application/pdf" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary">업로드</button>
-                    </form>
-
-                    <!-- 업로드 성공/실패 메시지 -->
-                    <div id="uploadMessage" class="mt-3" style="display: none;"></div>
-                </div>
-            </div>
-
-            <div class="card mb-4">
-                <div class="card-header">
-                    <i class="fas fa-file-pdf me-1"></i>
-                    업로드된 파일
-                </div>
-                <div class="card-body">
+                <div class="card-body" id="fileContainer" data-contract-id="{{contractId}}">
                     {{#uploadedFileName}}
                         <p><strong>파일 이름:</strong> {{uploadedFileName}}</p>
                         <a href="/contracts/detail/{{contractId}}/file" target="_blank" class="btn btn-secondary">다운로드</a>
+                        <button id="deleteFileButton" class="btn btn-danger">파일 삭제</button>
                     {{/uploadedFileName}}
                     {{^uploadedFileName}}
-                        <p>업로드된 파일이 없습니다.</p>
+                        <!-- 파일 업로드 폼 -->
+                        <form id="fileUploadForm" data-contract-id="{{contractId}}" action="/contracts/detail/{{contractId}}/upload" method="POST" enctype="multipart/form-data">
+                            <div class="mb-3">
+                                <label for="file" class="form-label">PDF 파일 업로드:</label>
+                                <input type="file" id="file" name="file" class="form-control" accept="application/pdf" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">업로드</button>
+                            <!-- 업로드 성공/실패 메시지 -->
+                            <div id="uploadMessage" class="mt-3" style="display: none;"></div>
+                        </form>
                     {{/uploadedFileName}}
                 </div>
             </div>
-
-
 
 
             <!-- 주문 부분 -->
@@ -388,54 +370,172 @@
 
 
     <script>
-        document.getElementById("fileUploadForm").addEventListener("submit", function(event) {
-        event.preventDefault(); // 기본 폼 제출 동작 방지
-        const formData = new FormData(this);
-        const uploadMessage = document.getElementById("uploadMessage");
-
-        fetch(this.action, {
-            method: "POST",
-            body: formData,
-        })
-            .then(response => response.text())
-            .then(data => {
-                uploadMessage.style.display = "block";
-                uploadMessage.innerText = "파일 업로드 성공!";
-                uploadMessage.className = "alert alert-success";
-                location.reload(); // 페이지 새로고침
-            })
-            .catch(error => {
-                uploadMessage.style.display = "block";
-                uploadMessage.innerText = "파일 업로드 실패: " + error.message;
-                uploadMessage.className = "alert alert-danger";
-            });
-    });
-
         document.addEventListener("DOMContentLoaded", function () {
-    const displayInput = document.getElementById("contractSalesDisplay");
-    const hiddenInput = document.getElementById("contractSales");
+            const fileContainer = document.querySelector("#fileContainer");
 
-    // 초기값 설정: 서버에서 전달된 값을 원화 형식으로 변환
-    if (hiddenInput.value) {
-        displayInput.value = formatCurrency(hiddenInput.value);
-    }
+            // 파일 업로드 처리
+            function addFileUploadListener() {
+                const fileUploadForm = document.getElementById("fileUploadForm");
+                if (fileUploadForm) {
+                    fileUploadForm.addEventListener("submit", function (event) {
+                        event.preventDefault();
 
-    // 입력 시 원화 형식으로 변환
-    displayInput.addEventListener("input", function () {
-        const rawValue = displayInput.value.replace(/[^\d]/g, ""); // 숫자 이외의 문자 제거
-        const formattedValue = formatCurrency(rawValue); // 원화 형식 변환
-        displayInput.value = formattedValue; // 포맷된 값 표시
-        hiddenInput.value = rawValue; // 실제 숫자 값을 hidden 필드에 저장
-    });
+                        const fileInput = document.getElementById("file");
+                        const file = fileInput ? fileInput.files[0] : null;
 
-    // 원화 형식으로 변환하는 함수
-    function formatCurrency(value) {
-        if (!value) return "₩0";
-        return `₩${parseInt(value, 10).toLocaleString("ko-KR")}`;
-    }
-});
+                        if (!file) {
+                            console.warn("파일 입력 요소가 존재하지 않거나 파일이 선택되지 않았습니다.");
+                            return;
+                        }
 
-            // Form 부분 기회상태 초기값 연동 JS (select Form은 html로 초기 value 지정이 안되어서 JS로 처리)
+                        const uploadMessage = document.getElementById("uploadMessage");
+                        const contractId = fileUploadForm.dataset.contractId;
+                        const formData = new FormData(this);
+
+                        // 파일 크기 제한 (5MB)
+                        if (file.size > 5 * 1024 * 1024) {
+                            if (uploadMessage) {
+                                uploadMessage.style.display = "block";
+                                uploadMessage.innerText = "파일 크기는 5MB를 초과할 수 없습니다.";
+                                uploadMessage.className = "alert alert-danger";
+                            }
+                            return;
+                        }
+
+                        // MIME 타입 확인
+                        if (file.type !== "application/pdf") {
+                            if (uploadMessage) {
+                                uploadMessage.style.display = "block";
+                                uploadMessage.innerText = "PDF 파일만 업로드할 수 있습니다.";
+                                uploadMessage.className = "alert alert-danger";
+                            }
+                            return;
+                        }
+
+                        // 서버에 파일 업로드
+                        fetch(this.action, {
+                            method: "POST",
+                            body: formData,
+                        })
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error("파일 업로드에 실패했습니다.");
+                                }
+                                return response.text();
+                            })
+                            .then(data => {
+                                if (uploadMessage) {
+                                    uploadMessage.style.display = "block";
+                                    uploadMessage.innerText = "파일 업로드 성공!";
+                                    uploadMessage.className = "alert alert-success";
+                                }
+
+                                // 업로드된 파일 정보로 UI 업데이트
+                                fileContainer.innerHTML = `
+                                    <p><strong>파일 이름:</strong> ${file.name}</p>
+                                    <a href="/contracts/detail/${contractId}/file" target="_blank" class="btn btn-secondary">다운로드</a>
+                                    <button id="deleteFileButton" class="btn btn-danger">파일 삭제</button>
+                                `;
+
+                                // 삭제 버튼 이벤트 리스너 추가
+                                addDeleteFileListener(contractId);
+                            })
+                            .catch(error => {
+                                if (uploadMessage) {
+                                    uploadMessage.style.display = "block";
+                                    uploadMessage.innerText = "파일 업로드 실패: " + error.message;
+                                    uploadMessage.className = "alert alert-danger";
+                                }
+                            });
+                    });
+                }
+            }
+
+            // 파일 삭제 처리
+            function addDeleteFileListener(contractId) {
+                const deleteFileButton = document.getElementById("deleteFileButton");
+                if (deleteFileButton) {
+                    deleteFileButton.addEventListener("click", function () {
+                        if (!confirm("정말로 이 파일을 삭제하시겠습니까?")) {
+                            return;
+                        }
+
+                        // 서버에 DELETE 요청
+                        fetch(`/contracts/detail/${contractId}/file`, {
+                            method: "DELETE",
+                        })
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error("파일 삭제에 실패했습니다.");
+                                }
+                                return response.text();
+                            })
+                            .then(message => {
+                                alert(message);
+
+                                // 파일 삭제 후 업로드 폼 다시 표시
+                                fileContainer.innerHTML = `
+                                    <form id="fileUploadForm" data-contract-id="${contractId}" action="/contracts/detail/${contractId}/upload" method="POST" enctype="multipart/form-data">
+                                        <div class="mb-3">
+                                            <label for="file" class="form-label">PDF 파일 업로드:</label>
+                                            <input type="file" id="file" name="file" class="form-control" accept="application/pdf" required>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">업로드</button>
+                                        <div id="uploadMessage" class="mt-3" style="display: none;"></div>
+                                    </form>
+                                `;
+
+                                // 새로 추가된 업로드 폼에 이벤트 리스너 추가
+                                addFileUploadListener();
+                            })
+                            .catch(error => {
+                                alert("파일 삭제 실패: " + error.message);
+                            });
+                    });
+                }
+            }
+
+            // 초기화
+            const initialDeleteFileButton = document.getElementById("deleteFileButton");
+            if (initialDeleteFileButton) {
+                const contractId = fileContainer ? fileContainer.dataset.contractId : null;
+                if (contractId) {
+                    addDeleteFileListener(contractId);
+                }
+            }
+
+            addFileUploadListener(); // 초기 업로드 폼에 리스너 추가
+        });
+
+
+
+
+
+                                                        document.addEventListener("DOMContentLoaded", function () {
+                                                    const displayInput = document.getElementById("contractSalesDisplay");
+                                                    const hiddenInput = document.getElementById("contractSales");
+
+                                                    // 초기값 설정: 서버에서 전달된 값을 원화 형식으로 변환
+                                                    if (hiddenInput.value) {
+                                                        displayInput.value = formatCurrency(hiddenInput.value);
+                                                    }
+
+                                                    // 입력 시 원화 형식으로 변환
+                                                    displayInput.addEventListener("input", function () {
+                                                        const rawValue = displayInput.value.replace(/[^\d]/g, ""); // 숫자 이외의 문자 제거
+                                                        const formattedValue = formatCurrency(rawValue); // 원화 형식 변환
+                                                        displayInput.value = formattedValue; // 포맷된 값 표시
+                                                        hiddenInput.value = rawValue; // 실제 숫자 값을 hidden 필드에 저장
+                                                    });
+
+                                                    // 원화 형식으로 변환하는 함수
+                                                    function formatCurrency(value) {
+                                                        if (!value) return "₩0";
+                                                        return `₩${parseInt(value, 10).toLocaleString("ko-KR")}`;
+                                                    }
+                                                });
+
+                                                            // Form 부분 기회상태 초기값 연동 JS (select Form은 html로 초기 value 지정이 안되어서 JS로 처리)
 
         {{#contracts}}
             {{#contractId}}
@@ -581,54 +681,6 @@
             }
         });
     });
-
-        document.addEventListener("DOMContentLoaded", function () {
-    const uploadForm = document.getElementById("fileUploadForm");
-    const uploadedFileContainer = document.getElementById("uploadedFileContainer");
-
-    uploadForm.addEventListener("submit", function (event) {
-        event.preventDefault(); // 기본 제출 동작 막기
-
-        const formData = new FormData(uploadForm);
-        const loader = document.createElement("div");
-        loader.innerText = "Uploading...";
-        loader.style.cssText = "color: blue; font-weight: bold; margin-top: 10px;";
-        uploadedFileContainer.appendChild(loader);
-
-        fetch(uploadForm.action, {
-            method: "POST",
-            body: formData,
-        })
-            .then(response => {
-                if (!response.ok) throw new Error("서버 오류");
-                return response.text(); // 업로드 성공 시 서버가 반환하는 데이터
-            })
-            .then(fileName => {
-                loader.innerText = "Upload Successful!";
-                loader.style.color = "green";
-
-                // 업로드된 파일 표시 업데이트
-                uploadedFileContainer.innerHTML = `
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <i class="fas fa-file-pdf me-1"></i>
-                            업로드된 파일
-                        </div>
-                        <div class="card-body">
-                            <a href="/uploads/contracts/${fileName}" target="_blank" class="btn btn-secondary">PDF 파일 보기</a>
-                        </div>
-                    </div>
-                `;
-            })
-            .catch(error => {
-                loader.innerText = "Upload Failed: " + error.message;
-                loader.style.color = "red";
-            });
-    });
-});
-
-
-
 
 
         {{/contracts}}

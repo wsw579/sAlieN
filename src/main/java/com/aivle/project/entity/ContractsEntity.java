@@ -7,8 +7,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.Type;
 
 import java.io.Serializable;
+import java.sql.Types;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -47,6 +50,7 @@ public class ContractsEntity implements Serializable {
     private String contractClassification;
 
     @Lob
+    @JdbcTypeCode(Types.BINARY)
     @Column(name = "file_data", columnDefinition = "bytea")
     private byte[] fileData;
 
@@ -80,8 +84,8 @@ public class ContractsEntity implements Serializable {
     @JoinColumn(name = "opportunity_id", nullable = true)
     private OpportunitiesEntity opportunityId;
 
-//    @OneToMany(mappedBy = "contractId", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
-//    private List<OrdersEntity> orders;
+    @OneToMany(mappedBy = "contractId", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+    private List<OrdersEntity> orders;
 
 
 
