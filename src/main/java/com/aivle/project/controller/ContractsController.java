@@ -89,7 +89,7 @@ public class ContractsController {
         List<OrdersEntity> orders = contractsService.getOrdersByContractId(contractId);
 
         List<ProductsDto> products = productsService.getAllProductIdsAndNames();
-      // List<AccountDto> accounts = accountService.getAllAccountIdsAndNames();
+       List<AccountDto> accounts = accountService.getAllAccountIdsAndNames();
         List<EmployeeDto.GetId> employee = employeeService.getAllEmployeeIdsAndNamesAndDepartmentIds();
         List<OpportunitiesDto> opportunities = opportunitiesService.getAllOpportunityIdsAndNames();
 
@@ -98,7 +98,7 @@ public class ContractsController {
 
         model.addAttribute("contracts", contracts);
         model.addAttribute("products", products);
-//        model.addAttribute("accounts", accounts);
+        model.addAttribute("accounts", accounts);
         model.addAttribute("employee", employee);
         model.addAttribute("opportunities", opportunities);
         model.addAttribute("orders", orders);

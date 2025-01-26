@@ -196,6 +196,8 @@ public class EmployeeController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류: " + e.getMessage());
         }
+    }
+
 
     // 부서 정보 추가
     @GetMapping("/employees")
@@ -204,7 +206,6 @@ public class EmployeeController {
         System.out.println("Controller: Employees size = " + employees.size());
         model.addAttribute("employees", employees);
         return "employeeList";
-
     }
 
 }
