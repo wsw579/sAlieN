@@ -1,5 +1,6 @@
 package com.aivle.project.controller;
 
+import com.aivle.project.entity.CrudLogsEntity;
 import com.aivle.project.enums.Position;
 import com.aivle.project.enums.Role;
 import com.aivle.project.service.EmployeeService;
@@ -10,7 +11,9 @@ import org.apache.catalina.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 
+import java.util.List;
 
 
 @Controller
@@ -40,6 +43,18 @@ public class IndexController {
             return "error/unauthorized"; // 에러페이지
         }
     }
+
+
+    @GetMapping("/rate_plan")
+    public String ratePlan(@ModelAttribute("id") String employeeId, Model model) {
+        // 세션에서 employeeId 가져오기
+        if (employeeId == null) {
+            throw new IllegalArgumentException("Invalid employeeId: " + employeeId);
+        }
+
+        return "main/rate_plan";
+    }
+
 
 
 }
