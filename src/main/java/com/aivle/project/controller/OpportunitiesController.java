@@ -33,6 +33,7 @@ public class OpportunitiesController {
     private final EmployeeService employeeService;
     private final LeadsService leadsService;
     private final PaginationService paginationService;
+    private final CrudLogsService crudLogsService;
 
     // Read page
     @GetMapping("/opportunities")
@@ -41,7 +42,7 @@ public class OpportunitiesController {
         int size = Integer.parseInt(params.getOrDefault("size", "10"));
         String search = params.getOrDefault("search", "");
         String sortColumn = params.getOrDefault("sortColumn", "createdDate");
-        String sortDirection = params.getOrDefault("sortDirection", "asc");
+        String sortDirection = params.getOrDefault("sortDirection", "desc");
 
         Page<OpportunitiesEntity> opportunitiesPage = opportunitiesService.readOpportunities(page, size, search, sortColumn, sortDirection);
         PaginationDto<OpportunitiesEntity> paginationDto = paginationService.createPaginationData(opportunitiesPage, page, 5);
@@ -110,14 +111,36 @@ public class OpportunitiesController {
     @PostMapping("/opportunities/detail/createcomment")
     public String createComment(@RequestParam("content") String content, @RequestParam("opportunityId") Long opportunityId) {
         opportunitiesService.createComment(content, opportunityId, "작성자");
+
+        // CRUD 작업 로깅
+        crudLogsService.logCrudOperation("create", "opportunities_comment", "", "True", "Success");
+
         return "redirect:/opportunities/detail/" + opportunityId + "#commentSection";
     }
 
     @GetMapping("/opportunities/detail/create")
     public String opportunitiesCreate(Model model) {
         OpportunitiesEntity opportunities = new OpportunitiesEntity();
+
+        opportunities.setOpportunityName("");
+        opportunities.setRegion("");
+        opportunities.setCompanySize(0);
+        opportunities.setOpportunityInquiries("");
+        opportunities.setCustomerEmployee("");
+        opportunities.setQuantity(0);
+        opportunities.setExpectedRevenue(0);
+        opportunities.setCompanyRevenue(0);
+        opportunities.setOpportunityNotes("");
         opportunities.setCreatedDate(LocalDate.now());
         opportunities.setTargetCloseDate(LocalDate.now());
+        opportunities.setOpportunityStatus("");
+        opportunities.setSuccessRate("");
+
+        //외래키 부분
+        opportunities.setLeadId(new LeadsEntity());
+        opportunities.setAccountId(new AccountEntity());
+        opportunities.setProductId(new ProductsEntity());
+        opportunities.setEmployeeId(new EmployeeEntity());
 
         model.addAttribute("opportunities", opportunities);
         model.addAttribute("products", productsService.getAllProductIdsAndNames());
@@ -131,6 +154,10 @@ public class OpportunitiesController {
     @PostMapping("/opportunities/detail/create")
     public String opportunitiesCreateNew(@ModelAttribute OpportunitiesDto opportunitiesDto) {
         opportunitiesService.createOpportunities(opportunitiesDto);
+
+        // CRUD 작업 로깅
+        crudLogsService.logCrudOperation("create", "opportunities", "", "True", "Success");
+
         return "redirect:/opportunities";
     }
 
@@ -150,12 +177,20 @@ public class OpportunitiesController {
     public String createHistory(@PathVariable Long opportunityId, @ModelAttribute HistoryDto historyDto) {
         opportunitiesService.createHistory(historyDto);
 
+        // CRUD 작업 로깅
+        crudLogsService.logCrudOperation("create", "opportunities_history", "", "True", "Success");
+
+
         return "redirect:/opportunities/detail/" + opportunityId;
     }
 
     @PostMapping("/opportunities/detail/{opportunityId}/update")
     public String opportunitiesUpdate(@PathVariable("opportunityId") Long opportunityId, @ModelAttribute OpportunitiesDto opportunitiesDto) {
         opportunitiesService.updateOpportunities(opportunityId, opportunitiesDto);
+
+        // CRUD 작업 로깅
+        crudLogsService.logCrudOperation("update", "opportunities", "", "True", "Success");
+
         return "redirect:/opportunities/detail/" + opportunityId;
     }
 
@@ -163,13 +198,30 @@ public class OpportunitiesController {
     @PostMapping("/opportunities/detail/{opportunityId}/delete")
     public ResponseEntity<Void> deleteOpportunity(@PathVariable("opportunityId") Long opportunityId) {
         opportunitiesService.deleteOpportunities(opportunityId);
+
+        // CRUD 작업 로깅
+        crudLogsService.logCrudOperation("delete", "opportunities", "", "True", "Success");
+
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/opportunities/detail/delete")
     public ResponseEntity<Void> deleteOpportunities(@RequestBody Map<String, List<Long>> request) {
         opportunitiesService.deleteOpportunitiesByIds(request.get("ids"));
+
+        // CRUD 작업 로깅
+        crudLogsService.logCrudOperation("delete", "opportunities", "", "True", "Success");
+
         return ResponseEntity.ok().build();
+    }
+
+    // 오늘 마감인 Leads 수 반환
+    @GetMapping("/api/opportunities/card-value")
+    public ResponseEntity<Map<String, Object>> countStatusCardValue() {
+        Map<String, Long> statusCounts = opportunitiesService.getOpportunitiesStatusCountsTeam();
+        Map<String, Object> response = new HashMap<>();
+        response.put("statusCounts", statusCounts);
+        return ResponseEntity.ok(response);
     }
 }
 
