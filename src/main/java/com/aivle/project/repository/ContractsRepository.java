@@ -5,6 +5,7 @@ import com.aivle.project.entity.OrdersEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -31,4 +32,11 @@ public interface ContractsRepository extends JpaRepository<ContractsEntity, Long
             "WHERE YEAR(c.terminationDate) = :year AND c.contractStatus = 'Activated' " +
             "GROUP BY MONTH(c.terminationDate)")
     List<Object[]> getMonthlyContracts(@Param("year") int year);
+
+    @Modifying
+    @Query(value = "UPDATE contracts SET file_data = :fileData, file_name = :fileName, mime_type = :mimeType WHERE contract_id = :contractId", nativeQuery = true)
+    void updateFileData(@Param("contractId") Long contractId,
+                        @Param("fileData") byte[] fileData,
+                        @Param("fileName") String fileName,
+                        @Param("mimeType") String mimeType);
 }

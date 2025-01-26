@@ -7,8 +7,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.Type;
 
 import java.io.Serializable;
+import java.sql.Types;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -45,6 +48,22 @@ public class ContractsEntity implements Serializable {
 
     @Column(nullable = true)
     private String contractClassification;
+
+    @Lob
+    @JdbcTypeCode(Types.BINARY)
+    @Column(name = "file_data", columnDefinition = "bytea")
+    private byte[] fileData;
+
+    // 업로드된 파일의 이름
+    @Column(name = "file_name", nullable = true)
+    private String fileName;
+
+    // 업로드된 파일의 MIME 타입
+    @Column(name = "mime_type", nullable = true)
+    private String mimeType;
+
+//    @Column(nullable = true)
+//    private String uploadedFilePath;
 
 
     // 외래키 부분

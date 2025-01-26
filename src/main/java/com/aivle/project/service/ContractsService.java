@@ -6,23 +6,25 @@ import com.aivle.project.entity.OrdersEntity;
 import com.aivle.project.repository.ContractsRepository;
 import com.aivle.project.repository.OrdersRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 
 @Service
 @Transactional
@@ -67,7 +69,7 @@ public class ContractsService {
         contractsRepository.deleteAllById(ids);
     }
 
-    // 테이블 데이터 전달
+    // Get Paginated Contract Data
     @Transactional(readOnly = true)
     public Map<String, Object> getContractPageData(int page, int size, String search, String sortColumn, String sortDirection) {
         Page<ContractsEntity> contractsPage = readContracts(page, size, search, sortColumn, sortDirection);
@@ -81,63 +83,78 @@ public class ContractsService {
         return data;
     }
 
-
-
-    // 상태별 카운트 가져오기
+    // Contract Status Counts
     @Transactional(readOnly = true)
     public Map<String, Long> getContractStatusCounts() {
-        Map<String, Long> statusCounts = new HashMap<>();
-        List<Object[]> results = contractsRepository.countContractsByStatus();
-        for (Object[] result : results) {
-            String status = (String) result[0];
-            Long count = (Long) result[1];
-            statusCounts.put(status, count);
-        }
-        return statusCounts;
+        return contractsRepository.countContractsByStatus().stream()
+                .collect(Collectors.toMap(result -> (String) result[0], result -> (Long) result[1]));
     }
 
     @Transactional(readOnly = true)
     public ContractsEntity searchContracts(Long contractId) {
         logger.info("Searching for contract with ID: {}", contractId);
-        if (contractId == null) {
-            throw new IllegalArgumentException("Contract ID cannot be null");
-        }
         return contractsRepository.findById(contractId)
-                .orElseThrow(() -> {
-                    logger.error("Contract not found with ID: {}", contractId);
-                    return new IllegalArgumentException("Contract not found with ID: " + contractId);
-                });
+                .orElseThrow(() -> new IllegalArgumentException("Contract not found with ID: " + contractId));
     }
 
-    // 주문 정보 가져오기
+    // File Upload
+    @Transactional
+    public void saveFileToContract(Long contractId, MultipartFile file) {
+        try {
+            byte[] fileData = file.getBytes();
+            String fileName = file.getOriginalFilename();
+            String mimeType = file.getContentType();
+
+            contractsRepository.updateFileData(contractId, fileData, fileName, mimeType);
+        } catch (IOException e) {
+            throw new RuntimeException("파일 처리 중 오류 발생", e);
+        }
+    }
+
+
+    // 파일 가져오기
+    public ResponseEntity<byte[]> getFileFromContract(Long contractId) {
+        ContractsEntity contract = contractsRepository.findById(contractId)
+                .orElseThrow(() -> new IllegalArgumentException("계약을 찾을 수 없습니다."));
+
+        if (contract.getFileData() == null) {
+            throw new IllegalArgumentException("파일이 존재하지 않습니다.");
+        }
+
+        logger.info("파일 데이터 크기: {}", contract.getFileData().length);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + contract.getFileName() + "\"")
+                .header(HttpHeaders.CONTENT_TYPE, contract.getMimeType())
+                .body(contract.getFileData());
+    }
+
+
+    // Orders by Contract ID
     @Transactional(readOnly = true)
     public List<OrdersEntity> getOrdersByContractId(Long contractId) {
         logger.info("Fetching orders for contract ID: {}", contractId);
-        if (contractId == null) {
-            throw new IllegalArgumentException("Contract ID cannot be null");
-        }
         ContractsEntity contract = searchContracts(contractId);
         return ordersRepository.findByContractId(contract);
     }
 
-    // ID 가져오기
+    // Get All Contract IDs
     @Transactional(readOnly = true)
     public List<ContractsDto> getAllContractIds() {
-        List<Long> results = contractsRepository.findAllContractIds();
-        return results.stream()
+        return contractsRepository.findAllContractIds().stream()
                 .map(this::convertIdToDto)
                 .collect(Collectors.toList());
     }
 
-    // Bar 및 Chart Data
+    // Bar and Chart Data
     @Transactional(readOnly = true)
     public Map<String, List<Integer>> getBarData() {
-        return getYearlyData(true); // 누적 데이터 포함
+        return getYearlyData(true);
     }
 
     @Transactional(readOnly = true)
     public Map<String, List<Integer>> getChartData() {
-        return getYearlyData(false); // 누적 데이터 제외
+        return getYearlyData(false);
     }
 
     private Map<String, List<Integer>> getYearlyData(boolean accumulate) {
@@ -167,12 +184,11 @@ public class ContractsService {
     }
 
     private void populateMonthlyData(int year, List<Integer> monthlyData) {
-        List<Object[]> orders = contractsRepository.getMonthlyContracts(year);
-        for (Object[] row : orders) {
-            int month = ((Number) row[0]).intValue() - 1; // 1월 = 0
+        contractsRepository.getMonthlyContracts(year).forEach(row -> {
+            int month = ((Number) row[0]).intValue() - 1;
             int count = ((Number) row[1]).intValue();
             monthlyData.set(month, count);
-        }
+        });
     }
 
     private void accumulateMonthlyData(List<Integer> monthlyData) {
@@ -181,7 +197,7 @@ public class ContractsService {
         }
     }
 
-    // 헬퍼 메서드
+    // Helper Methods
     private ContractsEntity convertDtoToEntity(ContractsDto dto) {
         ContractsEntity contractsEntity = new ContractsEntity();
         updateEntityFromDto(contractsEntity, dto);
