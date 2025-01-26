@@ -389,19 +389,20 @@
 
 
                             <div class="button-container d-flex justify-content-end gap-2 mb-3">
-                                <!-- 저장 버튼 -->
-                                <button type="submit" id="updateButton" class="btn btn-custom-create btn-sm">
-
-                            <div class="d-flex justify-content-end">
-                                <button type="submit" id="updateButton" class="btn btn-custom-update btn-sm">
-
-                                    <i class="fas fa-plus-circle"></i> 저장
-                                </button>
 
                                 <!-- 제안서 생성 버튼 -->
                                 <button type="button" id="proposalButton" class="btn btn-custom-proposal btn-sm">
                                     <i class="fas fa-plus-circle"></i> 제안서 생성
                                 </button>
+
+                                <!-- 저장 버튼 -->
+                                <div class="d-flex justify-content-end">
+                                    <button type="submit" id="updateButton" class="btn btn-custom-update btn-sm">
+                                        <i class="fas fa-plus-circle"></i> 저장
+                                    </button>
+                                </div>
+
+
                             </div>
 
                         </form>
@@ -769,7 +770,7 @@ document.getElementById('proposalButton').addEventListener('click', function() {
         console.log('전송할 데이터:', dataToSend);
 
         // PDF 생성 요청
-        fetch('http://127.0.0.1:8000/generate-pdf', {
+        fetch('http://127.0.0.1:8000/generate-excel', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -783,11 +784,11 @@ document.getElementById('proposalButton').addEventListener('click', function() {
             return response.blob();
         })
         .then(blob => {
-            // PDF 파일을 사용자 PC에 다운로드
+            // excel 파일을 사용자 PC에 다운로드
             const url = window.URL.createObjectURL(new Blob([blob]));
             const link = document.createElement('a');
             link.href = url;
-            link.setAttribute('download', `proposal.pdf`);
+            link.setAttribute('download', `${departmentName}_${employeeName}_${productName}_proposal.xlsx`);
             document.body.appendChild(link);
             link.click();
             window.URL.revokeObjectURL(url);
