@@ -32,4 +32,10 @@ public interface EmployeeRepository extends JpaRepository<EmployeeEntity, String
     String findLastEmployeeIdByYear(@Param("year") String year);
 
     List<EmployeeEntity> findAllByAccessPermission(Role role);
+
+    @Query("SELECT e FROM EmployeeEntity e WHERE e.teamId = :teamId")
+    List<EmployeeEntity> findByTeamId(@Param("teamId") String teamId);
+
+    @Query("SELECT e FROM EmployeeEntity e WHERE e.departmentId = :departmentId")
+    List<EmployeeEntity> findByDepartmentId(@Param("departmentId") String departmentId);
 }

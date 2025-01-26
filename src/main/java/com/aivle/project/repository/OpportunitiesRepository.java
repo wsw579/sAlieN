@@ -3,6 +3,7 @@ package com.aivle.project.repository;
 import com.aivle.project.entity.EmployeeEntity;
 import com.aivle.project.entity.OpportunitiesEntity;
 import com.aivle.project.entity.OrdersEntity;
+import com.aivle.project.enums.Dept;
 import com.aivle.project.enums.Team;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,6 +13,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 
 @Repository
@@ -78,6 +80,15 @@ public interface OpportunitiesRepository extends JpaRepository<OpportunitiesEnti
     // calendar
     List<OpportunitiesEntity> findByEmployeeId(EmployeeEntity employeeId);
 
+    // 직원 조회
+    @Query("SELECT COUNT(o) FROM OpportunitiesEntity o WHERE o.employeeId.employeeId = :employeeId AND o.opportunityStatus IN ('Qualification', 'Needs Analysis', 'Proposal', 'Negotiation')")
+    long countByEmployeeIdAndStatus(@Param("employeeId") String employeeId);
 
+    @Query("SELECT o FROM OpportunitiesEntity o WHERE o.employeeId.teamId = :team")
+    List<OpportunitiesEntity> findByTeam(@Param("team") Team team);
+
+    @Query("SELECT o FROM OpportunitiesEntity o WHERE o.employeeId.departmentId = :dept")
+    List<OpportunitiesEntity> findByDepartment(@Param("dept") Dept dept);
 
 }
+
