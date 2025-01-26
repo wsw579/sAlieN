@@ -20,6 +20,8 @@ import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.IntStream;
 
 
 @Controller
@@ -80,12 +82,28 @@ public class OpportunitiesController {
         List<HistoryEntity> history = opportunitiesService.getHistoryByOpportunityId(opportunityId);
         List<OpportunitiesCommentEntity> opportunitiesComments = opportunitiesService.getCommentsByOpportunityId(opportunityId);
 
+        // 로딩속도를 올리기 위해 findAll -> id와 name만 가져오게 변경
+        // 목록 조회 후 모델에 추가 (드롭다운 메뉴용)
+        List<ProductsDto> products = productsService.getAllProductIdsAndNames();
+        List<AccountDto> accounts = accountService.getAllAccountIdsAndNames();
+        List<EmployeeDto.GetId> employee = employeeService.getAllEmployeeIdsAndNamesAndDepartmentIds();
+        List<LeadsDto> leads = leadsService.getAllLeadIdsAndCompanyNames();
+
+        // 직원 목록 추가
+        List<EmployeeDto.GetId> employees = employeeService.getAllEmployeeIdsAndNamesAndDepartmentIds();
+
+        model.addAttribute("employees", employees);
+        // 디버깅을 위해 로그 출력
+        System.out.println("Opportunities: " + opportunities);
+        opportunitiesComments.forEach(comment -> System.out.println("Comment: " + comment.getContent() + ", Date: " + comment.getCommentCreatedDate()));
+
         model.addAttribute("opportunities", opportunities);
+        // 히스토리 수정
         model.addAttribute("history", history);
         model.addAttribute("opportunitiesComments", opportunitiesComments);
         model.addAttribute("products", productsService.getAllProductIdsAndNames());
         model.addAttribute("accounts", accountService.getAllAccountIdsAndNames());
-        model.addAttribute("employee", employeeService.getAllEmployeeIdsAndNames());
+        model.addAttribute("employee", employeeService.getAllEmployeeIdsAndNamesAndDepartmentIds());
         model.addAttribute("leads", leadsService.getAllLeadIdsAndCompanyNames());
         return "opportunities/opportunities_detail";
     }
@@ -127,7 +145,7 @@ public class OpportunitiesController {
         model.addAttribute("opportunities", opportunities);
         model.addAttribute("products", productsService.getAllProductIdsAndNames());
         model.addAttribute("accounts", accountService.getAllAccountIdsAndNames());
-        model.addAttribute("employee", employeeService.getAllEmployeeIdsAndNames());
+        model.addAttribute("employee", employeeService.getAllEmployeeIdsAndNamesAndDepartmentIds());
         model.addAttribute("leads", leadsService.getAllLeadIdsAndCompanyNames());
 
         return "opportunities/opportunities_detail";
@@ -161,6 +179,7 @@ public class OpportunitiesController {
 
         // CRUD 작업 로깅
         crudLogsService.logCrudOperation("create", "opportunities_history", "", "True", "Success");
+
 
         return "redirect:/opportunities/detail/" + opportunityId;
     }
@@ -205,5 +224,6 @@ public class OpportunitiesController {
         return ResponseEntity.ok(response);
     }
 }
+
 
 

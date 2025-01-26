@@ -14,7 +14,6 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.HashMap;
 import java.util.List;
@@ -160,4 +159,14 @@ public class EmployeeController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // HTTP 500 응답
         }
     }
+
+    // 부서 정보 추가
+    @GetMapping("/employees")
+    public String listEmployees(Model model) {
+        List<EmployeeDto.GetId> employees = employeeService.getAllEmployeeIdsAndNamesAndDepartmentIds();
+        System.out.println("Controller: Employees size = " + employees.size());
+        model.addAttribute("employees", employees);
+        return "employeeList";
+    }
+
 }

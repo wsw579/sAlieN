@@ -1,7 +1,6 @@
 package com.aivle.project.service;
 
 import com.aivle.project.dto.EmployeeDto;
-import com.aivle.project.dto.OpportunitiesDto;
 import com.aivle.project.entity.EmployeeEntity;
 import com.aivle.project.enums.Dept;
 import com.aivle.project.enums.Position;
@@ -19,10 +18,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,8 +29,6 @@ public class EmployeeService {
     private final EmployeeRepository employeeRepository;
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-
-
 
 
     private static final Map<Position, Float> positionBaseSalaryMap = new HashMap<>();
@@ -141,7 +135,6 @@ public class EmployeeService {
     }
 
 
-
     public EmployeeDto.Get findEmployeeById(String employeeId) {
         EmployeeEntity findEmployee = employeeRepository.findByEmployeeId(employeeId);
         EmployeeDto.Get employee = new EmployeeDto.Get();
@@ -195,7 +188,7 @@ public class EmployeeService {
     public List<EmployeeDto.Get> findAllEmployee() {
         List<EmployeeEntity> empList = employeeRepository.findAllByAccessPermission(Role.ROLE_USER);
         List<EmployeeDto.Get> empDtoList = new ArrayList<>();
-        for(EmployeeEntity emp :empList){
+        for (EmployeeEntity emp : empList) {
             EmployeeDto.Get empDto = new EmployeeDto.Get();
             empDto.setEmployeeId(emp.getEmployeeId());
             empDto.setEmployeeName(emp.getEmployeeName());
@@ -236,16 +229,22 @@ public class EmployeeService {
     }
 
     // detail select를 위한 이름 id 불러오기
-    public List<EmployeeDto.GetId> getAllEmployeeIdsAndNames() {
-        List<Object[]> results = employeeRepository.findAllEmployeeIdAndEmployeeName();
-        return results.stream()
+    public List<EmployeeDto.GetId> getAllEmployeeIdsAndNamesAndDepartmentIds() {
+        List<Object[]> results = employeeRepository.findAllEmployeeIdAndEmployeeNameAndDepartmentId();
+        List<EmployeeDto.GetId> dtoList = results.stream()
                 .map(result -> {
                     EmployeeDto.GetId dto = new EmployeeDto.GetId();
                     dto.setEmployeeId((String) result[0]);
                     dto.setEmployeeName((String) result[1]);
+                    if (result[2] != null) {
+                        dto.setDepartmentId((Dept) result[2]);
+                    } else {
+                        System.out.println("Department is null");
+                    }
                     return dto;
                 })
                 .collect(Collectors.toList());
+                    return dtoList;
     }
 
     public String getPositionByUserId(String userId) {
