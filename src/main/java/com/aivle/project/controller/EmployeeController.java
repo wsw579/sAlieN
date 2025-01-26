@@ -1,6 +1,7 @@
 package com.aivle.project.controller;
 
 import com.aivle.project.dto.EmployeeDto;
+import com.aivle.project.service.CrudLogsService;
 import com.aivle.project.service.EmployeeService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,6 +24,7 @@ import java.util.Map;
 public class EmployeeController {
 
     private final EmployeeService employeeService;
+    private final CrudLogsService crudLogsService;
 
     @GetMapping("/login")
     public String login(@RequestParam(value = "error", required = false) String error, Model model) {

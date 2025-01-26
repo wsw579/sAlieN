@@ -246,4 +246,8 @@ public class EmployeeService {
                 .collect(Collectors.toList());
                     return dtoList;
     }
+
+    public String getPositionByUserId(String userId) {
+        return employeeRepository.findPositionById(userId);
+    }
 }

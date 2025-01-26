@@ -1,61 +1,41 @@
 document.addEventListener("DOMContentLoaded", function () {
     const ctx = document.getElementById("opportunitiesReadBar");
 
-        var labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    if (!ctx) {
+        console.error("Canvas not found.");
+        return;
+    }
 
-        // Bar Chart Example
-        var ctx = document.getElementById("opportunitiesReadBar");
-        if (!ctx) {
-            console.error("Canvas with ID 'opportunitiesReadBar' not found.");
-            return;
-        }
-
-        var myBarChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [
-                    {
-                        label: "Last Year (Blue)",
-                        backgroundColor: "rgba(2,117,216,1)",
-                        borderColor: "rgba(2,117,216,1)",
-                        data: lastYearData,
-                    },
-                    {
-                        label: "This Year (Red)",
-                        backgroundColor: "rgba(255,0,0,1)",
-                        borderColor: "rgba(255,0,0,1)",
-                        data: currentYearData,
-                    }
-                ],
-            },
-            options: {
-                scales: {
-                    xAxes: [{
-                        time: {
-                            unit: 'month'
+    fetch('/opportunities/bar-data')
+        .then(response => response.json())
+        .then(data => {
+            const chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                    datasets: [
+                        {
+                            label: "Last Year",
+                            backgroundColor: "rgba(2,117,216,1)",
+                            data: data.lastYearData
                         },
-                        gridLines: {
-                            display: false
-                        },
-                        ticks: {
-                            maxTicksLimit: 12
+                        {
+                            label: "This Year",
+                            backgroundColor: "rgba(255,0,0,1)",
+                            data: data.currentYearData
                         }
-                    }],
-                    yAxes: [{
-                        ticks: {
-                            min: 0,
-                            maxTicksLimit: 5
-                        },
-                        gridLines: {
-                            display: true
-                        }
-                    }],
+                    ]
                 },
-                legend: {
-                    display: true // 범례를 표시합니다.
+                options: {
+                    responsive: true,
+                    animation: { duration: 500 },
+                    plugins: { legend: { display: true } },
+                    scales: {
+                        x: { grid: { display: false } },
+                        y: { beginAtZero: true }
+                    }
                 }
-            }
-        });
-    });
-
+            });
+        })
+        .catch(error => console.error("Error loading chart data:", error));
+});

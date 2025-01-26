@@ -34,6 +34,7 @@ public class ContractsController {
     private final OpportunitiesService opportunitiesService;
     private final ContractsRepository contractsRepository;
     private final PaginationService paginationService;
+    private final CrudLogsService crudLogsService;
 
     // Read page
     @GetMapping("/contracts")
@@ -42,7 +43,7 @@ public class ContractsController {
         int size = Integer.parseInt(params.getOrDefault("size", "10"));
         String search = params.getOrDefault("search", "");
         String sortColumn = params.getOrDefault("sortColumn", "startDate");
-        String sortDirection = params.getOrDefault("sortDirection", "asc");
+        String sortDirection = params.getOrDefault("sortDirection", "desc");
 
         // 데이터 조회
         Page<ContractsEntity> contractsPage = contractsService.readContracts(page, size, search, sortColumn, sortDirection);
@@ -152,18 +153,29 @@ public class ContractsController {
 
         contractsService.createContracts(contractsDto);
 
+        // CRUD 작업 로깅
+        crudLogsService.logCrudOperation("create", "contracts", "", "True", "Success");
+
         return "redirect:/contracts";
     }
 
     @PostMapping("/contracts/detail/{contractId}/update")
     public String contractsUpdate(@PathVariable("contractId") Long contractId, @ModelAttribute ContractsDto contractsDto) {
         contractsService.updateContracts(contractId, contractsDto);
+
+        // CRUD 작업 로깅
+        crudLogsService.logCrudOperation("update", "contracts", "", "True", "Success");
+
         return "redirect:/contracts/detail/" + contractId;
     }
 
     @PostMapping("/contracts/detail/{contractId}/delete")
     public ResponseEntity<Void> deleteContract(@PathVariable("contractId") Long contractId) {
         contractsService.deleteContracts(contractId);
+
+        // CRUD 작업 로깅
+        crudLogsService.logCrudOperation("delete", "contracts", "", "True", "Success");
+
         return ResponseEntity.ok().build();
     }
 
@@ -172,6 +184,10 @@ public class ContractsController {
         List<Long> ids = request.get("ids");
         logger.info("Deleting contracts with IDs: {}", ids);
         contractsService.deleteContractsByIds(ids);
+
+        // CRUD 작업 로깅
+        crudLogsService.logCrudOperation("delete", "contracts", "", "True", "Success");
+
         return ResponseEntity.ok().build();
     }
 }
