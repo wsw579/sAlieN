@@ -177,9 +177,6 @@
 </style>
 
 
-
-
-
 <div id="layoutSidenav_content">
     <main>
         <div class="container-fluid px-4">
@@ -203,7 +200,8 @@
                     <table id="opportunities_detail">
                         {{#opportunities}}
                             <div class="button-container mb-3">
-                                <a href="/opportunities/detail/create" class="btn btn-custom-create btn-sm" id="createButton">
+                                <a href="/opportunities/detail/create" class="btn btn-custom-create btn-sm"
+                                   id="createButton">
                                     <i class="fas fa-plus-circle"></i> 신규
                                 </a>
 
@@ -216,7 +214,8 @@
                             </div>
 
                             {{#opportunityId}}
-                            <form id="opportunityForm" action="/opportunities/detail/{{opportunityId}}/update" method="POST">
+                            <form id="opportunityForm" action="/opportunities/detail/{{opportunityId}}/update"
+                                  method="POST">
                             {{/opportunityId}}
                             {{^opportunityId}}
                             <form id="opportunityForm" action="/opportunities/detail/create" method="POST">
@@ -226,19 +225,22 @@
                             <div class="mb-3 row">
                                 <label for="createdDate" class="col-sm-2 col-form-label">생성일자:</label>
                                 <div class="col-sm-10">
-                                    <input type="date" class="form-control" id="createdDate" name="createdDate" value="{{createdDate}}" required>
+                                    <input type="date" class="form-control" id="createdDate" name="createdDate"
+                                           value="{{createdDate}}" required>
                                 </div>
                             </div>
                             <div class="mb-3 row">
                                 <label for="targetCloseDate" class="col-sm-2 col-form-label">마감기한:</label>
                                 <div class="col-sm-10">
-                                    <input type="date" class="form-control" id="targetCloseDate" name="targetCloseDate" value="{{targetCloseDate}}" required>
+                                    <input type="date" class="form-control" id="targetCloseDate" name="targetCloseDate"
+                                           value="{{targetCloseDate}}" required>
                                 </div>
                             </div>
                             <div class="mb-3 row">
                                 <label for="opportunityStatus" class="col-sm-2 col-form-label">기회상태:</label>
                                 <div class="col-sm-10">
-                                    <select class="form-control" id="opportunityStatus" name="opportunityStatus" required>
+                                    <select class="form-control" id="opportunityStatus" name="opportunityStatus"
+                                            required>
                                         <option value="Qualification">Qualification</option>
                                         <option value="Needs Analysis">Needs Analysis</option>
                                         <option value="Proposal">Proposal</option>
@@ -253,22 +255,23 @@
                             <div class="mb-3 row">
                                 <label for="leadId" class="col-sm-2 col-form-label">리드 명:</label>
                                 <div class="col-sm-10">
-                                        <select id="leadId" name="leadId">
+                                    <select id="leadId" name="leadId">
 
-                                            <option value="">-- 리드 선택 --</option>
-                                            {{#leads}}
-                                                <option value="{{leadId}}">
-                                                    {{leadId}} (ID: {{leadId}})
-                                                </option>
-                                            {{/leads}}
+                                        <option value="">-- 리드 선택 --</option>
+                                        {{#leads}}
+                                            <option value="{{leadId}}">
+                                                {{leadId}} (ID: {{leadId}})
+                                            </option>
+                                        {{/leads}}
 
-                                        </select>
+                                    </select>
                                 </div>
                             </div>
                             <div class="mb-3 row">
                                 <label for="opportunityName" class="col-sm-2 col-form-label">기회 명:</label>
                                 <div class="col-sm-10">
-                                    <input type="text" class="form-control" id="opportunityName" name="opportunityName" value="{{opportunityName}}" required>
+                                    <input type="text" class="form-control" id="opportunityName" name="opportunityName"
+                                           value="{{opportunityName}}" required>
                                 </div>
                             </div>
                             <div class="mb-3 row">
@@ -286,55 +289,68 @@
                                     </select>
                                 </div>
                             </div>
+
+
+
+
                             <div class="mb-3 row">
                                 <label for="employeeId" class="col-sm-2 col-form-label">기회 담당자:</label>
                                 <div class="col-sm-10">
                                     <select id="employeeId" name="employeeId" required>
-
                                         <option value="">-- 담당자 선택 --</option>
-                                        {{#employee}}
+                                        {{#employees}}
                                             <option value="{{employeeId}}">
-                                                {{employeeName}} (ID: {{employeeId}})
+                                                {{employeeName}} (ID: {{employeeId}}
+                                                Dept: {{#departmentId}}{{name}}{{/departmentId}}{{^departmentId}}
+                                                미지정{{/departmentId}})
                                             </option>
-                                        {{/employee}}
-
+                                        {{/employees}}
                                     </select>
                                 </div>
                             </div>
+
+
+
                             <div class="mb-3 row">
                                 <label for="successRate" class="col-sm-2 col-form-label">성공률:</label>
                                 <div class="col-sm-10">
-                                    <input type="text" class="form-control" id="successRate" name="successRate" value="{{successRate}}" required>
+                                    <input type="text" class="form-control" id="successRate" name="successRate"
+                                           value="{{successRate}}" required>
                                 </div>
                             </div>
                             <div class="mb-3 row">
                                 <label for="companyRevenue" class="col-sm-2 col-form-label">회사 매출:</label>
                                 <div class="col-sm-10">
-                                    <input type="number" step="0.01" class="form-control" id="companyRevenue" name="companyRevenue" value="{{companyRevenue}}" required>
+                                    <input type="number" step="0.01" class="form-control" id="companyRevenue"
+                                           name="companyRevenue" value="{{companyRevenue}}" required>
                                 </div>
                             </div>
                             <div class="mb-3 row">
                                 <label for="region" class="col-sm-2 col-form-label">배송지역:</label>
                                 <div class="col-sm-10">
-                                    <input type="text" class="form-control" id="region" name="region" value="{{region}}" required>
+                                    <input type="text" class="form-control" id="region" name="region" value="{{region}}"
+                                           required>
                                 </div>
                             </div>
                             <div class="mb-3 row">
                                 <label for="customerEmployee" class="col-sm-2 col-form-label">고객사 담당자:</label>
                                 <div class="col-sm-10">
-                                    <input type="text" class="form-control" id="customerEmployee" name="customerEmployee" value="{{customerEmployee}}" required>
+                                    <input type="text" class="form-control" id="customerEmployee"
+                                           name="customerEmployee" value="{{customerEmployee}}" required>
                                 </div>
                             </div>
                             <div class="mb-3 row">
                                 <label for="opportunityInquiries" class="col-sm-2 col-form-label">고객문의사항:</label>
                                 <div class="col-sm-10">
-                                    <input type="text" class="form-control" id="opportunityInquiries" name="opportunityInquiries" value="{{opportunityInquiries}}" required>
+                                    <input type="text" class="form-control" id="opportunityInquiries"
+                                           name="opportunityInquiries" value="{{opportunityInquiries}}" required>
                                 </div>
                             </div>
                             <div class="mb-3 row">
                                 <label for="opportunityNotes" class="col-sm-2 col-form-label">기회 세부내용:</label>
                                 <div class="col-sm-10">
-                                    <input type="text" class="form-control" id="opportunityNotes" name="opportunityNotes" value="{{opportunityNotes}}" required>
+                                    <input type="text" class="form-control" id="opportunityNotes"
+                                           name="opportunityNotes" value="{{opportunityNotes}}" required>
                                 </div>
                             </div>
 
@@ -359,13 +375,15 @@
                             <div class="mb-3 row">
                                 <label for="quantity" class="col-sm-2 col-form-label">기회 수량:</label>
                                 <div class="col-sm-10">
-                                    <input type="number" step="0.01" class="form-control" id="quantity" name="quantity" value="{{quantity}}" required>
+                                    <input type="number" step="0.01" class="form-control" id="quantity" name="quantity"
+                                           value="{{quantity}}" required>
                                 </div>
                             </div>
                             <div class="mb-3 row">
                                 <label for="expectedRevenue" class="col-sm-2 col-form-label">기회 매출:</label>
                                 <div class="col-sm-10">
-                                    <input type="number" step="0.01" class="form-control" id="expectedRevenue" name="expectedRevenue" value="{{expectedRevenue}}" required>
+                                    <input type="number" step="0.01" class="form-control" id="expectedRevenue"
+                                           name="expectedRevenue" value="{{expectedRevenue}}" required>
                                 </div>
                             </div>
 
@@ -393,7 +411,6 @@
                     </table>
                 </div>
             </div>
-
 
 
             <!-- 기회 단계 부분 -->
@@ -429,55 +446,58 @@
 
 
             {{#opportunities.opportunityId}}
-            <!-- 기회 히스토리 부분 -->
-            <div class="card mb-4">
-                <div class="card-header">
-                    <i class="fas fa-table me-1"></i>
-                    Opportunities History
-                </div>
-                <div class="card-body">
-                    <div class="button-container mb-3">
-                        <a href="/opportunities/detail/{{opportunityId}}/history/create" class="btn btn-custom-create btn-sm" id="createButton">
-                            <i class="fas fa-plus-circle"></i> 생성
-                        </a>
+                <!-- 기회 히스토리 부분 -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <i class="fas fa-table me-1"></i>
+                        Opportunities History
                     </div>
-                    <table id="opportunities_history" class="table table-striped table-bordered">
-                        <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>제목</th>
-                            <th>담당자</th>
-                            <th>미팅날짜</th>
-                            <th>미팅일시</th>
-                            <th>미팅장소</th>
-                            <th>회사규모</th>
-                            <th>액션</th>
-                            <th>고객문의</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {{#history}}
-                            <tr data-index="{{historyId}}">
-                                <td>{{historyId}}</td>
-                                <td><a href="/opportunities/detail/{{opportunityId}}/history/{{historyId}}">{{historyTitle}}</a></td>
-                                <td>{{customerRepresentative}}</td>
-                                <td>{{historyDate}}</td>
-                                <td>{{historyTime}}</td>
-                                <td>{{meetingPlace}}</td>
-                                <td>{{companySize}}</td>
-                                <td>{{actionTaken}}</td>
-                                <td>{{customerRequirements}}</td>
-                            </tr>
-                        {{/history}}
-                        {{^history}}
+                    <div class="card-body">
+                        <div class="button-container mb-3">
+                            <a href="/opportunities/detail/{{opportunityId}}/history/create"
+                               class="btn btn-custom-create btn-sm" id="createButton">
+                                <i class="fas fa-plus-circle"></i> 생성
+                            </a>
+                        </div>
+                        <table id="opportunities_history" class="table table-striped table-bordered">
+                            <thead>
                             <tr>
-                                <td colspan="9" class="text-center">No history available.</td>
+                                <th>ID</th>
+                                <th>제목</th>
+                                <th>담당자</th>
+                                <th>미팅날짜</th>
+                                <th>미팅일시</th>
+                                <th>미팅장소</th>
+                                <th>회사규모</th>
+                                <th>액션</th>
+                                <th>고객문의</th>
                             </tr>
-                        {{/history}}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                            {{#history}}
+                                <tr data-index="{{historyId}}">
+                                    <td>{{historyId}}</td>
+                                    <td>
+                                        <a href="/opportunities/detail/{{opportunityId}}/history/{{historyId}}">{{historyTitle}}</a>
+                                    </td>
+                                    <td>{{customerRepresentative}}</td>
+                                    <td>{{historyDate}}</td>
+                                    <td>{{historyTime}}</td>
+                                    <td>{{meetingPlace}}</td>
+                                    <td>{{companySize}}</td>
+                                    <td>{{actionTaken}}</td>
+                                    <td>{{customerRequirements}}</td>
+                                </tr>
+                            {{/history}}
+                            {{^history}}
+                                <tr>
+                                    <td colspan="9" class="text-center">No history available.</td>
+                                </tr>
+                            {{/history}}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
             {{/opportunities.opportunityId}}
 
 
@@ -521,10 +541,8 @@
             {{/opportunities.opportunityId}}
 
 
-
         </div>
     </main>
-
 
 
     <script>
@@ -532,76 +550,84 @@
 
         // Form 부분 기회상태 초기값 연동 JS (select Form은 html로 초기 value 지정이 안되어서 JS로 처리)
 
-    {{#opportunities}}
+        {{#opportunities}}
 
-        {{#opportunityId}}
-        document.addEventListener("DOMContentLoaded", function() {
-            // Mustache 템플릿에서 서버 데이터를 가져옴
-            var opportunityStatus = "{{opportunityStatus}}";
+            {{#opportunityId}}
+                document.addEventListener("DOMContentLoaded", function() {
+                    // Mustache 템플릿에서 서버 데이터를 가져옴
+                    var opportunityStatus = "{{opportunityStatus}}";
             var productId = "{{productId.productId}}";
             var accountId = "{{accountId.accountId}}";
             var employeeId = "{{employeeId.employeeId}}";
-            {{#leadId.leadId}}
-                var leadId = "{{leadId.leadId}}";
-            {{/leadId.leadId}}
+                {{#departmentId}}
+                    var departmentId = "{{departmentId}}";
+                {{/departmentId}}
 
-            // 폼에 데이터 채우기
-            document.getElementById("opportunityStatus").value = opportunityStatus;
-            document.getElementById("productId").value = productId;
-            document.getElementById("accountId").value = accountId;
-            document.getElementById("employeeId").value = employeeId;
-            {{#leadId.leadId}}
-                document.getElementById("leadId").value = leadId;
-            {{/leadId.leadId}}
+                {{#leadId.leadId}}
+                    var leadId = "{{leadId.leadId}}";
+                {{/leadId.leadId}}
+
+                // 폼에 데이터 채우기
+                document.getElementById("opportunityStatus").value = opportunityStatus;
+                document.getElementById("productId").value = productId;
+                document.getElementById("accountId").value = accountId;
+                document.getElementById("employeeId").value = employeeId;
+                {{#departmentId}}
+                    document.getElementById("departmentId").value = departmentId;
+                {{/departmentId}}
+
+                {{#leadId.leadId}}
+                    document.getElementById("leadId").value = leadId;
+                {{/leadId.leadId}}
 
 
-        });
-        {{/opportunityId}}
+                });
+            {{/opportunityId}}
 
 
-        // select 폼데이터 조회 기능 (main/header와 footer에 CSS 추가, 상단에 Selectize CSS, JS로 명시)
+            // select 폼데이터 조회 기능 (main/header와 footer에 CSS 추가, 상단에 Selectize CSS, JS로 명시)
 
 
 
-        document.addEventListener("DOMContentLoaded", function() {
-            // 계정 검색
-            $('#accountId').selectize({
-                create: false,
-                sortField: 'text'
+            document.addEventListener("DOMContentLoaded", function() {
+                // 계정 검색
+                $('#accountId').selectize({
+                    create: false,
+                    sortField: 'text'
+                });
+
+                // 리드 검색
+                $('#leadId').selectize({
+                    create: false,
+                    sortField: 'text'
+                });
+
+                // 직원 검색
+                $('#employeeId').selectize({
+                    create: false,
+                    sortField: 'text'
+                });
+
+                // 제품 검색
+                $('#productId').selectize({
+                    create: false,
+                    sortField: 'text'
+                });
             });
 
-            // 리드 검색
-            $('#leadId').selectize({
-                create: false,
-                sortField: 'text'
-            });
-
-            // 직원 검색
-            $('#employeeId').selectize({
-                create: false,
-                sortField: 'text'
-            });
-
-            // 제품 검색
-            $('#productId').selectize({
-                create: false,
-                sortField: 'text'
-            });
-        });
 
 
 
 
 
 
-
-        document.addEventListener("DOMContentLoaded", function() {
-        {{#opportunityId}}
-            var deleteButton = document.getElementById("deleteButton");
-            if (deleteButton) {
-                deleteButton.addEventListener("click", function () {
-                    // 서버에서 렌더링된 opportunityId 가져오기
-                    var opportunityId = "{{opportunityId}}";
+            document.addEventListener("DOMContentLoaded", function() {
+            {{#opportunityId}}
+                var deleteButton = document.getElementById("deleteButton");
+                if (deleteButton) {
+                    deleteButton.addEventListener("click", function () {
+                        // 서버에서 렌더링된 opportunityId 가져오기
+                        var opportunityId = "{{opportunityId}}";
 
                 if (opportunityId) {
                     var confirmDelete = confirm("현재 항목을 삭제하시겠습니까?");
@@ -631,42 +657,42 @@
                 }
             });
             }
-        {{/opportunityId}}
-    });
+            {{/opportunityId}}
+            });
 
 
 
 
-    // Form 삭제버튼 클릭 시 현 주소가 create인경우 create로 action주소 변경.
+            // Form 삭제버튼 클릭 시 현 주소가 create인경우 create로 action주소 변경.
 
 
-    document.addEventListener("DOMContentLoaded", function() {
-        var form = document.getElementById("opportunityForm");
-        var currentUrl = window.location.pathname;
+            document.addEventListener("DOMContentLoaded", function() {
+                var form = document.getElementById("opportunityForm");
+                var currentUrl = window.location.pathname;
 
-        // 현재 URL이 "/opportunities/detail/create"인 경우 폼 액션을 변경
-        if (currentUrl === "/opportunities/detail/create") {
-            form.action = "/opportunities/detail/create";
-        }
+                // 현재 URL이 "/opportunities/detail/create"인 경우 폼 액션을 변경
+                if (currentUrl === "/opportunities/detail/create") {
+                    form.action = "/opportunities/detail/create";
+                }
 
-        // 저장 버튼 클릭 시 변경사항 저장 여부 확인
-        document.getElementById("updateButton").addEventListener("click", function(event) {
-            var confirmSave = confirm("변경사항을 저장하겠습니까?");
+                // 저장 버튼 클릭 시 변경사항 저장 여부 확인
+                document.getElementById("updateButton").addEventListener("click", function(event) {
+                    var confirmSave = confirm("변경사항을 저장하겠습니까?");
 
-            if (!confirmSave) {
-                // 사용자가 취소를 클릭한 경우 폼 제출 중단
-                event.preventDefault();
-            }
-        });
-    });
+                    if (!confirmSave) {
+                        // 사용자가 취소를 클릭한 경우 폼 제출 중단
+                        event.preventDefault();
+                    }
+                });
+            });
 
 
 
-    // 현재 진행상황 bar JS
-    document.addEventListener("DOMContentLoaded", function() {
-        var progressSteps = document.querySelectorAll(".step");
-        var progressBar = document.getElementById("progressBar");
-        var opportunityStatus = "{{opportunityStatus}}"; // 현재 진행상황
+            // 현재 진행상황 bar JS
+            document.addEventListener("DOMContentLoaded", function() {
+                var progressSteps = document.querySelectorAll(".step");
+                var progressBar = document.getElementById("progressBar");
+                var opportunityStatus = "{{opportunityStatus}}"; // 현재 진행상황
 
         var steps = ["Qualification", "Needs Analysis", "Proposal", "Negotiation", "Closed"];
         var currentIndex = -1;
@@ -706,29 +732,36 @@
 
 
 
-  document.getElementById('proposalButton').addEventListener('click', function() {
+// AI 제안서 가능
+document.getElementById('proposalButton').addEventListener('click', function() {
     try {
         const employeeSelect = document.querySelector('#employeeId');
         const productSelect = document.querySelector('#productId');
-        const employeeName = employeeSelect.options[employeeSelect.selectedIndex].textContent.split(' (')[0];
-        const productName = productSelect.options[productSelect.selectedIndex].textContent.split(' (')[0];
-        const opportunityInquiries = document.getElementById('opportunityInquiries').value;
-        const opportunityName = document.getElementById('opportunityName').value;
 
-        // 부서 정보 가져오기
-        const employeeId = employeeSelect.value;
-        const employeeDepartments = JSON.parse(document.getElementById('employeeDepartments').value);
-        const department = employeeDepartments[employeeId];
+        if (!employeeSelect.value) {
+            throw new Error('담당자를 선택해주세요.');
+        }
 
-        // 전송할 데이터 객체 생성
+        const selectedOption = employeeSelect.options[employeeSelect.selectedIndex];
+        const employeeInfo = selectedOption.textContent.trim();
+        const employeeName = employeeInfo.split(' (')[0].replace(/^\s+|\s+$/g, '');
+
+        // 부서 정보 추출
+        const deptMatch = employeeInfo.match(/Dept: (.+?)\)/);
+        const departmentName = deptMatch ? deptMatch[1].trim() : '미지정';
+        // 제품 정보 추출
+        const productName = productSelect.options[productSelect.selectedIndex] ?
+        productSelect.options[productSelect.selectedIndex].textContent.split(' (')[0].replace(/^\s+|\s+$/g, '') : '미지정';
+
+        const opportunityInquiries = document.getElementById('opportunityInquiries').value.trim();
+
         const dataToSend = {
             담당자: employeeName,
-            부서: department,
+            부서: departmentName,
             제품: productName,
-            고객요구사항: opportunityInquiries
+            고객요구사항: opportunityInquiries || '요구사항 없음'
         };
 
-        // 전송할 데이터 출력
         console.log('전송할 데이터:', dataToSend);
 
         // PDF 생성 요청
@@ -747,14 +780,17 @@
         })
         .then(blob => {
             // PDF 파일을 사용자 PC에 다운로드
-            const url = window.URL.createObjectURL(blob);
+            const url = window.URL.createObjectURL(new Blob([blob]));
             const link = document.createElement('a');
             link.href = url;
-            link.setAttribute('download', `${opportunityName}_proposal.pdf`);
+            link.setAttribute('download', `proposal.pdf`);
             document.body.appendChild(link);
             link.click();
             window.URL.revokeObjectURL(url);
             link.remove();
+
+            // 다운로드 완료 팝업창 생성
+            alert('제안서가 성공적으로 다운로드되었습니다.');
         })
         .catch(error => {
             console.error('Error:', error);
@@ -762,16 +798,15 @@
         });
     } catch (error) {
         console.error('Error:', error);
-        alert('입력 정보를 확인할 수 없습니다. 모든 필드가 올바르게 입력되었는지 확인해 주세요.');
+        alert(error.message || '입력 정보를 확인할 수 없습니다. 모든 필드가 올바르게 입력되었는지 확인해 주세요.');
     }
 });
 
 
+        {{/opportunities}}
 
 
-    {{/opportunities}}
-
-</script>
+    </script>
 
 
 {{>main/footer}}

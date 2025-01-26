@@ -90,7 +90,7 @@ public class LeadsController {
         LeadsEntity leads = leadsService.searchLeads(leadId);
 
         List<AccountDto> accounts = accountService.getAllAccountIdsAndNames();
-        List<EmployeeDto.GetId> employee = employeeService.getAllEmployeeIdsAndNames();
+        List<EmployeeDto.GetId> employee = employeeService.getAllEmployeeIdsAndNamesAndDepartmentIds();
 
 
 
@@ -109,7 +109,7 @@ public class LeadsController {
 
         // 로딩속도를 올리기 위해 findAll -> id와 name만 가져오게 변경
         List<AccountDto> accounts = accountService.getAllAccountIdsAndNames();
-        List<EmployeeDto.GetId> employee = employeeService.getAllEmployeeIdsAndNames();
+        List<EmployeeDto.GetId> employee = employeeService.getAllEmployeeIdsAndNamesAndDepartmentIds();
 
         leads.setLeadStatus("");
         leads.setLeadSource("");

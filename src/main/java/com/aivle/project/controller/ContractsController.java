@@ -88,7 +88,7 @@ public class ContractsController {
 
         List<ProductsDto> products = productsService.getAllProductIdsAndNames();
       // List<AccountDto> accounts = accountService.getAllAccountIdsAndNames();
-        List<EmployeeDto.GetId> employee = employeeService.getAllEmployeeIdsAndNames();
+        List<EmployeeDto.GetId> employee = employeeService.getAllEmployeeIdsAndNamesAndDepartmentIds();
         List<OpportunitiesDto> opportunities = opportunitiesService.getAllOpportunityIdsAndNames();
 
         logger.info("Contracts: {}", contracts);
@@ -122,7 +122,7 @@ public class ContractsController {
 
         List<ProductsDto> products = productsService.getAllProductIdsAndNames();
         List<AccountDto> accounts = accountService.getAllAccountIdsAndNames();
-        List<EmployeeDto.GetId> employee = employeeService.getAllEmployeeIdsAndNames();
+        List<EmployeeDto.GetId> employee = employeeService.getAllEmployeeIdsAndNamesAndDepartmentIds();
         List<OpportunitiesDto> opportunities = opportunitiesService.getAllOpportunityIdsAndNames();
 
         contracts.setContractStatus("");

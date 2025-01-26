@@ -85,24 +85,13 @@ public class OpportunitiesController {
         // 목록 조회 후 모델에 추가 (드롭다운 메뉴용)
         List<ProductsDto> products = productsService.getAllProductIdsAndNames();
         List<AccountDto> accounts = accountService.getAllAccountIdsAndNames();
-        List<EmployeeDto.GetId> employee = employeeService.getAllEmployeeIdsAndNames();
+        List<EmployeeDto.GetId> employee = employeeService.getAllEmployeeIdsAndNamesAndDepartmentIds();
         List<LeadsDto> leads = leadsService.getAllLeadIdsAndCompanyNames();
 
+        // 직원 목록 추가
+        List<EmployeeDto.GetId> employees = employeeService.getAllEmployeeIdsAndNamesAndDepartmentIds();
 
-        // ai 제안서
-        List<EmployeeEntity> allEmployees = employeeService.getAllEmployees();
-        Map<String, String> employeeDepartments = new HashMap<>();
-        for (EmployeeEntity emp : allEmployees) {
-            String departmentStr = Optional.ofNullable(emp.getDepartmentId())
-                    .map(Enum::toString)
-                    .orElse("Unknown");
-            employeeDepartments.put(emp.getEmployeeId(), departmentStr);
-        }
-
-        model.addAttribute("employeeDepartments", employeeDepartments);
-
-
-
+        model.addAttribute("employees", employees);
         // 디버깅을 위해 로그 출력
         System.out.println("Opportunities: " + opportunities);
         opportunitiesComments.forEach(comment -> System.out.println("Comment: " + comment.getContent() + ", Date: " + comment.getCommentCreatedDate()));
@@ -113,7 +102,7 @@ public class OpportunitiesController {
         model.addAttribute("opportunitiesComments", opportunitiesComments);
         model.addAttribute("products", productsService.getAllProductIdsAndNames());
         model.addAttribute("accounts", accountService.getAllAccountIdsAndNames());
-        model.addAttribute("employee", employeeService.getAllEmployeeIdsAndNames());
+        model.addAttribute("employee", employeeService.getAllEmployeeIdsAndNamesAndDepartmentIds());
         model.addAttribute("leads", leadsService.getAllLeadIdsAndCompanyNames());
         return "opportunities/opportunities_detail";
     }
@@ -133,7 +122,7 @@ public class OpportunitiesController {
         model.addAttribute("opportunities", opportunities);
         model.addAttribute("products", productsService.getAllProductIdsAndNames());
         model.addAttribute("accounts", accountService.getAllAccountIdsAndNames());
-        model.addAttribute("employee", employeeService.getAllEmployeeIdsAndNames());
+        model.addAttribute("employee", employeeService.getAllEmployeeIdsAndNamesAndDepartmentIds());
         model.addAttribute("leads", leadsService.getAllLeadIdsAndCompanyNames());
 
         return "opportunities/opportunities_detail";
