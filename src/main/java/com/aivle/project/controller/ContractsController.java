@@ -8,17 +8,18 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.IntStream;
+
 
 @Controller
 @RequiredArgsConstructor
@@ -101,6 +102,10 @@ public class ContractsController {
         model.addAttribute("employee", employee);
         model.addAttribute("opportunities", opportunities);
         model.addAttribute("orders", orders);
+
+        model.addAttribute("uploadedFileName", contracts.getFileName());
+        model.addAttribute("contractId", contracts.getContractId());
+
         return "contracts/contracts_detail";
     }
 
@@ -150,7 +155,6 @@ public class ContractsController {
 
     @PostMapping("/contracts/detail/create")
     public String contractsCreateNew(@ModelAttribute ContractsDto contractsDto) {
-
         contractsService.createContracts(contractsDto);
 
         // CRUD 작업 로깅
@@ -189,5 +193,68 @@ public class ContractsController {
         crudLogsService.logCrudOperation("delete", "contracts", "", "True", "Success");
 
         return ResponseEntity.ok().build();
+    }
+
+    // 파일 업로드
+    @PostMapping("/contracts/detail/{contractId}/upload")
+    public ResponseEntity<String> uploadFile(
+            @PathVariable Long contractId,
+            @RequestParam("file") MultipartFile file
+    ) {
+        try {
+            logger.info("Uploading file: {}, size: {} bytes", file.getOriginalFilename(), file.getSize());
+            if (file.getSize() > 5 * 1024 * 1024) { // 5MB 제한
+                return ResponseEntity.badRequest().body("파일 크기는 최대 5MB를 초과할 수 없습니다.");
+            }
+
+            contractsService.saveFileToContract(contractId, file);
+            return ResponseEntity.ok("파일 업로드 성공");
+        } catch (Exception e) {
+            logger.error("파일 업로드 실패", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("파일 업로드 실패: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/contracts/detail/{contractId}/file")
+    public ResponseEntity<byte[]> downloadFile(@PathVariable Long contractId) {
+        logger.info("Downloading file for contract ID: {}", contractId);
+
+        ContractsEntity contract = contractsRepository.findById(contractId)
+                .orElseThrow(() -> new IllegalArgumentException("계약을 찾을 수 없습니다."));
+
+        if (contract.getFileData() == null) {
+            logger.warn("File not found for contract ID: {}", contractId);
+            throw new IllegalArgumentException("파일이 존재하지 않습니다.");
+        }
+
+        logger.info("File found: {}, size: {}", contract.getFileName(), contract.getFileData().length);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + contract.getFileName() + "\"")
+                .header(HttpHeaders.CONTENT_TYPE, contract.getMimeType())
+                .body(contract.getFileData());
+    }
+
+    @DeleteMapping("/contracts/detail/{contractId}/file")
+    public ResponseEntity<String> deleteFile(@PathVariable Long contractId) {
+        logger.info("파일 삭제 요청 - Contract ID: {}", contractId);
+
+        ContractsEntity contract = contractsRepository.findById(contractId)
+                .orElseThrow(() -> new IllegalArgumentException("계약을 찾을 수 없습니다."));
+
+        if (contract.getFileData() == null) {
+            logger.warn("Contract ID {}에 파일이 없습니다.", contractId);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("파일이 존재하지 않습니다.");
+        }
+
+        contract.setFileData(null);
+        contract.setFileName(null);
+        contract.setMimeType(null);
+
+        contractsRepository.save(contract);
+
+        logger.info("파일이 성공적으로 삭제되었습니다 - Contract ID: {}", contractId);
+        return ResponseEntity.ok("파일이 성공적으로 삭제되었습니다.");
     }
 }
