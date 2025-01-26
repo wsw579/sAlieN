@@ -770,7 +770,7 @@ document.getElementById('proposalButton').addEventListener('click', function() {
         console.log('전송할 데이터:', dataToSend);
 
         // PDF 생성 요청
-        fetch('http://127.0.0.1:8000/generate-excel', {
+        fetch('http://saiescrm.api.jyds.synology.me/generate-excel', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
