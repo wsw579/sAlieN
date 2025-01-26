@@ -2,15 +2,19 @@ package com.aivle.project.service;
 
 import com.aivle.project.dto.EmployeeDto;
 import com.aivle.project.entity.EmployeeEntity;
+import com.aivle.project.entity.OpportunitiesEntity;
 import com.aivle.project.enums.Dept;
 import com.aivle.project.enums.Position;
 import com.aivle.project.enums.Role;
 import com.aivle.project.enums.Team;
 import com.aivle.project.repository.EmployeeRepository;
+import com.aivle.project.repository.OpportunitiesRepository;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +31,7 @@ import java.util.stream.Collectors;
 public class EmployeeService {
 
     private final EmployeeRepository employeeRepository;
+    private final OpportunitiesRepository opportunitiesRepository;
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
@@ -249,5 +254,95 @@ public class EmployeeService {
 
     public String getPositionByUserId(String userId) {
         return employeeRepository.findPositionById(userId);
+    }
+
+    public List<Map<String, Object>> getSalesDataByTeam(String teamId) {
+        List<EmployeeEntity> employees = employeeRepository.findByTeamId(teamId);
+        return employees.stream()
+                .map(employee -> {
+                    long opportunityCount = opportunitiesRepository.countByEmployeeIdAndStatus(employee.getEmployeeId());
+                    Map<String, Object> data = new HashMap<>();
+                    data.put("employeeName", employee.getEmployeeName());
+                    data.put("opportunityCount", opportunityCount);
+                    return data;
+                })
+                .collect(Collectors.toList());
+    }
+
+    public List<Map<String, Object>> getSalesDataByDepartment(String departmentId) {
+        List<EmployeeEntity> employees = employeeRepository.findByDepartmentId(departmentId);
+        return employees.stream()
+                .map(employee -> {
+                    long opportunityCount = opportunitiesRepository.countByEmployeeIdAndStatus(employee.getEmployeeId());
+                    Map<String, Object> data = new HashMap<>();
+                    data.put("employeeName", employee.getEmployeeName());
+                    data.put("opportunityCount", opportunityCount);
+                    return data;
+                })
+                .collect(Collectors.toList());
+    }
+
+
+    // Object[] 결과를 Map으로 변환
+    private List<Map<String, Object>> mapToSalesData(List<Object[]> results) {
+        return results.stream().map(result -> {
+            Map<String, Object> data = new HashMap<>();
+            data.put("employeeName", result[0]);
+            data.put("opportunityCount", result[1]);
+            return data;
+        }).collect(Collectors.toList());
+    }
+
+    public Map<String, Object> getSalesData(Team team, Dept dept) {
+        List<OpportunitiesEntity> opportunities;
+
+        if (team != null) {
+            opportunities = opportunitiesRepository.findByTeam(team);
+        } else if (dept != null) {
+            opportunities = opportunitiesRepository.findByDepartment(dept);
+        } else {
+            throw new IllegalArgumentException("팀 또는 부서가 필요합니다.");
+        }
+
+        // 데이터를 그룹화하여 이름별로 기회 수를 합산
+        Map<String, Long> groupedData = opportunities.stream()
+                .collect(Collectors.groupingBy(
+                        o -> o.getEmployeeId().getEmployeeName(), // 직원 이름을 키로
+                        Collectors.counting() // 각 직원 이름에 해당하는 기회 수를 합산
+                ));
+
+        // 응답 데이터 변환
+        Map<String, Object> response = new HashMap<>();
+        response.put("labels", new ArrayList<>(groupedData.keySet())); // 직원 이름 리스트
+        response.put("values", new ArrayList<>(groupedData.values())); // 각 직원의 기회 수 리스트
+
+        return response;
+    }
+
+    public EmployeeDto.Get getLoggedInUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new IllegalStateException("현재 로그인된 사용자가 없습니다.");
+        }
+
+        String loggedInEmployeeId = authentication.getName(); // 로그인된 사용자의 ID 가져오기
+        EmployeeEntity findEmployee = employeeRepository.findByEmployeeId(loggedInEmployeeId);
+
+        if (findEmployee == null) {
+            throw new IllegalArgumentException("로그인된 사용자의 정보를 찾을 수 없습니다.");
+        }
+
+        EmployeeDto.Get employee = new EmployeeDto.Get();
+        employee.setEmployeeId(findEmployee.getEmployeeId());
+        employee.setEmployeeName(findEmployee.getEmployeeName());
+        employee.setHireDate(findEmployee.getHireDate());
+        employee.setTerminationDate(findEmployee.getTerminationDate());
+        employee.setBaseSalary(findEmployee.getBaseSalary());
+        employee.setPosition(findEmployee.getPosition().name());
+        employee.setAccessPermission(findEmployee.getAccessPermission().name());
+        employee.setDept(findEmployee.getDepartmentId() != null ? findEmployee.getDepartmentId().toString() : null);
+        employee.setTeam(findEmployee.getTeamId() != null ? findEmployee.getTeamId().toString() : null);
+
+        return employee;
     }
 }
