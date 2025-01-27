@@ -1,18 +1,12 @@
 package com.aivle.project.service;
-
-import com.aivle.project.dto.ContractsDto;
 import com.aivle.project.dto.OrdersDto;
-import com.aivle.project.entity.ContractsEntity;
 import com.aivle.project.entity.EmployeeEntity;
 import com.aivle.project.entity.OrdersEntity;
-import com.aivle.project.entity.ProductsEntity;
 import com.aivle.project.enums.Dept;
 import com.aivle.project.enums.OrderStatus;
 import com.aivle.project.enums.Team;
-import com.aivle.project.repository.ContractsRepository;
 import com.aivle.project.repository.EmployeeRepository;
 import com.aivle.project.repository.OrdersRepository;
-import com.aivle.project.repository.ProductsRepository;
 import com.aivle.project.utils.UserContext;
 import org.springframework.beans.BeanUtils;
 import org.springframework.security.access.AccessDeniedException;
@@ -37,9 +31,7 @@ import java.util.stream.IntStream;
 @RequiredArgsConstructor
 public class OrdersService {
 
-    private final ContractsRepository contractsRepository;
     private final OrdersRepository ordersRepository;
-    private final ProductsRepository productsRepository;
     private static final Logger logger = LoggerFactory.getLogger(OrdersService.class);
 
     private final EmployeeRepository employeeRepository;
@@ -117,11 +109,18 @@ public class OrdersService {
     @Transactional(readOnly = true)
     public Map<String, Long> getOrderStatusCounts() {
         String userid = UserContext.getCurrentUserId();
-        String userdept = employeeRepository.findDeptById(userid);
+        String userrole = UserContext.getCurrentUserRole();
+        String userposition = employeeRepository.findPositionById(userid);
         String userteam = employeeRepository.findTeamById(userid);
+        List<Object[]> results;
 
         Map<String, Long> statusCounts = new HashMap<>();
-        List<Object[]> results = ordersRepository.countOrdersByStatusForCurrentUser(userid, Dept.valueOf(userdept), Team.valueOf(userteam));
+        if (userrole.equals("ROLE_ADMIN") || userposition.equals("GENERAL_MANAGER") || userposition.equals("DEPARTMENT_HEAD") || userposition.equals("TEAM_LEADER"))
+        {
+            results = ordersRepository.countOrdersByStatusForCurrentAdmin();
+        } else {
+            results = ordersRepository.countOrdersByStatusForCurrentUser(Team.valueOf(userteam));
+        }
 
         for (Object[] result : results) {
             String status = (String) result[0];
@@ -176,12 +175,26 @@ public class OrdersService {
     }
 
     private void populateMonthlyData(int year, List<Integer> monthlyData) {
-        ordersRepository.getMonthlyOrders(year)
-                .forEach(row -> {
-                    int month = ((Number) row[0]).intValue() - 1;
-                    int count = ((Number) row[1]).intValue();
-                    monthlyData.set(month, count);
-                });
+        String userid = UserContext.getCurrentUserId();
+        String userrole = UserContext.getCurrentUserRole();
+        String userposition = employeeRepository.findPositionById(userid);
+        String userteam = employeeRepository.findTeamById(userid);
+        if (userrole.equals("ROLE_ADMIN") || userposition.equals("GENERAL_MANAGER") || userposition.equals("DEPARTMENT_HEAD") || userposition.equals("TEAM_LEADER"))
+        {
+            ordersRepository.getMonthlyOrdersAdmin(year)
+                    .forEach(row -> {
+                        int month = ((Number) row[0]).intValue() - 1;
+                        int count = ((Number) row[1]).intValue();
+                        monthlyData.set(month, count);
+                    });
+        } else {
+            ordersRepository.getMonthlyOrdersUser(year, Team.valueOf(userteam))
+                    .forEach(row -> {
+                        int month = ((Number) row[0]).intValue() - 1;
+                        int count = ((Number) row[1]).intValue();
+                        monthlyData.set(month, count);
+                    });
+        }
     }
 
     private void revenueMonthlyData(int year, List<Integer> monthlyData) {
@@ -258,8 +271,9 @@ public class OrdersService {
 
     // 주문현황 퍼센트 표시
     public double calculateDraftPercentage() {
-        long totalSalesThisMonth = ordersRepository.countTotalSalesThisMonth();
-        long draftSalesThisMonth = ordersRepository.countDraftSalesThisMonth();
+        String userid = UserContext.getCurrentUserId();
+        long totalSalesThisMonth = ordersRepository.countTotalSalesThisMonth(userid);
+        long draftSalesThisMonth = ordersRepository.countDraftSalesThisMonth(userid);
         if (totalSalesThisMonth == 0) {
             return 100.0; // 분모가 0인 경우 비율은 0
         }

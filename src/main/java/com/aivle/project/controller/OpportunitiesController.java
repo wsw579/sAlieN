@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -94,8 +96,8 @@ public class OpportunitiesController {
 
         // 직원 목록 추가
         List<EmployeeDto.GetId> employees = employeeService.getAllEmployeeIdsAndNamesAndDepartmentIds();
-
         model.addAttribute("employees", employees);
+
         // 디버깅을 위해 로그 출력
         System.out.println("Opportunities: " + opportunities);
         opportunitiesComments.forEach(comment -> System.out.println("Comment: " + comment.getContent() + ", Date: " + comment.getCommentCreatedDate()));
@@ -113,7 +115,9 @@ public class OpportunitiesController {
 
     @PostMapping("/opportunities/detail/createcomment")
     public String createComment(@RequestParam("content") String content, @RequestParam("opportunityId") Long opportunityId) {
-        opportunitiesService.createComment(content, opportunityId, "작성자");
+        String employeeId = getCurrentUserId();
+
+        opportunitiesService.createComment(content, opportunityId, employeeId);
 
         // CRUD 작업 로깅
         crudLogsService.logCrudOperation("create", "opportunities_comment", "", "True", "Success");
@@ -167,8 +171,17 @@ public class OpportunitiesController {
     @GetMapping("/opportunities/detail/{opportunityId}/history/create")
     public String historyCreate(@PathVariable Long opportunityId, Model model) {
         HistoryEntity history = new HistoryEntity();
+        OpportunitiesEntity opportunity = opportunitiesService.searchOpportunities(opportunityId);
+
+        history.setHistoryTitle("");
+        history.setCustomerRepresentative("");
         history.setHistoryDate(LocalDate.now());
         history.setHistoryTime(LocalTime.now());
+        history.setMeetingPlace("");
+        history.setActionTaken("");
+        history.setCompanySize("");
+        history.setCustomerRequirements("");
+        history.setOpportunity(new OpportunitiesEntity());
 
         model.addAttribute("history", history);
         model.addAttribute("opportunityId", opportunityId);
@@ -227,6 +240,7 @@ public class OpportunitiesController {
         return ResponseEntity.ok(response);
     }
 
+
     @GetMapping("/api/salesData")
     public ResponseEntity<?> getSalesData(
             @RequestParam(required = false) String teamId,
@@ -248,6 +262,12 @@ public class OpportunitiesController {
         }
     }
 
+    private String getCurrentUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return (authentication != null && authentication.isAuthenticated() && !authentication.getName().equals("anonymousUser"))
+                ? authentication.getName()
+                : null;
+    }
 }
 
 
