@@ -392,13 +392,13 @@
 
                                 <!-- 제안서 생성 버튼 -->
                                 <button type="button" id="proposalButton" class="btn btn-custom-proposal btn-sm">
-                                    <i class="fas fa-plus-circle"></i> 제안서 생성
+                                    <i class="fas fa-download"></i> 제안서 생성
                                 </button>
 
                                 <!-- 저장 버튼 -->
                                 <div class="d-flex justify-content-end">
                                     <button type="submit" id="updateButton" class="btn btn-custom-update btn-sm">
-                                        <i class="fas fa-plus-circle"></i> 저장
+                                        <i class="fas fa-save"></i> 저장
                                     </button>
                                 </div>
 
@@ -727,8 +727,6 @@
 
 
 
-
-
         // 페이지 로드 시 댓글 섹션 스크롤 최하단으로 이동
         window.onload = function() {
             var commentSection = document.getElementById("commentSection");
@@ -737,7 +735,7 @@
 
 
 
-// AI 제안서 가능
+// AI 제안서
 document.getElementById('proposalButton').addEventListener('click', function() {
     try {
         const employeeSelect = document.querySelector('#employeeId');
@@ -749,15 +747,17 @@ document.getElementById('proposalButton').addEventListener('click', function() {
 
         const selectedOption = employeeSelect.options[employeeSelect.selectedIndex];
         const employeeInfo = selectedOption.textContent.trim();
+        // 담당자 이름
         const employeeName = employeeInfo.split(' (')[0].replace(/^\s+|\s+$/g, '');
 
-        // 부서 정보 추출
+        // 부서명
         const deptMatch = employeeInfo.match(/Dept: (.+?)\)/);
         const departmentName = deptMatch ? deptMatch[1].trim() : '미지정';
-        // 제품 정보 추출
+
+        // 제품 이름
         const productName = productSelect.options[productSelect.selectedIndex] ?
         productSelect.options[productSelect.selectedIndex].textContent.split(' (')[0].replace(/^\s+|\s+$/g, '') : '미지정';
-
+        // 고객 요구사항
         const opportunityInquiries = document.getElementById('opportunityInquiries').value.trim();
 
         const dataToSend = {
@@ -795,7 +795,7 @@ document.getElementById('proposalButton').addEventListener('click', function() {
             link.remove();
 
             // 다운로드 완료 팝업창 생성
-            alert('제안서가 성공적으로 다운로드되었습니다.');
+            alert('제안서 다운로드가 완료되었습니다.');
         })
         .catch(error => {
             console.error('Error:', error);
@@ -806,9 +806,6 @@ document.getElementById('proposalButton').addEventListener('click', function() {
         alert(error.message || '입력 정보를 확인할 수 없습니다. 모든 필드가 올바르게 입력되었는지 확인해 주세요.');
     }
 });
-
-
-
 
 
         {{/opportunities}}
