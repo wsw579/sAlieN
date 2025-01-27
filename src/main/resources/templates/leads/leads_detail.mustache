@@ -216,7 +216,7 @@
                                         <label for="companyInput" class="col-sm-2 col-form-label">회사 명:</label>
                                         <div class="col-sm-10">
                                             <!-- 입력 필드와 자동완성 옵션을 합친 datalist -->
-                                            <input list="accountsList" id="companyInput" name="companyName" placeholder="회사명 선택 또는 직접 입력" oninput="handleCompanyInput()" required />
+                                            <input list="accountsList" class="form-control" id="companyInput" placeholder="회사명 선택 또는 직접 입력" oninput="handleCompanyInput()" required />
                                             <datalist id="accountsList">
                                                 {{#accounts}}
                                                     <option value="{{accountName}}" data-id="{{accountId}}">
@@ -227,16 +227,9 @@
                                         </div>
                                     </div>
 
-                                    <!-- Hidden Field for accountId -->
-                                    <input type="hidden" id="accountId" name="accountId" />
-
-
                                     <!-- Hidden Field for Final Data -->
-                                    <input type="hidden" id="companyName" name="companyName" required />
-                                    <input type="hidden" id="finalAccountId" name="accountId" />
-
-
-
+                                    <input type="hidden" id="accountId" name="accountId" />
+                                    <input type="hidden" id="companyName" name="companyName" />
 
                                     <div class="mb-3 row">
                                 <label for="employeeId" class="col-sm-2 col-form-label">기회 담당자:</label>
@@ -338,23 +331,37 @@
             });
         });
 
-    function handleCompanyInput() {
-    const inputField = document.getElementById('companyInput');
-    const accountIdField = document.getElementById('accountId');
-    const dataList = document.getElementById('accountsList');
-    const inputValue = inputField.value.trim();
+        function handleCompanyInput() {
+            const inputField = document.getElementById('companyInput'); // 입력 필드
+            const accountIdField = document.getElementById('accountId'); // 숨겨진 accountId 필드
+            const companyNameField = document.getElementById('companyName'); // 숨겨진 companyName 필드
+            const dataList = document.getElementById('accountsList'); // datalist
 
-    // 초기화
-    accountIdField.value = null;
+            const inputValue = inputField.value.trim(); // 입력값
+            let matchedAccount = null;
 
-    // datalist의 모든 옵션 순회
-    Array.from(dataList.options).forEach(option => {
-        if (option.value === inputValue) {
-            // 입력값과 일치하는 옵션이 있다면 accountId 설정
-            accountIdField.value = option.getAttribute('data-id');
+            // 초기화
+            accountIdField.value = ''; // accountId 초기화
+            companyNameField.value = ''; // companyName 초기화
+
+            // datalist 옵션 순회하여 입력값과 일치하는 데이터 검색
+            Array.from(dataList.options).forEach(option => {
+                if (option.value === inputValue) {
+                    matchedAccount = option; // 일치하는 옵션 저장
+                }
+            });
+
+            if (matchedAccount) {
+                // 입력값이 datalist 옵션 중 하나와 일치할 경우
+                accountIdField.value = matchedAccount.getAttribute('data-id');
+                companyNameField.value = matchedAccount.value;
+            } else {
+                // 입력값이 datalist 옵션에 없을 경우 (직접 입력)
+                accountIdField.value = null; // accountId는 null로 설정
+                companyNameField.value = inputValue; // 입력값을 companyName에 저장
+            }
         }
-    });
-}
+
 
 
 
