@@ -96,8 +96,8 @@ async function fetchAndRenderData(year) {
         // API에서 받은 데이터를 월별로 매핑
         data.labels.forEach((month, index) => {
             const monthIndex = parseInt(month.split("-")[1], 10) - 1; // 월 부분 추출 (0부터 시작)
-            revenues[monthIndex] = data.revenues[index] / 10000; // "만원" 단위로 변환
-            purchases[monthIndex] = data.purchases[index] / 10000; // "만원" 단위로 변환
+            revenues[monthIndex] = data.revenues[index] / 1000; // "천원" 단위로 변환
+            purchases[monthIndex] = data.purchases[index] / 1000; // "천원" 단위로 변환
             profits[monthIndex] = revenues[monthIndex] - purchases[monthIndex]; // 순이익 계산
         });
 
@@ -130,7 +130,7 @@ async function fetchAndRenderData(year) {
                             borderWidth: 1
                         },
                         {
-                            label: '순이익',
+                            label: '영업이익',
                             data: profits,
                             type: 'line', // 라인 차트로 추가
                             backgroundColor: 'rgba(2,117,216,0.2)',
@@ -155,7 +155,7 @@ async function fetchAndRenderData(year) {
                             ticks: {
                                 beginAtZero: true,
                                 callback: function (value) {
-                                    return `${value.toLocaleString()} 만원`; // Y축 눈금 값 포맷
+                                    return `${value.toLocaleString()} K`; // Y축 눈금 값 포맷
                                 }
                             }
                         }]
@@ -168,7 +168,7 @@ async function fetchAndRenderData(year) {
                             label: function (tooltipItem, data) {
                                 const dataset = data.datasets[tooltipItem.datasetIndex];
                                 const value = dataset.data[tooltipItem.index];
-                                return `${dataset.label}: ${value.toLocaleString()} 만원`; // 툴팁 값 포맷
+                                return `${dataset.label}: ${value.toLocaleString()} K`; // 툴팁 값 포맷
                             }
                         }
                     },
