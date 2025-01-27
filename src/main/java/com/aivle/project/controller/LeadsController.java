@@ -5,10 +5,7 @@ import com.aivle.project.dto.EmployeeDto;
 import com.aivle.project.dto.LeadsDto;
 import com.aivle.project.dto.PaginationDto;
 import com.aivle.project.entity.*;
-import com.aivle.project.service.AccountService;
-import com.aivle.project.service.EmployeeService;
-import com.aivle.project.service.LeadsService;
-import com.aivle.project.service.PaginationService;
+import com.aivle.project.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +29,7 @@ public class LeadsController {
     private final AccountService accountService;
     private final EmployeeService employeeService;
     private final PaginationService paginationService;
+    private final CrudLogsService crudLogsService;
 
     // Read Page
     @GetMapping("/leads")
@@ -90,7 +88,7 @@ public class LeadsController {
         LeadsEntity leads = leadsService.searchLeads(leadId);
 
         List<AccountDto> accounts = accountService.getAllAccountIdsAndNames();
-        List<EmployeeDto.GetId> employee = employeeService.getAllEmployeeIdsAndNames();
+        List<EmployeeDto.GetId> employee = employeeService.getAllEmployeeIdsAndNamesAndDepartmentIds();
 
 
 
@@ -109,7 +107,7 @@ public class LeadsController {
 
         // 로딩속도를 올리기 위해 findAll -> id와 name만 가져오게 변경
         List<AccountDto> accounts = accountService.getAllAccountIdsAndNames();
-        List<EmployeeDto.GetId> employee = employeeService.getAllEmployeeIdsAndNames();
+        List<EmployeeDto.GetId> employee = employeeService.getAllEmployeeIdsAndNamesAndDepartmentIds();
 
         leads.setLeadStatus("");
         leads.setLeadSource("");
@@ -137,6 +135,10 @@ public class LeadsController {
     public String leadsCreateNew(@ModelAttribute LeadsDto leadsDto){
         // createLeads method in the LeadsService -> passing the leadsDto as an argument
         leadsService.createLeads(leadsDto);
+
+        // CRUD 작업 로깅
+        crudLogsService.logCrudOperation("create", "leads", "", "True", "Success");
+
         return "redirect:/leads";
     }
 
@@ -144,6 +146,10 @@ public class LeadsController {
     @PostMapping("/leads/detail/{leadId}/update")
     public String leadsUpdate(@PathVariable("leadId") Long leadId, @ModelAttribute LeadsDto leadsDto) {
         leadsService.updateLeads(leadId, leadsDto);
+
+        // CRUD 작업 로깅
+        crudLogsService.logCrudOperation("update", "leads", "", "True", "Success");
+
         return "redirect:/leads/detail/" + leadId;
     }
 
@@ -151,6 +157,10 @@ public class LeadsController {
     @PostMapping("/leads/detail/{leadId}/delete")
     public ResponseEntity<Void> deleteLead(@PathVariable("leadId") Long leadId) {
         leadsService.deleteLeads(leadId);
+
+        // CRUD 작업 로깅
+        crudLogsService.logCrudOperation("delete", "leads", "", "True", "Success");
+
         return ResponseEntity.ok().build();
     }
 
@@ -160,9 +170,41 @@ public class LeadsController {
         List<Long> ids = request.get("ids");
         System.out.println("deleteLeads Received IDs: " + ids); // 로그 추가
         leadsService.deleteLeadsByIds(ids);
+
+        // CRUD 작업 로깅
+        crudLogsService.logCrudOperation("delete", "leads", "", "True", "Success");
+
         return ResponseEntity.ok().build(); // 상태 코드 200 반환
     }
 
+    // 오늘 추가된 Leads 수 반환
+    @GetMapping("/api/leads/today")
+    public ResponseEntity<Map<String, Object>> getTodayLeads() {
+        long count = leadsService.getTodayLeadsForTeam();
+        Map<String, Object> response = new HashMap<>();
+        response.put("todayLeads", count);
+        return ResponseEntity.ok(response);
+    }
+
+    // 특정 상태의 Leads 수 반환
+    @GetMapping("/api/leads/status")
+    public ResponseEntity<Map<String, Object>> countLeadsByStatus(@RequestParam String leadStatus) {
+        long count = leadsService.countLeadsByStatusAndTeam(leadStatus);
+        Map<String, Object> response = new HashMap<>();
+        response.put("leadStatus", leadStatus);
+        response.put("leadCount", count);
+        return ResponseEntity.ok(response);
+    }
+
+    // 오늘 마감인 Leads 수 반환
+    @GetMapping("/api/leads/target-close-today")
+    public ResponseEntity<Map<String, Object>> countLeadsWithTargetCloseDateToday() {
+        long count = leadsService.countLeadsWithTargetCloseDateTodayForTeam();
+        Map<String, Object> response = new HashMap<>();
+        response.put("targetCloseDate", "Today");
+        response.put("leadCount", count);
+        return ResponseEntity.ok(response);
+    }
 }
 
 

@@ -17,6 +17,7 @@
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <!-- Select2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
@@ -27,19 +28,67 @@
     <a class="navbar-brand ps-3" href="/">sAIes CRM - KT</a>
     <!-- Sidebar Toggle-->
     <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
+
+    {{#id}}
+        <div class="navbar-text text-light me-3">
+            {{id}}님 오늘 하루도 화이팅 하세요.
+        </div>
+    {{/id}}
+
+
     <!-- Navbar Search-->
     <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
         <div class="input-group">
-            <input class="form-control" type="text" placeholder="Search for..." aria-label="Search for..." aria-describedby="btnNavbarSearch" />
-            <button class="btn btn-primary" id="btnNavbarSearch" type="button"><i class="fas fa-search"></i></button>
+<!--            <input class="form-control" type="text" placeholder="Search for..." aria-label="Search for..." aria-describedby="btnNavbarSearch" />-->
+<!--            <button class="btn btn-primary" id="btnNavbarSearch" type="button"><i class="fas fa-search"></i></button>-->
         </div>
     </form>
-    {{#id}}
-        <div class="navbar-text text-light me-3">
-            {{id}}님 반갑습니다.
-        </div>
-    {{/id}}
-    <!-- Navbar-->
+
+    <!-- 요금제 -->
+    <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Basic Plan 사용중</a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                <li><a class="dropdown-item" href="/rate_plan">요금제 변경</a></li>
+            </ul>
+        </li>
+    </ul>
+
+
+    <!-- notification-->
+    <style>
+        .badge {
+            position: absolute;
+            top: 5px;
+            padding: 5px 10px;
+            border-radius: 50%;
+            background-color: red;
+            color: white;
+            font-size: 9px;
+            display: inline; /* 기본적으로 표시 */
+        }
+    </style>
+
+    <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+        <li class="nav-item">
+            <a class="nav-link" id="navbarDropdown" href="/alarm" role="button">
+                <i class="fas fa-bell"></i>
+
+                    <!-- 안읽은 알림이 있다면 알림 수 아이콘으로 추가 표시-->
+                    {{#alarm}}
+                        <span class="badge">{{count}}</span>
+                    {{/alarm}}
+                    <!-- 테스트로 2개 띄워보기, 삭제예정-->
+                    {{^alarm}}
+                        <span class="badge">2</span>
+                    {{/alarm}}
+
+            </a>
+        </li>
+    </ul>
+
+
+    <!-- profile-->
     <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
@@ -50,6 +99,10 @@
             </ul>
         </li>
     </ul>
+
+
+
+
 </nav>
 
 
@@ -144,6 +197,18 @@
                     <div class="collapse" id="collapseINFO" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                         <nav class="sb-sidenav-menu-nested nav">
                             <a class="nav-link" href="/employee-list">Employee Directory</a>
+                        </nav>
+                    </div>
+
+                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLogs" aria-expanded="false" aria-controls="collapseLogs">
+                        <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                        Logs
+                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                    </a>
+                    <div class="collapse" id="collapseLogs" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                        <nav class="sb-sidenav-menu-nested nav">
+                            <a class="nav-link" href="/chatbot_logs">Chatbot Logs</a>
+                            <a class="nav-link" href="/crud_logs">CRUD Logs</a>
                         </nav>
                     </div>
 
@@ -270,12 +335,89 @@
             display: none;
         }
 
+
+
+        .button-container {
+        display: flex;
+        justify-content: flex-end; /* 오른쪽 정렬 */
+        gap: 10px; /* 버튼 간격 */
+        }
+        .btn-custom-create {
+            background-color: #007bff; /* 블루 */
+            border-color: #c3e6cb;
+            color: #ffffffe3;
+        }
+        .btn-custom-delete {
+            background-color: #ef1325e6; /* 레드 */
+            border-color: #f5c6cb;
+            color: #ffffffe3;
+        }
+        .btn-custom-select {
+            background-color: #0ea134; /* 그린 */
+            border-color: #f5c6cb;
+            color: #ffffffe3;
+        }
+        .btn-custom-update {
+            background-color: #0ab3d9; /* 청록 */
+            border-color: #f5c6cb;
+            color: #ffffffe3;
+        }
+
+        .btn-custom-create:hover {
+            background-color: #0d4e95; /* 어두운 블루 */
+            border-color: #b1dfbb;
+            color: #ffffffe3;
+        }
+        .btn-custom-delete:hover {
+            background-color: #9b0c18e6; /* 어두운 레드 */
+            border-color: #8b0b16e6;
+            color: #ffffffe3;
+        }
+        .btn-custom-select:hover {
+            background-color: #097d27; /* 어두운 그린 */
+            border-color: #8b0b16e6;
+            color: #ffffffe3;
+        }
+        .btn-custom-update:hover {
+            background-color: #0885a1; /* 어두운 청록 */
+            border-color: #8b0b16e6;
+            color: #ffffffe3;
+        }
+        .btn-sm {
+            font-size: 0.875rem; /* 버튼 폰트 크기 감소 */
+            padding: 0.25rem 0.5rem; /* 패딩 감소 */
+        }
+
+
+        .container {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .col-form-label {
+            font-weight: bold;
+        }
+        .btn-primary {
+            background-color: #6c757d;
+            border: none;
+        }
+        .btn-primary:hover {
+            background-color: #5a6268;
+        }
+
+
+
     </style>
 
     <!-- Chatbot Button -->
     <div id="chatbotButton" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000; width: 60px; height: 60px; background-color: #007bff; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px;">
         💬
     </div>
+
+    <!-- 효과음 -->
+    <audio id="dingup" src="/assets/mp3/dingup.mp3"></audio>
+    <audio id="dingdown" src="/assets/mp3/dingdown.mp3"></audio>
+
 
     <!-- Chatbot Modal -->
     <div id="chatbotModal" class="chatbot-modal">
@@ -286,16 +428,18 @@
             </div>
             <div id="chatbotMessages" class="chat-container"></div>
             <div class="input-container">
-                <input type="text" id="chatbotInput" placeholder="Type a message..." onkeydown="if (event.key === 'Enter') sendChatbotMessage();">
-                <button id="voiceInputButton">🎤</button>
+                <input type="text" id="chatbotInput" placeholder="메시지를 입력하세요..." onkeydown="if (event.key === 'Enter') sendChatbotMessage();">
+                <button id="voiceInputButton", class= "btn btn-custom-select btn-sm"><i class="fas fa-microphone"></i></button>
                 <button id="sendChatbotMessage">Send</button>
             </div>
         </div>
-    </div>
+    </div>️
 
+
+<!-- JavaScript -->
     <script>
-        // Add this JavaScript to your main JS file
         document.addEventListener("DOMContentLoaded", function() {
+
             var chatbotButton = document.getElementById('chatbotButton');
             var chatbotModal = document.getElementById('chatbotModal');
             var closeModal = document.getElementsByClassName('close')[0];
@@ -304,6 +448,7 @@
 
             chatbotButton.onclick = function() {
                 chatbotModal.style.display = "block";
+                initializeChat(); // 모달이 열릴 때 초기 메시지 추가
             }
 
             closeModal.onclick = function() {
@@ -323,6 +468,7 @@
 
                 recognition.onstart = function() {
                     recognizing = true;
+                    document.getElementById('dingup').play();
                     console.log('Speech recognition started');
                 };
 
@@ -341,7 +487,7 @@
                         if (recognizing) {
                             recognition.stop();
                         }
-                    }, 5000); // Stop recognition after 5 seconds of silence
+                    }, 1000); // Stop recognition after 1 seconds of silence
                 };
 
                 recognition.onerror = function(event) {
@@ -352,10 +498,18 @@
                 recognition.onend = function() {
                     recognizing = false;
                     document.getElementById('chatbotInput').value = finalTranscript; // Ensure the final transcript remains
+                    document.getElementById('dingdown').play();
                     console.log('Speech recognition ended');
+
+                    //음성 인식 메시지 자동 전송
+                    sendChatbotMessage();
+
+
                 };
 
+                //음성인식버튼 클릭
                 document.getElementById('voiceInputButton').onclick = function() {
+
                     if (recognizing) {
                         recognition.stop();
                     } else {
@@ -367,63 +521,83 @@
                 console.log('Speech recognition not supported');
             }
 
-        var sendChatbotMessage = function() {
-            if (recognizing) {
-                recognition.stop();
-            }
-            var message = document.getElementById('chatbotInput').value;
-            var currentTime = new Date().toLocaleTimeString();
+            var sendChatbotMessage = function() {
+                if (recognizing) {
+                    recognition.stop();
+                }
+                var user_id = '{{#id}}{{id}}{{/id}}{{^id}}null{{/id}}';
+                var message = document.getElementById('chatbotInput').value;
+                var currentTime = new Date().toLocaleTimeString();
 
-            {{#id}}
-            var userMessage = "<div class='chat-container'><div class='user-info message-info'>{{id}}</div><div class='user-message'>" + message + "<br><span class='message-info'>" + currentTime + "</span></div></div>";
-            {{/id}}
+                var userMessage = "<div class='chat-container'><div class='user-info message-info'>User</div><div class='user-message'>" + message + "<br><span class='message-info'>" + currentTime + "</span></div></div>";
 
-            {{^id}}
-            var userMessage = "<div class='chat-container'><div class='user-info message-info'>User</div><div class='user-message'>" + message + "<br><span class='message-info'>" + currentTime + "</span></div></div>";
-            {{/id}}
+                document.getElementById('chatbotMessages').innerHTML += userMessage;
+                document.getElementById('chatbotInput').value = "";
+                finalTranscript = ''; // Reset the final transcript after sending the message
 
-            document.getElementById('chatbotMessages').innerHTML += userMessage;
-            document.getElementById('chatbotInput').value = "";
-            finalTranscript = ''; // Reset the final transcript after sending the message
-            document.getElementById('chatbotMessages').scrollTop = document.getElementById('chatbotMessages').scrollHeight;
-
-            // API 호출 부분
-            fetch('https://saiescrm.api.jyds.synology.me/chatbot', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ request: message })
-            })
-            .then(response => response.json())
-            .then(data => {
-                // \n 문자를 <br> 태그로 대체
-                var formattedResponse = data.response.replace(/\\n/g, '<br>');
-                var botMessage = "<div class='chat-container'><div class='bot-info message-info'>sAIes CRM</div><div class='bot-message'>" + formattedResponse + "<br><span class='message-info'>" + currentTime + "</span></div></div>";
-                document.getElementById('chatbotMessages').innerHTML += botMessage;
-                // 모달 창 내의 스크롤 최하단으로 내리기
-                var chatContainer = document.getElementById('chatbotMessages');
-                chatContainer.scrollTop = chatContainer.scrollHeight;
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                var botMessage = "<div class='chat-container'><div class='bot-info message-info'>sAIes CRM</div><div class='bot-message'>API 호출 오류: " + error.message + "<br><span class='message-info'>" + currentTime + "</span></div></div>";
-                document.getElementById('chatbotMessages').innerHTML += botMessage;
-                // 모달 창 내의 스크롤 최하단으로 내리기 (오류 메시지 경우에도)
-                var chatContainer = document.getElementById('chatbotMessages');
-                chatContainer.scrollTop = chatContainer.scrollHeight;
-            });
-        }
-
-        document.getElementById('chatbotInput').onkeydown = function(event) {
-            if (event.key === 'Enter') {
-                sendChatbotMessage();
                 setTimeout(function() {
                     document.getElementById('chatbotMessages').scrollTop = document.getElementById('chatbotMessages').scrollHeight;
-                }, 100); // Adjust the delay as needed
+                }, 100); // 딜레이 조정 가능
+
+                // API 호출 부분
+                //fetch('http://127.0.0.1:8000/chatbot', { // 로컬
+                fetch('https://saiescrm.api.jyds.synology.me/chatbot', { // 서버
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ request: message, user_id: user_id})
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // \n 문자를 <br> 태그로 대체
+                    var formattedResponse = data.response.replace(/\\n/g, '<br>');
+                    var botMessage = "<div class='chat-container'><div class='bot-info message-info'>sAIes CRM</div><div class='bot-message'>" + formattedResponse + "<br><span class='message-info'>" + currentTime + "</span></div></div>";
+                    document.getElementById('chatbotMessages').innerHTML += botMessage;
+
+                    // 모달 창 내의 스크롤 최하단으로 내리기
+                    setTimeout(function() {
+                        document.getElementById('chatbotMessages').scrollTop = document.getElementById('chatbotMessages').scrollHeight;
+                    }, 100); // 딜레이 조정 가능
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    var botMessage = "<div class='chat-container'><div class='bot-info message-info'>sAIes CRM</div><div class='bot-message'>API 호출 오류: " + error.message + "<br><span class='message-info'>" + currentTime + "</span></div></div>";
+                    document.getElementById('chatbotMessages').innerHTML += botMessage;
+
+                    // 모달 창 내의 스크롤 최하단으로 내리기 (오류 메시지 경우에도)
+                    setTimeout(function() {
+                        document.getElementById('chatbotMessages').scrollTop = document.getElementById('chatbotMessages').scrollHeight;
+                    }, 100); // 딜레이 조정 가능
+                });
             }
-        };
-    });
+
+            document.getElementById('chatbotInput').onkeydown = function(event) {
+                if (event.key === 'Enter') {
+                    sendChatbotMessage();
+                    setTimeout(function() {
+                        document.getElementById('chatbotMessages').scrollTop = document.getElementById('chatbotMessages').scrollHeight;
+                    }, 100); // Adjust the delay as needed
+                }
+            };
+
+            // 초기 메시지를 설정하는 함수
+            var initializeChat = function() {
+                var initialMessage = "<div class='chat-container'><div class='bot-info message-info'>sAIes CRM</div><div class='bot-message'>안녕하세요. CRM 어시스던트 입니다. 무엇을 도와드릴까요?<br><span class='message-info'>" + new Date().toLocaleTimeString() + "</span></div></div>";
+                document.getElementById('chatbotMessages').innerHTML = initialMessage;
+            };
+
+
+
+
+
+
+
+
+
+
+
+        });
     </script>
 
 

@@ -4,10 +4,12 @@ import com.aivle.project.dto.HistoryDto;
 import com.aivle.project.dto.OpportunitiesDto;
 import com.aivle.project.dto.ProductsDto;
 import com.aivle.project.entity.*;
+import com.aivle.project.enums.Team;
 import com.aivle.project.repository.EmployeeRepository;
 import com.aivle.project.repository.HistoryRepository;
 import com.aivle.project.repository.OpportunitiesCommentRepository;
 import com.aivle.project.repository.OpportunitiesRepository;
+import com.aivle.project.utils.UserContext;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -145,6 +147,14 @@ public class OpportunitiesService {
                 .stream()
                 .collect(Collectors.toMap(result -> (String) result[0], result -> (Long) result[1]));
     }
+    // 내 팀의 상태 수 세기
+    public Map<String, Long> getOpportunitiesStatusCountsTeam() {
+        String userid = UserContext.getCurrentUserId();
+        String userteam = employeeRepository.findTeamById(userid);
+        return opportunitiesRepository.countAllStatusesTeam(Team.valueOf(userteam))
+                .stream()
+                .collect(Collectors.toMap(result -> (String) result[0], result -> (Long) result[1]));
+    }
 
     public Map<String, List<Integer>> getBarData() {
         return getYearlyData(true);
@@ -237,4 +247,6 @@ public class OpportunitiesService {
         entity.setCustomerRequirements(dto.getCustomerRequirements());
         entity.setOpportunity(dto.getOpportunityId());
     }
+
+
 }

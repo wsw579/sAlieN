@@ -133,22 +133,31 @@ public class OrdersService {
 
     // Bar 및 Chart Data
     public Map<String, List<Integer>> getBarData() {
-        return getYearlyData(true);
+        return getYearlyData(true, false);
     }
 
     public Map<String, List<Integer>> getChartData() {
-        return getYearlyData(false);
+        return getYearlyData(false, false);
     }
 
-    private Map<String, List<Integer>> getYearlyData(boolean accumulate) {
+    public Map<String, List<Integer>> getChartRevenueData() {
+        return getYearlyData(false, true);
+    }
+
+    private Map<String, List<Integer>> getYearlyData(boolean accumulate, boolean revenue) {
         int currentYear = LocalDate.now().getYear();
         int lastYear = currentYear - 1;
 
         List<Integer> lastYearData = initializeMonthlyData();
         List<Integer> currentYearData = initializeMonthlyData();
 
-        populateMonthlyData(lastYear, lastYearData);
-        populateMonthlyData(currentYear, currentYearData);
+        if (revenue){
+            revenueMonthlyData(lastYear, lastYearData);
+            revenueMonthlyData(currentYear, currentYearData);
+        } else{
+            populateMonthlyData(lastYear, lastYearData);
+            populateMonthlyData(currentYear, currentYearData);
+        }
 
         if (accumulate) {
             accumulateMonthlyData(lastYearData);
@@ -171,6 +180,17 @@ public class OrdersService {
                     int month = ((Number) row[0]).intValue() - 1;
                     int count = ((Number) row[1]).intValue();
                     monthlyData.set(month, count);
+                });
+    }
+
+    private void revenueMonthlyData(int year, List<Integer> monthlyData) {
+        String userid = UserContext.getCurrentUserId();
+        String userteam = employeeRepository.findTeamById(userid);
+        ordersRepository.getMonthlyRevenue(year, Team.valueOf(userteam))
+                .forEach(row -> {
+                    int month = ((Number) row[0]).intValue() - 1;
+                    int revenue = ((Number) row[1]).intValue();
+                    monthlyData.set(month, revenue);
                 });
     }
 
@@ -217,5 +237,32 @@ public class OrdersService {
             return ordersRepository.findByOrderIdLikeUser("%" + search + "%", Dept.valueOf(departmentId), Team.valueOf(teamId), pageable);
         }
         return ordersRepository.findByDepartmentAndTeam(Dept.valueOf(departmentId), Team.valueOf(teamId), pageable);
+    }
+
+    // 영업 실적 그래프
+    public List<Map<String, Object>> getEmployeeSalesPerformanceWithNames() {
+        String userid = UserContext.getCurrentUserId();
+        String userteam = employeeRepository.findTeamById(userid);
+        List<Object[]> data = ordersRepository.getSalesByEmployeeWithNames(Team.valueOf(userteam));
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (Object[] row : data) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("employeeId", row[0]);
+            map.put("employeeName", row[1]);
+            map.put("totalSales", row[2]);
+            result.add(map);
+        }
+        return result;
+    }
+
+    // 주문현황 퍼센트 표시
+    public double calculateDraftPercentage() {
+        long totalSalesThisMonth = ordersRepository.countTotalSalesThisMonth();
+        long draftSalesThisMonth = ordersRepository.countDraftSalesThisMonth();
+        if (totalSalesThisMonth == 0) {
+            return 100.0; // 분모가 0인 경우 비율은 0
+        }
+
+        return (double) draftSalesThisMonth / totalSalesThisMonth * 100;
     }
 }
