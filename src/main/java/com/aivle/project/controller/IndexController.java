@@ -34,7 +34,7 @@ public class IndexController {
                     Position.GENERAL_MANAGER.equals(userPosition) ||
                     Position.DEPARTMENT_HEAD.equals(userPosition) ||
                     Position.TEAM_LEADER.equals(userPosition)) {
-                return "main/index_admin";
+                return "main/index_manager";
             } else {
                 return "main/index_user";
             }
