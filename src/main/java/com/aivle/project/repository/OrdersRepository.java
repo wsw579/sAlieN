@@ -92,16 +92,20 @@ public interface OrdersRepository extends JpaRepository<OrdersEntity, Long> {
 
     // 이번달 주문 현황 퍼센트 표시
     @Query("SELECT COUNT(o) FROM OrdersEntity o " +
-            "WHERE EXTRACT(MONTH FROM o.salesDate) = EXTRACT(MONTH FROM CURRENT_DATE) " +
+            "JOIN o.employeeId e " +
+            "WHERE e.employeeId = :employeeId " +
+            "AND EXTRACT(MONTH FROM o.salesDate) = EXTRACT(MONTH FROM CURRENT_DATE) " +
             "AND EXTRACT(YEAR FROM o.salesDate) = EXTRACT(YEAR FROM CURRENT_DATE) " +
             "AND o.orderStatus IN ('draft', 'completed', 'activated')")
-    long countTotalSalesThisMonth();
+    long countTotalSalesThisMonth(@Param("employeeId") String employeeId);
 
     @Query("SELECT COUNT(o) FROM OrdersEntity o " +
-            "WHERE EXTRACT(MONTH FROM o.salesDate) = EXTRACT(MONTH FROM CURRENT_DATE) " +
+            "JOIN o.employeeId e " +
+            "WHERE e.employeeId = :employeeId " +
+            "AND EXTRACT(MONTH FROM o.salesDate) = EXTRACT(MONTH FROM CURRENT_DATE) " +
             "AND EXTRACT(YEAR FROM o.salesDate) = EXTRACT(YEAR FROM CURRENT_DATE) " +
             "AND o.orderStatus = 'draft'")
-    long countDraftSalesThisMonth();
+    long countDraftSalesThisMonth(@Param("employeeId") String employeeId);
 
     // 연도별 팀 매출 합
     @Query(value = "SELECT MONTH(o.salesDate) AS month, " +

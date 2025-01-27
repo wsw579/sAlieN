@@ -164,8 +164,17 @@ public class OpportunitiesController {
     @GetMapping("/opportunities/detail/{opportunityId}/history/create")
     public String historyCreate(@PathVariable Long opportunityId, Model model) {
         HistoryEntity history = new HistoryEntity();
+        OpportunitiesEntity opportunity = opportunitiesService.searchOpportunities(opportunityId);
+
+        history.setHistoryTitle("");
+        history.setCustomerRepresentative("");
         history.setHistoryDate(LocalDate.now());
         history.setHistoryTime(LocalTime.now());
+        history.setMeetingPlace("");
+        history.setActionTaken("");
+        history.setCompanySize("");
+        history.setCustomerRequirements("");
+        history.setOpportunity(new OpportunitiesEntity());
 
         model.addAttribute("history", history);
         model.addAttribute("opportunityId", opportunityId);
@@ -223,6 +232,14 @@ public class OpportunitiesController {
         response.put("statusCounts", statusCounts);
         return ResponseEntity.ok(response);
     }
+
+    // 개인의 기회별 히스토리 수 - 보류
+//    @GetMapping("/history/progress")
+//    public ResponseEntity<Map<String, Long>> countHistoriesByEmployeeId() {
+//        Map<String, Long> historyCounts = opportunitiesService.countHistoriesByTitle();
+//        System.out.println(historyCounts);
+//        return ResponseEntity.ok(historyCounts);
+//    }
 }
 
 

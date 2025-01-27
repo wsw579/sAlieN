@@ -55,7 +55,7 @@ public interface OpportunitiesRepository extends JpaRepository<OpportunitiesEnti
             "COUNT(o) " +
             "FROM OpportunitiesEntity o " +
             "JOIN o.employeeId e " +  // Employee와 JOIN
-            "WHERE e.teamId = :teamId " + // teamId 조건 추가
+            "WHERE e.employeeId = :employeeId " + // employeeId 조건 추가
             "AND MONTH(o.createdDate) = MONTH(CURRENT_DATE) " + // 같은 달 조건
             "AND YEAR(o.createdDate) = YEAR(CURRENT_DATE) " +   // 같은 연도 조건
             "GROUP BY " +
@@ -65,7 +65,7 @@ public interface OpportunitiesRepository extends JpaRepository<OpportunitiesEnti
             "   WHEN o.opportunityStatus LIKE 'Closed%' THEN 'Closed' " +
             "   WHEN o.opportunityStatus NOT LIKE 'Closed%' THEN 'Ongoing' " +
             "END")
-    List<Object[]> countAllStatusesTeam(@Param("teamId") Team teamId);
+    List<Object[]> countAllStatusesUser(@Param("employeeId") String employeeId);
 
 
 
@@ -89,6 +89,19 @@ public interface OpportunitiesRepository extends JpaRepository<OpportunitiesEnti
 
     @Query("SELECT o FROM OpportunitiesEntity o WHERE o.employeeId.departmentId = :dept")
     List<OpportunitiesEntity> findByDepartment(@Param("dept") Dept dept);
+
+    // 사원의 진행중 히스토리 그래프 - 보류
+//    @Query("SELECT o.opportunityName, " +
+//            "       COALESCE(COUNT(h), 0) " +
+//            "FROM OpportunitiesEntity o " +
+//            "LEFT JOIN HistoryEntity h ON h.opportunity = o " +
+//            "  AND o.opportunityStatus IN ('Qualification', 'Needs Analysis', 'Proposal', 'Negotiation') " +
+//            "WHERE o.employeeId.employeeId = :employeeId " +
+//            "GROUP BY o.opportunityId, o.opportunityName")
+//    List<Object[]> countHistoryByEmployeeId(@Param("employeeId") String employeeId);
+
+
+
 
 }
 

@@ -12,6 +12,7 @@ import com.aivle.project.repository.OpportunitiesRepository;
 import com.aivle.project.utils.UserContext;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.apache.catalina.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -147,11 +148,10 @@ public class OpportunitiesService {
                 .stream()
                 .collect(Collectors.toMap(result -> (String) result[0], result -> (Long) result[1]));
     }
-    // 내 팀의 상태 수 세기
+    // 내 상태 수 세기
     public Map<String, Long> getOpportunitiesStatusCountsTeam() {
         String userid = UserContext.getCurrentUserId();
-        String userteam = employeeRepository.findTeamById(userid);
-        return opportunitiesRepository.countAllStatusesTeam(Team.valueOf(userteam))
+        return opportunitiesRepository.countAllStatusesUser(userid)
                 .stream()
                 .collect(Collectors.toMap(result -> (String) result[0], result -> (Long) result[1]));
     }
@@ -247,6 +247,18 @@ public class OpportunitiesService {
         entity.setCustomerRequirements(dto.getCustomerRequirements());
         entity.setOpportunity(dto.getOpportunityId());
     }
-
-
+//    기회별 히스토리 개수 세기 - 보류
+//    public Map<String, Long> countHistoriesByTitle() {
+//        String userid = UserContext.getCurrentUserId();
+//        List<Object[]> results = opportunitiesRepository.countHistoryByEmployeeId(userid);
+//
+//        // Map 형태로 변환: historyTitle -> count
+//        Map<String, Long> historyCounts = new HashMap<>();
+//        for (Object[] result : results) {
+//            String historyTitle = (String) result[0];
+//            Long count = (Long) result[1];
+//            historyCounts.put(historyTitle, count);
+//        }
+//        return historyCounts;
+//    }
 }

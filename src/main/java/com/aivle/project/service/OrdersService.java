@@ -270,8 +270,9 @@ public class OrdersService {
 
     // 주문현황 퍼센트 표시
     public double calculateDraftPercentage() {
-        long totalSalesThisMonth = ordersRepository.countTotalSalesThisMonth();
-        long draftSalesThisMonth = ordersRepository.countDraftSalesThisMonth();
+        String userid = UserContext.getCurrentUserId();
+        long totalSalesThisMonth = ordersRepository.countTotalSalesThisMonth(userid);
+        long draftSalesThisMonth = ordersRepository.countDraftSalesThisMonth(userid);
         if (totalSalesThisMonth == 0) {
             return 100.0; // 분모가 0인 경우 비율은 0
         }
