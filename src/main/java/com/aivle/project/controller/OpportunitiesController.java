@@ -11,6 +11,8 @@ import com.aivle.project.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -110,7 +112,9 @@ public class OpportunitiesController {
 
     @PostMapping("/opportunities/detail/createcomment")
     public String createComment(@RequestParam("content") String content, @RequestParam("opportunityId") Long opportunityId) {
-        opportunitiesService.createComment(content, opportunityId, "작성자");
+        String employeeId = getCurrentUserId();
+
+        opportunitiesService.createComment(content, opportunityId, employeeId);
 
         // CRUD 작업 로깅
         crudLogsService.logCrudOperation("create", "opportunities_comment", "", "True", "Success");
@@ -223,6 +227,18 @@ public class OpportunitiesController {
         response.put("statusCounts", statusCounts);
         return ResponseEntity.ok(response);
     }
+
+    private String getCurrentUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return (authentication != null && authentication.isAuthenticated() && !authentication.getName().equals("anonymousUser"))
+                ? authentication.getName()
+                : null;
+    }
+
+
+
+
+
 }
 
 

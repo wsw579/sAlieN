@@ -30,7 +30,7 @@ public class OpportunitiesCommentEntity implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime commentCreatedDate;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String author; // 작성자 임시 필드.(추후 인사ID 외부키로 대체하여 조회)
 
     // 외래키 부분
@@ -41,5 +41,9 @@ public class OpportunitiesCommentEntity implements Serializable {
 
 
     public OpportunitiesCommentEntity(String content, LocalDateTime now, String author, OpportunitiesEntity opportunity) {
+        this.content = content;
+        this.commentCreatedDate = now;
+        this.author = author;
+        this.opportunity = opportunity;
     }
 }
