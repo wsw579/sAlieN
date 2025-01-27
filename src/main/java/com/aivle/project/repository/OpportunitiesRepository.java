@@ -84,11 +84,23 @@ public interface OpportunitiesRepository extends JpaRepository<OpportunitiesEnti
     @Query("SELECT COUNT(o) FROM OpportunitiesEntity o WHERE o.employeeId.employeeId = :employeeId AND o.opportunityStatus IN ('Qualification', 'Needs Analysis', 'Proposal', 'Negotiation')")
     long countByEmployeeIdAndStatus(@Param("employeeId") String employeeId);
 
-    @Query("SELECT o FROM OpportunitiesEntity o WHERE o.employeeId.teamId = :team")
-    List<OpportunitiesEntity> findByTeam(@Param("team") Team team);
+    @Query(value = "SELECT e.employee_name, COUNT(o.opportunity_id) AS opportunity_count " +
+            "FROM opportunities o " +
+            "JOIN employee e ON o.employee_id = e.employee_id " +
+            "WHERE e.team_id = :team " +
+            "GROUP BY e.employee_name " +
+            "ORDER BY opportunity_count DESC " +
+            "LIMIT 5", nativeQuery = true)
+    List<Object[]> findTop5ByTeamWithCount(@Param("team") String team);
 
-    @Query("SELECT o FROM OpportunitiesEntity o WHERE o.employeeId.departmentId = :dept")
-    List<OpportunitiesEntity> findByDepartment(@Param("dept") Dept dept);
+    @Query(value = "SELECT e.employee_name, COUNT(o.opportunity_id) AS opportunity_count " +
+            "FROM opportunities o " +
+            "JOIN employee e ON o.employee_id = e.employee_id " +
+            "WHERE e.department_id = :dept " +
+            "GROUP BY e.employee_name " +
+            "ORDER BY opportunity_count DESC " +
+            "LIMIT 5", nativeQuery = true)
+    List<Object[]> findTop5ByDepartmentWithCount(@Param("dept") String dept);
 
 }
 

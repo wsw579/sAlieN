@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.jaxb.SpringDataJaxb;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,6 +23,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -194,12 +197,48 @@ public class OrdersController {
         return ResponseEntity.ok(salesPerformance);
     }
 
-    @GetMapping("/api/draft-percentage")
-    public ResponseEntity<Map<String, Double>> getDraftPercentage() {
-        double percentage = 100.0 - ordersService.calculateDraftPercentage();
-        Map<String, Double> response = new HashMap<>();
-        response.put("draftPercentage", percentage);
-        return ResponseEntity.ok(response);
+    @GetMapping("/api/available-years")
+    public ResponseEntity<Map<String, Integer>> getAvailableYears() {
+        return ResponseEntity.ok(ordersService.getAvailableYears());
+    }
+
+    @GetMapping("/api/monthly-revenue-purchase")
+    public ResponseEntity<Map<String, Object>> getMonthlyRevenueAndPurchase(
+            @RequestParam(required = false) String team,
+            @RequestParam(required = false) String department,
+            @RequestParam int year) {
+        Map<String, Object> data = ordersService.getMonthlyRevenueAndPurchase(team, department, year);
+        return ResponseEntity.ok(data);
+    }
+
+    @GetMapping("/api/ordersData")
+    public ResponseEntity<List<Map<String, Object>>> getOrdersGroupedByEmployee(@RequestParam(required = false) String team,
+                                                                                @RequestParam(required = false) String department,
+                                                                                @RequestParam(required = false) String startDate,
+                                                                                @RequestParam(required = false) String endDate) {
+        try {
+            System.out.println("Received Request: team=" + team + ", department=" + department);
+
+            LocalDate now = LocalDate.now();
+            LocalDate start = (startDate != null) ? LocalDate.parse(startDate) : now.withDayOfMonth(1);
+            LocalDate end = (endDate != null) ? LocalDate.parse(endDate) : now.withDayOfMonth(now.lengthOfMonth());
+
+            List<Map<String, Object>> result;
+            if (team != null) {
+                result = ordersService.getTeamOrdersGroupedByEmployee(team, start, end);
+            } else if (department != null) {
+                result = ordersService.getDepartmentOrdersGroupedByEmployee(department, start, end);
+            } else {
+                return ResponseEntity.badRequest().body(Collections.emptyList());
+            }
+
+            System.out.println("Service returned " + result.size() + " grouped orders.");
+            return ResponseEntity.ok(result);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
+        }
     }
 
 }

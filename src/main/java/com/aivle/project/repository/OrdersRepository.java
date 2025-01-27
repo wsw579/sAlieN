@@ -1,5 +1,6 @@
 package com.aivle.project.repository;
 
+import com.aivle.project.dto.OrdersDto;
 import com.aivle.project.entity.ContractsEntity;
 import com.aivle.project.entity.OrdersEntity;
 import com.aivle.project.enums.Dept;
@@ -11,6 +12,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface OrdersRepository extends JpaRepository<OrdersEntity, Long> {
@@ -102,4 +104,42 @@ public interface OrdersRepository extends JpaRepository<OrdersEntity, Long> {
             "GROUP BY MONTH(o.salesDate)")
     List<Object[]> getMonthlyRevenue(@Param("year") int year,
                                      @Param("teamId") Team teamId);
+
+    //관리자 메인 매출
+    @Query(value = "SELECT MIN(EXTRACT(YEAR FROM o.order_date)) AS minYear, " +
+            "MAX(EXTRACT(YEAR FROM o.order_date)) AS maxYear " +
+            "FROM orders o", nativeQuery = true)
+    Object[] findMinAndMaxYears();
+
+
+    @Query(value = "SELECT " +
+            "TO_CHAR(o.order_date, 'YYYY-MM') AS month, " +
+            "SUM(o.order_amount * p.dealer_price) AS totalRevenue, " +
+            "SUM(o.order_amount * p.cost_price) AS totalPurchase " +
+            "FROM orders o " +
+            "JOIN products p ON o.product_id = p.product_id " +
+            "JOIN employee e ON o.employee_id = e.employee_id " +
+            "WHERE (:team IS NULL OR e.team_id = :team) " +
+            "AND (:department IS NULL OR e.department_id = :department) " +
+            "AND EXTRACT(YEAR FROM o.order_date) = :year " +
+            "GROUP BY TO_CHAR(o.order_date, 'YYYY-MM') " +
+            "ORDER BY month", nativeQuery = true)
+    List<Object[]> findMonthlyRevenueAndPurchaseByTeamAndDepartment(
+            @Param("team") String team,
+            @Param("department") String department,
+            @Param("year") int year
+    );
+
+    //대시보드 order 현황
+    @Query("SELECT e.employeeName AS employeeName, COUNT(o.orderId) AS totalOrders, SUM(CASE WHEN LOWER(o.orderStatus) = 'completed' THEN 1 ELSE 0 END) AS completedOrders " +
+            "FROM OrdersEntity o JOIN o.employeeId e " +
+            "WHERE e.teamId = :team AND o.salesDate BETWEEN :startDate AND :endDate AND LOWER(o.orderStatus) IN ('activated', 'completed') " +
+            "GROUP BY e.employeeName")
+    List<Object[]> findTeamOrdersGroupedByEmployee(@Param("team") Team team, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
+
+    @Query("SELECT e.employeeName AS employeeName, COUNT(o.orderId) AS totalOrders, SUM(CASE WHEN LOWER(o.orderStatus) = 'completed' THEN 1 ELSE 0 END) AS completedOrders " +
+            "FROM OrdersEntity o JOIN o.employeeId e " +
+            "WHERE e.departmentId = :department AND o.salesDate BETWEEN :startDate AND :endDate AND LOWER(o.orderStatus) IN ('activated', 'completed') " +
+            "GROUP BY e.employeeName")
+    List<Object[]> findDepartmentOrdersGroupedByEmployee(@Param("department") Dept department, @Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate);
 }
