@@ -293,31 +293,7 @@ public class EmployeeService {
         }).collect(Collectors.toList());
     }
 
-    public Map<String, Object> getSalesData(Team team, Dept dept) {
-        List<OpportunitiesEntity> opportunities;
 
-        if (team != null) {
-            opportunities = opportunitiesRepository.findByTeam(team);
-        } else if (dept != null) {
-            opportunities = opportunitiesRepository.findByDepartment(dept);
-        } else {
-            throw new IllegalArgumentException("팀 또는 부서가 필요합니다.");
-        }
-
-        // 데이터를 그룹화하여 이름별로 기회 수를 합산
-        Map<String, Long> groupedData = opportunities.stream()
-                .collect(Collectors.groupingBy(
-                        o -> o.getEmployeeId().getEmployeeName(), // 직원 이름을 키로
-                        Collectors.counting() // 각 직원 이름에 해당하는 기회 수를 합산
-                ));
-
-        // 응답 데이터 변환
-        Map<String, Object> response = new HashMap<>();
-        response.put("labels", new ArrayList<>(groupedData.keySet())); // 직원 이름 리스트
-        response.put("values", new ArrayList<>(groupedData.values())); // 각 직원의 기회 수 리스트
-
-        return response;
-    }
 
     public EmployeeDto.Get getLoggedInUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
