@@ -197,6 +197,14 @@ public class OrdersController {
         return ResponseEntity.ok(salesPerformance);
     }
 
+    @GetMapping("/api/draft-percentage")
+    public ResponseEntity<Map<String, Double>> getDraftPercentage() {
+        double percentage = 100.0 - ordersService.calculateDraftPercentage();
+        Map<String, Double> response = new HashMap<>();
+        response.put("draftPercentage", percentage);
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/api/available-years")
     public ResponseEntity<Map<String, Integer>> getAvailableYears() {
         return ResponseEntity.ok(ordersService.getAvailableYears());

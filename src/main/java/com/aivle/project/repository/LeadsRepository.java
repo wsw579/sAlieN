@@ -36,26 +36,26 @@ public interface LeadsRepository extends JpaRepository<LeadsEntity, Long> {
             "GROUP BY MONTH(l.targetCloseDate)")
     List<Object[]> getMonthlyLeads(@Param("year") int year);
 
-    // createdDate가 오늘인 데이터의 개수를 반환
+    // createdDate가 오늘인 데이터의 개수를 반환 - 개인
     @Query("SELECT COUNT(l) FROM LeadsEntity l " +
             "JOIN l.employeeId e " +
             "WHERE l.createdDate = :today " +
-            "AND e.teamId = :teamId")
-    long countTodayLeadsForTeam(@Param("today") LocalDate today,
-                                @Param("teamId") Team teamId);
+            "AND e.employeeId = :employeeId")
+    long countTodayLeadsUser(@Param("today") LocalDate today,
+                                @Param("employeeId") String employeeId);
 
     @Query("SELECT COUNT(l) FROM LeadsEntity l " +
             "JOIN l.employeeId e " +
             "WHERE l.leadStatus = :leadStatus " +
-            "AND e.teamId = :teamId")
-    long countLeadsByStatusForTeam(@Param("leadStatus") String leadStatus,
-                                          @Param("teamId") Team teamId);
+            "AND e.employeeId = :employeeId")
+    long countLeadsByStatusUser(@Param("leadStatus") String leadStatus,
+                                          @Param("employeeId") String employeeId);
 
     @Query("SELECT COUNT(l) FROM LeadsEntity l " +
             "JOIN l.employeeId e " +
             "WHERE l.targetCloseDate = :targetCloseDate " +
-            "AND e.teamId = :teamId")
-    long countLeadsWithTargetCloseDateTodayForTeam(@Param("targetCloseDate") LocalDate targetCloseDate,
-                                  @Param("teamId") Team teamId);
+            "AND e.employeeId = :employeeId")
+    long countLeadsWithTargetCloseDateTodayUser(@Param("targetCloseDate") LocalDate targetCloseDate,
+                                  @Param("employeeId") String employeeId);
 
 }

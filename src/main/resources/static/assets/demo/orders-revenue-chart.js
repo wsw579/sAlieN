@@ -10,8 +10,8 @@ document.addEventListener("DOMContentLoaded", function () {
         .then(response => response.json())
         .then(data => {
             const labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-            const lastYearData = data.lastYearData.map(value => value / 10000); // 값을 10000으로 나눔
-            const currentYearData = data.currentYearData.map(value => value / 10000); // 값을 10000으로 나눔
+            const lastYearData = data.lastYearData.map(value => value / 1000); // 값을 10000으로 나눔
+            const currentYearData = data.currentYearData.map(value => value / 1000); // 값을 10000으로 나눔
 
             new Chart(ctx, {
                 type: 'line',
@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             ticks: {
                                 beginAtZero: true,
                                 callback: function (value, index, values) {
-                                    return value + " 만원"; // 눈금 값 뒤에 "만원" 추가
+                                    return value + " k"; // 눈금 값 뒤에 "k" 추가
                                 }
                             }
                         }]
@@ -60,7 +60,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             label: function (tooltipItem, data) {
                                 const dataset = data.datasets[tooltipItem.datasetIndex];
                                 const value = dataset.data[tooltipItem.index];
-                                return `${dataset.label}: ${value} 만원`; // 툴팁에 단위 추가
+                                return `${dataset.label}: ${value} k`; // 툴팁에 단위 추가
                             }
                         }
                     }

@@ -148,11 +148,10 @@ public class OpportunitiesService {
                 .stream()
                 .collect(Collectors.toMap(result -> (String) result[0], result -> (Long) result[1]));
     }
-    // 내 팀의 상태 수 세기
+    // 내 상태 수 세기
     public Map<String, Long> getOpportunitiesStatusCountsTeam() {
         String userid = UserContext.getCurrentUserId();
-        String userteam = employeeRepository.findTeamById(userid);
-        return opportunitiesRepository.countAllStatusesTeam(Team.valueOf(userteam))
+        return opportunitiesRepository.countAllStatusesUser(userid)
                 .stream()
                 .collect(Collectors.toMap(result -> (String) result[0], result -> (Long) result[1]));
     }
@@ -287,7 +286,4 @@ public class OpportunitiesService {
             return map;
         }).collect(Collectors.toList());
     }
-
-
-
 }

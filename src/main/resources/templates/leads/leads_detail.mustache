@@ -212,35 +212,33 @@
                                 </div>
                             </div>
 
-                            <div class="mb-3 row">
-                                <label for="accountId" class="col-sm-2 col-form-label">회사 명:</label>
-                                <div class="col-sm-10">
-                                    <select id="accountId" name="accountId" onchange="updateCompanyName()" required>
-                                        <option value="">-- 계정 선택 --</option>
-                                        {{#accounts}}
-                                            <option value="{{accountId}}">
-                                                {{accountName}} (ID: {{accountId}})
-                                            </option>
-                                        {{/accounts}}
-                                    </select>
-                                </div>
-                            </div>
+                                    <div class="mb-3 row">
+                                        <label for="companyInput" class="col-sm-2 col-form-label">회사 명:</label>
+                                        <div class="col-sm-10">
+                                            <!-- 입력 필드와 자동완성 옵션을 합친 datalist -->
+                                            <input list="accountsList" id="companyInput" name="companyName" placeholder="회사명 선택 또는 직접 입력" oninput="handleCompanyInput()" required />
+                                            <datalist id="accountsList">
+                                                {{#accounts}}
+                                                    <option value="{{accountName}}" data-id="{{accountId}}">
+                                                        {{accountName}} (ID: {{accountId}})
+                                                    </option>
+                                                {{/accounts}}
+                                            </datalist>
+                                        </div>
+                                    </div>
 
-                            <div class="mb-3 row">
-                                <label for="customCompanyName" class="col-sm-2 col-form-label">직접 입력:</label>
-                                <div class="col-sm-10">
-                                    <input type="text" id="customCompanyName" name="customCompanyName" placeholder="직접 입력" oninput="updateCompanyName()" />
-                                </div>
-                            </div>
+                                    <!-- Hidden Field for accountId -->
+                                    <input type="hidden" id="accountId" name="accountId" />
 
-                            <div class="mb-3 row">
-                                <label for="companyName" class="col-sm-2 col-form-label">최종 회사명:</label>
-                                <div class="col-sm-10">
-                                    <input type="text" id="companyName" name="companyName" readonly required />
-                                </div>
-                            </div>
 
-                            <div class="mb-3 row">
+                                    <!-- Hidden Field for Final Data -->
+                                    <input type="hidden" id="companyName" name="companyName" required />
+                                    <input type="hidden" id="finalAccountId" name="accountId" />
+
+
+
+
+                                    <div class="mb-3 row">
                                 <label for="employeeId" class="col-sm-2 col-form-label">기회 담당자:</label>
                                 <div class="col-sm-10">
                                     <select id="employeeId" name="employeeId" required>
@@ -321,6 +319,7 @@
             document.getElementById("employeeId").value = employeeId;
             document.getElementById("leadSource").value = leadSource;
             document.getElementById("companyName").value = companyName;
+            document.getElementById("companyInput").value = companyName;
         });
         {{/leadId}}
 
@@ -339,27 +338,25 @@
             });
         });
 
-        function updateCompanyName() {
-        const customNameInput = document.getElementById("customCompanyName");
-        const selectedAccount = document.getElementById("accountId");
-        const companyNameField = document.getElementById("companyName");
+    function handleCompanyInput() {
+    const inputField = document.getElementById('companyInput');
+    const accountIdField = document.getElementById('accountId');
+    const dataList = document.getElementById('accountsList');
+    const inputValue = inputField.value.trim();
 
-        // 우선 직접 입력을 적용, 없으면 선택한 계정을 사용
-        if (customNameInput.value.trim() !== "") {
-            companyNameField.value = customNameInput.value;
-        } else if (selectedAccount.value !== "") {
-            const selectedOption = selectedAccount. options[selectedAccount.selectedIndex];
-            let selectedText = selectedOption.textContent.trim();
+    // 초기화
+    accountIdField.value = null;
 
-             const companyName = selectedText.split(/\s+/)[0]; // 연속된 공백 기준으로 나누기
-
-             // companyName 필드와 hiddenAccountId 필드 업데이트
-            companyNameField. value = companyName;
-            accountIdField. value = selectedAccount.value; // 드롭다운 value로 accountId 설정
-        } else {
-            companyNameField.value = ""; // 유효성 검증을 위해 비워둠
+    // datalist의 모든 옵션 순회
+    Array.from(dataList.options).forEach(option => {
+        if (option.value === inputValue) {
+            // 입력값과 일치하는 옵션이 있다면 accountId 설정
+            accountIdField.value = option.getAttribute('data-id');
         }
-    }
+    });
+}
+
+
 
 
     // 폼 제출 시 회사명이 비어 있는지 확인

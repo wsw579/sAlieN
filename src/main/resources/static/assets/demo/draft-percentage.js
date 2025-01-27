@@ -71,7 +71,7 @@ document.addEventListener("DOMContentLoaded", function () {
                                 if (label === 'Draft') {
                                     return `Draft: ${value.toFixed(0)}%`; // Draft 데이터
                                 } else {
-                                    return `Remaining: ${value.toFixed(0)}%`; // Remaining 데이터
+                                    return `Completed: ${value.toFixed(0)}%`; // Completed 데이터
                                 }
                             }
                         }

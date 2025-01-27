@@ -171,8 +171,17 @@ public class OpportunitiesController {
     @GetMapping("/opportunities/detail/{opportunityId}/history/create")
     public String historyCreate(@PathVariable Long opportunityId, Model model) {
         HistoryEntity history = new HistoryEntity();
+        OpportunitiesEntity opportunity = opportunitiesService.searchOpportunities(opportunityId);
+
+        history.setHistoryTitle("");
+        history.setCustomerRepresentative("");
         history.setHistoryDate(LocalDate.now());
         history.setHistoryTime(LocalTime.now());
+        history.setMeetingPlace("");
+        history.setActionTaken("");
+        history.setCompanySize("");
+        history.setCustomerRequirements("");
+        history.setOpportunity(new OpportunitiesEntity());
 
         model.addAttribute("history", history);
         model.addAttribute("opportunityId", opportunityId);
@@ -259,8 +268,6 @@ public class OpportunitiesController {
                 ? authentication.getName()
                 : null;
     }
-
-
 }
 
 
