@@ -198,7 +198,6 @@ public class EmployeeController {
         }
     }
 
-
     // 부서 정보 추가
     @GetMapping("/employees")
     public String listEmployees(Model model) {
@@ -206,6 +205,7 @@ public class EmployeeController {
         System.out.println("Controller: Employees size = " + employees.size());
         model.addAttribute("employees", employees);
         return "employeeList";
+
     }
 
 }
