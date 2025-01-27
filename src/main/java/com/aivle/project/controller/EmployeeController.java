@@ -176,29 +176,6 @@ public class EmployeeController {
         }
     }
 
-    @GetMapping("/api/salesData")
-    public ResponseEntity<?> getSalesData(
-            @RequestParam(required = false) String teamId,
-            @RequestParam(required = false) String departmentId
-    ) {
-        try {
-            if (teamId == null && departmentId == null) {
-                throw new IllegalArgumentException("팀 ID 또는 부서 ID가 필요합니다.");
-            }
-
-            Dept deptEnum = departmentId != null ? Dept.valueOf(departmentId) : null;
-            Team teamEnum = teamId != null ? Team.valueOf(teamId) : null;
-
-            Map<String, Object> response = employeeService.getSalesData(teamEnum, deptEnum);
-            return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body("잘못된 팀 또는 부서 값: " + e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류: " + e.getMessage());
-        }
-    }
-
-
     // 부서 정보 추가
     @GetMapping("/employees")
     public String listEmployees(Model model) {
@@ -206,6 +183,7 @@ public class EmployeeController {
         System.out.println("Controller: Employees size = " + employees.size());
         model.addAttribute("employees", employees);
         return "employeeList";
+
     }
 
 }

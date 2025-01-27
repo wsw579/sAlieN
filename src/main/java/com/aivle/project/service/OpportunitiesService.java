@@ -4,6 +4,7 @@ import com.aivle.project.dto.HistoryDto;
 import com.aivle.project.dto.OpportunitiesDto;
 import com.aivle.project.dto.ProductsDto;
 import com.aivle.project.entity.*;
+import com.aivle.project.enums.Dept;
 import com.aivle.project.enums.Team;
 import com.aivle.project.repository.EmployeeRepository;
 import com.aivle.project.repository.HistoryRepository;
@@ -12,7 +13,6 @@ import com.aivle.project.repository.OpportunitiesRepository;
 import com.aivle.project.utils.UserContext;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -247,18 +247,43 @@ public class OpportunitiesService {
         entity.setCustomerRequirements(dto.getCustomerRequirements());
         entity.setOpportunity(dto.getOpportunityId());
     }
-//    기회별 히스토리 개수 세기 - 보류
-//    public Map<String, Long> countHistoriesByTitle() {
-//        String userid = UserContext.getCurrentUserId();
-//        List<Object[]> results = opportunitiesRepository.countHistoryByEmployeeId(userid);
-//
-//        // Map 형태로 변환: historyTitle -> count
-//        Map<String, Long> historyCounts = new HashMap<>();
-//        for (Object[] result : results) {
-//            String historyTitle = (String) result[0];
-//            Long count = (Long) result[1];
-//            historyCounts.put(historyTitle, count);
-//        }
-//        return historyCounts;
-//    }
+
+
+    public Map<String, Object> getSalesData(String teamId, String departmentId) {
+
+        // 적절한 데이터 가져오기
+        List<Map<String, Object>> opportunities;
+        if (teamId != null) {
+            opportunities = getOpportunitiesByTeam(teamId);
+        } else {
+            opportunities = getOpportunitiesByDepartment(departmentId);
+        }
+
+        // 응답 데이터 생성
+        Map<String, Object> response = new HashMap<>();
+        response.put("labels", opportunities.stream().map(data -> data.get("employeeName")).collect(Collectors.toList()));
+        response.put("values", opportunities.stream().map(data -> data.get("opportunityCount")).collect(Collectors.toList()));
+
+        return response;
+    }
+
+    private List<Map<String, Object>> getOpportunitiesByTeam(String team) {
+        List<Object[]> results = opportunitiesRepository.findTop5ByTeamWithCount(team);
+        return mapOpportunities(results);
+    }
+
+    private List<Map<String, Object>> getOpportunitiesByDepartment(String dept) {
+        List<Object[]> results = opportunitiesRepository.findTop5ByDepartmentWithCount(dept);
+        return mapOpportunities(results);
+    }
+
+    // 데이터를 맵으로 변환
+    private List<Map<String, Object>> mapOpportunities(List<Object[]> results) {
+        return results.stream().map(result -> {
+            Map<String, Object> map = new HashMap<>();
+            map.put("employeeName", result[0]);
+            map.put("opportunityCount", result[1]);
+            return map;
+        }).collect(Collectors.toList());
+    }
 }

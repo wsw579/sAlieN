@@ -1,12 +1,10 @@
 async function fetchLoggedInUser() {
     try {
         const response = await fetch('/api/getLoggedInUser');
-        if (!response.ok) {
-            throw new Error('Failed to fetch logged-in user');
-        }
+        if (!response.ok) throw new Error('Failed to fetch logged-in user');
         return await response.json();
     } catch (error) {
-        console.error('Error fetching logged-in user:', error);
+        console.error('Error fetching logged-in user:', error.message || error);
         return null;
     }
 }
@@ -19,7 +17,6 @@ async function initializeChart() {
     }
 
     const { team, dept } = loggedInUser;
-
     let apiUrl = '/api/salesData';
 
     if (team) {
@@ -31,18 +28,14 @@ async function initializeChart() {
         return;
     }
 
-
     try {
         const response = await fetch(apiUrl);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         const data = await response.json();
 
         const ctx = document.getElementById('teamOpportunitiesChart').getContext('2d');
         new Chart(ctx, {
-            type: 'bar',
+            type: 'horizontalBar', // Chart.js 2.x
             data: {
                 labels: data.labels,
                 datasets: [{
@@ -50,17 +43,27 @@ async function initializeChart() {
                     data: data.values,
                     backgroundColor: 'rgba(54, 162, 235, 0.6)',
                     borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 1
-                }]
+                    borderWidth: 1,
+                }],
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: false,
+                legend: {
+                    position: 'top',
+                },
                 scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
+                    xAxes: [{
+                        ticks: {
+                            beginAtZero: true,
+                        },
+                    }],
+                    yAxes: [{
+                        barPercentage: 0.6,
+                        categoryPercentage: 0.8,
+                    }],
+                },
+            },
         });
     } catch (error) {
         console.error('Error fetching sales data:', error.message || error);

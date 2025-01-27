@@ -8,6 +8,7 @@ import com.aivle.project.enums.Team;
 import com.aivle.project.repository.EmployeeRepository;
 import com.aivle.project.repository.OrdersRepository;
 import com.aivle.project.utils.UserContext;
+import org.springframework.beans.BeanUtils;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -278,5 +279,91 @@ public class OrdersService {
         }
 
         return (double) draftSalesThisMonth / totalSalesThisMonth * 100;
+    }
+
+    //관리자 페이지 매출현황
+    public Map<String, Integer> getAvailableYears() {
+        Object[] rawResult = ordersRepository.findMinAndMaxYears();
+
+        // 첫 번째 배열 추출
+        Object[] result = (Object[]) rawResult[0];
+        int minYear = ((Number) result[0]).intValue();
+        int maxYear = ((Number) result[1]).intValue();
+
+        Map<String, Integer> years = new HashMap<>();
+        years.put("minYear", minYear);
+        years.put("maxYear", maxYear);
+
+        return years;
+    }
+
+    public Map<String, Object> getMonthlyRevenueAndPurchase(String team, String department, int year) {
+        List<Object[]> result = ordersRepository.findMonthlyRevenueAndPurchaseByTeamAndDepartment(team, department, year);
+
+        List<String> labels = new ArrayList<>();
+        List<Double> revenues = new ArrayList<>();
+        List<Double> purchases = new ArrayList<>();
+
+        for (Object[] row : result) {
+            labels.add((String) row[0]); // month
+
+            // Float 값을 Double로 변환
+            revenues.add(((Number) row[1]).doubleValue()); // totalRevenue
+            purchases.add(((Number) row[2]).doubleValue()); // totalPurchase
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("labels", labels);
+        response.put("revenues", revenues);
+        response.put("purchases", purchases);
+
+        return response;
+    }
+
+    //대시보드 order 현황
+    public List<Map<String, Object>> getTeamOrdersGroupedByEmployee(String team, LocalDate startDate, LocalDate endDate) {
+        if (team == null || team.isEmpty()) {
+            throw new IllegalArgumentException("Team cannot be null or empty");
+        }
+
+        Team teamEnum;
+        try {
+            teamEnum = Team.valueOf(team.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid team value: " + team);
+        }
+
+        return ordersRepository.findTeamOrdersGroupedByEmployee(teamEnum, startDate, endDate).stream()
+                .map(result -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("employeeName", result[0]);
+                    map.put("totalOrders", ((Number) result[1]).longValue());
+                    map.put("completedOrders", ((Number) result[2]).longValue());
+                    return map;
+                })
+                .collect(Collectors.toList());
+    }
+
+    public List<Map<String, Object>> getDepartmentOrdersGroupedByEmployee(String department, LocalDate startDate, LocalDate endDate) {
+        if (department == null || department.isEmpty()) {
+            throw new IllegalArgumentException("Department cannot be null or empty");
+        }
+
+        Dept departmentEnum;
+        try {
+            departmentEnum = Dept.valueOf(department.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid department value: " + department);
+        }
+
+        return ordersRepository.findDepartmentOrdersGroupedByEmployee(departmentEnum, startDate, endDate).stream()
+                .map(result -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("employeeName", result[0]);
+                    map.put("totalOrders", ((Number) result[1]).longValue());
+                    map.put("completedOrders", ((Number) result[2]).longValue());
+                    return map;
+                })
+                .collect(Collectors.toList());
     }
 }

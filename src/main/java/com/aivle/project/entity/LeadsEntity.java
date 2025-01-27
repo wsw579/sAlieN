@@ -24,30 +24,30 @@ public class LeadsEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long leadId;
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = true, length = 50)
     private String leadStatus;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = true, length = 255)
     private String leadSource;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate createdDate;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate targetCloseDate;
 
-    @Column(nullable = false)
+    @Column(nullable = true) // 리드내용
     private String customerRequirements;
 
-    @Column(nullable = false)
+    @Column(nullable = true) // 계정명
     private String companyName;
 
-    @Column(nullable = false)
+    @Column(nullable = true) // 계정 담당자
     private String customerRepresentitive;
 
-    @Column(nullable = false)
+    @Column(nullable = true)  // 연락처
     private String c_tel;
 
 
@@ -67,7 +67,7 @@ public class LeadsEntity implements Serializable {
 
     // Account 외래키 설정
     @ManyToOne
-    @JoinColumn(name = "account_id", foreignKey = @ForeignKey(name = "fk_leads_account_id"))
+    @JoinColumn(name = "account_id", nullable = true , foreignKey = @ForeignKey(name = "fk_leads_account_id"))
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private AccountEntity accountId;
 }
