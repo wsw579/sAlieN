@@ -102,16 +102,6 @@ public interface OpportunitiesRepository extends JpaRepository<OpportunitiesEnti
             "LIMIT 5", nativeQuery = true)
     List<Object[]> findTop5ByDepartmentWithCount(@Param("dept") String dept);
 
-    // 사원의 진행중 히스토리 그래프 - 보류
-//    @Query("SELECT o.opportunityName, " +
-//            "       COALESCE(COUNT(h), 0) " +
-//            "FROM OpportunitiesEntity o " +
-//            "LEFT JOIN HistoryEntity h ON h.opportunity = o " +
-//            "  AND o.opportunityStatus IN ('Qualification', 'Needs Analysis', 'Proposal', 'Negotiation') " +
-//            "WHERE o.employeeId.employeeId = :employeeId " +
-//            "GROUP BY o.opportunityId, o.opportunityName")
-//    List<Object[]> countHistoryByEmployeeId(@Param("employeeId") String employeeId);
-
 
 
 

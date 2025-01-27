@@ -268,16 +268,6 @@ public class OpportunitiesController {
                 ? authentication.getName()
                 : null;
     }
-
-
-
-    // 개인의 기회별 히스토리 수 - 보류
-//    @GetMapping("/history/progress")
-//    public ResponseEntity<Map<String, Long>> countHistoriesByEmployeeId() {
-//        Map<String, Long> historyCounts = opportunitiesService.countHistoriesByTitle();
-//        System.out.println(historyCounts);
-//        return ResponseEntity.ok(historyCounts);
-//    }
 }
 
 
