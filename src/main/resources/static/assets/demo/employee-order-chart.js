@@ -1,4 +1,5 @@
 (async function () {
+    // 로그인된 사용자 정보 가져오기
     const loggedInUser = await fetchLoggedInUser();
     if (!loggedInUser) {
         alert('로그인된 사용자 정보를 가져올 수 없습니다.');
@@ -6,11 +7,11 @@
     }
 
     const { team, dept } = loggedInUser;
-
     const now = new Date();
     let selectedYear = now.getFullYear();
     let selectedMonth = now.getMonth();
 
+    // 시작일과 종료일 계산
     const getFirstAndLastDay = (year, month) => {
         const firstDay = new Date(year, month, 1).toISOString().split('T')[0];
         const lastDay = new Date(year, month + 1, 0).toISOString().split('T')[0];
@@ -19,6 +20,7 @@
 
     const { firstDay, lastDay } = getFirstAndLastDay(selectedYear, selectedMonth);
 
+    // API URL 생성
     const buildApiUrl = (startDate, endDate) => {
         let apiUrl = '/api/ordersData';
         if (team) {
@@ -30,12 +32,12 @@
             return null;
         }
         apiUrl += `&startDate=${startDate}&endDate=${endDate}`;
-        console.log("Generated API URL:", apiUrl);
         return apiUrl;
     };
 
     let chartInstance = null;
 
+    // 차트 업데이트 함수
     const updateChart = async (startDate, endDate) => {
         const dynamicApiUrl = buildApiUrl(startDate, endDate);
         if (!dynamicApiUrl) {
@@ -44,14 +46,12 @@
         }
 
         try {
-            console.log("Fetching data from:", dynamicApiUrl);
             const response = await fetch(dynamicApiUrl);
             if (!response.ok) {
                 const errorText = await response.text();
                 throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
             }
             let data = await response.json();
-            console.log("Fetched data:", data);
 
             if (!Array.isArray(data) || data.length === 0) {
                 data = [{ employeeName: 'No Data', totalOrders: 0, completedOrders: 0 }];
@@ -66,6 +66,7 @@
                 chartInstance.destroy();
             }
 
+            // Chart.js 2 문법으로 차트 생성
             chartInstance = new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -77,7 +78,6 @@
                             backgroundColor: 'rgba(75, 192, 192, 0.6)',
                             borderColor: 'rgba(75, 192, 192, 1)',
                             borderWidth: 1,
-                            stack: 'Stack 0',
                         },
                         {
                             label: 'Remaining Orders',
@@ -85,32 +85,54 @@
                             backgroundColor: 'rgba(54, 162, 235, 0.6)',
                             borderColor: 'rgba(54, 162, 235, 1)',
                             borderWidth: 1,
-                            stack: 'Stack 0',
-                        }
-                    ]
+                        },
+                    ],
                 },
                 options: {
-                    plugins: {
-                        tooltip: {
-                            callbacks: {
-                                label: function (context) {
-                                    const label = context.dataset.label || '';
-                                    const value = context.raw;
-                                    return `${label}: ${value}`;
-                                }
-                            }
-                        }
-                    },
+                    responsive: true,
+                    maintainAspectRatio: true,
                     scales: {
-                        x: {
-                            stacked: true,
+                        xAxes: [
+                            {
+                                stacked: true,
+                                ticks: {
+                                    autoSkip: true, // 레이블 자동 스킵
+                                    maxRotation: 45, // 최대 회전 각도
+                                    minRotation: 0, // 최소 회전 각도
+                                },
+                            },
+                        ],
+                        yAxes: [
+                            {
+                                stacked: true,
+                                ticks: {
+                                    beginAtZero: true,
+                                },
+                            },
+                        ],
+                    },
+                    tooltips: {
+                        callbacks: {
+                            label: function (tooltipItem, data) {
+                                const dataset = data.datasets[tooltipItem.datasetIndex];
+                                const value = dataset.data[tooltipItem.index];
+                                return `${dataset.label}: ${value}`;
+                            },
                         },
-                        y: {
-                            stacked: true,
-                            beginAtZero: true,
-                        }
-                    }
-                }
+                    },
+                    plugins: {
+                        zoom: {
+                            pan: {
+                                enabled: true,
+                                mode: 'x', // x축 방향으로만 스크롤
+                            },
+                            zoom: {
+                                enabled: true,
+                                mode: 'x', // x축 방향으로만 확대/축소
+                            },
+                        },
+                    },
+                },
             });
         } catch (error) {
             console.error("Error fetching order data:", error);
@@ -146,8 +168,6 @@
             selectedYear += 1;
         }
         selectedMonthSpan.textContent = selectedMonth + 1;
-
-        console.log(`Changed to: ${selectedYear}-${selectedMonth + 1}`);
         const { firstDay: newFirstDay, lastDay: newLastDay } = getFirstAndLastDay(selectedYear, selectedMonth);
         updateChart(newFirstDay, newLastDay);
     };
