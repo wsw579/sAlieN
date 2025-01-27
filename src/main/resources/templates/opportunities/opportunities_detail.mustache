@@ -392,7 +392,7 @@
 
                                 <!-- 제안서 생성 버튼 -->
                                 <button type="button" id="proposalButton" class="btn btn-custom-proposal btn-sm">
-                                    <i class="fas fa-plus-circle"></i> 제안서 생성
+                                    <i class="fas fa-plus-circle"></i> AI 제안서 생성 (excel)
                                 </button>
 
                                 <!-- 저장 버튼 -->
@@ -522,7 +522,7 @@
 
                                 {{#opportunitiesComments}}
                                     <div class="comment">
-                                        <div class="author">작성자</div> <!-- 아직 외부키 구현 안되어서 인사ID를 작성자로 임시 지정 -->
+                                        <div class="author">{{author}}</div>
                                         {{content}}
 
                                         <div class="timestamp">{{commentCreatedDate}}</div>
@@ -769,8 +769,8 @@ document.getElementById('proposalButton').addEventListener('click', function() {
 
         console.log('전송할 데이터:', dataToSend);
 
-        // PDF 생성 요청
-        fetch('http://127.0.0.1:8000/generate-excel', {
+        // Excel 생성 요청
+        fetch('https://saiescrm.api.jyds.synology.me/generate-excel', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

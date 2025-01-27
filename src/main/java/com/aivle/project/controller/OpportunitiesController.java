@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -113,7 +115,9 @@ public class OpportunitiesController {
 
     @PostMapping("/opportunities/detail/createcomment")
     public String createComment(@RequestParam("content") String content, @RequestParam("opportunityId") Long opportunityId) {
-        opportunitiesService.createComment(content, opportunityId, "작성자");
+        String employeeId = getCurrentUserId();
+
+        opportunitiesService.createComment(content, opportunityId, employeeId);
 
         // CRUD 작업 로깅
         crudLogsService.logCrudOperation("create", "opportunities_comment", "", "True", "Success");
@@ -227,6 +231,7 @@ public class OpportunitiesController {
         return ResponseEntity.ok(response);
     }
 
+
     @GetMapping("/api/salesData")
     public ResponseEntity<?> getSalesData(
             @RequestParam(required = false) String teamId,
@@ -247,6 +252,14 @@ public class OpportunitiesController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류: " + e.getMessage());
         }
     }
+
+    private String getCurrentUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return (authentication != null && authentication.isAuthenticated() && !authentication.getName().equals("anonymousUser"))
+                ? authentication.getName()
+                : null;
+    }
+
 
 }
 
