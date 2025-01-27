@@ -1,48 +1,7 @@
 {{>main/header}}
 
 <style>
-    .button-container {
-        display: flex;
-        justify-content: flex-end;
-        gap: 10px;
-    }
-    .btn-custom-create {
-        background-color: #d4edda;
-        border-color: #c3e6cb;
-        color: #155724;
-    }
-    .btn-custom-delete {
-        background-color: #f8d7da;
-        border-color: #f5c6cb;
-        color: #721c24;
-    }
-    .btn-custom-create:hover {
-        background-color: #c3e6cb;
-        border-color: #b1dfbb;
-    }
-    .btn-custom-delete:hover {
-        background-color: #f5c6cb;
-        border-color: #f1b0b7;
-    }
-    .btn-sm {
-        font-size: 0.875rem;
-        padding: 0.25rem 0.5rem;
-    }
-    .container {
-        background-color: #f8f9fa;
-        padding: 20px;
-        border-radius: 10px;
-    }
-    .col-form-label {
-        font-weight: bold;
-    }
-    .btn-primary {
-        background-color: #6c757d;
-        border: none;
-    }
-    .btn-primary:hover {
-        background-color: #5a6268;
-    }
+
 </style>
 
 <div id="layoutSidenav_content">
@@ -57,22 +16,47 @@
             <div class="row">
                 <div class="col-xl-3 col-md-6">
                     <div class="card bg-primary text-white mb-4">
-                        <div class="card-body">판매 중인 제품</div>
+                        <div class="card-body">가용 제품</div>
                         <div class="card-footer d-flex align-items-center justify-content-between">
-                            <h3 id="availableCount"></h3>
+                            <h3 id="availableCount">{{availableCount}} 개</h3>
                             <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                         </div>
                     </div>
                 </div>
+
+                <div class="col-xl-3 col-md-6">
+                    <div class="card bg-warning text-white mb-4">
+                        <div class="card-body">재고 부족 제품</div>
+                        <div class="card-footer d-flex align-items-center justify-content-between">
+                            <h3 id="outOfStockCount">{{outOfStockCount}} 개</h3>
+                            <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6">
+                    <div class="card bg-success text-white mb-4">
+                        <div class="card-body">AI 가용 제품</div>
+                        <div class="card-footer d-flex align-items-center justify-content-between">
+                            <h3 id="activatedCount"> 개</h3>
+                            <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="col-xl-3 col-md-6">
                     <div class="card bg-danger text-white mb-4">
-                        <div class="card-body">품절된 제품</div>
+                        <div class="card-body">서비스 종료 제품</div>
                         <div class="card-footer d-flex align-items-center justify-content-between">
-                            <h3 id="outOfStockCount"></h3>
+                            <h3 id="draftCount"> 개</h3>
                             <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                         </div>
                     </div>
                 </div>
+
+
+
+
             </div>
 
             <!-- Products 테이블 -->
@@ -82,8 +66,36 @@
                     My Products
                 </div>
                 <div class="card-body">
-                    <table id="datatablesSimple">
-                        <div class="button-container mb-3">
+
+                    <div class="button-container mb-3" style="display: flex; align-items: center; gap: 10px;">
+                        <div style="flex: 1; display: flex; align-items: center; gap: 10px; justify-content: flex-end;">
+                            <form method="GET" action="/products" style="display: flex; align-items: center; gap: 5px;">
+                                <!-- 검색어 -->
+                                <input type="text" class = "form-control" name="search" id="customSearch" placeholder="검색어를 입력하세요"
+                                       style="padding: 5px; width: 200px;" value="{{search}}">
+
+<!--                                &lt;!&ndash; 정렬 기준 &ndash;&gt;-->
+<!--                                <label>-->
+<!--                                    <select name="sortColumn">-->
+<!--                                        <option value="productName" {{#isProductNameSorted}}selected{{/isProductNameSorted}}>Product Name</option>-->
+<!--                                    </select>-->
+<!--                                </label>-->
+
+<!--                                &lt;!&ndash; 정렬 방향 &ndash;&gt;-->
+<!--                                <label>-->
+<!--                                    <select name="sortDirection">-->
+<!--                                        <option value="asc" {{#isAscSorted}}selected{{/isAscSorted}}>Ascending</option>-->
+<!--                                        <option value="desc" {{#isDescSorted}}selected{{/isDescSorted}}>Descending</option>-->
+<!--                                    </select>-->
+<!--                                </label>-->
+
+                                <!-- 제출 버튼 -->
+                                <button type="submit" class = "btn btn-custom-select btn-sm">검색</button>
+                            </form>
+
+                        </div>
+                        <div>
+                            <!-- 신규 및 삭제 버튼 -->
                             <a href="/products/detail/create" class="btn btn-custom-create btn-sm" id="createButton">
                                 <i class="fas fa-plus-circle"></i> 신규
                             </a>
@@ -91,7 +103,9 @@
                                 <i class="fas fa-trash-alt"></i> 삭제
                             </button>
                         </div>
+                    </div>
 
+                    <table id="datatablesSimple">
                         <thead>
                         <tr>
                             <th></th>
@@ -105,81 +119,106 @@
                         </tr>
                         </thead>
                         <tbody>
-                        {{#products}}
+                        {{#pagination.contents}}
                             <tr data-index="{{productId}}">
                                 <td><input type="checkbox" class="select-row" value="{{productId}}"></td>
-                                <td><a href="/products/detail/{{productId}}">{{productId}}</a></td>
-                                <td>{{productName}}</td>
+                                <td>{{productId}}</td>
+                                <td><a href="/products/detail/{{productId}}">{{productName}}</a></td>
                                 <td>{{productFamily}}</td>
-                                <td>{{fixedPrice}}</td>
-                                <td>{{dealerPrice}}</td>
-                                <td>{{costPrice}}</td>
+                                <td data-price="{{fixedPrice}}">{{fixedPrice}}</td>
+                                <td data-price="{{dealerPrice}}">{{dealerPrice}}</td>
+                                <td data-price="{{costPrice}}">{{costPrice}}</td>
                                 <td>{{productCondition}}</td>
                             </tr>
-                        {{/products}}
+                        {{/pagination.contents}}
                         </tbody>
                     </table>
+
+
+                    <div class="pagination justify-content-center">
+                        <!-- 이전 버튼 -->
+                        {{#pagination.hasPreviousPage}}
+                            <button onclick="window.location.href='/products?page={{pagination.previousPage}}&size=10&search={{search}}&sortColumn={{sortColumn}}&sortDirection={{sortDirection}}'">
+                            이전
+                            </button>
+                        {{/pagination.hasPreviousPage}}
+
+                        <!-- 페이지 번호 버튼 -->
+                        {{#pagination.pageNumbers}}
+                            <button
+                                    onclick="window.location.href='/products?page={{page}}&size=10&search={{search}}&sortColumn={{sortColumn}}&sortDirection={{sortDirection}}'"
+                            class="{{#isActive}}active{{/isActive}}">
+                            {{displayPage}}
+                            </button>
+                        {{/pagination.pageNumbers}}
+
+                        <!-- 다음 버튼 -->
+                        {{#pagination.hasNextPage}}
+                            <button onclick="window.location.href='/orders?page={{pagination.nextPage}}&size=10&search={{search}}&sortColumn={{sortColumn}}&sortDirection={{sortDirection}}'">
+                            다음
+                            </button>
+                        {{/pagination.hasNextPage}}
+                    </div>
                 </div>
             </div>
         </div>
     </main>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var rows = document.querySelectorAll("#datatablesSimple tbody tr");
-            var availableCount = 0;
-            var outOfStockCount = 0;
+        document.addEventListener("DOMContentLoaded", function () {
+     // 모든 data-price 요소 처리
+     document.querySelectorAll("td[data-price]").forEach(function (element) {
+         const rawPrice = element.getAttribute("data-price"); // data-price 속성에서 데이터 읽기
+         if (rawPrice) {
+             const parsedPrice = parseFloat(rawPrice); // 지수 표기법 숫자로 변환
+             if (!isNaN(parsedPrice)) {
+                 // 원화 포맷 적용
+                 const formattedPrice = new Intl.NumberFormat('ko-KR', {
+                     style: 'currency',
+                     currency: 'KRW',
+                 }).format(parsedPrice);
 
-            rows.forEach(function(row) {
-                var productCondition = row.querySelector("td:nth-child(8)").innerText.trim();
+                 element.textContent = formattedPrice; // 변환된 값 적용
+             }
+         }
+     });
+                             var deleteButton = document.getElementById("deleteButton");
+                             if (deleteButton) {
+                                 deleteButton.addEventListener("click", function() {
+                                     var selectedCheckboxes = document.querySelectorAll(".select-row:checked");
+                                     var selectedIds = [];
 
-                if (productCondition === "available") {
-                    availableCount++;
-                } else if (productCondition === "out_of_stock") {
-                    outOfStockCount++;
-                }
-            });
+                                     selectedCheckboxes.forEach(function(checkbox) {
+                                         var productId = checkbox.value;
+                                         selectedIds.push(productId);
+                                     });
 
-            document.getElementById("availableCount").innerText = `${availableCount} 건`;
-            document.getElementById("outOfStockCount").innerText = `${outOfStockCount} 건`;
-
-            var deleteButton = document.getElementById("deleteButton");
-            if (deleteButton) {
-                deleteButton.addEventListener("click", function() {
-                    var selectedCheckboxes = document.querySelectorAll(".select-row:checked");
-                    var selectedIds = [];
-
-                    selectedCheckboxes.forEach(function(checkbox) {
-                        var productId = checkbox.value;
-                        selectedIds.push(productId);
-                    });
-
-                    if (selectedIds.length > 0) {
-                        var confirmDelete = confirm("선택한 항목들을 삭제하시겠습니까?");
-                        if (confirmDelete) {
-                            fetch("/products/detail/delete", {
-                                method: "POST",
-                                headers: {
-                                    "Content-Type": "application/json"
-                                },
-                                body: JSON.stringify({ ids: selectedIds })
-                            }).then(response => {
-                                if (response.ok) {
-                                    window.location.href = "/products";
-                                } else {
-                                    alert("삭제 중 오류가 발생했습니다.");
-                                }
-                            }).catch(error => {
-                                console.error("Error:", error);
-                                alert("삭제 중 오류가 발생했습니다.");
-                            });
-                        }
-                    } else {
-                        alert("삭제할 항목을 선택해 주세요.");
-                    }
-                });
-            }
-        });
+                                     if (selectedIds.length > 0) {
+                                         var confirmDelete = confirm("선택한 항목들을 삭제하시겠습니까?");
+                                         if (confirmDelete) {
+                                             fetch("/products/detail/delete", {
+                                                 method: "POST",
+                                                 headers: {
+                                                     "Content-Type": "application/json"
+                                                 },
+                                                 body: JSON.stringify({ ids: selectedIds })
+                                             }).then(response => {
+                                                 if (response.ok) {
+                                                     window.location.href = "/products";
+                                                 } else {
+                                                     alert("삭제 중 오류가 발생했습니다.");
+                                                 }
+                                             }).catch(error => {
+                                                 console.error("Error:", error);
+                                                 alert("삭제 중 오류가 발생했습니다.");
+                                             });
+                                         }
+                                     } else {
+                                         alert("삭제할 항목을 선택해 주세요.");
+                                     }
+                                 });
+                             }
+                         });
     </script>
 
     <script src="/assets/demo/products-read-chart.js"></script>

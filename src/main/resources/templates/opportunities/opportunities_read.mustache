@@ -1,50 +1,7 @@
 {{>main/header}}
 
 <style>
-    .button-container {
-        display: flex;
-        justify-content: flex-end; /* 오른쪽 정렬 */
-        gap: 10px; /* 버튼 간격 */
-    }
-    .btn-custom-create {
-        background-color: #d4edda; /* 파스텔 그린 */
-        border-color: #c3e6cb;
-        color: #155724;
-    }
-    .btn-custom-delete {
-        background-color: #f8d7da; /* 파스텔 레드 */
-        border-color: #f5c6cb;
-        color: #721c24;
-    }
-    .btn-custom-create:hover {
-        background-color: #c3e6cb; /* 약간 어두운 그린 */
-        border-color: #b1dfbb;
-    }
-    .btn-custom-delete:hover {
-        background-color: #f5c6cb; /* 약간 어두운 레드 */
-        border-color: #f1b0b7;
-    }
-    .btn-sm {
-        font-size: 0.875rem; /* 버튼 폰트 크기 감소 */
-        padding: 0.25rem 0.5rem; /* 패딩 감소 */
-    }
 
-
-    .container {
-        background-color: #f8f9fa;
-        padding: 20px;
-        border-radius: 10px;
-    }
-    .col-form-label {
-        font-weight: bold;
-    }
-    .btn-primary {
-        background-color: #6c757d;
-        border: none;
-    }
-    .btn-primary:hover {
-        background-color: #5a6268;
-    }
 
 
 </style>
@@ -64,7 +21,7 @@
                     <div class="card bg-primary text-white mb-4">
                         <div class="card-body">진행중 기회</div>
                         <div class="card-footer d-flex align-items-center justify-content-between">
-                            <h3 id="ongoingCount"></h3>
+                            <h3 id="ongoingCount">{{ongoingCount}} 건</h3>
                             <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                         </div>
                     </div>
@@ -73,7 +30,7 @@
                     <div class="card bg-warning text-white mb-4">
                         <div class="card-body">마감일자 초과</div>
                         <div class="card-footer d-flex align-items-center justify-content-between">
-                            <h3 id="overdueCount"></h3>
+                            <h3 id="overdueCount">{{overdueCount}} 건</h3>
                             <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                         </div>
                     </div>
@@ -82,7 +39,7 @@
                     <div class="card bg-success text-white mb-4">
                         <div class="card-body">계약 전환 성공</div>
                         <div class="card-footer d-flex align-items-center justify-content-between">
-                            <h3 id="closedCount"></h3>
+                            <h3 id="closedCount">{{closedCount}} 건</h3>
                             <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                         </div>
                     </div>
@@ -91,7 +48,7 @@
                     <div class="card bg-danger text-white mb-4">
                         <div class="card-body">기회 보류</div>
                         <div class="card-footer d-flex align-items-center justify-content-between">
-                            <h3 id="pendingCount"></h3>
+                            <h3 id="pendingCount">{{pendingCount}} 건</h3>
                             <div class="small text-white"><i class="fas fa-angle-right"></i></div>
                         </div>
                     </div>
@@ -130,26 +87,55 @@
                     My Opportunities
                 </div>
                 <div class="card-body">
-                    <table id="datatablesSimple">
+                    <div class="button-container mb-3" style="display: flex; align-items: center; gap: 10px;">
+                        <div style="flex: 1; display: flex; align-items: center; gap: 10px; justify-content: flex-end;">
+                            <form method="GET" action="/opportunities" style="display: flex; align-items: center; gap: 5px;">
+                                <!-- 검색어 -->
+                                <input type="text" class = "form-control" name="search" id="customSearch" placeholder="검색어를 입력하세요"
+                                       style="padding: 5px; width: 200px;" value="{{search}}">
 
-                        <div class="button-container mb-3">
+<!--                                &lt;!&ndash; 정렬 기준 &ndash;&gt;-->
+<!--                                <label>-->
+<!--                                    <select name="sortColumn">-->
+<!--                                        <option value="startDate" {{#sortColumn}} {{.}}=="startDate" ? 'selected' : '' {{/sortColumn}}>Start Date</option>-->
+<!--                                        <option value="terminationDate" {{#sortColumn}} {{.}}=="terminationDate" ? 'selected' : '' {{/sortColumn}}>Termination Date</option>-->
+<!--                                    </select>-->
+<!--                                </label>-->
+
+<!--                                &lt;!&ndash; 정렬 방향 &ndash;&gt;-->
+<!--                                <label>-->
+<!--                                    <select name="sortDirection">-->
+<!--                                        <option value="asc" {{#sortDirection}} {{.}}=="asc" ? 'selected' : '' {{/sortDirection}}>Ascending</option>-->
+<!--                                        <option value="desc" {{#sortDirection}} {{.}}=="desc" ? 'selected' : '' {{/sortDirection}}>Descending</option>-->
+<!--                                    </select>-->
+<!--                                </label>-->
+
+                                <!-- 제출 버튼 -->
+                                <button type="submit" class = "btn btn-custom-select btn-sm">검색</button>
+                            </form>
+
+                        </div>
+
+                        <div>
+                            <!-- 신규 및 삭제 버튼 -->
                             <a href="/opportunities/detail/create" class="btn btn-custom-create btn-sm" id="createButton">
                                 <i class="fas fa-plus-circle"></i> 신규
                             </a>
 
                             <button class="btn btn-custom-delete btn-sm" id="deleteButton">
-                                <i class="fas fa-plus-circle"></i> 삭제
+                                <i class="fas fa-trash-alt"></i> 삭제
                             </button>
                         </div>
-
+                    </div>
+                    <table id="datatablesSimple">
                         <thead>
                         <tr>
                             <th></th>
                             <th>ID</th>
                             <th>생성일자</th>
                             <th>기회명</th>
-                            <<th>계정이름</th>
-                            <<th>제품명</th>
+                            <th>계정이름</th>
+                            <th>제품명</th>
                             <th>기회매출</th>
                             <th>상태</th>
                             <th>마감일자</th>
@@ -159,25 +145,49 @@
                         </tr>
                         </thead>
                         <tbody>
-                        {{#opportunities}}
+                        {{#pagination.contents}}
                             <tr data-index="{{opportunityId}}">
                                 <td><input type="checkbox" class="select-row" value="{{opportunityId}}" ></td>
                                 <td>{{opportunityId}}</td>
                                 <td>{{createdDate}}</td>
                                 <td><a href="/opportunities/detail/{{opportunityId}}">{{opportunityName}}</a></td>
-                                <td>{{accountId.accountId}}</td>
+                                <td>{{accountId.accountName}}</td>
                                 <td>{{productId.productName}}</td>
-                                <td>{{expectedRevenue}}</td>
+                                <td data-revenue="{{expectedRevenue}}">{{expectedRevenue}}</td>
                                 <td>{{opportunityStatus}}</td>
                                 <td>{{targetCloseDate}}</td>
-                                <td>{{successRate}}</td>
+                                <td data-success-rate="{{successRate}}">{{successRate}}</td>
                                 <td>{{employeeId.employeeId}}</td>
 
                             </tr>
-                        {{/opportunities}}
+                        {{/pagination.contents}}
                         </tbody>
 
                     </table>
+
+                    <div class="pagination justify-content-center">
+                        <!-- 이전 버튼 -->
+                        {{#pagination.hasPreviousPage}}
+                            <button onclick="window.location.href='/opportunities?page={{pagination.previousPage}}&size=10&search={{search}}&sortColumn={{sortColumn}}&sortDirection={{sortDirection}}'">
+                            이전
+                            </button>
+                        {{/pagination.hasPreviousPage}}
+
+                        <!-- 페이지 번호 버튼 -->
+                        {{#pagination.pageNumbers}}
+                            <button onclick="window.location.href='/opportunities?page={{page}}&size=10&search={{search}}&sortColumn={{sortColumn}}&sortDirection={{sortDirection}}'"
+                            class="{{#isActive}}active{{/isActive}}">
+                            {{displayPage}}
+                            </button>
+                        {{/pagination.pageNumbers}}
+
+                        <!-- 다음 버튼 -->
+                        {{#pagination.hasNextPage}}
+                            <button onclick="window.location.href='/opportunities?page={{pagination.nextPage}}&size=10&search={{search}}&sortColumn={{sortColumn}}&sortDirection={{sortDirection}}'">
+                            다음
+                            </button>
+                        {{/pagination.hasNextPage}}
+                    </div>
                 </div>
             </div>
         </div>
@@ -185,89 +195,82 @@
 
 
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var rows = document.querySelectorAll("#datatablesSimple tbody tr");
-            var now = new Date();
-
-            var ongoingCount = 0;
-            var overdueCount = 0;
-            var closedCount = 0;
-            var pendingCount = 0;
-
-            rows.forEach(function(row) {
-                var status = row.querySelector("td:nth-child(6)").innerText;
-                var targetCloseDate = new Date(row.querySelector("td:nth-child(7)").innerText);
-
-                if (!status.startsWith("Closed")) {
-                    ongoingCount++;
-                }
-
-                if (status === "Closed(won)") {
-                    closedCount++;
-                }
-                if (status === "Pending") {
-                    pendingCount++;
-                }
-                if (targetCloseDate < now && !status.startsWith("Closed")) {
-                    overdueCount++;
+        document.addEventListener("DOMContentLoaded", function () {
+            // 모든 매출 데이터를 포맷
+            document.querySelectorAll("td[data-revenue]").forEach(function (element) {
+                const rawRevenue = element.textContent.trim(); // 원래 데이터
+                if (!isNaN(rawRevenue)) {
+                    const formattedRevenue = new Intl.NumberFormat('ko-KR', {
+                        style: 'currency',
+                        currency: 'KRW',
+                    }).format(Number(rawRevenue));
+                    element.textContent = formattedRevenue; // 원화로 변환 후 적용
                 }
             });
-
-            document.getElementById("ongoingCount").innerText = `${ongoingCount} 건`;
-            document.getElementById("overdueCount").innerText = `${overdueCount} 건`;
-            document.getElementById("closedCount").innerText = `${closedCount} 건`;
-            document.getElementById("pendingCount").innerText = `${pendingCount} 건`;
         });
 
+        document.addEventListener("DOMContentLoaded", function () {
+            // 모든 successRate 데이터를 처리
+            document.querySelectorAll("td[data-success-rate]").forEach(function (element) {
+                const rawRate = parseFloat(element.textContent.trim()); // 서버에서 전달된 원래 값
+                if (!isNaN(rawRate)) {
+                    const percentage = (rawRate * 100).toFixed(0); // 퍼센트 변환
+                    element.textContent = `${percentage}%`; // 퍼센트 기호 추가
 
-
-
-
-
-
-
-    document.addEventListener("DOMContentLoaded", function() {
-        var deleteButton = document.getElementById("deleteButton");
-        if (deleteButton) {
-            deleteButton.addEventListener("click", function() {
-                var selectedCheckboxes = document.querySelectorAll(".select-row:checked");
-                var selectedIds = [];
-
-                selectedCheckboxes.forEach(function(checkbox) {
-                    var opportunityId = checkbox.value;
-                    console.log("Opportunity ID:", opportunityId); // 로그 추가
-                    selectedIds.push(opportunityId);
-                });
-
-                if (selectedIds.length > 0) {
-                    var confirmDelete = confirm("선택한 항목들을 삭제하시겠습니까?");
-
-                    if (confirmDelete) {
-                        console.log("Deleting IDs:", selectedIds); // 로그 추가
-                        fetch("/opportunities/detail/delete", {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json"
-                            },
-                            body: JSON.stringify({ ids: selectedIds })
-                        }).then(response => {
-                            if (response.ok) {
-                                // 서버 응답이 성공적이면 리다이렉트 수행
-                                window.location.href = "/opportunities";
-                            } else {
-                                alert("삭제 중 오류가 발생했습니다.");
-                            }
-                        }).catch(error => {
-                            console.error("Error:", error);
-                            alert("삭제 중 오류가 발생했습니다.");
-                        });
+                    // 조건부 스타일링
+                    if (rawRate >= 0.5) {
+                        element.style.color = "green"; // 성공률이 50% 이상이면 녹색
+                    } else if (rawRate >= 0.3) {
+                        element.style.color = "orange"; // 성공률이 30% 이상이면 주황색
+                    } else {
+                        element.style.color = "red"; // 성공률이 30% 미만이면 빨간색
                     }
-                } else {
-                    alert("삭제할 항목을 선택해 주세요.");
                 }
             });
-        }
-    });
+        });
+
+            document.addEventListener("DOMContentLoaded", function() {
+                var deleteButton = document.getElementById("deleteButton");
+                if (deleteButton) {
+                    deleteButton.addEventListener("click", function() {
+                        var selectedCheckboxes = document.querySelectorAll(".select-row:checked");
+                        var selectedIds = [];
+
+                        selectedCheckboxes.forEach(function(checkbox) {
+                            var opportunityId = checkbox.value;
+                            console.log("Opportunity ID:", opportunityId); // 로그 추가
+                            selectedIds.push(opportunityId);
+                        });
+
+                        if (selectedIds.length > 0) {
+                            var confirmDelete = confirm("선택한 항목들을 삭제하시겠습니까?");
+
+                            if (confirmDelete) {
+                                console.log("Deleting IDs:", selectedIds); // 로그 추가
+                                fetch("/opportunities/detail/delete", {
+                                    method: "POST",
+                                    headers: {
+                                        "Content-Type": "application/json"
+                                    },
+                                    body: JSON.stringify({ ids: selectedIds })
+                                }).then(response => {
+                                    if (response.ok) {
+                                        // 서버 응답이 성공적이면 리다이렉트 수행
+                                        window.location.href = "/opportunities";
+                                    } else {
+                                        alert("삭제 중 오류가 발생했습니다.");
+                                    }
+                                }).catch(error => {
+                                    console.error("Error:", error);
+                                    alert("삭제 중 오류가 발생했습니다.");
+                                });
+                            }
+                        } else {
+                            alert("삭제할 항목을 선택해 주세요.");
+                        }
+                    });
+                }
+            });
 
 
 

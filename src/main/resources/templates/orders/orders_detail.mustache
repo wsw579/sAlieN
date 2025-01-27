@@ -1,60 +1,7 @@
 {{>main/header}}
 
 <style>
-    /* 버튼 스타일 */
-.button-container {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-}
 
-.btn-custom-create {
-    background-color: #d4edda;
-    border-color: #c3e6cb;
-    color: #155724;
-}
-
-.btn-custom-delete {
-    background-color: #f8d7da;
-    border-color: #f5c6cb;
-    color: #721c24;
-}
-
-.btn-custom-create:hover {
-    background-color: #c3e6cb;
-    border-color: #b1dfbb;
-}
-
-.btn-custom-delete:hover {
-    background-color: #f5c6cb;
-    border-color: #f1b0b7;
-}
-
-.btn-sm {
-    font-size: 0.875rem;
-    padding: 0.25rem 0.5rem;
-}
-
-/* 컨테이너 스타일 */
-.container {
-    background-color: #f8f9fa;
-    padding: 20px;
-    border-radius: 10px;
-}
-
-.col-form-label {
-    font-weight: bold;
-}
-
-/* 기본 버튼 스타일 */
-.btn-primary {
-    background-color: #6c757d;
-    border: none;
-}
-
-.btn-primary:hover {
-    background-color: #5a6268;
-}
 
 /* 진행 상태바 컨테이너 */
 .progress-container {
@@ -127,8 +74,8 @@
 }
 
 .step.completed.active {
-    background-color: gray;
-    border-color: gray;
+    background-color: yellow;
+    border-color: yellow;
 }
 
 .step.cancelled.active {
@@ -169,10 +116,13 @@
                         </a>
 
                         {{#orderId}}
-                            <a href="/orders/detail/{{orderId}}/delete" id = "deleteButton" class="btn btn-custom-delete btn-sm">
+                            <button id = "deleteButton" class="btn btn-custom-delete btn-sm">
                                 <i class="fas fa-trash-alt"></i> 삭제
-                            </a>
+                            </button>
                         {{/orderId}}
+                        <a href="/orders" class="btn btn-custom-select btn-sm" id="selectButton">
+                            <i class="fas fa-plus-circle"></i> 목록
+                        </a>
                     </div>
 
                     <!-- 폼 시작 -->
@@ -218,17 +168,15 @@
                     </div>
 
                         <div class="mb-3 row">
-                            <label for="product" class="col-sm-2 col-form-label">기회 제품:</label>
+                            <label for="productId" class="col-sm-2 col-form-label">제품:</label>
                             <div class="col-sm-10">
                                 <select id="productId" name="productId" required>
-
                                     <option value="">-- 제품 선택 --</option>
                                     {{#products}}
-                                        <option value="{{productId}}">
+                                        <option value="{{productId}}" {{#isSelected}}{{productId}}{{/isSelected}}>
                                             {{productName}} (ID: {{productId}})
                                         </option>
                                     {{/products}}
-
                                 </select>
                             </div>
                         </div>
@@ -239,7 +187,7 @@
                                 <select id="contractId" name="contractId" required>
                                     <option value="">-- 계약 선택 --</option>
                                     {{#contracts}}
-                                        <option value="{{contractId}}">
+                                        <option value="{{contractId}}" {{#isSelected}}{{contractId}}{{/isSelected}}>
                                             {{contractId}} (ID: {{contractId}})
                                         </option>
                                     {{/contracts}}
@@ -248,17 +196,13 @@
                         </div>
 
                     <div class="d-flex justify-content-end">
-                        <button type="submit" id="updateButton" class="btn btn-custom-create btn-sm">
+                        <button type="submit" id="updateButton" class="btn btn-custom-update btn-sm">
                             <i class="fas fa-plus-circle"></i> 저장
                         </button>
                     </div>
                 </form> <!-- 폼 닫기 -->
                     {{/orders}}
-
-
-
-
-
+                </form>
                     </table>
 
                 </div>
@@ -281,8 +225,8 @@
                         <div class="progress-steps">
                             <div class="step none" data-step="none"></div>
                             <div class="step draft" data-step="draft"></div>
-                            <div class="step activated" data-step="activated"></div>
                             <div class="step completed" data-step="completed"></div>
+                            <div class="step activated" data-step="activated"></div>
                             <div class="step cancelled" data-step="cancelled"></div>
                         </div>
                     </div>
@@ -293,78 +237,101 @@
     </div>
 </main>
 
-
     <script>
 
-    {{#orders}}
+
         document.addEventListener("DOMContentLoaded", function () {
-    // 삭제 버튼 클릭 이벤트 등록
-    var deleteButton = document.getElementById("deleteButton");
-    if (deleteButton) {
-        deleteButton.addEventListener("click", function (event) {
-            event.preventDefault(); // 기본 링크 동작을 막습니다.
+{{#orders}}
 
-            var confirmDelete = confirm("정말 삭제하시겠습니까?");
-            if (confirmDelete) {
-                window.location.href = this.href;
-            }
+    {{#orderId}}
+        // Mustache 템플릿에서 서버 데이터를 가져옴
+            var orderStatus = "{{orderStatus}}";
+            var productId = "{{productId.productId}}";
+            var contractId = "{{contractId.contractId}}";
+
+            // 폼에 데이터 채우기
+            document.getElementById("orderStatus").value = orderStatus;
+            document.getElementById("productId").value = productId;
+            document.getElementById("contractId").value = contractId;
+    {{/orderId}}
+
+        // Selectize 초기화
+        $('#contractId').selectize({
+            create: false,
+            sortField: 'text'
         });
-    }
-
-    // Mustache 템플릿에서 서버 데이터를 가져옴
-    var orderStatus = "{{orderStatus}}";
-    var productId = "{{productId}}"; // Mustache 템플릿에서 올바른 값 바인딩
-    var contractId = "{{contractId}}";
-
-    // 폼에 데이터 채우기
-    var orderStatusSelect = document.getElementById("orderStatus");
-    if (orderStatusSelect) {
-        orderStatusSelect.value = orderStatus;
-    }
-    document.getElementById("productId").value = productId;
-    document.getElementById("contractId").value = contractId;
-
-    // Selectize 초기화
-    $('#contractId').selectize({
-        create: false,
-        sortField: 'text'
-    });
-    $('#productId').selectize({
-        create: false,
-        sortField: 'text'
-    });
-
-    // Form 삭제버튼 클릭 시 현 주소가 create인 경우 create로 action 주소 변경
-    var form = document.getElementById("orderForm");
-    var currentUrl = window.location.pathname;
-    if (form && currentUrl === "/orders/detail/create") {
-        form.action = "/orders/detail/create";
-    }
-
-    // 저장 버튼 클릭 시 변경사항 저장 여부 확인
-    var updateButton = document.getElementById("updateButton");
-    if (updateButton) {
-        updateButton.addEventListener("click", function (event) {
-            var confirmSave = confirm("변경사항을 저장하겠습니까?");
-            if (!confirmSave) {
-                event.preventDefault();
-            }
+        $('#productId').selectize({
+            create: false,
+            sortField: 'text'
         });
-    }
 
-    // 상태에 따른 진행상황 표시
-    var progressSteps = document.querySelectorAll(".step");
-    var steps = ["none", "draft", "activated", "completed", "cancelled"];
-    var currentIndex = steps.indexOf(orderStatus);
-    if (currentIndex !== -1) {
-        progressSteps[currentIndex].classList.add("active");
-    }
-});
+        // Form 삭제버튼 클릭 시 현 주소가 create인 경우 create로 action 주소 변경
+        var form = document.getElementById("orderForm");
+        var currentUrl = window.location.pathname;
+        if (form && currentUrl === "/orders/detail/create") {
+            form.action = "/orders/detail/create";
+        }
 
+        // 저장 버튼 클릭 시 변경사항 저장 여부 확인
+        var updateButton = document.getElementById("updateButton");
+        if (updateButton) {
+            updateButton.addEventListener("click", function (event) {
+                var confirmSave = confirm("변경사항을 저장하겠습니까?");
+                if (!confirmSave) {
+                    event.preventDefault();
+                }
+            });
+        }
 
-    {{/orders}}
+        // 상태에 따른 진행상황 표시
+        var progressSteps = document.querySelectorAll(".step");
+        var steps = ["none", "draft", "completed", "activated", "cancelled"];
+        var currentIndex = steps.indexOf(orderStatus);
+        if (currentIndex !== -1) {
+            progressSteps[currentIndex].classList.add("active");
+        }
+
+        {{#orderId}}
+            var deleteButton = document.getElementById("deleteButton");
+            if (deleteButton) {
+                deleteButton.addEventListener("click", function () {
+                    // 서버에서 렌더링된 orderId 가져오기
+                    var orderId = "{{orderId}}";
+
+                if (orderId) {
+                    var confirmDelete = confirm("현재 항목을 삭제하시겠습니까?");
+                    if (confirmDelete) {
+                        fetch(`/orders/detail/${orderId}/delete`, {
+                            method: "POST", // 서버 엔드포인트가 POST를 지원해야 함
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({ id: orderId }), // 올바른 데이터 전송
+                        })
+                            .then((response) => {
+                                if (response.ok) {
+                                    alert("삭제되었습니다.");
+                                    window.location.href = "/orders"; // 삭제 후 이동
+                                } else {
+                                    alert("삭제 중 오류가 발생했습니다.");
+                                }
+                            })
+                            .catch((error) => {
+                                console.error("Error:", error);
+                                alert("삭제 중 오류가 발생했습니다.");
+                            });
+                    }
+                } else {
+                    alert("삭제할 ID가 없습니다.");
+                }
+            });
+            }
+        {{/orderId}}
+    });
+{{/orders}}
     </script>
 
 
 
-    {{>main/footer}}
+
+{{>main/footer}}

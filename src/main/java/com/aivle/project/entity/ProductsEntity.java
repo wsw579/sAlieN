@@ -43,13 +43,18 @@ public class ProductsEntity implements Serializable {
 
     private String productFamily;
 
+    // 내부 외래키
+    @ManyToOne
+    @JoinColumn(name = "employee_id", nullable = false, foreignKey = @ForeignKey(name = "fk_orders_employee_Id"))
+    private EmployeeEntity employeeId;
+
     // 외부 외래키
     @OneToMany(mappedBy = "productId", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     private List<OpportunitiesEntity> opportunities;
 
     @OneToMany(mappedBy = "productId", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     private List<ContractsEntity> contracts;
-  
+
     @OneToMany(mappedBy = "productId", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     private List<OrdersEntity> orders;
 }

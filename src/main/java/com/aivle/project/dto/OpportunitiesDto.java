@@ -5,14 +5,9 @@ import com.aivle.project.entity.AccountEntity;
 import com.aivle.project.entity.EmployeeEntity;
 import com.aivle.project.entity.LeadsEntity;
 import com.aivle.project.entity.ProductsEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -44,7 +39,6 @@ public class OpportunitiesDto {
     private EmployeeEntity employeeId;
 
 
-
-
-
+    public OpportunitiesDto(Long aLong, String s) {
+    }
 }

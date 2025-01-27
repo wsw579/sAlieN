@@ -1,170 +1,125 @@
 {{>main/header}}
 
 <style>
-    .button-container {
-        display: flex;
-        justify-content: flex-end; /* 오른쪽 정렬 */
-        gap: 10px; /* 버튼 간격 */
-    }
-    .btn-custom-create {
-        background-color: #d4edda; /* 파스텔 그린 */
-        border-color: #c3e6cb;
-        color: #155724;
-    }
-    .btn-custom-delete {
-        background-color: #f8d7da; /* 파스텔 레드 */
-        border-color: #f5c6cb;
-        color: #721c24;
-    }
-    .btn-custom-create:hover {
-        background-color: #c3e6cb; /* 약간 어두운 그린 */
-        border-color: #b1dfbb;
-    }
-    .btn-custom-delete:hover {
-        background-color: #f5c6cb; /* 약간 어두운 레드 */
-        border-color: #f1b0b7;
-    }
-    .btn-sm {
-        font-size: 0.875rem; /* 버튼 폰트 크기 감소 */
-        padding: 0.25rem 0.5rem; /* 패딩 감소 */
-    }
-
-
-    .container {
-        background-color: #f8f9fa;
-        padding: 20px;
-        border-radius: 10px;
-    }
-    .col-form-label {
-        font-weight: bold;
-    }
-    .btn-primary {
-        background-color: #6c757d;
-        border: none;
-    }
-    .btn-primary:hover {
-        background-color: #5a6268;
-    }
 
 
 
 
 
 
+<!--.progress-container {-->
+<!--    position: relative;-->
+<!--    width: 100%;-->
+<!--    height: 70px; /* 높이를 조금 늘립니다 */-->
+<!--    margin: 20px 0;-->
+<!--}-->
 
-.progress-container {
-    position: relative;
-    width: 100%;
-    height: 70px; /* 높이를 조금 늘립니다 */
-    margin: 20px 0;
-}
+<!--.progress-bar {-->
+<!--    position: absolute;-->
+<!--    top: 38%; /* 중앙 정렬 */-->
+<!--    left: 10%; /* Qualification 원의 중앙에서 시작하도록 조정합니다 */-->
+<!--    transform: translateY(-50%);-->
+<!--    width: 0;-->
+<!--    height: 10px;-->
+<!--    background-color: green;-->
+<!--    transition: width 0.4s ease;-->
+<!--}-->
 
-.progress-bar {
-    position: absolute;
-    top: 38%; /* 중앙 정렬 */
-    left: 10%; /* Qualification 원의 중앙에서 시작하도록 조정합니다 */
-    transform: translateY(-50%);
-    width: 0;
-    height: 10px;
-    background-color: green;
-    transition: width 0.4s ease;
-}
+<!--.progress-steps {-->
+<!--    display: flex;-->
+<!--    justify-content: space-between;-->
+<!--    position: absolute;-->
+<!--    top: 50%; /* 중앙 정렬 */-->
+<!--    width: 100%;-->
+<!--    transform: translateY(-50%);-->
+<!--}-->
 
-.progress-steps {
-    display: flex;
-    justify-content: space-between;
-    position: absolute;
-    top: 50%; /* 중앙 정렬 */
-    width: 100%;
-    transform: translateY(-50%);
-}
-
-.step {
-    width: 20%;
-    text-align: center;
-    position: relative;
-    padding-top: 30px; /* 텍스트를 아래로 내리기 위해 패딩 추가 */
-}
-
-
-.step::before {
-    content: '';
-    position: absolute;
-    top: 16%; /* 원의 위치를 조정합니다 */
-    left: 50%;
-    transform: translateX(-50%);
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background-color: white;
-    border: 2px solid green;
-    transition: background-color 0.4s ease, border-color 0.4s ease;
-}
-
-.step.active::before {
-    background-color: green;
-    border-color: green;
-}
+<!--.step {-->
+<!--    width: 20%;-->
+<!--    text-align: center;-->
+<!--    position: relative;-->
+<!--    padding-top: 30px; /* 텍스트를 아래로 내리기 위해 패딩 추가 */-->
+<!--}-->
 
 
+<!--.step::before {-->
+<!--    content: '';-->
+<!--    position: absolute;-->
+<!--    top: 16%; /* 원의 위치를 조정합니다 */-->
+<!--    left: 50%;-->
+<!--    transform: translateX(-50%);-->
+<!--    width: 20px;-->
+<!--    height: 20px;-->
+<!--    border-radius: 50%;-->
+<!--    background-color: white;-->
+<!--    border: 2px solid green;-->
+<!--    transition: background-color 0.4s ease, border-color 0.4s ease;-->
+<!--}-->
 
-        .comment-section {
-            max-height: 300px;
-            overflow-y: auto;
-            border: 1px solid #ccc;
-            padding: 10px;
-            width: 100%;
-        }
-        .comment {
-            margin-bottom: 10px;
-            padding: 10px;
-            border-radius: 10px;
-            background-color: #f1f1f1;
-            position: relative;
-            width: calc(100% - 20px);
-        }
-        .comment .author {
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        .comment .timestamp {
-            font-size: 0.8em;
-            color: #888;
-            position: absolute;
-            bottom: 5px;
-            right: 10px;
-        }
-        .comment-form {
-            display: flex;
-            width: 100%;
-            align-items: center;
-            margin-top: 10px;
-            background-color: #f9f9f9;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        .comment-form input[type="text"] {
-            flex: 1;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            margin-right: 10px;
-            font-size: 16px;
-        }
-        .comment-form button {
-            padding: 10px 10px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        .comment-form button:hover {
-            background-color: #0056b3;
-        }
+<!--.step.active::before {-->
+<!--    background-color: green;-->
+<!--    border-color: green;-->
+<!--}-->
+
+
+
+<!--        .comment-section {-->
+<!--            max-height: 300px;-->
+<!--            overflow-y: auto;-->
+<!--            border: 1px solid #ccc;-->
+<!--            padding: 10px;-->
+<!--            width: 100%;-->
+<!--        }-->
+<!--        .comment {-->
+<!--            margin-bottom: 10px;-->
+<!--            padding: 10px;-->
+<!--            border-radius: 10px;-->
+<!--            background-color: #f1f1f1;-->
+<!--            position: relative;-->
+<!--            width: calc(100% - 20px);-->
+<!--        }-->
+<!--        .comment .author {-->
+<!--            font-weight: bold;-->
+<!--            margin-bottom: 5px;-->
+<!--        }-->
+<!--        .comment .timestamp {-->
+<!--            font-size: 0.8em;-->
+<!--            color: #888;-->
+<!--            position: absolute;-->
+<!--            bottom: 5px;-->
+<!--            right: 10px;-->
+<!--        }-->
+<!--        .comment-form {-->
+<!--            display: flex;-->
+<!--            width: 100%;-->
+<!--            align-items: center;-->
+<!--            margin-top: 10px;-->
+<!--            background-color: #f9f9f9;-->
+<!--            padding: 10px;-->
+<!--            border: 1px solid #ccc;-->
+<!--            border-radius: 10px;-->
+<!--            box-shadow: 0 4px 8px rgba(0,0,0,0.1);-->
+<!--        }-->
+<!--        .comment-form input[type="text"] {-->
+<!--            flex: 1;-->
+<!--            padding: 10px;-->
+<!--            border: 1px solid #ddd;-->
+<!--            border-radius: 5px;-->
+<!--            margin-right: 10px;-->
+<!--            font-size: 16px;-->
+<!--        }-->
+<!--        .comment-form button {-->
+<!--            padding: 10px 10px;-->
+<!--            background-color: #007bff;-->
+<!--            color: white;-->
+<!--            border: none;-->
+<!--            border-radius: 5px;-->
+<!--            cursor: pointer;-->
+<!--            transition: background-color 0.3s ease;-->
+<!--        }-->
+<!--        .comment-form button:hover {-->
+<!--            background-color: #0056b3;-->
+<!--        }-->
 
 
 </style>
@@ -199,7 +154,8 @@
                                 </a>
 
                                 {{#accountId}}
-                                    <a href="/account/detail/{{accountId}}/delete" class="btn btn-custom-delete btn-sm" id="deleteButton">
+                                    <a href="/account/detail/{{accountId}}/delete" class="btn btn-custom-delete btn-sm"
+                                       id="deleteButton">
                                         <i class="fas fa-plus-circle"></i> 삭제
                                     </a>
                                 {{/accountId}}
@@ -208,6 +164,9 @@
                                         <i class="fas fa-plus-circle"></i> 삭제
                                     </a>
                                 {{/accountId}}
+                                <a href="/account" class="btn btn-custom-select btn-sm" id="selectButton">
+                                    <i class="fas fa-plus-circle"></i> 목록
+                                </a>
 
                             </div>
 
@@ -220,7 +179,7 @@
 
 
                             <div class="mb-3 row">
-                                <label for="accountCreatedDate" class="col-sm-2 col-form-label">생성일자:</label>
+                                <label for="accountCreatedDate" class="col-sm-2 col-form-label">생성 일자:</label>
                                 <div class="col-sm-10">
                                     <input type="date" class="form-control" id="accountCreatedDate"
                                            name="accountCreatedDate" value="{{accountCreatedDate}}" required>
@@ -228,9 +187,10 @@
                             </div>
 
                             <div class="mb-3 row">
-                                <label for="accountStatus" class="col-sm-2 col-form-label">계정상태:</label>
+                                <label for="accountStatus" class="col-sm-2 col-form-label">계정 상태:</label>
                                 <div class="col-sm-10">
                                     <select class="form-control" id="accountStatus" name="accountStatus">
+                                        <option value="">계정 상태 선택</option>
                                         <option value="Active">Active</option>
                                         <option value="Closed">Closed</option>
                                     </select>
@@ -246,35 +206,57 @@
                             </div>
 
                             <div class="mb-3 row">
-                                <label for="owner" class="col-sm-2 col-form-label">계정 소유자:</label>
+                                <label for="employeeId" class="col-sm-2 col-form-label">계약 소유자:</label>
                                 <div class="col-sm-10">
-                                    <input type="text" class="form-control" id="owner" name="owner" value="">
+                                    <select id="employeeId" name="employeeId" required>
+
+                                        <option value="">-- 담당자 선택 --</option>
+                                        {{#employee}}
+                                            <option value="{{employeeId}}">
+                                                {{employeeName}} (ID: {{employeeId}})
+                                            </option>
+                                        {{/employee}}
+
+                                    </select>
                                 </div>
                             </div>
+
 
                             <div class="mb-3 row">
                                 <label for="accountType" class="col-sm-2 col-form-label">유형:</label>
                                 <div class="col-sm-10">
-                                    <input type="text" class="form-control" id="accountType" name="accountType"
-                                           value="{{accountType}}" required>
+                                    <select class="form-control" id="accountType" name="accountType">
+                                        <option value="">유형 선택</option>
+                                        <option value="고객사">고객사</option>
+                                        <option value="협력사">협력사</option>
+                                        <option value="파트너사">파트너사</option>
+                                        <option value="계열사">계열사</option>
+                                    </select>
                                 </div>
                             </div>
+
 
                             <div class="mb-3 row">
                                 <label for="parentAccountId" class="col-sm-2 col-form-label">상위 계정:</label>
                                 <div class="col-sm-10">
-                                    <select class="form-control" id="parentAccountId" name="parentAccountId">
-                                        <option value=1>1</option>
-                                        <option value=2>2</option>
-                                    </select>
-                                </div>
-                            </div>
+                                    <select id="parentAccountId" name="parentAccountId">
+                                        <option value="">-- 계정 선택 --</option>
+                                        {{#accounts}}
+                                            <option value="{{accountId}}">
+                                                {{accountName}} (ID: {{accountId}})
+                                            </option>
+                                        {{/accounts}}
+                                </select>
+                    </div>
+                    </div>
+
+
 
                             <div class="mb-3 row">
                                 <label for="website" class="col-sm-2 col-form-label">웹사이트:</label>
                                 <div class="col-sm-10">
                                     <input type="text" class="form-control" id="website" name="website"
-                                           value="{{website}}" >
+                                           value="{{website}}">
                                 </div>
                             </div>
 
@@ -282,15 +264,24 @@
                                 <label for="contact" class="col-sm-2 col-form-label">대표 전화:</label>
                                 <div class="col-sm-10">
                                     <input type="text" class="form-control" id="contact" name="contact"
-                                           value="{{contact}}" >
+                                           value="{{contact}}">
                                 </div>
                             </div>
+
 
                             <div class="mb-3 row">
                                 <label for="businessType" class="col-sm-2 col-form-label">사업 유형:</label>
                                 <div class="col-sm-10">
-                                    <input type="text" class="form-control" id="businessType" name="businessType"
-                                           value="{{businessType}}" required>
+                                    <select class="form-control" id="businessType" name="businessType">
+                                        <option value="">사업 유형 선택</option>
+                                        <option value="제조업">제조업</option>
+                                        <option value="IT서비스">IT서비스</option>
+                                        <option value="소프트웨어">소프트웨어</option>
+                                        <option value="반도체">반도체</option>
+                                        <option value="전자부품">전자부품</option>
+                                        <option value="통신">통신</option>
+                                        <option value="보안">보안</option>
+                                    </select>
                                 </div>
                             </div>
 
@@ -306,7 +297,7 @@
                                 <label for="accountDetail" class="col-sm-2 col-form-label">설명:</label>
                                 <div class="col-sm-10">
                                     <input type="text" class="form-control" id="accountDetail" name="accountDetail"
-                                           value="{{accountDetail}}" >
+                                           value="{{accountDetail}}">
                                 </div>
                             </div>
 
@@ -314,7 +305,7 @@
                                 <label for="address" class="col-sm-2 col-form-label">배송지:</label>
                                 <div class="col-sm-10">
                                     <input type="text" class="form-control" id="address" name="address"
-                                           value="{{address}}" >
+                                           value="{{address}}">
                                 </div>
                             </div>
 
@@ -328,92 +319,96 @@
 
                             <div class="d-flex justify-content-end">
                                 <button type="submit" id="updateButton"
-                                        class="btn btn-custom-create btn-sm">
+                                        class="btn btn-custom-update btn-sm">
                                     <i class="fas fa-plus-circle"></i> 저장
                                 </button>
                             </div>
 
+                
                             </form>
 
                         {{/account}}
                     </form>
                     </table>
-
                 </div>
-
             </div>
-
-
         </div>
+
 
     </main>
 
 
-
     <script>
 
-                // Form 부분 기회상태 초기값 연동 JS (select Form은 html로 초기 value 지정이 안되어서 JS로 처리)
+        // Form 부분 기회상태 초기값 연동 JS (select Form 은 html 초기 value 지정이 안되어서 JS로 처리)
+        {{#account}}
+            {{#accountId}}
+                document.addEventListener("DOMContentLoaded", function() {
+                    // Mustache 템플릿에서 서버 데이터를 가져옴
+                    var accountStatus = "{{accountStatus}}";
+                    var employeeId = "{{employeeId.employeeId}}";
+                    var parentAccountId = "{{parentAccount.accountId}}";
 
-                {{#account}}
-                    document.addEventListener("DOMContentLoaded", function() {
-                        // Mustache 템플릿에서 서버 데이터를 가져옴
-                        var accountStatus = "{{accountStatus}}";
+                    // 폼에 데이터 채우기
+                    document.getElementById("accountStatus").value = accountStatus;
+                    document.getElementById("employeeId").value = employeeId;
+                    document.getElementById("parentAccountId").value = parentAccountId;
+                });
+            {{/accountId}}
 
-        // 폼에 데이터 채우기
-        document.getElementById("accountStatus").value = accountStatus;
-        });
+            document.addEventListener("DOMContentLoaded", function() {
+                // 직원 검색
+                      $('#employeeId').selectize({
+                           create: false,
+                           sortField: 'text'
+                       });
+                       $('#parentAccountId').selectize({
+                           create: false,
+                           sortField: 'text'
+                       });
+                    });
 
-        document.addEventListener("DOMContentLoaded", function() {
-        document.getElementById("deleteButton").addEventListener("click", function(event) {
-            event.preventDefault(); // 기본 링크 동작을 막습니다.
+               document.addEventListener("DOMContentLoaded", function() {
+               document.getElementById("deleteButton").addEventListener("click", function(event) {
+                   event.preventDefault(); // 기본 링크 동작을 막습니다.
 
-            // 사용자 확인 대화 상자 표시
-            var confirmDelete = confirm("정말 삭제하시겠습니까?");
-        if (confirmDelete) {
-            window.location.href = this.href;  // 올바른 리다이렉트 경로
-        }
-    });
-});
-
-
-
-
-    //Form 삭제버튼 클릭 시 현 주소가 create인경우 create로 action주소 변경.
-
-    document.addEventListener("DOMContentLoaded", function() {
-        var form = document.getElementById("accountForm");
-        var currentUrl = window.location.pathname;
-
-        // 현재 URL이 "/account/detail/create"인 경우 폼 액션을 변경
-        if (currentUrl === "/account/detail/create") {
-            form.action = "/account/detail/create";
-        }
-
-        // 저장 버튼 클릭 시 변경사항 저장 여부 확인
-        document.getElementById("updateButton").addEventListener("click", function(event) {
-            var confirmSave = confirm("변경사항을 저장하겠습니까?");
-
-            if (!confirmSave) {
-                // 사용자가 취소를 클릭한 경우 폼 제출 중단
-                event.preventDefault();
-            }
-        });
-    });
+                  // 사용자 확인 대화 상자 표시
+                   var confirmDelete = confirm("정말 삭제하시겠습니까?");
+               if (confirmDelete) {
+                   window.location.href = this.href;  // 올바른 리다이렉트 경로
+               }
+           });
+       });
 
 
 
+           //Form 삭제버튼 클릭 시 현 주소가 create 인경우 create 로 action 주소 변경.
+
+           document.addEventListener("DOMContentLoaded", function() {
+               var form = document.getElementById("accountForm");
+               var currentUrl = window.location.pathname;
+
+               // 현재 URL "/account/detail/create"인 경우 폼 액션을 변경
+               if (currentUrl === "/account/detail/create") {
+                   form.action = "/account/detail/create";
+               }
+
+               // 저장 버튼 클릭 시 변경사항 저장 여부 확인
+               document.getElementById("updateButton").addEventListener("click", function(event) {
+                   var confirmSave = confirm("변경사항을 저장하겠습니까?");
+
+                   if (!confirmSave) {
+                       // 사용자가 취소를 클릭한 경우 폼 제출 중단
+                       event.preventDefault();
+                   }
+               });
+           });
 
 
-        // 페이지 로드 시 댓글 섹션 스크롤 최하단으로 이동
-        window.onload = function() {
-            var commentSection = document.getElementById("commentSection");
-            commentSection.scrollTop = commentSection.scrollHeight;
-        };
-                {{/account}}
 
+{{/account}}
 
-
-         </script>
+    </script>
 
 
 

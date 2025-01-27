@@ -40,4 +40,6 @@ public class OpportunitiesCommentEntity implements Serializable {
     private OpportunitiesEntity opportunity;
 
 
+    public OpportunitiesCommentEntity(String content, LocalDateTime now, String author, OpportunitiesEntity opportunity) {
+    }
 }

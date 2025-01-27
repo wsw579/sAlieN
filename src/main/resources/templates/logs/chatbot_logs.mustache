@@ -1,0 +1,153 @@
+{{>main/header}}
+
+<style>
+
+
+
+</style>
+
+
+
+
+<div id="layoutSidenav_content">
+    <main>
+        <div class="container-fluid px-4">
+            <h1 class="mt-4">Chatbot Logs</h1>
+            <ol class="breadcrumb mb-4">
+                <li class="breadcrumb-item active">Chatbot Logs</li>
+            </ol>
+            <!-- 상단 데이터 요약 카드 바 -->
+            <div class="row">
+                <div class="col-xl-3 col-md-6">
+                    <div class="card bg-primary text-white mb-4">
+                        <div class="card-body">오늘 생성 로그</div>
+                        <div class="card-footer d-flex align-items-center justify-content-between">
+                            <h3 id="allCount">건</h3>
+                            <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="card bg-warning text-white mb-4">
+                        <div class="card-body">전체 로그</div>
+                        <div class="card-footer d-flex align-items-center justify-content-between">
+                            <h3 id="proposalCount">건</h3>
+                            <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="card bg-success text-white mb-4">
+                        <div class="card-body">성공 로그</div>
+                        <div class="card-footer d-flex align-items-center justify-content-between">
+                            <h3 id="reviewCount">건</h3>
+                            <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="card bg-danger text-white mb-4">
+                        <div class="card-body">실패 로그</div>
+                        <div class="card-footer d-flex align-items-center justify-content-between">
+                            <h3 id="acceptedCount">건</h3>
+                            <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- 차트 -->
+            <div class="row">
+                <div class="col-xl-6">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-chart-area me-1"></i>
+                            연간 성공 로그
+                        </div>
+                        <div class="card-body"><canvas id="leadsReadChart" width="100%" height="40"></canvas></div>
+                    </div>
+                </div>
+                <div class="col-xl-6">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-chart-bar me-1"></i>
+                            연간 실패 로그
+                        </div>
+                        <div class="card-body"><canvas id="leadsReadBar" width="100%" height="40"></canvas></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 로그 테이블 -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-table me-1"></i>
+                    Logs
+                </div>
+                <div class="card-body">
+                    <div class="button-container mb-3" style="display: flex; align-items: center; gap: 10px;">
+                        <div style="flex: 1; display: flex; align-items: center; gap: 10px; justify-content: flex-end;">
+                            <form method="GET" action="/chatbot_logs" style="display: flex; align-items: center; gap: 5px;">
+                                <!-- 검색어 -->
+                                <input type="text" class="form-control" name="search" id="customSearch" placeholder="검색어를 입력하세요"
+                                       style="padding: 5px; width: 200px;" value="">
+
+                                <button type="submit" class = "btn btn-custom-select btn-sm">검색</button>
+                            </form>
+
+                        </div>
+
+                    </div>
+                    <table id="datatablesSimple">
+
+                        <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Date</th>
+                            <th>User_ID</th>
+                            <th>Classification</th>
+                            <th>Table</th>
+                            <th>Requests</th>
+                            <th>User Response</th>
+                            <th>System Response</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {{#logs}}
+                            <tr data-index="{{logsId}}">
+                                <td>{{logsId}}</td>
+                                <td>{{logDate}}</td>
+                                <td>{{userId}}</td>
+                                <td>{{crudOperations}}</td>
+                                <td>{{tableName}}</td>
+                                <td>{{requests}}</td>
+                                <td>{{userResponse}}</td>
+                                <td>{{systemResponse}}</td>
+                            </tr>
+                        {{/logs}}
+                        {{^logs}}
+
+                        {{/logs}}
+                        </tbody>
+
+                    </table>
+
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+
+    <script>
+
+
+
+
+    </script>
+
+    <script src="/assets/demo/leads-read-chart.js"></script>
+    <script src="/assets/demo/leads-read-bar.js"></script>
+
+{{>main/footer}}

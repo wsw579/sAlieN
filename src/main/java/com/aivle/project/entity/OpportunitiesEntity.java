@@ -8,12 +8,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -73,6 +70,9 @@ public class OpportunitiesEntity implements Serializable {
 
     @OneToMany(mappedBy = "opportunity", cascade = CascadeType.ALL)
     private List<OpportunitiesCommentEntity> comments;
+
+    @OneToMany(mappedBy = "opportunity", cascade = CascadeType.ALL)
+    private List<HistoryEntity> history;
 
 
     // 내부 외래키 부분

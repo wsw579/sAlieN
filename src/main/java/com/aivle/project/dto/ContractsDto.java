@@ -24,8 +24,11 @@ public class ContractsDto {
     private float contractSales;
     private float contractAmount;
     private String contractClassification;
-    private boolean contractSelected;
-    private boolean contractDeleted = false;
+//    private String uploadedFilePath;
+    // 파일 관련 필드
+    private byte[] fileData;
+    private String fileName;
+    private String mimeType;
 
     // 외래키 부분
 

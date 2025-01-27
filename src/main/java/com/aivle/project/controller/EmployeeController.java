@@ -1,10 +1,15 @@
 package com.aivle.project.controller;
 
 import com.aivle.project.dto.EmployeeDto;
+import com.aivle.project.entity.OpportunitiesEntity;
+import com.aivle.project.enums.Dept;
+import com.aivle.project.enums.Team;
+import com.aivle.project.service.CrudLogsService;
 import com.aivle.project.service.EmployeeService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,13 +19,16 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
 public class EmployeeController {
 
     private final EmployeeService employeeService;
+    private final CrudLogsService crudLogsService;
 
     @GetMapping("/login")
     public String login(@RequestParam(value = "error", required = false) String error, Model model) {
@@ -57,10 +65,31 @@ public class EmployeeController {
     }
 
     @PostMapping("/password-edit")
-    public String passwordEdit(EmployeeDto.Patch employeeDto){
-        String employeeId = employeeService.editPassword(employeeDto);
-        return "redirect:/mypage/" + employeeId;
+    @ResponseBody
+    public ResponseEntity<String> passwordEdit(@RequestBody EmployeeDto.Patch employeeDto) {
+        try {
+            // 비밀번호 변경 로직
+            String employeeId = employeeService.editPassword(employeeDto);
+
+            // 비밀번호 변경이 완료된 후, mypage/employeeId로 리다이렉트
+            return ResponseEntity.ok("비밀번호가 성공적으로 변경되었습니다.");
+        } catch (IllegalArgumentException e) {
+            // 오류 메시지 반환
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
+
+    @PostMapping("/password-find")
+    public ResponseEntity<String> passwordFind(@RequestBody EmployeeDto.Patch employeeDto) {
+        try {
+            String employeeId = employeeService.findPassword(employeeDto);
+            return ResponseEntity.ok("비밀번호가 성공적으로 변경되었습니다.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+
 
     @GetMapping("/mypage/{employeeId}")
     public String mypage(@PathVariable("employeeId") String employeeId, Model model){
@@ -78,4 +107,105 @@ public class EmployeeController {
         response.put("employeeId", employeeId); // 예시 응답
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/employee-list")
+    public String employeeList(Model model){
+        List<EmployeeDto.Get> empList = employeeService.findAllEmployee();
+        model.addAttribute("employeeList", empList);
+        return "user/employee_list";
+    }
+
+    @GetMapping("/admin/employee-signup")
+    public String adminEmployeeSignup(Model model){
+        return "admin/signup";
+    }
+
+    @PostMapping("/admin/signup")
+    public String adminEmployeeSignup(EmployeeDto.Post memberDto){
+        employeeService.join(memberDto);
+        return "redirect:/admin/employee-signup";
+    }
+
+
+    @GetMapping("/admin/employee-detail/{employeeId}")
+    public String employeeDetail(@PathVariable("employeeId") String employeeId, Model model){
+        EmployeeDto.Get employee = employeeService.findEmployeeById(employeeId);
+        model.addAttribute("employee", employee);
+        return "admin/employee_detail";
+    }
+
+    @GetMapping("/admin/employee-password-reset/{employeeId}")
+    public ResponseEntity<Map<String, Object>> resetPassword(@PathVariable String employeeId) {
+        Map<String, Object> response = new HashMap<>();
+
+        boolean resetSuccess = employeeService.resetEmployeePassword(employeeId); // 비밀번호 초기화 로직
+
+        if (resetSuccess) {
+            response.put("success", true);
+        } else {
+            response.put("success", false);
+        }
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/admin/employee/delete")
+    public ResponseEntity<Void> deleteAccounts(@RequestBody Map<String, List<String>> request) {
+        try {
+            List<String> ids = request.get("ids");
+            if (ids == null || ids.isEmpty()) {
+                return ResponseEntity.badRequest().build(); // HTTP 400 응답
+            }
+            System.out.println("delete Employee Received IDs: " + ids);
+            employeeService.deleteByIds(ids);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            System.err.println("Error during delete: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // HTTP 500 응답
+        }
+    }
+
+
+    @GetMapping("/api/getLoggedInUser")
+    @ResponseBody
+    public ResponseEntity<EmployeeDto.Get> getLoggedInUser() {
+        try {
+            EmployeeDto.Get loggedInUser = employeeService.getLoggedInUser();
+            return ResponseEntity.ok(loggedInUser);
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+    }
+
+    @GetMapping("/api/salesData")
+    public ResponseEntity<?> getSalesData(
+            @RequestParam(required = false) String teamId,
+            @RequestParam(required = false) String departmentId
+    ) {
+        try {
+            if (teamId == null && departmentId == null) {
+                throw new IllegalArgumentException("팀 ID 또는 부서 ID가 필요합니다.");
+            }
+
+            Dept deptEnum = departmentId != null ? Dept.valueOf(departmentId) : null;
+            Team teamEnum = teamId != null ? Team.valueOf(teamId) : null;
+
+            Map<String, Object> response = employeeService.getSalesData(teamEnum, deptEnum);
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("잘못된 팀 또는 부서 값: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류: " + e.getMessage());
+        }
+    }
+
+
+    // 부서 정보 추가
+    @GetMapping("/employees")
+    public String listEmployees(Model model) {
+        List<EmployeeDto.GetId> employees = employeeService.getAllEmployeeIdsAndNamesAndDepartmentIds();
+        System.out.println("Controller: Employees size = " + employees.size());
+        model.addAttribute("employees", employees);
+        return "employeeList";
+    }
+
 }
