@@ -141,6 +141,11 @@ public class ProductsService {
     }
 
     private void updateEntityFromDto(ProductsEntity entity, ProductsDto dto) {
+        // 현재 사용자 정보 가져오기
+        String currentUserId = UserContext.getCurrentUserId();
+        // 데이터베이스에서 EmployeeEntity 로드
+        EmployeeEntity employee = employeeRepository.findByEmployeeId(currentUserId);
+
         entity.setProductName(dto.getProductName());
         entity.setFixedPrice(dto.getFixedPrice());
         entity.setDealerPrice(dto.getDealerPrice());
@@ -148,6 +153,7 @@ public class ProductsService {
         entity.setProductCondition(ProductCondition.valueOf(dto.getProductCondition()));
         entity.setProductDescription(dto.getProductDescription());
         entity.setProductFamily(dto.getProductFamily());
+        entity.setEmployeeId(employee);
         productsRepository.save(entity);
     }
 
