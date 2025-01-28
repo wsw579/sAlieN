@@ -540,13 +540,12 @@
                 }, 100); // 딜레이 조정 가능
 
                 // API 호출 부분
-                //fetch('http://127.0.0.1:8000/chatbot', { // 로컬
                 fetch('https://saiescrm.api.jyds.synology.me/chatbot', { // 서버
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ request: message, user_id: user_id})
+                    body: JSON.stringify({ request: message, user_id: user_id })
                 })
                 .then(response => response.json())
                 .then(data => {
@@ -559,18 +558,49 @@
                     setTimeout(function() {
                         document.getElementById('chatbotMessages').scrollTop = document.getElementById('chatbotMessages').scrollHeight;
                     }, 100); // 딜레이 조정 가능
+
+                    // TTS API 호출 부분
+                    // 줄바꿈 문자를 제거하고 JSON 형식의 텍스트를 지워서 포맷팅
+                    var normalizedResponse = formattedResponse.replace(/\\n/g, ' ').replace(/\n/g, ' ').replace(/{[^{}]*}/g, '').replace(/<br>/g, '');
+
+                    fetch('https://saiescrm.tts.jyds.synology.me/tts', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ request: normalizedResponse, user_id: user_id })
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            return response.blob();
+                        } else {
+                            throw new Error('TTS API 호출 실패');
+                        }
+                    })
+                    .then(blob => {
+                        var audioUrl = URL.createObjectURL(blob);
+                        var audio = new Audio(audioUrl);
+                        audio.play();
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        var botMessage = "<div class='chat-container'><div class='bot-info message-info'>sAIes CRM</div><div class='bot-message'>TTS API 호출 오류: " + error.message + "<br><span class='message-info'>" + currentTime + "</span></div></div>";
+                        document.getElementById('chatbotMessages').innerHTML += botMessage;
+                        setTimeout(function() {
+                            document.getElementById('chatbotMessages').scrollTop = document.getElementById('chatbotMessages').scrollHeight;
+                        }, 100); // 딜레이 조정 가능
+                    });
                 })
                 .catch(error => {
                     console.error('Error:', error);
                     var botMessage = "<div class='chat-container'><div class='bot-info message-info'>sAIes CRM</div><div class='bot-message'>API 호출 오류: " + error.message + "<br><span class='message-info'>" + currentTime + "</span></div></div>";
                     document.getElementById('chatbotMessages').innerHTML += botMessage;
-
-                    // 모달 창 내의 스크롤 최하단으로 내리기 (오류 메시지 경우에도)
                     setTimeout(function() {
                         document.getElementById('chatbotMessages').scrollTop = document.getElementById('chatbotMessages').scrollHeight;
                     }, 100); // 딜레이 조정 가능
                 });
             }
+
 
             document.getElementById('chatbotInput').onkeydown = function(event) {
                 if (event.key === 'Enter') {
