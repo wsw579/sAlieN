@@ -24,8 +24,24 @@ public interface OpportunitiesRepository extends JpaRepository<OpportunitiesEnti
     @Query("SELECT o.opportunityId, o.opportunityName FROM OpportunitiesEntity o")
     List<Object[]> findAllOpportunityIdAndOpportunityName();
 
-    @Query("SELECT o FROM OpportunitiesEntity o WHERE CAST(o.opportunityId AS string) LIKE %:opportunityId%")
-    Page<OpportunitiesEntity> findByOpportunityIdLike(@Param("opportunityId") String opportunityId, Pageable pageable);
+    @Query("SELECT o FROM OpportunitiesEntity o WHERE o.opportunityName LIKE %:opportunityName%")
+    Page<OpportunitiesEntity> findByOpportunityNameLikeManager(@Param("opportunityName") String opportunityName, Pageable pageable);
+
+    @Query("SELECT o FROM OpportunitiesEntity o " +
+            "JOIN o.employeeId e " +
+            "WHERE e.teamId = :teamId " +
+            "AND o.opportunityName LIKE %:opportunityName%")
+    Page<OpportunitiesEntity> findByOpportunityNameLikeUser(
+            @Param("opportunityName") String opportunityName,
+            @Param("teamId") Team teamId,
+            Pageable pageable);
+
+    @Query("SELECT o FROM OpportunitiesEntity o " +
+            "JOIN o.employeeId e " +
+            "WHERE e.teamId = :teamId")
+    Page<OpportunitiesEntity> findByTeamId(
+            @Param("teamId") Team teamId,
+            Pageable pageable);
 
     @Query("SELECT " +
             "CASE " +
@@ -44,6 +60,27 @@ public interface OpportunitiesRepository extends JpaRepository<OpportunitiesEnti
             "   WHEN o.opportunityStatus NOT LIKE 'Closed%' THEN 'Ongoing' " +
             "END")
     List<Object[]> countAllStatuses();
+
+    @Query("SELECT " +
+            "CASE " +
+            "   WHEN o.targetCloseDate < CURRENT_DATE AND o.opportunityStatus NOT LIKE 'Closed%' THEN 'Overdue' " +
+            "   WHEN o.opportunityStatus = 'Pending' THEN 'Pending' " +
+            "   WHEN o.opportunityStatus LIKE 'Closed%' THEN 'Closed' " +
+            "   WHEN o.opportunityStatus NOT LIKE 'Closed%' THEN 'Ongoing' " +
+            "END AS status, " +
+            "COUNT(o) " +
+            "FROM OpportunitiesEntity o " +
+            "JOIN o.employeeId e " +  // Employee와 JOIN
+            "WHERE e.teamId = :teamId " + // employeeId 조건 추가
+            "GROUP BY " +
+            "CASE " +
+            "   WHEN o.targetCloseDate < CURRENT_DATE AND o.opportunityStatus NOT LIKE 'Closed%' THEN 'Overdue' " +
+            "   WHEN o.opportunityStatus = 'Pending' THEN 'Pending' " +
+            "   WHEN o.opportunityStatus LIKE 'Closed%' THEN 'Closed' " +
+            "   WHEN o.opportunityStatus NOT LIKE 'Closed%' THEN 'Ongoing' " +
+            "END")
+    List<Object[]> countAllStatusesUserTeam(@Param("teamId") Team teamId);
+
     // 이번달 기회 상태 수
     @Query("SELECT " +
             "CASE " +
@@ -74,7 +111,18 @@ public interface OpportunitiesRepository extends JpaRepository<OpportunitiesEnti
             "FROM OpportunitiesEntity o " +
             "WHERE YEAR(o.createdDate) = :year AND o.opportunityStatus = 'Closed(won)' " +
             "GROUP BY MONTH(o.createdDate)")
-    List<Object[]> getMonthlyOpportunities(@Param("year") int year);
+    List<Object[]> getMonthlyOpportunitiesManager(@Param("year") int year);
+
+    // 차트 그래프
+    @Query("SELECT MONTH(o.createdDate), COUNT(o) " +
+            "FROM OpportunitiesEntity o " +
+            "JOIN o.employeeId e " +
+            "WHERE e.teamId = :teamId " +
+            "AND YEAR(o.createdDate) = :year AND o.opportunityStatus = 'Closed(won)' " +
+            "GROUP BY MONTH(o.createdDate)")
+    List<Object[]> getMonthlyOpportunitiesUser(
+            @Param("year") int year,
+            @Param("teamId") Team teamId);
 
 
     // calendar

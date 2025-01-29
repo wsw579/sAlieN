@@ -298,13 +298,13 @@
                                 <div class="col-sm-10">
                                     <select id="employeeId" name="employeeId" required>
                                         <option value="">-- 담당자 선택 --</option>
-                                        {{#employees}}
+                                        {{#employee}}
                                             <option value="{{employeeId}}">
                                                 {{employeeName}} (ID: {{employeeId}}
                                                 Dept: {{#departmentId}}{{name}}{{/departmentId}}{{^departmentId}}
                                                 미지정{{/departmentId}})
                                             </option>
-                                        {{/employees}}
+                                        {{/employee}}
                                     </select>
                                 </div>
                             </div>

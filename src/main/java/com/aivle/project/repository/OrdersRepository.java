@@ -24,8 +24,8 @@ public interface OrdersRepository extends JpaRepository<OrdersEntity, Long> {
     Page<OrdersEntity> findByOrderIdLikeManager(@Param("productName") String productName, Pageable pageable);
 
     @Query("SELECT o FROM OrdersEntity o " +
-            "LEFT JOIN o.employeeId e " +
-            "LEFT JOIN o.productId p " +
+            "JOIN o.employeeId e " +
+            "JOIN o.productId p " +
             "WHERE e.teamId = :teamId " +
             "AND p.productName LIKE %:productName%")
     Page<OrdersEntity> findByOrderIdLikeUser(
@@ -34,7 +34,7 @@ public interface OrdersRepository extends JpaRepository<OrdersEntity, Long> {
             Pageable pageable);
 
     @Query("SELECT o FROM OrdersEntity o " +
-            "LEFT JOIN o.employeeId e " +
+            "JOIN o.employeeId e " +
             "WHERE e.teamId = :teamId ")
     Page<OrdersEntity> findByTeamId(
             @Param("teamId") Team teamId,
