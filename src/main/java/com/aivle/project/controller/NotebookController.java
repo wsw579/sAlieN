@@ -18,7 +18,8 @@ public class NotebookController {
     public String startNotebook(Model model) {
 
 
-        String notebookUrl = "https://jupyter.org/try-jupyter/notebooks/?path=notebooks/Intro.ipynb";
+        String notebookUrl = "https://saiescrm.jupyterhub.jyds.synology.me/user/admin/doc/tree/Data_Analysis.ipynb";
+
 
         model.addAttribute("notebookUrl", notebookUrl);
 
