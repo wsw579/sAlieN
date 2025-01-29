@@ -47,14 +47,14 @@ public class OrdersService {
     public Page<OrdersEntity> readOrders(int page, int size, String search, String sortColumn, String sortDirection) {
         String userid = UserContext.getCurrentUserId();
         String userrole = UserContext.getCurrentUserRole();
-        String userdept = employeeRepository.findDeptById(userid);
+        String userposition = employeeRepository.findPositionById(userid);
         String userteam = employeeRepository.findTeamById(userid);
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortDirection), sortColumn));
 
-        if ("ROLE_ADMIN".equals(userrole)) {
-            return findOrdersForAdmin(search, pageable);
+        if ("ROLE_ADMIN".equals(userrole) || "GENERAL_MANAGER".equals(userposition) || "DEPARTMENT_HEAD".equals(userposition) || "TEAM_LEADER".equals(userposition)) {
+            return findOrdersForManager(search, pageable);
         } else if ("ROLE_USER".equals(userrole)) {
-            return findOrdersForUser(search, userdept, userteam, pageable);
+            return findOrdersForUser(search, userteam, pageable);
         } else {
             throw new AccessDeniedException("권한이 없습니다.");
         }
@@ -117,7 +117,7 @@ public class OrdersService {
         Map<String, Long> statusCounts = new HashMap<>();
         if (userrole.equals("ROLE_ADMIN") || userposition.equals("GENERAL_MANAGER") || userposition.equals("DEPARTMENT_HEAD") || userposition.equals("TEAM_LEADER"))
         {
-            results = ordersRepository.countOrdersByStatusForCurrentAdmin();
+            results = ordersRepository.countOrdersByStatusForCurrentManager();
         } else {
             results = ordersRepository.countOrdersByStatusForCurrentUser(Team.valueOf(userteam));
         }
@@ -181,7 +181,7 @@ public class OrdersService {
         String userteam = employeeRepository.findTeamById(userid);
         if (userrole.equals("ROLE_ADMIN") || userposition.equals("GENERAL_MANAGER") || userposition.equals("DEPARTMENT_HEAD") || userposition.equals("TEAM_LEADER"))
         {
-            ordersRepository.getMonthlyOrdersAdmin(year)
+            ordersRepository.getMonthlyOrdersManager(year)
                     .forEach(row -> {
                         int month = ((Number) row[0]).intValue() - 1;
                         int count = ((Number) row[1]).intValue();
@@ -237,20 +237,20 @@ public class OrdersService {
         ordersRepository.save(entity);
     }
 
-    private Page<OrdersEntity> findOrdersForAdmin(String search, Pageable pageable) {
-        // Admin 전용 로직
+    private Page<OrdersEntity> findOrdersForManager(String search, Pageable pageable) {
+        // Manager 전용 로직
         if (search != null && !search.isEmpty()) {
-            return ordersRepository.findByOrderIdLikeAdmin("%" + search + "%", pageable);
+            return ordersRepository.findByOrderIdLikeManager("%" + search + "%", pageable);
         }
         return ordersRepository.findAll(pageable);
     }
 
-    private Page<OrdersEntity> findOrdersForUser(String search, String departmentId, String teamId, Pageable pageable) {
+    private Page<OrdersEntity> findOrdersForUser(String search, String teamId, Pageable pageable) {
         // User 전용 로직
         if (search != null && !search.isEmpty()) {
-            return ordersRepository.findByOrderIdLikeUser("%" + search + "%", Dept.valueOf(departmentId), Team.valueOf(teamId), pageable);
+            return ordersRepository.findByOrderIdLikeUser("%" + search + "%", Team.valueOf(teamId), pageable);
         }
-        return ordersRepository.findByDepartmentAndTeam(Dept.valueOf(departmentId), Team.valueOf(teamId), pageable);
+        return ordersRepository.findByTeamId(Team.valueOf(teamId), pageable);
     }
 
     // 영업 실적 그래프

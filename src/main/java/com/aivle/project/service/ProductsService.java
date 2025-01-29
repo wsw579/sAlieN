@@ -58,7 +58,7 @@ public class ProductsService {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortDirection), sortColumn));
 
         if (search != null && !search.isEmpty()) {
-            return productsRepository.findByProductIdLike("%" + search + "%", pageable);
+            return productsRepository.findByProductNameLike("%" + search + "%", pageable);
         }
         return productsRepository.findAll(pageable);
     }
