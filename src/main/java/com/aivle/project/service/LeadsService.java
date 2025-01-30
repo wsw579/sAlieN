@@ -5,6 +5,7 @@ import com.aivle.project.dto.LeadsDto;
 import com.aivle.project.dto.ProductsDto;
 import com.aivle.project.entity.ContractsEntity;
 import com.aivle.project.entity.LeadsEntity;
+import com.aivle.project.entity.OpportunitiesEntity;
 import com.aivle.project.entity.OrdersEntity;
 import com.aivle.project.enums.Team;
 import com.aivle.project.repository.EmployeeRepository;
@@ -17,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,12 +54,19 @@ public class LeadsService {
     //Read
     @Transactional(readOnly = true)
     public Page<LeadsEntity> readLeads(int page, int size, String search, String sortColumn, String sortDirection) {
+        String userid = UserContext.getCurrentUserId();
+        String userrole = UserContext.getCurrentUserRole();
+        String userposition = employeeRepository.findPositionById(userid);
+        String userteam = employeeRepository.findTeamById(userid);
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortDirection), sortColumn));
 
-        if (search != null && !search.isEmpty()) {
-            return leadsRepository.findByLeadIdLike("%" + search + "%", pageable);
+        if ("ROLE_ADMIN".equals(userrole) || "GENERAL_MANAGER".equals(userposition) || "DEPARTMENT_HEAD".equals(userposition) || "TEAM_LEADER".equals(userposition)) {
+            return findLeadsForManager(search, pageable);
+        } else if ("ROLE_USER".equals(userrole)) {
+            return findLeadsForUser(search, userteam, pageable);
+        } else {
+            throw new AccessDeniedException("권한이 없습니다.");
         }
-        return leadsRepository.findAll(pageable);
     }
 
 
@@ -106,16 +115,22 @@ public class LeadsService {
     // 상태 수 가져오기
     @Transactional(readOnly = true)
     public Map<String, Long> getLeadStatusCounts() {
-        Map<String, Long> statusCounts = new HashMap<>();
-        List<Object[]> results = leadsRepository.countLeadsByStatus();
+        String userid = UserContext.getCurrentUserId();
+        String userrole = UserContext.getCurrentUserRole();
+        String userposition = employeeRepository.findPositionById(userid);
+        String userteam = employeeRepository.findTeamById(userid);
 
-        for (Object[] result : results) {
-            String status = (String) result[0];
-            Long count = (Long) result[1];
-            statusCounts.put(status, count);
-        }
+// 적절한 쿼리 실행
+        List<Object[]> results = isManager(userrole, userposition)
+                ? leadsRepository.countLeadsByStatusManager()
+                : leadsRepository.countLeadsByStatusTeam(Team.valueOf(userteam));
 
-        return statusCounts;
+// Stream API 활용하여 데이터 변환
+        return results.stream()
+                .collect(Collectors.toMap(
+                        result -> (String) result[0],  // Key: Status
+                        result -> (Long) result[1]     // Value: Count
+                ));
     }
     // Bar 및 Chart Data
     @Transactional(readOnly = true)
@@ -155,12 +170,23 @@ public class LeadsService {
     }
 
     private void populateMonthlyData(int year, List<Integer> monthlyData) {
-        List<Object[]> orders = leadsRepository.getMonthlyLeads(year);
-        for (Object[] row : orders) {
-            int month = ((Number) row[0]).intValue() - 1; // 1월 = 0
+        String userid = UserContext.getCurrentUserId();
+        String userrole = UserContext.getCurrentUserRole();
+        String userposition = employeeRepository.findPositionById(userid);
+        String userteam = employeeRepository.findTeamById(userid);
+
+
+// 데이터 조회 (관리자는 모든 데이터, 일반 사용자는 팀별 데이터)
+        List<Object[]> queryResult = isManager(userrole, userposition)
+                ? leadsRepository.getMonthlyLeadsManager(year)
+                : leadsRepository.getMonthlyLeadsTeam(year, Team.valueOf(userteam));
+
+// 공통 로직: 데이터 매핑
+        queryResult.forEach(row -> {
+            int month = ((Number) row[0]).intValue() - 1;
             int count = ((Number) row[1]).intValue();
             monthlyData.set(month, count);
-        }
+        });
     }
 
     private void accumulateMonthlyData(List<Integer> monthlyData) {
@@ -219,5 +245,29 @@ public class LeadsService {
 
         // Repository 메서드 호출
         return leadsRepository.countLeadsWithTargetCloseDateTodayUser(today, userid);
+    }
+
+    // 권한별 조회
+    private Page<LeadsEntity> findLeadsForManager(String search, Pageable pageable) {
+        // Manager 전용 로직
+        if (search != null && !search.isEmpty()) {
+            return leadsRepository.findByCompanyNameLikeManager("%" + search + "%", pageable);
+        }
+        return leadsRepository.findAll(pageable);
+    }
+
+    private Page<LeadsEntity> findLeadsForUser(String search, String teamId, Pageable pageable) {
+        // User 전용 로직
+        if (search != null && !search.isEmpty()) {
+            return leadsRepository.findByCompanyNameLikeTeam("%" + search + "%", Team.valueOf(teamId), pageable);
+        }
+        return leadsRepository.findByTeamId(Team.valueOf(teamId), pageable);
+    }
+
+    private boolean isManager(String userrole, String userposition) {
+        return "ROLE_ADMIN".equals(userrole) ||
+                "GENERAL_MANAGER".equals(userposition) ||
+                "DEPARTMENT_HEAD".equals(userposition) ||
+                "TEAM_LEADER".equals(userposition);
     }
 }

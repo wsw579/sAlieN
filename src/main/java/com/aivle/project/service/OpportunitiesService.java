@@ -160,7 +160,7 @@ public class OpportunitiesService {
 
 // 적절한 쿼리 실행
         List<Object[]> results = isManager(userrole, userposition)
-                ? opportunitiesRepository.countAllStatuses()
+                ? opportunitiesRepository.countAllStatusesManager()
                 : opportunitiesRepository.countAllStatusesUserTeam(Team.valueOf(userteam));
 
 // Stream API 활용하여 데이터 변환
@@ -221,7 +221,7 @@ public class OpportunitiesService {
 // 데이터 조회 (관리자는 모든 데이터, 일반 사용자는 팀별 데이터)
         List<Object[]> queryResult = isManager(userrole, userposition)
                 ? opportunitiesRepository.getMonthlyOpportunitiesManager(year)
-                : opportunitiesRepository.getMonthlyOpportunitiesUser(year, Team.valueOf(userteam));
+                : opportunitiesRepository.getMonthlyOpportunitiesTeam(year, Team.valueOf(userteam));
 
 // 공통 로직: 데이터 매핑
         queryResult.forEach(row -> {
@@ -332,7 +332,7 @@ public class OpportunitiesService {
     private Page<OpportunitiesEntity> findOpportunitiesForUser(String search, String teamId, Pageable pageable) {
         // User 전용 로직
         if (search != null && !search.isEmpty()) {
-            return opportunitiesRepository.findByOpportunityNameLikeUser("%" + search + "%", Team.valueOf(teamId), pageable);
+            return opportunitiesRepository.findByOpportunityNameLikeTeam("%" + search + "%", Team.valueOf(teamId), pageable);
         }
         return opportunitiesRepository.findByTeamId(Team.valueOf(teamId), pageable);
     }
