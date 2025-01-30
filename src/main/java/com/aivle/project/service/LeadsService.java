@@ -63,7 +63,7 @@ public class LeadsService {
         if ("ROLE_ADMIN".equals(userrole) || "GENERAL_MANAGER".equals(userposition) || "DEPARTMENT_HEAD".equals(userposition) || "TEAM_LEADER".equals(userposition)) {
             return findLeadsForManager(search, pageable);
         } else if ("ROLE_USER".equals(userrole)) {
-            return findLeadsForUser(search, userteam, pageable);
+            return findLeadsForTeam(search, userteam, pageable);
         } else {
             throw new AccessDeniedException("권한이 없습니다.");
         }
@@ -256,7 +256,7 @@ public class LeadsService {
         return leadsRepository.findAll(pageable);
     }
 
-    private Page<LeadsEntity> findLeadsForUser(String search, String teamId, Pageable pageable) {
+    private Page<LeadsEntity> findLeadsForTeam(String search, String teamId, Pageable pageable) {
         // User 전용 로직
         if (search != null && !search.isEmpty()) {
             return leadsRepository.findByCompanyNameLikeTeam("%" + search + "%", Team.valueOf(teamId), pageable);

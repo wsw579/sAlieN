@@ -60,7 +60,7 @@ public class OpportunitiesService {
         if ("ROLE_ADMIN".equals(userrole) || "GENERAL_MANAGER".equals(userposition) || "DEPARTMENT_HEAD".equals(userposition) || "TEAM_LEADER".equals(userposition)) {
             return findOpportunitiesForManager(search, pageable);
         } else if ("ROLE_USER".equals(userrole)) {
-            return findOpportunitiesForUser(search, userteam, pageable);
+            return findOpportunitiesForTeam(search, userteam, pageable);
         } else {
             throw new AccessDeniedException("권한이 없습니다.");
         }
@@ -161,7 +161,7 @@ public class OpportunitiesService {
 // 적절한 쿼리 실행
         List<Object[]> results = isManager(userrole, userposition)
                 ? opportunitiesRepository.countAllStatusesManager()
-                : opportunitiesRepository.countAllStatusesUserTeam(Team.valueOf(userteam));
+                : opportunitiesRepository.countAllStatusesTeam(Team.valueOf(userteam));
 
 // Stream API 활용하여 데이터 변환
         return results.stream()
@@ -329,7 +329,7 @@ public class OpportunitiesService {
         return opportunitiesRepository.findAll(pageable);
     }
 
-    private Page<OpportunitiesEntity> findOpportunitiesForUser(String search, String teamId, Pageable pageable) {
+    private Page<OpportunitiesEntity> findOpportunitiesForTeam(String search, String teamId, Pageable pageable) {
         // User 전용 로직
         if (search != null && !search.isEmpty()) {
             return opportunitiesRepository.findByOpportunityNameLikeTeam("%" + search + "%", Team.valueOf(teamId), pageable);

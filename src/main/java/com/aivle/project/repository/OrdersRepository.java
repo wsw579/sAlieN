@@ -28,7 +28,7 @@ public interface OrdersRepository extends JpaRepository<OrdersEntity, Long> {
             "JOIN o.productId p " +
             "WHERE e.teamId = :teamId " +
             "AND p.productName LIKE %:productName%")
-    Page<OrdersEntity> findByOrderIdLikeUser(
+    Page<OrdersEntity> findByOrderIdLikeTeam(
             @Param("productName") String productName,
             @Param("teamId") Team teamId,
             Pageable pageable);
@@ -46,7 +46,7 @@ public interface OrdersRepository extends JpaRepository<OrdersEntity, Long> {
             "JOIN o.employeeId e " +
             "WHERE e.teamId = :teamId " +
             "GROUP BY o.orderStatus")
-    List<Object[]> countOrdersByStatusForCurrentUser(@Param("teamId") Team teamId);
+    List<Object[]> countOrdersByStatusForCurrentTeam(@Param("teamId") Team teamId);
 
     // 관리자들을 위한 전체 상태의 수 세기
     @Query("SELECT CAST(o.orderStatus AS string), COUNT(o) " +
@@ -62,7 +62,7 @@ public interface OrdersRepository extends JpaRepository<OrdersEntity, Long> {
             "WHERE YEAR(o.orderDate) = :year AND o.orderStatus = 'activated' " +
             "AND e.teamId = :teamId " +
             "GROUP BY MONTH(o.orderDate)")
-    List<Object[]> getMonthlyOrdersUser(@Param("year") int year,
+    List<Object[]> getMonthlyOrdersTeam(@Param("year") int year,
                                         @Param("teamId") Team teamId);
 
     // 차트 그래프 - 관리자

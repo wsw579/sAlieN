@@ -80,7 +80,7 @@ public interface OpportunitiesRepository extends JpaRepository<OpportunitiesEnti
             "   WHEN o.opportunityStatus LIKE 'Closed%' THEN 'Closed' " +
             "   WHEN o.opportunityStatus NOT LIKE 'Closed%' THEN 'Ongoing' " +
             "END")
-    List<Object[]> countAllStatusesUserTeam(@Param("teamId") Team teamId);
+    List<Object[]> countAllStatusesTeam(@Param("teamId") Team teamId);
 
     // 이번달 기회 상태 수
     @Query("SELECT " +
