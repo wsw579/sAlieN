@@ -20,4 +20,8 @@ public interface ProductsRepository extends JpaRepository<ProductsEntity, Long> 
 
     @Query("SELECT CAST(p.productCondition AS string), COUNT(p) FROM ProductsEntity p GROUP BY p.productCondition")
     List<Object[]> countProductsByCondition();
+
+    // "AI"가 포함된 제품의 개수
+    @Query("SELECT COUNT(p) FROM ProductsEntity p WHERE LOWER(p.productFamily) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+    long countProductsByProductFamilyContaining(@Param("keyword") String keyword);
 }

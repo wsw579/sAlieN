@@ -42,6 +42,7 @@ public class ProductsController {
         String search = params.getOrDefault("search", "");
         String sortColumn = params.getOrDefault("sortColumn", "productName");
         String sortDirection = params.getOrDefault("sortDirection", "asc");
+        long AICount = productsService.countAIProducts();
 
         Page<ProductsEntity> productsPage = productsService.readProducts(page, size, search, sortColumn, sortDirection);
 
@@ -68,6 +69,10 @@ public class ProductsController {
         // 상태별 개수 추가
         model.addAttribute("availableCount", conditionCounts.getOrDefault("available", 0L));
         model.addAttribute("outOfStockCount", conditionCounts.getOrDefault("out_of_stock", 0L));
+        model.addAttribute("discontinuedCount", conditionCounts.getOrDefault("discontinued", 0L));
+
+        // AI 모델의 수
+        model.addAttribute("AICount",AICount);
 
         return "products/products_read";
     }

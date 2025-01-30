@@ -162,4 +162,8 @@ public class ProductsService {
         dto.setProductId(id);
         return dto;
     }
+
+    public long countAIProducts() {
+        return productsRepository.countProductsByProductFamilyContaining("AI");
+    }
 }
