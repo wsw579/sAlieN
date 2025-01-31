@@ -17,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -50,11 +51,19 @@ public class OpportunitiesService {
 
     // Read
     public Page<OpportunitiesEntity> readOpportunities(int page, int size, String search, String sortColumn, String sortDirection) {
+        String userid = UserContext.getCurrentUserId();
+        String userrole = UserContext.getCurrentUserRole();
+        String userposition = employeeRepository.findPositionById(userid);
+        String userteam = employeeRepository.findTeamById(userid);
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortDirection), sortColumn));
-        if (search != null && !search.isEmpty()) {
-            return opportunitiesRepository.findByOpportunityIdLike("%" + search + "%", pageable);
+
+        if ("ROLE_ADMIN".equals(userrole) || "GENERAL_MANAGER".equals(userposition) || "DEPARTMENT_HEAD".equals(userposition) || "TEAM_LEADER".equals(userposition)) {
+            return findOpportunitiesForManager(search, pageable);
+        } else if ("ROLE_USER".equals(userrole)) {
+            return findOpportunitiesForTeam(search, userteam, pageable);
+        } else {
+            throw new AccessDeniedException("권한이 없습니다.");
         }
-        return opportunitiesRepository.findAll(pageable);
     }
 
     // Update
@@ -144,12 +153,25 @@ public class OpportunitiesService {
     }
 
     public Map<String, Long> getOpportunitiesStatusCounts() {
-        return opportunitiesRepository.countAllStatuses()
-                .stream()
-                .collect(Collectors.toMap(result -> (String) result[0], result -> (Long) result[1]));
+        String userid = UserContext.getCurrentUserId();
+        String userrole = UserContext.getCurrentUserRole();
+        String userposition = employeeRepository.findPositionById(userid);
+        String userteam = employeeRepository.findTeamById(userid);
+
+// 적절한 쿼리 실행
+        List<Object[]> results = isManager(userrole, userposition)
+                ? opportunitiesRepository.countAllStatusesManager()
+                : opportunitiesRepository.countAllStatusesTeam(Team.valueOf(userteam));
+
+// Stream API 활용하여 데이터 변환
+        return results.stream()
+                .collect(Collectors.toMap(
+                        result -> (String) result[0],  // Key: Status
+                        result -> (Long) result[1]     // Value: Count
+                ));
     }
     // 내 상태 수 세기
-    public Map<String, Long> getOpportunitiesStatusCountsTeam() {
+    public Map<String, Long> getOpportunitiesStatusCountsUser() {
         String userid = UserContext.getCurrentUserId();
         return opportunitiesRepository.countAllStatusesUser(userid)
                 .stream()
@@ -190,12 +212,23 @@ public class OpportunitiesService {
     }
 
     private void populateMonthlyData(int year, List<Integer> monthlyData) {
-        opportunitiesRepository.getMonthlyOpportunities(year)
-                .forEach(row -> {
-                    int month = ((Number) row[0]).intValue() - 1;
-                    int count = ((Number) row[1]).intValue();
-                    monthlyData.set(month, count);
-                });
+        String userid = UserContext.getCurrentUserId();
+        String userrole = UserContext.getCurrentUserRole();
+        String userposition = employeeRepository.findPositionById(userid);
+        String userteam = employeeRepository.findTeamById(userid);
+
+
+// 데이터 조회 (관리자는 모든 데이터, 일반 사용자는 팀별 데이터)
+        List<Object[]> queryResult = isManager(userrole, userposition)
+                ? opportunitiesRepository.getMonthlyOpportunitiesManager(year)
+                : opportunitiesRepository.getMonthlyOpportunitiesTeam(year, Team.valueOf(userteam));
+
+// 공통 로직: 데이터 매핑
+        queryResult.forEach(row -> {
+            int month = ((Number) row[0]).intValue() - 1;
+            int count = ((Number) row[1]).intValue();
+            monthlyData.set(month, count);
+        });
     }
 
     private void accumulateMonthlyData(List<Integer> monthlyData) {
@@ -286,4 +319,29 @@ public class OpportunitiesService {
             return map;
         }).collect(Collectors.toList());
     }
+
+    // 권한별 조회
+    private Page<OpportunitiesEntity> findOpportunitiesForManager(String search, Pageable pageable) {
+        // Manager 전용 로직
+        if (search != null && !search.isEmpty()) {
+            return opportunitiesRepository.findByOpportunityNameLikeManager("%" + search + "%", pageable);
+        }
+        return opportunitiesRepository.findAll(pageable);
+    }
+
+    private Page<OpportunitiesEntity> findOpportunitiesForTeam(String search, String teamId, Pageable pageable) {
+        // User 전용 로직
+        if (search != null && !search.isEmpty()) {
+            return opportunitiesRepository.findByOpportunityNameLikeTeam("%" + search + "%", Team.valueOf(teamId), pageable);
+        }
+        return opportunitiesRepository.findByTeamId(Team.valueOf(teamId), pageable);
+    }
+
+    private boolean isManager(String userrole, String userposition) {
+        return "ROLE_ADMIN".equals(userrole) ||
+                "GENERAL_MANAGER".equals(userposition) ||
+                "DEPARTMENT_HEAD".equals(userposition) ||
+                "TEAM_LEADER".equals(userposition);
+    }
+
 }

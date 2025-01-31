@@ -231,10 +231,10 @@ public class OpportunitiesController {
         return ResponseEntity.ok().build();
     }
 
-    // 오늘 마감인 Leads 수 반환
+    // 기회카드
     @GetMapping("/api/opportunities/card-value")
     public ResponseEntity<Map<String, Object>> countStatusCardValue() {
-        Map<String, Long> statusCounts = opportunitiesService.getOpportunitiesStatusCountsTeam();
+        Map<String, Long> statusCounts = opportunitiesService.getOpportunitiesStatusCountsUser();
         Map<String, Object> response = new HashMap<>();
         response.put("statusCounts", statusCounts);
         return ResponseEntity.ok(response);
