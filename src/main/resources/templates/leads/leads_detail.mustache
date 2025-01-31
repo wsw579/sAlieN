@@ -2,11 +2,6 @@
 
 <style>
 
-
-
-
-
-
 .progress-container {
     position: relative;
     width: 100%;
@@ -164,11 +159,11 @@
                                 </a>
 
                                     <button class="btn btn-custom-delete btn-sm" id="deleteButton">
-                                        <i class="fas fa-plus-circle"></i> 삭제
+                                        <i class="fas fa-trash"></i> 삭제
                                     </button>
 
                                 <a href="/leads" class="btn btn-custom-select btn-sm" id="selectButton">
-                                    <i class="fas fa-plus-circle"></i> 목록
+                                    <i class="fas fa-list"></i> 목록
                                 </a>
 
                             </div>
@@ -484,7 +479,7 @@
         });
     });
 
-// AI 자동생성
+// AI 리드 자동 생성
 document.addEventListener('DOMContentLoaded', function() {
     const autoButton = document.getElementById('autoButton');
 
@@ -504,7 +499,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 return response.json();
             })
             .then(data => {
-                // 문자열을 JavaScript 객체로 파싱
                 const parsedData = JSON.parse(data.replace(/'/g, '"'));
                 console.log('파싱된 데이터:', parsedData);
                 fillFormWithData(parsedData);
@@ -523,7 +517,10 @@ function fillFormWithData(data) {
 
     // 각 필드에 데이터 입력
     setInputValue('leadSource', data.leadSource);
-    setInputValue('customCompanyName', data.customCompanyName);
+    setInputValue('companyInput', data.companyInput);
+    // companyInput의 값을 accountName 필드에 설정
+    setInputValue('accountName', data.companyInput);
+     setInputValue('companyName', data.companyInput);
     setInputValue('customerRepresentitive', data.customerRepresentitive);
     setInputValue('c_tel', data.c_tel);
     setInputValue('customerRequirements', data.customerRequirements);
