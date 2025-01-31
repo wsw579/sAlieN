@@ -11261,3 +11261,21 @@ body {
     cursor: default; /* 클릭 불가 */
 }
 
+.back-btn {
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+    border: 2px solid #ccc;
+    border-radius: 50%;
+    background-color: white;
+    color: #333;
+    cursor: pointer;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.back-btn:hover {
+    background-color: #f0f0f0;
+    border-color: #bbb;
+}
+
+

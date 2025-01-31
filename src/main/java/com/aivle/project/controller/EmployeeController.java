@@ -108,6 +108,7 @@ public class EmployeeController {
         return ResponseEntity.ok(response);
     }
 
+    // 멤버 페이지
     @GetMapping("/employee-list")
     public String employeeList(Model model){
         List<EmployeeDto.Get> empList = employeeService.findAllEmployee();
