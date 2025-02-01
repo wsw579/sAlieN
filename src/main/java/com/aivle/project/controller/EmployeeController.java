@@ -1,14 +1,20 @@
 package com.aivle.project.controller;
 
 import com.aivle.project.dto.EmployeeDto;
+import com.aivle.project.dto.PaginationDto;
+import com.aivle.project.entity.EmployeeEntity;
 import com.aivle.project.entity.OpportunitiesEntity;
+import com.aivle.project.entity.OrdersEntity;
 import com.aivle.project.enums.Dept;
 import com.aivle.project.enums.Team;
 import com.aivle.project.service.CrudLogsService;
 import com.aivle.project.service.EmployeeService;
+import com.aivle.project.service.PaginationService;
+import com.aivle.project.service.ProductsService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -29,6 +35,7 @@ public class EmployeeController {
 
     private final EmployeeService employeeService;
     private final CrudLogsService crudLogsService;
+    private final PaginationService paginationService;
 
     @GetMapping("/login")
     public String login(@RequestParam(value = "error", required = false) String error, Model model) {
@@ -110,9 +117,23 @@ public class EmployeeController {
 
     // 멤버 페이지
     @GetMapping("/employee-list")
-    public String employeeList(Model model){
-        List<EmployeeDto.Get> empList = employeeService.findAllEmployee();
-        model.addAttribute("employeeList", empList);
+    public String employeeList(@RequestParam Map<String, String> params, Model model){
+        int page = Integer.parseInt(params.getOrDefault("page", "0"));
+        int size = Integer.parseInt(params.getOrDefault("size", "10"));
+        String search = params.getOrDefault("search", "");
+
+        // 서비스에서 페이지 데이터 가져오기
+        Page<EmployeeDto.Get> employeePage = employeeService.findAllEmployee(page, size, search);
+        long numberOfElements = employeePage.getTotalElements();
+        System.out.println(numberOfElements); // 테스트 용
+        // 페이지네이션 데이터 생성
+        PaginationDto<EmployeeDto.Get> paginationDto = paginationService.createPaginationData(employeePage, page, 5);
+
+        // Model에 데이터 추가
+        model.addAttribute("pagination", paginationDto);
+
+        // 검색 및 정렬 데이터
+        model.addAttribute("search", search); // 검색어
         return "user/employee_list";
     }
 
