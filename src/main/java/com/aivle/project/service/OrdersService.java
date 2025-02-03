@@ -47,14 +47,14 @@ public class OrdersService {
     public Page<OrdersEntity> readOrders(int page, int size, String search, String sortColumn, String sortDirection) {
         String userid = UserContext.getCurrentUserId();
         String userrole = UserContext.getCurrentUserRole();
-        String userdept = employeeRepository.findDeptById(userid);
+        String userposition = employeeRepository.findPositionById(userid);
         String userteam = employeeRepository.findTeamById(userid);
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortDirection), sortColumn));
 
-        if ("ROLE_ADMIN".equals(userrole)) {
-            return findOrdersForAdmin(search, pageable);
+        if ("ROLE_ADMIN".equals(userrole) || "GENERAL_MANAGER".equals(userposition) || "DEPARTMENT_HEAD".equals(userposition) || "TEAM_LEADER".equals(userposition)) {
+            return findOrdersForManager(search, pageable);
         } else if ("ROLE_USER".equals(userrole)) {
-            return findOrdersForUser(search, userdept, userteam, pageable);
+            return findOrdersForTeam(search, userteam, pageable);
         } else {
             throw new AccessDeniedException("권한이 없습니다.");
         }
@@ -112,23 +112,18 @@ public class OrdersService {
         String userrole = UserContext.getCurrentUserRole();
         String userposition = employeeRepository.findPositionById(userid);
         String userteam = employeeRepository.findTeamById(userid);
-        List<Object[]> results;
 
-        Map<String, Long> statusCounts = new HashMap<>();
-        if (userrole.equals("ROLE_ADMIN") || userposition.equals("GENERAL_MANAGER") || userposition.equals("DEPARTMENT_HEAD") || userposition.equals("TEAM_LEADER"))
-        {
-            results = ordersRepository.countOrdersByStatusForCurrentAdmin();
-        } else {
-            results = ordersRepository.countOrdersByStatusForCurrentUser(Team.valueOf(userteam));
-        }
+// 적절한 쿼리 실행
+        List<Object[]> results = isManager(userrole, userposition)
+                ? ordersRepository.countOrdersByStatusForCurrentManager()
+                : ordersRepository.countOrdersByStatusForCurrentTeam(Team.valueOf(userteam));
 
-        for (Object[] result : results) {
-            String status = (String) result[0];
-            Long count = (Long) result[1];
-            statusCounts.put(status, count);
-        }
-
-        return statusCounts;
+// Stream API 활용하여 데이터 변환
+        return results.stream()
+                .collect(Collectors.toMap(
+                        result -> (String) result[0],  // Key: Status
+                        result -> (Long) result[1]     // Value: Count
+                ));
     }
 
     // Bar 및 Chart Data
@@ -179,22 +174,19 @@ public class OrdersService {
         String userrole = UserContext.getCurrentUserRole();
         String userposition = employeeRepository.findPositionById(userid);
         String userteam = employeeRepository.findTeamById(userid);
-        if (userrole.equals("ROLE_ADMIN") || userposition.equals("GENERAL_MANAGER") || userposition.equals("DEPARTMENT_HEAD") || userposition.equals("TEAM_LEADER"))
-        {
-            ordersRepository.getMonthlyOrdersAdmin(year)
-                    .forEach(row -> {
-                        int month = ((Number) row[0]).intValue() - 1;
-                        int count = ((Number) row[1]).intValue();
-                        monthlyData.set(month, count);
-                    });
-        } else {
-            ordersRepository.getMonthlyOrdersUser(year, Team.valueOf(userteam))
-                    .forEach(row -> {
-                        int month = ((Number) row[0]).intValue() - 1;
-                        int count = ((Number) row[1]).intValue();
-                        monthlyData.set(month, count);
-                    });
-        }
+
+
+// 데이터 조회 (관리자는 모든 데이터, 일반 사용자는 팀별 데이터)
+        List<Object[]> queryResult = isManager(userrole, userposition)
+                ? ordersRepository.getMonthlyOrdersManager(year)
+                : ordersRepository.getMonthlyOrdersTeam(year, Team.valueOf(userteam));
+
+// 공통 로직: 데이터 매핑
+        queryResult.forEach(row -> {
+            int month = ((Number) row[0]).intValue() - 1;
+            int count = ((Number) row[1]).intValue();
+            monthlyData.set(month, count);
+        });
     }
 
     private void revenueMonthlyData(int year, List<Integer> monthlyData) {
@@ -237,20 +229,27 @@ public class OrdersService {
         ordersRepository.save(entity);
     }
 
-    private Page<OrdersEntity> findOrdersForAdmin(String search, Pageable pageable) {
-        // Admin 전용 로직
+    private Page<OrdersEntity> findOrdersForManager(String search, Pageable pageable) {
+        // Manager 전용 로직
         if (search != null && !search.isEmpty()) {
-            return ordersRepository.findByOrderIdLikeAdmin("%" + search + "%", pageable);
+            return ordersRepository.findByOrderIdLikeManager("%" + search + "%", pageable);
         }
         return ordersRepository.findAll(pageable);
     }
 
-    private Page<OrdersEntity> findOrdersForUser(String search, String departmentId, String teamId, Pageable pageable) {
+    private Page<OrdersEntity> findOrdersForTeam(String search, String teamId, Pageable pageable) {
         // User 전용 로직
         if (search != null && !search.isEmpty()) {
-            return ordersRepository.findByOrderIdLikeUser("%" + search + "%", Dept.valueOf(departmentId), Team.valueOf(teamId), pageable);
+            return ordersRepository.findByOrderIdLikeTeam("%" + search + "%", Team.valueOf(teamId), pageable);
         }
-        return ordersRepository.findByDepartmentAndTeam(Dept.valueOf(departmentId), Team.valueOf(teamId), pageable);
+        return ordersRepository.findByTeamId(Team.valueOf(teamId), pageable);
+    }
+
+    private boolean isManager(String userrole, String userposition) {
+        return "ROLE_ADMIN".equals(userrole) ||
+                "GENERAL_MANAGER".equals(userposition) ||
+                "DEPARTMENT_HEAD".equals(userposition) ||
+                "TEAM_LEADER".equals(userposition);
     }
 
     // 영업 실적 그래프

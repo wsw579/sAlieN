@@ -18,28 +18,25 @@ import java.util.List;
 public interface OrdersRepository extends JpaRepository<OrdersEntity, Long> {
     List<OrdersEntity> findByContractId(ContractsEntity contractId);
 
-    @Query("SELECT o FROM OrdersEntity o WHERE CAST(o.orderId AS string) LIKE %:orderId%")
-    Page<OrdersEntity> findByOrderIdLikeAdmin(@Param("orderId") String orderId, Pageable pageable);
+    @Query("SELECT o FROM OrdersEntity o " +
+            "JOIN o.productId p " +
+            "WHERE p.productName LIKE %:productName%")
+    Page<OrdersEntity> findByOrderIdLikeManager(@Param("productName") String productName, Pageable pageable);
 
     @Query("SELECT o FROM OrdersEntity o " +
-            "LEFT JOIN o.employeeId e " +
-            "WHERE (e.position = 'GENERAL_MANAGER' " +
-            "       OR (e.position = 'DEPARTMENT_HEAD' AND e.departmentId = :departmentId) " +
-            "       OR (e.position NOT IN ('GENERAL_MANAGER', 'DEPARTMENT_HEAD') AND e.teamId = :teamId)) " +
-            "AND CAST(o.orderId AS string) LIKE %:orderId%")
-    Page<OrdersEntity> findByOrderIdLikeUser(
-            @Param("orderId") String orderId,
-            @Param("departmentId") Dept departmentId,
+            "JOIN o.employeeId e " +
+            "JOIN o.productId p " +
+            "WHERE e.teamId = :teamId " +
+            "AND p.productName LIKE %:productName%")
+    Page<OrdersEntity> findByOrderIdLikeTeam(
+            @Param("productName") String productName,
             @Param("teamId") Team teamId,
             Pageable pageable);
 
     @Query("SELECT o FROM OrdersEntity o " +
-            "LEFT JOIN o.employeeId e " +
-            "WHERE (e.position = 'GENERAL_MANAGER' " +
-            "       OR (e.position = 'DEPARTMENT_HEAD' AND e.departmentId = :departmentId) " +
-            "       OR (e.position NOT IN ('GENERAL_MANAGER', 'DEPARTMENT_HEAD') AND e.teamId = :teamId)) ")
-    Page<OrdersEntity> findByDepartmentAndTeam(
-            @Param("departmentId") Dept departmentId,
+            "JOIN o.employeeId e " +
+            "WHERE e.teamId = :teamId ")
+    Page<OrdersEntity> findByTeamId(
             @Param("teamId") Team teamId,
             Pageable pageable);
 
@@ -49,13 +46,13 @@ public interface OrdersRepository extends JpaRepository<OrdersEntity, Long> {
             "JOIN o.employeeId e " +
             "WHERE e.teamId = :teamId " +
             "GROUP BY o.orderStatus")
-    List<Object[]> countOrdersByStatusForCurrentUser(@Param("teamId") Team teamId);
+    List<Object[]> countOrdersByStatusForCurrentTeam(@Param("teamId") Team teamId);
 
     // 관리자들을 위한 전체 상태의 수 세기
     @Query("SELECT CAST(o.orderStatus AS string), COUNT(o) " +
             "FROM OrdersEntity o " +
             "GROUP BY o.orderStatus")
-    List<Object[]> countOrdersByStatusForCurrentAdmin();
+    List<Object[]> countOrdersByStatusForCurrentManager();
 
 
     // 차트 그래프 - 일반 사원
@@ -65,7 +62,7 @@ public interface OrdersRepository extends JpaRepository<OrdersEntity, Long> {
             "WHERE YEAR(o.orderDate) = :year AND o.orderStatus = 'activated' " +
             "AND e.teamId = :teamId " +
             "GROUP BY MONTH(o.orderDate)")
-    List<Object[]> getMonthlyOrdersUser(@Param("year") int year,
+    List<Object[]> getMonthlyOrdersTeam(@Param("year") int year,
                                         @Param("teamId") Team teamId);
 
     // 차트 그래프 - 관리자
@@ -73,7 +70,7 @@ public interface OrdersRepository extends JpaRepository<OrdersEntity, Long> {
             "FROM OrdersEntity o " +
             "WHERE YEAR(o.orderDate) = :year AND o.orderStatus = 'activated' " +
             "GROUP BY MONTH(o.orderDate)")
-    List<Object[]> getMonthlyOrdersAdmin(@Param("year") int year);
+    List<Object[]> getMonthlyOrdersManager(@Param("year") int year);
 
 
 

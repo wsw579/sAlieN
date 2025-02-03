@@ -15,9 +15,13 @@ public interface ProductsRepository extends JpaRepository<ProductsEntity, Long> 
     @Query("SELECT p.productId, p.productName FROM ProductsEntity p")
     List<Object[]> findAllProductIdAndProductName();
 
-    @Query("SELECT p FROM ProductsEntity p WHERE CAST(p.productId AS string) LIKE %:productId%")
-    Page<ProductsEntity> findByProductIdLike(@Param("productId") String productId, Pageable pageable);
+    @Query("SELECT p FROM ProductsEntity p WHERE p.productName LIKE %:productName%")
+    Page<ProductsEntity> findByProductNameLike(@Param("productName") String productName, Pageable pageable);
 
     @Query("SELECT CAST(p.productCondition AS string), COUNT(p) FROM ProductsEntity p GROUP BY p.productCondition")
     List<Object[]> countProductsByCondition();
+
+    // "AI"가 포함된 제품의 개수
+    @Query("SELECT COUNT(p) FROM ProductsEntity p WHERE LOWER(p.productFamily) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+    long countProductsByProductFamilyContaining(@Param("keyword") String keyword);
 }

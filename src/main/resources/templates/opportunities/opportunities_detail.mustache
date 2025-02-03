@@ -177,7 +177,10 @@
 <div id="layoutSidenav_content">
     <main>
         <div class="container-fluid px-4">
-            <h1 class="mt-4">Opportunities</h1>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h1 class="mt-4">Opportunities</h1>
+                <button onclick="location.href='/opportunities'" class="back-btn">🔙</button>
+            </div>
             <ol class="breadcrumb mb-4">
                 <li class="breadcrumb-item active">Opportunities</li>
             </ol>
@@ -298,13 +301,13 @@
                                 <div class="col-sm-10">
                                     <select id="employeeId" name="employeeId" required>
                                         <option value="">-- 담당자 선택 --</option>
-                                        {{#employees}}
+                                        {{#employee}}
                                             <option value="{{employeeId}}">
                                                 {{employeeName}} (ID: {{employeeId}}
                                                 Dept: {{#departmentId}}{{name}}{{/departmentId}}{{^departmentId}}
                                                 미지정{{/departmentId}})
                                             </option>
-                                        {{/employees}}
+                                        {{/employee}}
                                     </select>
                                 </div>
                             </div>

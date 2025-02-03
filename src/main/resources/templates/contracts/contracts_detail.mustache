@@ -86,7 +86,10 @@
 <div id="layoutSidenav_content">
     <main>
         <div class="container-fluid px-4">
-            <h1 class="mt-4">Contracts</h1>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h1 class="mt-4">Contracts</h1>
+                <button onclick="location.href='/contracts'" class="back-btn">🔙</button>
+            </div>
             <ol class="breadcrumb mb-4">
                 <li class="breadcrumb-item active">Contracts</li>
             </ol>
@@ -291,7 +294,7 @@
 
             <div class="card mb-4">
                 <div class="card-header">
-                    <i class="fas fa-file-upload me-1"></i> 파일 업로드
+                    <i class="fas fa-file-upload me-1"></i> 계약서 첨부
                 </div>
                 {{#contractId}}
                     <div class="card-body" id="fileContainer" data-contract-id="{{contractId}}">
@@ -314,7 +317,7 @@
                 {{/contractId}}
                 {{^contractId}}
                     <div class="card-body" id="fileContainer">
-                        <p>새로운 계약을 생성한 후 파일을 업로드할 수 있습니다.</p>
+                        <p>새로운 계약을 생성한 후 계약서를 업로드할 수 있습니다.</p>
                     </div>
                 {{/contractId}}
             </div>
