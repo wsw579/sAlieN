@@ -10,10 +10,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
-
+import java.time.Year;
+import java.util.stream.IntStream;
 
 import org.springframework.data.domain.Sort;
 
@@ -126,8 +130,98 @@ public class AccountService {
 
 
     // 로그인한 employee 계정 수
-    public Long getAccountCountForEmployee(String employeeId) {
-        return accountRepository.countAccountsByEmployeeId(employeeId);
+    public Long getAccountCountForEmployee(String employeeIdCount) {
+        return accountRepository.countAccountsByEmployeeId(employeeIdCount);
+    }
+
+    // 올해 생성한 계정 수
+    public long getAccountsCreatedThisYear() {
+        int currentYear = Year.now().getValue();
+        return accountRepository.countAccountsCreatedThisYear(currentYear);
+    }
+
+    // 작년에 생성한 계정 수
+    public long getAccountsCreatedLastYear() {
+        int lastYear = Year.now().getValue() - 1;
+        return accountRepository.countAccountsCreatedLastYear(lastYear);
+    }
+
+    // 계정 상태바
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    public Map<String, Long> getContractStatusCounts() {
+        return accountRepository.countAccountByStatus().stream()
+                .collect(Collectors.toMap(result -> (String) result[0], result -> (Long) result[1]));
+    }
+
+    // Bar and Chart Data
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    public Map<String, List<Integer>> getBarData() {
+        return getYearlyData(true);
+    }
+
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    public Map<String, List<Integer>> getChartData() {
+        return getYearlyData(false);
+    }
+
+    private Map<String, List<Integer>> getYearlyData(boolean accumulate) {
+        int currentYear = LocalDate.now().getYear();
+        int lastYear = currentYear - 1;
+
+        List<Integer> lastYearData = initializeMonthlyData();
+        List<Integer> currentYearData = initializeMonthlyData();
+
+        populateMonthlyData(lastYear, lastYearData);
+        populateMonthlyData(currentYear, currentYearData);
+
+        if (accumulate) {
+            accumulateMonthlyData(lastYearData);
+            accumulateMonthlyDataUntilCurrentMonth(currentYearData);
+        }
+
+        Map<String, List<Integer>> yearlyData = new HashMap<>();
+        yearlyData.put("lastYearData", lastYearData);
+        yearlyData.put("currentYearData", currentYearData);
+
+        return yearlyData;
+    }
+
+    private List<Integer> initializeMonthlyData() {
+        return IntStream.range(0, 12).mapToObj(i -> 0).collect(Collectors.toList());
+    }
+
+    private void populateMonthlyData(int year, List<Integer> monthlyData) {
+        accountRepository.getMonthlyAccount(year).forEach(row -> {
+            int month = ((Number) row[0]).intValue() - 1;
+            int count = ((Number) row[1]).intValue();
+            monthlyData.set(month, count);
+        });
+
+        // 현재 연도인 경우, 현재 월 이후의 데이터를 0으로 설정
+        if (year == LocalDate.now().getYear()) {
+            int currentMonth = LocalDate.now().getMonthValue();
+            for (int i = currentMonth+1; i < monthlyData.size(); i++) {
+                monthlyData.set(i, 0);
+            }
+        }
+    }
+
+
+    private void accumulateMonthlyData(List<Integer> monthlyData) {
+        for (int i = 1; i < monthlyData.size(); i++) {
+            monthlyData.set(i, monthlyData.get(i) + monthlyData.get(i - 1));
+        }
+    }
+
+    private void accumulateMonthlyDataUntilCurrentMonth(List<Integer> monthlyData) {
+        int currentMonth = LocalDate.now().getMonthValue();
+        for (int i = 1; i < currentMonth; i++) {
+            monthlyData.set(i, monthlyData.get(i) + monthlyData.get(i - 1));
+        }
+        // 현재 월 이후의 데이터는 0으로 유지
+        for (int i = currentMonth+1; i < monthlyData.size(); i++) {
+            monthlyData.set(i, 0);
+        }
     }
 
     // detail  select 를 위한 이름 id 불러오기
@@ -142,6 +236,8 @@ public class AccountService {
                 })
                 .collect(Collectors.toList());
     }
+
+
 }
 
 

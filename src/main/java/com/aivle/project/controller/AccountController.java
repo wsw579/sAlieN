@@ -59,10 +59,26 @@ public class AccountController {
         // 현재 로그인한 직원의 계정 수 가져오기
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentEmployeeId = authentication.getName();
-        Long currentEmployeeAccountCount = accountService.getAccountCountForEmployee(currentEmployeeId);
+        long currentEmployeeAccountCount = accountService.getAccountCountForEmployee(currentEmployeeId);
 
         // 모델에 데이터 추가
         addDataToModel(model, paging, pageNumbers, currentPage, nextPage, totalPages, keyword, totalAccounts, currentEmployeeId, currentEmployeeAccountCount);
+
+        long accountsThisYear = accountService.getAccountsCreatedThisYear();
+        long accountsLastYear = accountService.getAccountsCreatedLastYear();
+
+        // Mustache에 전달할 데이터 추가
+        model.addAttribute("accountsThisYear", accountsThisYear);
+        model.addAttribute("accountsLastYear", accountsLastYear);
+        model.addAttribute("currentEmployeeAccountCount", currentEmployeeAccountCount);
+
+        // 상태별 계약 수 가져오기
+        Map<String, Long> statusCounts = accountService.getContractStatusCounts();
+        long allCount = statusCounts.values().stream().mapToLong(Long::longValue).sum();
+
+        // 데이터 추가
+        model.addAttribute("ActiveData", statusCounts.getOrDefault("Active", 0L));
+
 
         return "account/account_read";
 
@@ -218,6 +234,26 @@ public class AccountController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/this-year")
+    public long getAccountsThisYear() {
+        return accountService.getAccountsCreatedThisYear();
+    }
+
+    @GetMapping("/last-year")
+    public long getAccountsLastYear() {
+        return accountService.getAccountsCreatedLastYear();
+    }
+
+
+    @GetMapping("/account/bar-data")
+    public ResponseEntity<Map<String, List<Integer>>> getBarData() {
+        return ResponseEntity.ok(accountService.getBarData());
+    }
+
+    @GetMapping("/account/chart-data")
+    public ResponseEntity<Map<String, List<Integer>>> getChartData() {
+        return ResponseEntity.ok(accountService.getChartData());
+    }
 
 }
 
