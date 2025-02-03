@@ -213,7 +213,7 @@ public class AccountController {
             // 성공 메시지를 RedirectAttributes에 저장 (리다이렉트 후에도 유지됨)
             redirectAttributes.addFlashAttribute("message", "계정이 성공적으로 수정되었습니다.");
 
-            return "redirect:/account/detail/" + accountId; // 성공 시 계정 목록 페이지로 이동
+            return "redirect:/account/detail/" + accountId; // 성공 시 계정 detail 페이지로 이동
         } catch (Exception e) {
             // 실패 로그 기록
             crudLogsService.logCrudOperation("update", "accounts", accountId.toString(), "False", "Error: " + e.getMessage());
@@ -227,7 +227,7 @@ public class AccountController {
 
     // 단일 계정 삭제
     @PostMapping("/account/detail/{accountId}/delete")
-    public ResponseEntity<Void> accountDeleteDetail(@PathVariable("accountId") Long accountId, RedirectAttributes redirectAttributes) {
+    public ResponseEntity<Void> accountDeleteDetail(@PathVariable("accountId") Long accountId) {
         try {
             // 계정 삭제 실행
             accountService.delete(accountId);
@@ -246,7 +246,7 @@ public class AccountController {
 
     // 다중 계정 삭제
     @PostMapping("/account/detail/delete")
-    public ResponseEntity<Void> deleteAccounts(@RequestBody Map<String, List<Long>> request, RedirectAttributes redirectAttributes) {
+    public ResponseEntity<Void> deleteAccounts(@RequestBody Map<String, List<Long>> request) {
         List<Long> ids = request.get("ids");
         try {
             // 계정 삭제 실행
