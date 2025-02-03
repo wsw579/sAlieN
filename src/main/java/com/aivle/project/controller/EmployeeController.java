@@ -7,10 +7,7 @@ import com.aivle.project.entity.OpportunitiesEntity;
 import com.aivle.project.entity.OrdersEntity;
 import com.aivle.project.enums.Dept;
 import com.aivle.project.enums.Team;
-import com.aivle.project.service.CrudLogsService;
-import com.aivle.project.service.EmployeeService;
-import com.aivle.project.service.PaginationService;
-import com.aivle.project.service.ProductsService;
+import com.aivle.project.service.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +33,7 @@ public class EmployeeController {
     private final EmployeeService employeeService;
     private final CrudLogsService crudLogsService;
     private final PaginationService paginationService;
+    private final SignupService signupService;
 
     @GetMapping("/login")
     public String login(@RequestParam(value = "error", required = false) String error, Model model) {
@@ -45,16 +43,16 @@ public class EmployeeController {
         return "user/login";
     }
 
-    @PostMapping("/signup")
-    public String user(EmployeeDto.Post memberDto){
-        employeeService.join(memberDto);
-        return "redirect:/";
-    }
-
-    @GetMapping("/signup")
-    public String signup(){
-        return "user/signup";
-    }
+//    @PostMapping("/signup")
+//    public String user(EmployeeDto.Post memberDto){
+//        employeeService.join(memberDto);
+//        return "redirect:/";
+//    }
+//
+//    @GetMapping("/signup")
+//    public String signup(){
+//        return "user/signup";
+//    }
 
     @GetMapping("/logout")
     public String logout(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -106,14 +104,14 @@ public class EmployeeController {
     }
 
 
-    @GetMapping("/api/generateEmployeeId")
-    @ResponseBody // 반환값을 JSON으로 처리
-    public ResponseEntity<Map<String, String>> generateUserId(@RequestParam("year") int year) {
-        Map<String, String> response = new HashMap<>();
-        String employeeId = employeeService.makeNewEmployeeId(year+"");
-        response.put("employeeId", employeeId); // 예시 응답
-        return ResponseEntity.ok(response);
-    }
+//    @GetMapping("/api/generateEmployeeId")
+//    @ResponseBody // 반환값을 JSON으로 처리
+//    public ResponseEntity<Map<String, String>> generateUserId(@RequestParam("year") int year) {
+//        Map<String, String> response = new HashMap<>();
+//        String employeeId = employeeService.makeNewEmployeeId(year+"");
+//        response.put("employeeId", employeeId); // 예시 응답
+//        return ResponseEntity.ok(response);
+//    }
 
     // 멤버 페이지
     @GetMapping("/employee-list")
@@ -144,7 +142,7 @@ public class EmployeeController {
 
     @PostMapping("/admin/signup")
     public String adminEmployeeSignup(EmployeeDto.Post memberDto){
-        employeeService.join(memberDto);
+        signupService.registerUser(memberDto);
         return "redirect:/admin/employee-signup";
     }
 

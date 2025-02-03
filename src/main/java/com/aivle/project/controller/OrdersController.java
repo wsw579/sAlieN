@@ -23,10 +23,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -45,6 +42,7 @@ public class OrdersController {
 
     private final PaginationService paginationService;
     private final CrudLogsService crudLogsService;
+
 
     // Read page
     @GetMapping("/orders")
@@ -182,7 +180,6 @@ public class OrdersController {
     @PostMapping("/orders/detail/delete")
     public ResponseEntity<Void> deleteOrders(@RequestBody Map<String, List<Long>> request) {
         List<Long> ids = request.get("ids");
-        logger.info("Deleting orders with IDs: {}", ids); // 로그 추가
         ordersService.deleteOrdersByIds(ids);
 
         // CRUD 작업 로깅
@@ -220,33 +217,39 @@ public class OrdersController {
     }
 
     @GetMapping("/api/ordersData")
-    public ResponseEntity<List<Map<String, Object>>> getOrdersGroupedByEmployee(@RequestParam(required = false) String team,
-                                                                                @RequestParam(required = false) String department,
-                                                                                @RequestParam(required = false) String startDate,
-                                                                                @RequestParam(required = false) String endDate) {
+    public ResponseEntity<List<Map<String, Object>>> getOrdersGroupedByEmployee(
+            @RequestParam(required = false) String team,
+            @RequestParam(required = false) String department,
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate) {
+
+        if (team == null && department == null) {
+            return ResponseEntity.badRequest().body(Collections.emptyList());
+        }
+
         try {
-            System.out.println("Received Request: team=" + team + ", department=" + department);
-
             LocalDate now = LocalDate.now();
-            LocalDate start = (startDate != null) ? LocalDate.parse(startDate) : now.withDayOfMonth(1);
-            LocalDate end = (endDate != null) ? LocalDate.parse(endDate) : now.withDayOfMonth(now.lengthOfMonth());
+            LocalDate start = Optional.ofNullable(startDate)
+                    .map(LocalDate::parse)
+                    .orElse(now.withDayOfMonth(1));
+            LocalDate end = Optional.ofNullable(endDate)
+                    .map(LocalDate::parse)
+                    .orElse(now.withDayOfMonth(now.lengthOfMonth()));
 
-            List<Map<String, Object>> result;
-            if (team != null) {
-                result = ordersService.getTeamOrdersGroupedByEmployee(team, start, end);
-            } else if (department != null) {
-                result = ordersService.getDepartmentOrdersGroupedByEmployee(department, start, end);
-            } else {
-                return ResponseEntity.badRequest().body(Collections.emptyList());
-            }
 
-            System.out.println("Service returned " + result.size() + " grouped orders.");
+            List<Map<String, Object>> result = getOrders(team, department, start, end);
+
             return ResponseEntity.ok(result);
-
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error fetching orders", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
         }
+    }
+
+    private List<Map<String, Object>> getOrders(String team, String department, LocalDate start, LocalDate end) {
+        return (team != null)
+                ? ordersService.getTeamOrdersGroupedByEmployee(team, start, end)
+                : ordersService.getDepartmentOrdersGroupedByEmployee(department, start, end);
     }
 
 }
