@@ -246,21 +246,22 @@ public class OpportunitiesController {
             @RequestParam(required = false) String teamId,
             @RequestParam(required = false) String departmentId
     ) {
-        try {
-            if (teamId == null && departmentId == null) {
-                throw new IllegalArgumentException("팀 ID 또는 부서 ID가 필요합니다.");
-            }
-
-            // Service에서 데이터 가져오기
-            Map<String, Object> response = opportunitiesService.getSalesData(teamId, departmentId);
-
-            return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body("잘못된 팀 또는 부서 값: " + e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류: " + e.getMessage());
+        if (teamId == null && departmentId == null) {
+            return ResponseEntity.badRequest().body("팀 ID 또는 부서 ID가 필요합니다.");
         }
+
+        Map<String, Object> salesData;
+        try {
+            salesData = opportunitiesService.getSalesData(teamId, departmentId);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+
+        return ResponseEntity.ok(salesData);
     }
+
+
+
 
     private String getCurrentUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
