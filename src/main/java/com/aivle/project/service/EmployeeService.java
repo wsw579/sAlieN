@@ -13,6 +13,7 @@ import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -190,21 +191,30 @@ public class EmployeeService {
         return String.format("%s%04d", year, nextNumber);
     }
 
-    public List<EmployeeDto.Get> findAllEmployee() {
-        List<EmployeeEntity> empList = employeeRepository.findAllByAccessPermission(Role.ROLE_USER);
-        List<EmployeeDto.Get> empDtoList = new ArrayList<>();
-        for (EmployeeEntity emp : empList) {
-            EmployeeDto.Get empDto = new EmployeeDto.Get();
-            empDto.setEmployeeId(emp.getEmployeeId());
-            empDto.setEmployeeName(emp.getEmployeeName());
-            empDto.setHireDate(emp.getHireDate());
-            empDto.setPosition(positionMap.get(emp.getPosition()));
-            empDto.setDept(emp.getDepartmentId() == null ? "부서 정보 없음" : deptMap.get(emp.getDepartmentId()));
-            empDto.setTeam(emp.getTeamId() == null ? "팀 정보 없음" : teamMap.get(emp.getTeamId()));
-            empDto.setBaseSalary(emp.getBaseSalary());
-            empDtoList.add(empDto);
-        }
-        return empDtoList;
+    public Page<EmployeeDto.Get> findAllEmployee(int page, int size, String search) {
+        Pageable pageable = PageRequest.of(page, size); // 페이징 정보 설정
+
+        // ✅ 직급순 정렬을 포함한 쿼리 실행
+        Page<EmployeeEntity> empPage = (search == null || search.isBlank())
+                ? employeeRepository.findAllByAccessPermission(Role.ROLE_USER, pageable)
+                : employeeRepository.findAllByAccessPermissionAndNameLike(Role.ROLE_USER, search, pageable);
+
+        // ✅ DTO 변환 (정렬된 상태 그대로 유지)
+        List<EmployeeDto.Get> employeeDtos = empPage.getContent().stream()
+                .map(emp -> {
+                    EmployeeDto.Get empDto = new EmployeeDto.Get();
+                    empDto.setEmployeeId(emp.getEmployeeId());
+                    empDto.setEmployeeName(emp.getEmployeeName());
+                    empDto.setHireDate(emp.getHireDate());
+                    empDto.setPosition(emp.getPosition().name());
+                    empDto.setDept(emp.getDepartmentId() == null ? "부서 정보 없음" : deptMap.get(emp.getDepartmentId()));
+                    empDto.setTeam(emp.getTeamId() == null ? "팀 정보 없음" : teamMap.get(emp.getTeamId()));
+                    empDto.setBaseSalary(emp.getBaseSalary());
+                    return empDto;
+                })
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(employeeDtos, pageable, empPage.getTotalElements()); // 정렬된 데이터 반환
     }
 
     public boolean resetEmployeePassword(String employeeId) {
