@@ -48,6 +48,8 @@ public class EmployeeController {
     @PostMapping("/signup")
     public String user(EmployeeDto.Post memberDto){
         employeeService.join(memberDto);
+        // CRUD 작업 로깅
+        crudLogsService.logCrudOperation("create", "employee", "", "True", "Success");
         return "redirect:/";
     }
 
@@ -78,9 +80,14 @@ public class EmployeeController {
             // 비밀번호 변경 로직
             String employeeId = employeeService.editPassword(employeeDto);
 
+            // CRUD 작업 로깅
+            crudLogsService.logCrudOperation("update", "employee", "", "True", "Success");
+
             // 비밀번호 변경이 완료된 후, mypage/employeeId로 리다이렉트
             return ResponseEntity.ok("비밀번호가 성공적으로 변경되었습니다.");
         } catch (IllegalArgumentException e) {
+            // CRUD 작업 로깅
+            crudLogsService.logCrudOperation("update", "employee", "", "False", "Fail");
             // 오류 메시지 반환
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -90,8 +97,13 @@ public class EmployeeController {
     public ResponseEntity<String> passwordFind(@RequestBody EmployeeDto.Patch employeeDto) {
         try {
             String employeeId = employeeService.findPassword(employeeDto);
+
+            // CRUD 작업 로깅
+            crudLogsService.logCrudOperation("update", "employee", "", "True", "Success");
             return ResponseEntity.ok("비밀번호가 성공적으로 변경되었습니다.");
         } catch (IllegalArgumentException e) {
+            // CRUD 작업 로깅
+            crudLogsService.logCrudOperation("update", "employee", "", "False", "Fail");
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
@@ -145,6 +157,9 @@ public class EmployeeController {
     @PostMapping("/admin/signup")
     public String adminEmployeeSignup(EmployeeDto.Post memberDto){
         employeeService.join(memberDto);
+
+        // CRUD 작업 로깅
+        crudLogsService.logCrudOperation("create", "employee", "", "True", "Success");
         return "redirect:/admin/employee-signup";
     }
 
@@ -179,6 +194,9 @@ public class EmployeeController {
             }
             System.out.println("delete Employee Received IDs: " + ids);
             employeeService.deleteByIds(ids);
+
+            // CRUD 작업 로깅
+            crudLogsService.logCrudOperation("delete", "contracts", "", "True", "Success");
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             System.err.println("Error during delete: " + e.getMessage());
