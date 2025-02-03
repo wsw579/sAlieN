@@ -8,10 +8,12 @@ import com.aivle.project.entity.*;
 import com.aivle.project.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -132,36 +134,71 @@ public class LeadsController {
     }
 
     @PostMapping("/leads/detail/create")
-    public String leadsCreateNew(@ModelAttribute LeadsDto leadsDto){
-        // createLeads method in the LeadsService -> passing the leadsDto as an argument
-        leadsService.createLeads(leadsDto);
+    public String leadsCreateNew(@ModelAttribute LeadsDto leadsDto, RedirectAttributes redirectAttributes){
+        try {
+            // 리드 생성
+            leadsService.createLeads(leadsDto);
 
-        // CRUD 작업 로깅
-        crudLogsService.logCrudOperation("create", "leads", "", "True", "Success");
+            // CRUD 작업 로깅
+            crudLogsService.logCrudOperation("create", "leads", "", "True", "Success");
 
-        return "redirect:/leads";
+            // 성공 메시지를 RedirectAttributes에 저장 (리다이렉트 후에도 유지됨)
+            redirectAttributes.addFlashAttribute("message", "계약이 성공적으로 생성되었습니다.");
+
+            return "redirect:/leads"; // 성공 시 리드 목록 페이지로 이동
+        } catch (Exception e) {
+            // 실패 로그 기록
+            crudLogsService.logCrudOperation("create", "leads", "", "False", "Error: " + e.getMessage());
+
+            // 에러 메시지를 사용자에게 전달
+            redirectAttributes.addFlashAttribute("errorMessage", "리드 생성 중 오류가 발생했습니다. 다시 시도해주세요.");
+
+            return "redirect:/errorPage"; // 에러 발생 시 오류 페이지로 리다이렉트
+        }
     }
 
     // Update detail page
     @PostMapping("/leads/detail/{leadId}/update")
-    public String leadsUpdate(@PathVariable("leadId") Long leadId, @ModelAttribute LeadsDto leadsDto) {
-        leadsService.updateLeads(leadId, leadsDto);
+    public String leadsUpdate(@PathVariable("leadId") Long leadId, @ModelAttribute LeadsDto leadsDto, RedirectAttributes redirectAttributes) {
+        try {
+            // 리드 수정
+            leadsService.updateLeads(leadId, leadsDto);
 
-        // CRUD 작업 로깅
-        crudLogsService.logCrudOperation("update", "leads", "", "True", "Success");
+            // 성공 로그 기록
+            crudLogsService.logCrudOperation("update", "leads", leadId.toString(), "True", "Success");
 
-        return "redirect:/leads/detail/" + leadId;
+            // 성공 메시지를 RedirectAttributes에 저장 (리다이렉트 후에도 유지됨)
+            redirectAttributes.addFlashAttribute("message", "계약이 성공적으로 수정되었습니다.");
+
+            return "redirect:/leads/detail/" + leadId;
+        } catch (Exception e) {
+            // 실패 로그 기록
+            crudLogsService.logCrudOperation("update", "leads", leadId.toString(), "False", "Error: " + e.getMessage());
+
+            // 에러 메시지를 사용자에게 전달
+            redirectAttributes.addFlashAttribute("errorMessage", "리드 수정 중 오류가 발생했습니다. 다시 시도해주세요.");
+
+            return "redirect:/errorPage"; // 에러 발생 시 오류 페이지로 리다이렉트
+        }
     }
 
     // Delete detail page
     @PostMapping("/leads/detail/{leadId}/delete")
     public ResponseEntity<Void> deleteLead(@PathVariable("leadId") Long leadId) {
-        leadsService.deleteLeads(leadId);
+        try {
+            // 리드 삭제 실행
+            leadsService.deleteLeads(leadId);
 
-        // CRUD 작업 로깅
-        crudLogsService.logCrudOperation("delete", "leads", "", "True", "Success");
+            // CRUD 작업 로깅
+            crudLogsService.logCrudOperation("delete", "leads", leadId.toString(), "True", "Success");
 
-        return ResponseEntity.ok().build();
+            return ResponseEntity.ok().build(); // HTTP 200 응답 (삭제 성공)
+        } catch (Exception e) {
+            // 삭제 실패 로그 기록
+            crudLogsService.logCrudOperation("delete", "leads", leadId.toString(), "False", "Error: " + e.getMessage());
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // HTTP 500 응답 (삭제 실패)
+        }
     }
 
     // Delete read page (list)
@@ -169,12 +206,24 @@ public class LeadsController {
     public ResponseEntity<Void> deleteLeads(@RequestBody Map<String, List<Long>> request) {
         List<Long> ids = request.get("ids");
         System.out.println("deleteLeads Received IDs: " + ids); // 로그 추가
-        leadsService.deleteLeadsByIds(ids);
+        try {
+            // 리드 삭제 실행
+            leadsService.deleteLeadsByIds(ids);
 
-        // CRUD 작업 로깅
-        crudLogsService.logCrudOperation("delete", "leads", "", "True", "Success");
+            // 개별 ID에 대해 성공 로그 기록
+            for (Long id : ids) {
+                crudLogsService.logCrudOperation("delete", "leads", id.toString(), "True", "Success");
+            }
 
-        return ResponseEntity.ok().build(); // 상태 코드 200 반환
+            return ResponseEntity.ok().build(); // HTTP 200 응답 (삭제 성공)
+        } catch (Exception e) {
+            // 개별 ID에 대해 실패 로그 기록
+            for (Long id : ids) {
+                crudLogsService.logCrudOperation("delete", "leads", id.toString(), "False", "Error: " + e.getMessage());
+            }
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // HTTP 500 응답 (삭제 실패)
+        }
     }
 
     // 오늘 추가된 Leads 수 반환
