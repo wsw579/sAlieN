@@ -22,32 +22,20 @@ public interface AccountRepository extends JpaRepository<AccountEntity, Long> {
     //  모든 계정 조회
     @NonNull
     Page<AccountEntity> findAll(@NonNull Pageable pageable);
-    // 대소문자 구분없이 계정명으로 조회
+    // keyword 검색 시 대소문자 구분없이 계정명으로 조회
     Page<AccountEntity> findByAccountNameContainingIgnoreCase(String keyword, Pageable pageable);
-
-
-    Page<AccountEntity> findByAccountNameContainingOrAccountTypeContaining(String name, String type, Pageable pageable);
-    List<AccountEntity> findByAccountStatus(String status);
+    //  계정 상태
+    List<AccountEntity> findByAccountStatus(String accountStatus);
 
     // 상태바
-
     //  employeeId 별 계정 수
-    @Query("SELECT COUNT(a) FROM AccountEntity a WHERE a.employeeId.employeeId = :employeeIdCount")
-    Long countAccountsByEmployeeId(@Param("employeeIdCount") String employeeIdCount);
+    @Query("SELECT COUNT(a) FROM AccountEntity a WHERE a.employeeId.employeeId = :employeeId")
+    Long countAccountsByEmployeeId(@Param("employeeId") String employeeId);
 
-    // 올해 생성된 계정 수를 반환
-    @Query("SELECT COUNT(a) FROM AccountEntity a WHERE YEAR(a.accountCreatedDate) = :currentYear")
-    long countAccountsCreatedThisYear(@Param("currentYear") int currentYear);
+    // 그래프
+    @Query("SELECT COUNT(a) FROM AccountEntity a WHERE YEAR(a.accountCreatedDate) = :year ")
+    long countByYear(@Param("year") int year);
 
-    // 작년에 생성된 계정 수를 반환
-    @Query("SELECT COUNT(a) FROM AccountEntity a WHERE YEAR(a.accountCreatedDate) = :lastYear")
-    long countAccountsCreatedLastYear(@Param("lastYear") int lastYear);
-
-    // Active , Closed  상태별 count
-    @Query("SELECT CAST(a.accountStatus AS string), COUNT(a) FROM AccountEntity  a GROUP BY a.accountStatus")
-    List<Object[]> countAccountByStatus();
-
-    // 차트 그래프
     @Query("SELECT MONTH(a.accountCreatedDate), COUNT(a) " +
             "FROM AccountEntity a " +
             "WHERE YEAR(a.accountCreatedDate) = :year AND a.accountStatus = 'Active' " +
@@ -57,6 +45,10 @@ public interface AccountRepository extends JpaRepository<AccountEntity, Long> {
 
     @Query("SELECT a.accountId, a.accountName FROM AccountEntity a")
     List<Object[]> findAllAccountIdAndAccountName();
+
+
+
+    //    Page<AccountEntity> findByAccountNameContainingOrAccountTypeContaining(String name, String type, Pageable pageable);
 }
 
 

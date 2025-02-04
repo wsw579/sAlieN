@@ -8,7 +8,6 @@ import com.aivle.project.enums.Team;
 import com.aivle.project.repository.EmployeeRepository;
 import com.aivle.project.repository.OrdersRepository;
 import com.aivle.project.utils.UserContext;
-import org.springframework.beans.BeanUtils;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -156,7 +155,7 @@ public class OrdersService {
 
         if (accumulate) {
             accumulateMonthlyData(lastYearData);
-            accumulateMonthlyData(currentYearData);
+            accumulateMonthlyDataUntilCurrentMonth(currentYearData);
         }
 
         Map<String, List<Integer>> yearlyData = new HashMap<>();
@@ -203,6 +202,17 @@ public class OrdersService {
     private void accumulateMonthlyData(List<Integer> monthlyData) {
         for (int i = 1; i < monthlyData.size(); i++) {
             monthlyData.set(i, monthlyData.get(i) + monthlyData.get(i - 1));
+        }
+    }
+
+    private void accumulateMonthlyDataUntilCurrentMonth(List<Integer> monthlyData) {
+        int currentMonth = LocalDate.now().getMonthValue();
+        for (int i = 1; i < currentMonth; i++) {
+            monthlyData.set(i, monthlyData.get(i) + monthlyData.get(i - 1));
+        }
+        // 현재 월 이후의 데이터는 0으로 유지
+        for (int i = currentMonth+1; i < monthlyData.size(); i++) {
+            monthlyData.set(i, 0);
         }
     }
 

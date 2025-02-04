@@ -5,9 +5,6 @@ import com.aivle.project.entity.HistoryEntity;
 import com.aivle.project.entity.LeadsEntity;
 import com.aivle.project.entity.OpportunitiesCommentEntity;
 import com.aivle.project.entity.OpportunitiesEntity;
-import com.aivle.project.enums.Dept;
-import com.aivle.project.enums.Team;
-import com.aivle.project.repository.OpportunitiesRepository;
 import com.aivle.project.entity.*;
 import com.aivle.project.service.*;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +22,6 @@ import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.IntStream;
 
 
 @Controller
@@ -207,7 +202,7 @@ public class OpportunitiesController {
         // CRUD 작업 로깅
         crudLogsService.logCrudOperation("update", "opportunities", "", "True", "Success");
 
-        return "redirect:/opportunities/detail/" + opportunityId;
+        return "redirect:/opportunities" ;
     }
 
 
