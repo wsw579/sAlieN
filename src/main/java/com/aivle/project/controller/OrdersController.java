@@ -21,6 +21,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 import java.util.Collections;
@@ -144,38 +145,73 @@ public class OrdersController {
     // Create new order
 
     @PostMapping("/orders/detail/create")
-    public String saveOrder(@ModelAttribute OrdersDto ordersDto) {
-        // OrdersEntity 생성 및 저장
-        ordersService.createOrder(ordersDto);
+    public String saveOrder(@ModelAttribute OrdersDto ordersDto, RedirectAttributes redirectAttributes) {
+        try {
+            // 주문 생성
+            ordersService.createOrder(ordersDto);
 
-        // CRUD 작업 로깅
-        crudLogsService.logCrudOperation("create", "orders", "", "True", "Success");
+            // CRUD 작업 로깅
+            crudLogsService.logCrudOperation("create", "orders", "", "True", "Success");
 
-        return "redirect:/orders";
+            // 성공 메시지를 RedirectAttributes에 저장 (리다이렉트 후에도 유지됨)
+            redirectAttributes.addFlashAttribute("message", "주문이 성공적으로 생성되었습니다.");
+
+            return "redirect:/orders"; // 성공 시 주문 목록 페이지로 이동
+        } catch (Exception e) {
+            // 실패 로그 기록
+            crudLogsService.logCrudOperation("create", "orders", "", "False", "Error: " + e.getMessage());
+
+            // 에러 메시지를 사용자에게 전달
+            redirectAttributes.addFlashAttribute("errorMessage", "주문 생성 중 오류가 발생했습니다. 다시 시도해주세요.");
+
+            return "redirect:/errorPage"; // 에러 발생 시 오류 페이지로 리다이렉트
+        }
     }
 
 
 
     // Update detail page
     @PostMapping("/orders/detail/{orderId}/update")
-    public String ordersUpdate(@PathVariable("orderId") Long orderId, @ModelAttribute OrdersDto ordersDto) {
-        ordersService.updateOrder(orderId, ordersDto);
+    public String ordersUpdate(@PathVariable("orderId") Long orderId, @ModelAttribute OrdersDto ordersDto, RedirectAttributes redirectAttributes) {
+        try {
+            // 주문 수정
+            ordersService.updateOrder(orderId, ordersDto);
 
-        // CRUD 작업 로깅
-        crudLogsService.logCrudOperation("update", "orders", "", "True", "Success");
+            // 성공 로그 기록
+            crudLogsService.logCrudOperation("update", "orders", orderId.toString(), "True", "Success");
 
-        return "redirect:/orders/detail/" + orderId;
+            // 성공 메시지를 RedirectAttributes에 저장 (리다이렉트 후에도 유지됨)
+            redirectAttributes.addFlashAttribute("message", "주문이 성공적으로 수정되었습니다.");
+
+            return "redirect:/orders/detail/" + orderId;
+        } catch (Exception e) {
+            // 실패 로그 기록
+            crudLogsService.logCrudOperation("update", "orders", orderId.toString(), "False", "Error: " + e.getMessage());
+
+            // 에러 메시지를 사용자에게 전달
+            redirectAttributes.addFlashAttribute("errorMessage", "주문 수정 중 오류가 발생했습니다. 다시 시도해주세요.");
+
+            return "redirect:/errorPage"; // 에러 발생 시 오류 페이지로 리다이렉트
+        }
     }
 
     // Delete detail page
     @PostMapping("/orders/detail/{orderId}/delete")
     public ResponseEntity<Void> deleteOrder(@PathVariable("orderId") Long orderId) {
-        ordersService.deleteOrder(orderId);
+        try {
+            // 주문 삭제 실행
+            ordersService.deleteOrder(orderId);
 
-        // CRUD 작업 로깅
-        crudLogsService.logCrudOperation("delete", "orders", "", "True", "Success");
+            // CRUD 작업 로깅
+            crudLogsService.logCrudOperation("delete", "orders", orderId.toString(), "True", "Success");
 
-        return ResponseEntity.ok().build();
+            return ResponseEntity.ok().build(); // HTTP 200 응답 (삭제 성공)
+        } catch (Exception e) {
+            // 삭제 실패 로그 기록
+            crudLogsService.logCrudOperation("delete", "orders", orderId.toString(), "False", "Error: " + e.getMessage());
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // HTTP 500 응답 (삭제 실패)
+        }
     }
 
     // Delete orders in bulk
@@ -183,12 +219,24 @@ public class OrdersController {
     public ResponseEntity<Void> deleteOrders(@RequestBody Map<String, List<Long>> request) {
         List<Long> ids = request.get("ids");
         logger.info("Deleting orders with IDs: {}", ids); // 로그 추가
-        ordersService.deleteOrdersByIds(ids);
+        try {
+            // 주문 삭제 실행
+            ordersService.deleteOrdersByIds(ids);
 
-        // CRUD 작업 로깅
-        crudLogsService.logCrudOperation("delete", "orders", "", "True", "Success");
+            // 개별 ID에 대해 성공 로그 기록
+            for (Long id : ids) {
+                crudLogsService.logCrudOperation("delete", "orders", id.toString(), "True", "Success");
+            }
 
-        return ResponseEntity.ok().build(); // 상태 코드 200 반환
+            return ResponseEntity.ok().build(); // HTTP 200 응답 (삭제 성공)
+        } catch (Exception e) {
+            // 개별 ID에 대해 실패 로그 기록
+            for (Long id : ids) {
+                crudLogsService.logCrudOperation("delete", "orders", id.toString(), "False", "Error: " + e.getMessage());
+            }
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // HTTP 500 응답 (삭제 실패)
+        }
     }
 
     @GetMapping("/api/sales-performance")

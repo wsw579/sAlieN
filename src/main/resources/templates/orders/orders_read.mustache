@@ -182,6 +182,10 @@
     </main>
 
     <script>
+        // CRUD 메시지
+        {{#message}}
+            alert("{{message}}");
+        {{/message}}
     document.addEventListener("DOMContentLoaded", function() {
         var deleteButton = document.getElementById("deleteButton");
         if (deleteButton) {
@@ -206,6 +210,7 @@
                             body: JSON.stringify({ ids: selectedIds })
                         }).then(response => {
                             if (response.ok) {
+                                alert("삭제되었습니다.");
                                 window.location.href = "/orders";
                             } else {
                                 alert("삭제 중 오류가 발생했습니다.");
