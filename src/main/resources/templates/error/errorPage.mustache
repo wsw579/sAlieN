@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>오류 발생</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+        }
+        .error-box {
+            border: 1px solid #ff6b6b;
+            background-color: #ffecec;
+            padding: 20px;
+            display: inline-block;
+            border-radius: 5px;
+        }
+        .home-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .home-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+<div class="error-box">
+    <h2>❌ 오류가 발생했어요.</h2>
+    <p>{{errorMessage}}</p>
+    <button class="home-button" onclick="window.location.href='/'">🏠 홈으로 돌아가기</button>
+</div>
+</body>
+</html>
