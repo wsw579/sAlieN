@@ -165,6 +165,10 @@
     </main>
 
     <script>
+        // CRUD 메시지
+        {{#message}}
+            alert("{{message}}");
+        {{/message}}
         document.addEventListener("DOMContentLoaded", function () {
      // 모든 data-price 요소 처리
      document.querySelectorAll("td[data-price]").forEach(function (element) {
@@ -204,6 +208,7 @@
                                                  body: JSON.stringify({ ids: selectedIds })
                                              }).then(response => {
                                                  if (response.ok) {
+                                                     alert("삭제되었습니다.");
                                                      window.location.href = "/products";
                                                  } else {
                                                      alert("삭제 중 오류가 발생했습니다.");

@@ -154,16 +154,11 @@
                                 </a>
 
                                 {{#accountId}}
-                                    <a href="/account/detail/{{accountId}}/delete" class="btn btn-custom-delete btn-sm"
-                                       id="deleteButton">
-                                        <i class="fas fa-trash"></i> 삭제
-                                    </a>
+                                    <button id = "deleteButton" class="btn btn-custom-delete btn-sm">
+                                        <i class="fas fa-trash-alt"></i> 삭제
+                                    </button>
                                 {{/accountId}}
-                                {{^accountId}}
-                                    <a href="/account" class="btn btn-custom-delete btn-sm" id="deleteButton">
-                                        <i class="fas fa-trash"></i> 삭제
-                                    </a>
-                                {{/accountId}}
+
                                 <a href="/account" class="btn btn-custom-select btn-sm" id="selectButton">
                                     <i class="fas fa-list"></i> 목록
                                 </a>
@@ -340,6 +335,10 @@
 
 
     <script>
+        // CRUD 메시지
+        {{#message}}
+            alert("{{message}}");
+        {{/message}}
 
         // Form 부분  초기값 연동 JS (select Form 은 html 초기 value 지정이 안되어서 JS로 처리)
         {{#account}}
@@ -373,41 +372,68 @@
                        });
                     });
 
-               document.addEventListener("DOMContentLoaded", function() {
-               document.getElementById("deleteButton").addEventListener("click", function(event) {
-                   event.preventDefault(); // 기본 링크 동작을 막습니다.
+            // 삭제버튼
+            document.addEventListener("DOMContentLoaded", function() {
+            {{#accountId}}
+                var deleteButton = document.getElementById("deleteButton");
+                if (deleteButton) {
+                    deleteButton.addEventListener("click", function () {
+                        // 서버에서 렌더링된 accountId 가져오기
+                        var accountId = "{{accountId}}";
 
-                  // 사용자 확인 대화 상자 표시
-                   var confirmDelete = confirm("정말 삭제하시겠습니까?");
-               if (confirmDelete) {
-                   window.location.href = this.href;  // 올바른 리다이렉트 경로
-               }
-           });
-       });
+                if (accountId) {
+                    var confirmDelete = confirm("현재 항목을 삭제하시겠습니까?");
+                    if (confirmDelete) {
+                        fetch(`/account/detail/${accountId}/delete`, {
+                            method: "POST", // 서버 엔드포인트가 POST를 지원해야 함
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({ id: accountId }), // 올바른 데이터 전송
+                        })
+                            .then((response) => {
+                                if (response.ok) {
+                                    alert("삭제되었습니다.");
+                                    window.location.href = "/account"; // 삭제 후 이동
+                                } else {
+                                    alert("삭제 중 오류가 발생했습니다.");
+                                }
+                            })
+                            .catch((error) => {
+                                console.error("Error:", error);
+                                alert("삭제 중 오류가 발생했습니다.");
+                            });
+                    }
+                } else {
+                    alert("삭제할 ID가 없습니다.");
+                }
+            });
+            }
+            {{/accountId}}
+            });
 
 
+                           //Form 삭제버튼 클릭 시 현 주소가 create 인경우 create 로 action 주소 변경.
 
-           //Form 삭제버튼 클릭 시 현 주소가 create 인경우 create 로 action 주소 변경.
+                           document.addEventListener("DOMContentLoaded", function() {
+                               var form = document.getElementById("accountForm");
+                               var currentUrl = window.location.pathname;
 
-           document.addEventListener("DOMContentLoaded", function() {
-               var form = document.getElementById("accountForm");
-               var currentUrl = window.location.pathname;
+                               // 현재 URL "/account/detail/create"인 경우 폼 액션을 변경
+                               if (currentUrl === "/account/detail/create") {
+                                   form.action = "/account/detail/create";
+                               }
 
-               // 현재 URL "/account/detail/create"인 경우 폼 액션을 변경
-               if (currentUrl === "/account/detail/create") {
-                   form.action = "/account/detail/create";
-               }
+                               // 저장 버튼 클릭 시 변경사항 저장 여부 확인
+                               document.getElementById("updateButton").addEventListener("click", function(event) {
+                                   var confirmSave = confirm("변경사항을 저장하겠습니까?");
 
-               // 저장 버튼 클릭 시 변경사항 저장 여부 확인
-               document.getElementById("updateButton").addEventListener("click", function(event) {
-                   var confirmSave = confirm("변경사항을 저장하겠습니까?");
-
-                   if (!confirmSave) {
-                       // 사용자가 취소를 클릭한 경우 폼 제출 중단
-                       event.preventDefault();
-                   }
-               });
-           });
+                                   if (!confirmSave) {
+                                       // 사용자가 취소를 클릭한 경우 폼 제출 중단
+                                       event.preventDefault();
+                                   }
+                               });
+                           });
 
 
 

@@ -20,6 +20,7 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.HashMap;
 import java.util.List;
@@ -44,9 +45,24 @@ public class EmployeeController {
     }
 
 //    @PostMapping("/signup")
-//    public String user(EmployeeDto.Post memberDto){
-//        employeeService.join(memberDto);
-//        return "redirect:/";
+//    public String user(EmployeeDto.Post memberDto, RedirectAttributes redirectAttributes){
+//        try {
+//            // 계정 생성
+//            employeeService.join(memberDto);
+//
+//            // CRUD 작업 로깅
+//            crudLogsService.logCrudOperation("create", "employee", "", "True", "Success");
+//
+//            return "redirect:/"; // 성공 시 메인 페이지로 이동
+//        } catch (Exception e) {
+//            // 실패 로그 기록
+//            crudLogsService.logCrudOperation("create", "employee", "", "False", "Error: " + e.getMessage());
+//
+//            // 에러 메시지를 사용자에게 전달
+//            redirectAttributes.addFlashAttribute("errorMessage", "ID 생성 중 오류가 발생했습니다. 다시 시도해주세요.");
+//
+//            return "redirect:/errorPage"; // 에러 발생 시 오류 페이지로 리다이렉트
+//        }
 //    }
 //
 //    @GetMapping("/signup")
@@ -71,25 +87,35 @@ public class EmployeeController {
 
     @PostMapping("/password-edit")
     @ResponseBody
-    public ResponseEntity<String> passwordEdit(@RequestBody EmployeeDto.Patch employeeDto) {
+    public ResponseEntity<String> passwordEdit(@RequestBody EmployeeDto.Patch employeeDto, RedirectAttributes redirectAttributes) {
         try {
             // 비밀번호 변경 로직
             String employeeId = employeeService.editPassword(employeeDto);
 
+            // CRUD 작업 로깅
+            crudLogsService.logCrudOperation("update", "employee", employeeDto.getEmployeeId(), "True", "Success");
+
             // 비밀번호 변경이 완료된 후, mypage/employeeId로 리다이렉트
             return ResponseEntity.ok("비밀번호가 성공적으로 변경되었습니다.");
         } catch (IllegalArgumentException e) {
+            // CRUD 작업 로깅
+            crudLogsService.logCrudOperation("update", "employee", employeeDto.getEmployeeId(), "False", "Error: " + e.getMessage());
             // 오류 메시지 반환
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
     @PostMapping("/password-find")
-    public ResponseEntity<String> passwordFind(@RequestBody EmployeeDto.Patch employeeDto) {
+    public ResponseEntity<String> passwordFind(@RequestBody EmployeeDto.Patch employeeDto, RedirectAttributes redirectAttributes) {
         try {
             String employeeId = employeeService.findPassword(employeeDto);
+
+            // CRUD 작업 로깅
+            crudLogsService.logCrudOperation("update", "employee", employeeDto.getEmployeeId(), "True", "Success");
             return ResponseEntity.ok("비밀번호가 성공적으로 변경되었습니다.");
         } catch (IllegalArgumentException e) {
+            // CRUD 작업 로깅
+            crudLogsService.logCrudOperation("update", "employee", employeeDto.getEmployeeId(), "False", "Error: " + e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
@@ -141,9 +167,27 @@ public class EmployeeController {
     }
 
     @PostMapping("/admin/signup")
-    public String adminEmployeeSignup(EmployeeDto.Post memberDto){
-        signupService.registerUser(memberDto);
-        return "redirect:/admin/employee-signup";
+    public String adminEmployeeSignup(EmployeeDto.Post memberDto, RedirectAttributes redirectAttributes){
+        try {
+            // 계정 생성
+            signupService.registerUser(memberDto);
+
+            // CRUD 작업 로깅
+            crudLogsService.logCrudOperation("create", "employee", "", "True", "Success");
+
+            // 성공 메시지를 RedirectAttributes에 저장 (리다이렉트 후에도 유지됨)
+            redirectAttributes.addFlashAttribute("message", "계정이 성공적으로 생성되었습니다.");
+
+            return "redirect:/admin/employee-signup"; // 성공 시 admin 계정 가입 페이지로 이동
+        } catch (Exception e) {
+            // 실패 로그 기록
+            crudLogsService.logCrudOperation("create", "employee", "", "False", "Error: " + e.getMessage());
+
+            // 에러 메시지를 사용자에게 전달
+            redirectAttributes.addFlashAttribute("errorMessage", "ID 생성 중 오류가 발생했습니다. 다시 시도해주세요.");
+
+            return "redirect:/errorPage"; // 에러 발생 시 오류 페이지로 리다이렉트
+        }
     }
 
 
@@ -170,16 +214,28 @@ public class EmployeeController {
 
     @PostMapping("/admin/employee/delete")
     public ResponseEntity<Void> deleteAccounts(@RequestBody Map<String, List<String>> request) {
+        List<String> ids = request.get("ids");
+        if (ids == null || ids.isEmpty()) {
+            return ResponseEntity.badRequest().build(); // HTTP 400 응답
+        }
         try {
-            List<String> ids = request.get("ids");
-            if (ids == null || ids.isEmpty()) {
-                return ResponseEntity.badRequest().build(); // HTTP 400 응답
-            }
             System.out.println("delete Employee Received IDs: " + ids);
             employeeService.deleteByIds(ids);
+
+            // 개별 ID에 대해 성공 로그 기록
+            for (String id : ids) {
+                crudLogsService.logCrudOperation("delete", "employee", id, "True", "Success");
+            }
+
             return ResponseEntity.ok().build();
         } catch (Exception e) {
             System.err.println("Error during delete: " + e.getMessage());
+
+            // 개별 ID에 대해 실패 로그 기록
+            for (String id : ids) {
+                crudLogsService.logCrudOperation("delete", "employee", id, "False", "Error: " + e.getMessage());
+            }
+
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // HTTP 500 응답
         }
     }

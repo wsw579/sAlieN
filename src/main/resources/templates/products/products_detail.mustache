@@ -204,6 +204,10 @@
     </main>
 
     <script>
+        // CRUD 메시지
+        {{#message}}
+            alert("{{message}}");
+        {{/message}}
     {{#products}}
         document.addEventListener("DOMContentLoaded", function() {
             var productCondition = "{{productCondition}}";

@@ -177,6 +177,10 @@
 
     <script>
 
+        // CRUD 메시지
+        {{#message}}
+            alert("{{message}}");
+        {{/message}}
     document.addEventListener("DOMContentLoaded", function() {
         var deleteButton = document.getElementById("deleteButton");
         if (deleteButton) {
@@ -203,6 +207,7 @@
                             body: JSON.stringify({ ids: selectedIds })
                         }).then(response => {
                             if (response.ok) {
+                                alert("삭제되었습니다.");
                                 // 서버 응답이 성공적이면 리다이렉트 수행
                                 window.location.href = "/leads";
                             } else {

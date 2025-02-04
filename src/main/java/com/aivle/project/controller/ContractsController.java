@@ -15,6 +15,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -154,45 +155,93 @@ public class ContractsController {
     }
 
     @PostMapping("/contracts/detail/create")
-    public String contractsCreateNew(@ModelAttribute ContractsDto contractsDto) {
-        contractsService.createContracts(contractsDto);
+    public String contractsCreateNew(@ModelAttribute ContractsDto contractsDto, RedirectAttributes redirectAttributes) {
+        try {
+            // 계약 생성
+            contractsService.createContracts(contractsDto);
 
-        // CRUD 작업 로깅
-        crudLogsService.logCrudOperation("create", "contracts", "", "True", "Success");
+            // CRUD 작업 로깅
+            crudLogsService.logCrudOperation("create", "contracts", "", "True", "Success");
 
-        return "redirect:/contracts";
+            // 성공 메시지를 RedirectAttributes에 저장 (리다이렉트 후에도 유지됨)
+            redirectAttributes.addFlashAttribute("message", "계약이 성공적으로 생성되었습니다.");
+
+            return "redirect:/contracts"; // 성공 시 계약 목록 페이지로 이동
+        } catch (Exception e) {
+            // 실패 로그 기록
+            crudLogsService.logCrudOperation("create", "contracts", "", "False", "Error: " + e.getMessage());
+
+            // 에러 메시지를 사용자에게 전달
+            redirectAttributes.addFlashAttribute("errorMessage", "계약 생성 중 오류가 발생했습니다. 다시 시도해주세요.");
+
+            return "redirect:/errorPage"; // 에러 발생 시 오류 페이지로 리다이렉트
+        }
     }
 
     @PostMapping("/contracts/detail/{contractId}/update")
-    public String contractsUpdate(@PathVariable("contractId") Long contractId, @ModelAttribute ContractsDto contractsDto) {
-        contractsService.updateContracts(contractId, contractsDto);
+    public String contractsUpdate(@PathVariable("contractId") Long contractId, @ModelAttribute ContractsDto contractsDto, RedirectAttributes redirectAttributes) {
+        try {
+            // 계약 수정
+            contractsService.updateContracts(contractId, contractsDto);
 
-        // CRUD 작업 로깅
-        crudLogsService.logCrudOperation("update", "contracts", "", "True", "Success");
+            // 성공 로그 기록
+            crudLogsService.logCrudOperation("update", "contracts", contractId.toString(), "True", "Success");
 
-        return "redirect:/contracts/detail/" + contractId;
+            // 성공 메시지를 RedirectAttributes에 저장 (리다이렉트 후에도 유지됨)
+            redirectAttributes.addFlashAttribute("message", "계약이 성공적으로 수정되었습니다.");
+
+            return "redirect:/contracts/detail/" + contractId;
+        } catch (Exception e) {
+            // 실패 로그 기록
+            crudLogsService.logCrudOperation("update", "contracts", contractId.toString(), "False", "Error: " + e.getMessage());
+
+            // 에러 메시지를 사용자에게 전달
+            redirectAttributes.addFlashAttribute("errorMessage", "계약 수정 중 오류가 발생했습니다. 다시 시도해주세요.");
+
+            return "redirect:/errorPage"; // 에러 발생 시 오류 페이지로 리다이렉트
+        }
     }
 
     @PostMapping("/contracts/detail/{contractId}/delete")
     public ResponseEntity<Void> deleteContract(@PathVariable("contractId") Long contractId) {
-        contractsService.deleteContracts(contractId);
+        try {
+            // 계약 삭제 실행
+            contractsService.deleteContracts(contractId);
 
-        // CRUD 작업 로깅
-        crudLogsService.logCrudOperation("delete", "contracts", "", "True", "Success");
+            // CRUD 작업 로깅
+            crudLogsService.logCrudOperation("delete", "contracts", contractId.toString(), "True", "Success");
 
-        return ResponseEntity.ok().build();
+            return ResponseEntity.ok().build(); // HTTP 200 응답 (삭제 성공)
+        } catch (Exception e) {
+            // 삭제 실패 로그 기록
+            crudLogsService.logCrudOperation("delete", "contracts", contractId.toString(), "False", "Error: " + e.getMessage());
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // HTTP 500 응답 (삭제 실패)
+        }
     }
 
     @PostMapping("/contracts/detail/delete")
     public ResponseEntity<Void> deleteContracts(@RequestBody Map<String, List<Long>> request) {
         List<Long> ids = request.get("ids");
         logger.info("Deleting contracts with IDs: {}", ids);
-        contractsService.deleteContractsByIds(ids);
+        try {
+            // 계약 삭제 실행
+            contractsService.deleteContractsByIds(ids);
 
-        // CRUD 작업 로깅
-        crudLogsService.logCrudOperation("delete", "contracts", "", "True", "Success");
+            // 개별 ID에 대해 성공 로그 기록
+            for (Long id : ids) {
+                crudLogsService.logCrudOperation("delete", "contracts", id.toString(), "True", "Success");
+            }
 
-        return ResponseEntity.ok().build();
+            return ResponseEntity.ok().build(); // HTTP 200 응답 (삭제 성공)
+        } catch (Exception e) {
+            // 개별 ID에 대해 실패 로그 기록
+            for (Long id : ids) {
+                crudLogsService.logCrudOperation("delete", "contracts", id.toString(), "False", "Error: " + e.getMessage());
+            }
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // HTTP 500 응답 (삭제 실패)
+        }
     }
 
     // 파일 업로드
