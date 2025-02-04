@@ -98,6 +98,11 @@ public class OpportunitiesService {
         OpportunitiesCommentEntity comment = new OpportunitiesCommentEntity(content, LocalDateTime.now(), author, opportunity);
         opportunitiesCommentRepository.save(comment);
     }
+    // 히스토리 id로 찾기
+    public HistoryEntity searchHistory(Long historyId) {
+        return historyRepository.findById(historyId)
+                .orElseThrow(()->new IllegalArgumentException("error"));
+    }
 
     // History Operations
     public List<HistoryEntity> getHistoryByOpportunityId(Long opportunityId) {
