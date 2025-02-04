@@ -7,6 +7,10 @@ import com.aivle.project.repository.ChatbotLogsRepository;
 import com.aivle.project.repository.CrudLogsRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -22,8 +26,9 @@ public class CrudLogsService {
     private final CrudLogsRepository crudLogsRepository;
 
     // Read
-    public List<CrudLogsEntity> readCrudLogs() {
-        return crudLogsRepository.findAllByOrderByLogsIdDesc(); // 내림차순으로 로그 가져오기
+    public Page<CrudLogsEntity> readCrudLogs(int page, int size, String search) {
+        Pageable pageable = PageRequest.of(page, size);
+        return crudLogsRepository.findAllByKeyword(search, pageable); // 내림차순으로 로그 가져오기
     }
 
     // 각 게시물 log 기록
