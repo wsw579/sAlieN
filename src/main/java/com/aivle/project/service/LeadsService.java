@@ -1,19 +1,12 @@
 package com.aivle.project.service;
 
-import com.aivle.project.dto.ContractsDto;
 import com.aivle.project.dto.LeadsDto;
-import com.aivle.project.dto.ProductsDto;
-import com.aivle.project.entity.ContractsEntity;
 import com.aivle.project.entity.LeadsEntity;
-import com.aivle.project.entity.OpportunitiesEntity;
-import com.aivle.project.entity.OrdersEntity;
 import com.aivle.project.enums.Team;
 import com.aivle.project.repository.EmployeeRepository;
 import com.aivle.project.repository.LeadsRepository;
-
 import com.aivle.project.utils.UserContext;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -155,7 +147,7 @@ public class LeadsService {
 
         if (accumulate) {
             accumulateMonthlyData(lastYearData);
-            accumulateMonthlyData(currentYearData);
+            accumulateMonthlyDataUntilCurrentMonth(currentYearData);
         }
 
         Map<String, List<Integer>> yearlyData = new HashMap<>();
@@ -187,11 +179,31 @@ public class LeadsService {
             int count = ((Number) row[1]).intValue();
             monthlyData.set(month, count);
         });
+
+
+        // 현재 연도인 경우, 현재 월 이후의 데이터를 0으로 설정
+        if (year == LocalDate.now().getYear()) {
+            int currentMonth = LocalDate.now().getMonthValue();
+            for (int i = currentMonth + 1; i < monthlyData.size(); i++) {
+                monthlyData.set(i, 0);
+            }
+        }
     }
 
     private void accumulateMonthlyData(List<Integer> monthlyData) {
         for (int i = 1; i < monthlyData.size(); i++) {
             monthlyData.set(i, monthlyData.get(i) + monthlyData.get(i - 1));
+        }
+    }
+
+    private void accumulateMonthlyDataUntilCurrentMonth(List<Integer> monthlyData) {
+        int currentMonth = LocalDate.now().getMonthValue();
+        for (int i = 1; i < currentMonth; i++) {
+            monthlyData.set(i, monthlyData.get(i) + monthlyData.get(i - 1));
+        }
+        // 현재 월 이후의 데이터는 0으로 유지
+        for (int i = currentMonth+1; i < monthlyData.size(); i++) {
+            monthlyData.set(i, 0);
         }
     }
 
