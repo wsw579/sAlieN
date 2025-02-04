@@ -552,8 +552,139 @@
                 .then(data => {
                     // \n 문자를 <br> 태그로 대체
                     var formattedResponse = data.response.replace(/\\n/g, '<br>');
+
+
+                    // 2. system_response 값을 JSON 객체로 변환
+                    var systemData = {};
+                    if (data.system_response) {
+                        try {
+                            // ✅ \\_ 제거 및 백슬래시 정리
+                            let cleanedJson = data.system_response
+                                    .replace(/\\\\/g, '\\')  // 이중 백슬래시 정리
+                                    .replace(/\\_/g, '_')    // 잘못된 이스케이프 문자 제거
+                                    .replace(/\\n/g, '');    // 개행 문자 정리
+
+                            console.log("📌 정리된 JSON 문자열:", cleanedJson);
+
+                            // ✅ JSON 변환
+                            systemData = JSON.parse(cleanedJson);
+                        } catch (e) {
+                            console.error("❌ system_response JSON 파싱 오류:", e);
+                        }
+                    }
+
+
+                    if (data.crudOperations === "create") {
+                        if (data.table === "leads"){
+                            // 3. system_response 데이터를 URL의 쿼리 파라미터 형태로 변환
+                            var queryParams = new URLSearchParams({
+                                createdDate: systemData.createdDate || '',
+                                targetCloseDate: systemData.targetCloseDate || '',
+                                leadSource: systemData.leadSource || '',
+                                leadStatus: systemData.leadStatus || '',
+                                companyName: systemData.companyName || '',
+                                customerRequirements: systemData.customerRequirements || '',
+                                customerRepresentitive: systemData.customerRepresentitive || '',
+                                accountManager: systemData["계정담당자"] || '',
+                                contact: systemData.c_tel || ''
+                            }).toString(); // 쿼리 문자열 생성
+
+                            // queryParams 값 로그 출력
+                            console.log("🔍 생성된 queryParams:", queryParams);
+
+                            // 특정 링크를 추가 (예: 새로 생성된 리소스 링크 제공)
+                            formattedResponse += `<br><a href="/chatbot/create/leads?${queryParams}" target="_blank">새로 생성된 리소스 보기</a>`;
+                        }
+
+                        if (data.table === "accounts") {
+                            // system_response 데이터를 URL의 쿼리 파라미터 형태로 변환
+                            var queryParams = new URLSearchParams({
+                                accountCreatedDate: systemData.accountCreatedDate || '',
+                                accountStatus: systemData.accountStatus || '',
+                                accountName: systemData.accountName || '',
+                                담당자명: systemData["담당자명"] || '',
+                                accountType: systemData.accountType || '',
+                                parentAccount: systemData.parentAccount || '',
+                                website: systemData.website || '',
+                                contact: systemData.contact || '',
+                                businessType: systemData.businessType || '',
+                                accountManager: systemData.accountManager || '',
+                                accountDetail: systemData.accountDetail || '',
+                                address: systemData.address || '',
+                                accountManagerContact: systemData.accountManagerContact || ''
+                            }).toString(); // 쿼리 문자열 생성
+
+                            // queryParams 값 로그 출력
+                            console.log("🔍 생성된 queryParams:", queryParams);
+
+                            // 특정 링크를 추가 (예: 새로 생성된 리소스 링크 제공)
+                            formattedResponse += `<br><a href="/chatbot/create/accounts?${queryParams}" target="_blank">새로 생성된 리소스 보기</a>`;
+                        }
+
+                        if (data.table === "opportunities") {
+                            // system_response 데이터를 URL의 쿼리 파라미터 형태로 변환
+                            var queryParams = new URLSearchParams({
+                                createdDate: systemData.createdDate || '',
+                                targetCloseDate: systemData.targetCloseDate || '',
+                                opportunityStatus: systemData.opportunityStatus || '',
+                                리드명: systemData["리드명"] || '',
+                                opportunityName: systemData.opportunityName || '',
+                                계정명: systemData["계정명"] || '',
+                                담당자명: systemData["담당자명"] || '',
+                                successRate: systemData.successRate || '',
+                                companyRevenue: systemData.companyRevenue || '',
+                                region: systemData.region || '',
+                                customerEmployee: systemData.customerEmployee || '',
+                                opportunityInquiries: systemData.opportunityInquiries || '',
+                                opportunityNotes: systemData.opportunityNotes || '',
+                                제품명: systemData["제품명"] || '',
+                                quantity: systemData.quantity || '',
+                                expectedRevenue: systemData.expectedRevenue || ''
+                            }).toString(); // 쿼리 문자열 생성
+
+                            // queryParams 값 로그 출력
+                            console.log("🔍 생성된 queryParams:", queryParams);
+
+                            // 특정 링크를 추가 (예: 새로 생성된 리소스 링크 제공)
+                            formattedResponse += `<br><a href="/chatbot/create/opportunities?${queryParams}" target="_blank">새로 생성된 리소스 보기</a>`;
+                        }
+
+                    }
+
+
+
+
+
+
                     var botMessage = "<div class='chat-container'><div class='bot-info message-info'>sAIes CRM</div><div class='bot-message'>" + formattedResponse + "<br><span class='message-info'>" + currentTime + "</span></div></div>";
                     document.getElementById('chatbotMessages').innerHTML += botMessage;
+
+                    // // Spring Boot 요청 처리
+                    // if (data.crudOperations !== "normal") {
+                    //     if (data.crudOperations === "create") {
+                    //         var tableName = data.table; // chatbot 응답에서 table 값을 가져옴
+                    //         var systemResponse = data.system_response; // chatbot의 system_response 값을 가져옴
+                    //
+                    //         // Spring Boot로 POST 요청
+                    //         fetch(`http://localhost:8080/chatbot/create/${tableName}`, { // 엔드포인트 수정
+                    //             method: 'POST',
+                    //             headers: {
+                    //                 'Content-Type': 'application/json'
+                    //             },
+                    //             body: JSON.stringify({ response: systemResponse })
+                    //         })
+                    //                 .then(res => res.json())
+                    //                 .then(resData => {
+                    //                     console.log('Spring Boot 응답:', resData);
+                    //                     // Spring Boot의 응답에 대한 추가 처리 가능
+                    //                 })
+                    //                 .catch(error => {
+                    //                     console.error('Spring Boot 요청 오류:', error);
+                    //                 });
+                    //     }
+                    // }
+
+
 
                     // 모달 창 내의 스크롤 최하단으로 내리기
                     setTimeout(function() {

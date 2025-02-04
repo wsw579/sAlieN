@@ -17,10 +17,10 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-                .cors(cors -> cors
-                        .configurationSource(CorsConfig.corsConfigurationSource())
-                );
+//        http
+//                .cors(cors -> cors
+//                        .configurationSource(CorsConfig.corsConfigurationSource())
+//                );
 
         http
                 .authorizeHttpRequests((auth) -> auth

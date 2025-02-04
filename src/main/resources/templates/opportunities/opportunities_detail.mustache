@@ -426,8 +426,6 @@
                 </div>
                 <div class="card-body">
                     <table id="opportunities_status">
-
-
                         {{#opportunities}}
                             <tbody>
                             <div class="progress-container">
@@ -692,7 +690,7 @@
             });
 
 
-
+            {{#opportunityId}}
             // 현재 진행상황 bar JS
             document.addEventListener("DOMContentLoaded", function() {
                 var progressSteps = document.querySelectorAll(".step");
@@ -724,6 +722,7 @@
             }
         }
     });
+            {{/opportunityId}}
 
 
 
