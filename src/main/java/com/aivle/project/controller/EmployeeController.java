@@ -99,7 +99,7 @@ public class EmployeeController {
             return ResponseEntity.ok("비밀번호가 성공적으로 변경되었습니다.");
         } catch (IllegalArgumentException e) {
             // CRUD 작업 로깅
-            crudLogsService.logCrudOperation("update", "employee", employeeDto.getEmployeeId(), "False", "Fail");
+            crudLogsService.logCrudOperation("update", "employee", employeeDto.getEmployeeId(), "False", "Error: " + e.getMessage());
             // 오류 메시지 반환
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -115,7 +115,7 @@ public class EmployeeController {
             return ResponseEntity.ok("비밀번호가 성공적으로 변경되었습니다.");
         } catch (IllegalArgumentException e) {
             // CRUD 작업 로깅
-            crudLogsService.logCrudOperation("update", "employee", employeeDto.getEmployeeId(), "False", "Fail");
+            crudLogsService.logCrudOperation("update", "employee", employeeDto.getEmployeeId(), "False", "Error: " + e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
@@ -170,7 +170,7 @@ public class EmployeeController {
     public String adminEmployeeSignup(EmployeeDto.Post memberDto, RedirectAttributes redirectAttributes){
         try {
             // 계정 생성
-            employeeService.registerUser(memberDto);
+            signupService.registerUser(memberDto);
 
             // CRUD 작업 로깅
             crudLogsService.logCrudOperation("create", "employee", "", "True", "Success");

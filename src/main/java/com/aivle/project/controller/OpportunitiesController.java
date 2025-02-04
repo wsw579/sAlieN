@@ -248,7 +248,7 @@ public class OpportunitiesController {
             // 성공 메시지를 RedirectAttributes에 저장 (리다이렉트 후에도 유지됨)
             redirectAttributes.addFlashAttribute("message", "기회가 성공적으로 수정되었습니다.");
 
-            return "redirect:/opportunities" ;
+            return "redirect:/opportunities/detail/" + opportunityId;
         } catch (Exception e) {
             // 실패 로그 기록
             crudLogsService.logCrudOperation("update", "opportunities", opportunityId.toString(), "False", "Error: " + e.getMessage());

@@ -143,7 +143,7 @@ public class LeadsController {
             crudLogsService.logCrudOperation("create", "leads", "", "True", "Success");
 
             // 성공 메시지를 RedirectAttributes에 저장 (리다이렉트 후에도 유지됨)
-            redirectAttributes.addFlashAttribute("message", "계약이 성공적으로 생성되었습니다.");
+            redirectAttributes.addFlashAttribute("message", "리드가 성공적으로 생성되었습니다.");
 
             return "redirect:/leads"; // 성공 시 리드 목록 페이지로 이동
         } catch (Exception e) {
@@ -168,7 +168,7 @@ public class LeadsController {
             crudLogsService.logCrudOperation("update", "leads", leadId.toString(), "True", "Success");
 
             // 성공 메시지를 RedirectAttributes에 저장 (리다이렉트 후에도 유지됨)
-            redirectAttributes.addFlashAttribute("message", "계약이 성공적으로 수정되었습니다.");
+            redirectAttributes.addFlashAttribute("message", "리드가 성공적으로 수정되었습니다.");
 
             return "redirect:/leads/detail/" + leadId;
         } catch (Exception e) {
