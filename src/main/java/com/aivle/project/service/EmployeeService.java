@@ -9,6 +9,7 @@ import com.aivle.project.enums.Role;
 import com.aivle.project.enums.Team;
 import com.aivle.project.repository.EmployeeRepository;
 import com.aivle.project.repository.OpportunitiesRepository;
+import com.aivle.project.utils.EmployeeDataMapping;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 import jakarta.transaction.Transactional;
@@ -37,75 +38,75 @@ public class EmployeeService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
 
-    private static final Map<Position, Float> positionBaseSalaryMap = new HashMap<>();
-    private static final Map<Dept, String> deptMap = new HashMap<>();
-    private static final Map<Position, String> positionMap = new HashMap<>();
-    private static final Map<Team, String> teamMap = new HashMap<>();
+//    private static final Map<Position, Float> positionBaseSalaryMap = new HashMap<>();
+//    private static final Map<Dept, String> deptMap = new HashMap<>();
+//    private static final Map<Position, String> positionMap = new HashMap<>();
+//    private static final Map<Team, String> teamMap = new HashMap<>();
+//
+//    static {
+//        // static 블록에서 초기화
+//        positionBaseSalaryMap.put(Position.STAFF, 50000000F);
+//        positionBaseSalaryMap.put(Position.JUNIOR, 60000000F);
+//        positionBaseSalaryMap.put(Position.ASSOCIATE, 75000000F);
+//        positionBaseSalaryMap.put(Position.MANAGER, 100000000F);
+//        positionBaseSalaryMap.put(Position.ASSISTANT_MANAGER, 120000000F);
+//        positionBaseSalaryMap.put(Position.TEAM_LEADER, 140000000F);
+//        positionBaseSalaryMap.put(Position.DEPARTMENT_HEAD, 160000000F);
+//        positionBaseSalaryMap.put(Position.GENERAL_MANAGER, 180000000F);
+//    }
+//
+//    static {
+//        deptMap.put(Dept.STRATEGY_DEPT, "전략고객본부");
+//        deptMap.put(Dept.PUBLIC_DEPT, "공공고객본부");
+//        deptMap.put(Dept.FINANCE_DEPT, "금융고객본부");
+//        deptMap.put(Dept.CORPORATE_DEPT, "법인영업본부");
+//    }
+//
+//    static {
+//        // Position 매핑 초기화
+//        positionMap.put(Position.GENERAL_MANAGER, "본부장");
+//        positionMap.put(Position.DEPARTMENT_HEAD, "부장");
+//        positionMap.put(Position.TEAM_LEADER, "팀장");
+//        positionMap.put(Position.ASSISTANT_MANAGER, "차장");
+//        positionMap.put(Position.MANAGER, "과장");
+//        positionMap.put(Position.ASSOCIATE, "대리");
+//        positionMap.put(Position.JUNIOR, "주임");
+//        positionMap.put(Position.STAFF, "사원");
+//    }
+//
+//    static {
+//        // Team 매핑 초기화
+//        teamMap.put(Team.STRATEGY_CUST_SECTOR, "전략고객섹터담당");
+//        teamMap.put(Team.STRATEGY_CUST_1, "전략고객1담당");
+//        teamMap.put(Team.STRATEGY_CUST_2, "전략고객2담당");
+//        teamMap.put(Team.PUBLIC_CUST_SECTOR, "공공고객섹터담당");
+//        teamMap.put(Team.PUBLIC_CUST_1, "공공고객1담당");
+//        teamMap.put(Team.PUBLIC_CUST_2, "공공고객2담당");
+//        teamMap.put(Team.FINANCE_CUST_SECTOR, "금융고객섹터담당");
+//        teamMap.put(Team.FINANCE_CUST_1, "금융고객1담당");
+//        teamMap.put(Team.FINANCE_CUST_2, "금융고객2담당");
+//        teamMap.put(Team.CORPORATE_SALES_PLANNING, "법인영업기획담당");
+//        teamMap.put(Team.CORPORATE_CUST, "법인고객담당");
+//        teamMap.put(Team.CORPORATE_RETAIL, "법인유통담당");
+//        teamMap.put(Team.CORPORATE_SALES_SECTOR, "법인섹터담당");
+//    }
 
-    static {
-        // static 블록에서 초기화
-        positionBaseSalaryMap.put(Position.STAFF, 50000000F);
-        positionBaseSalaryMap.put(Position.JUNIOR, 60000000F);
-        positionBaseSalaryMap.put(Position.ASSOCIATE, 75000000F);
-        positionBaseSalaryMap.put(Position.MANAGER, 100000000F);
-        positionBaseSalaryMap.put(Position.ASSISTANT_MANAGER, 120000000F);
-        positionBaseSalaryMap.put(Position.TEAM_LEADER, 140000000F);
-        positionBaseSalaryMap.put(Position.DEPARTMENT_HEAD, 160000000F);
-        positionBaseSalaryMap.put(Position.GENERAL_MANAGER, 180000000F);
-    }
-
-    static {
-        deptMap.put(Dept.STRATEGY_DEPT, "전략고객본부");
-        deptMap.put(Dept.PUBLIC_DEPT, "공공고객본부");
-        deptMap.put(Dept.FINANCE_DEPT, "금융고객본부");
-        deptMap.put(Dept.CORPORATE_DEPT, "법인영업본부");
-    }
-
-    static {
-        // Position 매핑 초기화
-        positionMap.put(Position.GENERAL_MANAGER, "본부장");
-        positionMap.put(Position.DEPARTMENT_HEAD, "부장");
-        positionMap.put(Position.TEAM_LEADER, "팀장");
-        positionMap.put(Position.ASSISTANT_MANAGER, "차장");
-        positionMap.put(Position.MANAGER, "과장");
-        positionMap.put(Position.ASSOCIATE, "대리");
-        positionMap.put(Position.JUNIOR, "주임");
-        positionMap.put(Position.STAFF, "사원");
-    }
-
-    static {
-        // Team 매핑 초기화
-        teamMap.put(Team.STRATEGY_CUST_SECTOR, "전략고객섹터담당");
-        teamMap.put(Team.STRATEGY_CUST_1, "전략고객1담당");
-        teamMap.put(Team.STRATEGY_CUST_2, "전략고객2담당");
-        teamMap.put(Team.PUBLIC_CUST_SECTOR, "공공고객섹터담당");
-        teamMap.put(Team.PUBLIC_CUST_1, "공공고객1담당");
-        teamMap.put(Team.PUBLIC_CUST_2, "공공고객2담당");
-        teamMap.put(Team.FINANCE_CUST_SECTOR, "금융고객섹터담당");
-        teamMap.put(Team.FINANCE_CUST_1, "금융고객1담당");
-        teamMap.put(Team.FINANCE_CUST_2, "금융고객2담당");
-        teamMap.put(Team.CORPORATE_SALES_PLANNING, "법인영업기획담당");
-        teamMap.put(Team.CORPORATE_CUST, "법인고객담당");
-        teamMap.put(Team.CORPORATE_RETAIL, "법인유통담당");
-        teamMap.put(Team.CORPORATE_SALES_SECTOR, "법인섹터담당");
-    }
-
-    public void join(EmployeeDto.Post employeeDto) {
-        // EmployeeEntity 생성 및 저장
-        EmployeeEntity employee = new EmployeeEntity();
-        employee.setEmployeeId(employeeDto.getEmployeeId());
-        employee.setEmployeeName(employeeDto.getEmployeeName());
-        employee.setHireDate(LocalDate.parse(employeeDto.getHireDate()));
-        employee.setTerminationDate(null);
-        employee.setBaseSalary(positionBaseSalaryMap.get(Position.valueOf(employeeDto.getPosition())));
-        employee.setPosition(Position.valueOf(employeeDto.getPosition()));
-        employee.setAccessPermission(Role.ROLE_USER);
-        employee.setPassword(bCryptPasswordEncoder.encode(employeeDto.getPassword()));
-        employee.setPasswordAnswer(employeeDto.getPasswordAnswer());
-        employee.setDepartmentId(Dept.valueOf(employeeDto.getDept()));
-        employee.setTeamId(Team.valueOf(employeeDto.getTeam()));
-        employeeRepository.save(employee);
-    }
+//    public void join(EmployeeDto.Post employeeDto) {
+//        // EmployeeEntity 생성 및 저장
+//        EmployeeEntity employee = new EmployeeEntity();
+//        employee.setEmployeeId(employeeDto.getEmployeeId());
+//        employee.setEmployeeName(employeeDto.getEmployeeName());
+//        employee.setHireDate(LocalDate.parse(employeeDto.getHireDate()));
+//        employee.setTerminationDate(null);
+//        employee.setBaseSalary(positionBaseSalaryMap.get(Position.valueOf(employeeDto.getPosition())));
+//        employee.setPosition(Position.valueOf(employeeDto.getPosition()));
+//        employee.setAccessPermission(Role.ROLE_USER);
+//        employee.setPassword(bCryptPasswordEncoder.encode(employeeDto.getPassword()));
+//        employee.setPasswordAnswer(employeeDto.getPasswordAnswer());
+//        employee.setDepartmentId(Dept.valueOf(employeeDto.getDept()));
+//        employee.setTeamId(Team.valueOf(employeeDto.getTeam()));
+//        employeeRepository.save(employee);
+//    }
 
     public String editPassword(EmployeeDto.Patch employee) {
         EmployeeEntity findEmployee = employeeRepository.findByEmployeeId(employee.getEmployeeId());
@@ -147,9 +148,9 @@ public class EmployeeService {
         employee.setEmployeeId(employeeId);
         employee.setEmployeeName(findEmployee.getEmployeeName());
         employee.setHireDate(findEmployee.getHireDate());
-        employee.setPosition(positionMap.get(findEmployee.getPosition()));
-        employee.setTeam(findEmployee.getTeamId() == null ? "팀 정보 없음" : teamMap.get(findEmployee.getTeamId()));
-        employee.setDept(findEmployee.getDepartmentId() == null ? "부서정보 없음" : deptMap.get(findEmployee.getDepartmentId()));
+        employee.setPosition(EmployeeDataMapping.POSITION_MAP.get(findEmployee.getPosition()));
+        employee.setTeam(findEmployee.getTeamId() == null ? "팀 정보 없음" : EmployeeDataMapping.TEAM_MAP.get(findEmployee.getTeamId()));
+        employee.setDept(findEmployee.getDepartmentId() == null ? "부서정보 없음" : EmployeeDataMapping.DEPT_MAP.get(findEmployee.getDepartmentId()));
         return employee;
     }
 
@@ -178,18 +179,18 @@ public class EmployeeService {
         }
     }
 
-    public String makeNewEmployeeId(String year) {
-        // 데이터베이스에서 해당 연도에 가장 마지막으로 등록된 employeeId 조회
-        String lastEmployeeId = employeeRepository.findLastEmployeeIdByYear(year);
-
-        // 해당 연도의 마지막 번호 계산
-        int nextNumber = 1; // 기본값은 1 (입사자가 없을 경우)
-        if (lastEmployeeId != null && lastEmployeeId.startsWith(year)) {
-            // 연도 이후의 번호를 추출하고 숫자로 변환하여 증가
-            nextNumber = Integer.parseInt(lastEmployeeId.substring(4)) + 1;
-        }
-        return String.format("%s%04d", year, nextNumber);
-    }
+//    public String makeNewEmployeeId(String year) {
+//        // 데이터베이스에서 해당 연도에 가장 마지막으로 등록된 employeeId 조회
+//        String lastEmployeeId = employeeRepository.findLastEmployeeIdByYear(year);
+//
+//        // 해당 연도의 마지막 번호 계산
+//        int nextNumber = 1; // 기본값은 1 (입사자가 없을 경우)
+//        if (lastEmployeeId != null && lastEmployeeId.startsWith(year)) {
+//            // 연도 이후의 번호를 추출하고 숫자로 변환하여 증가
+//            nextNumber = Integer.parseInt(lastEmployeeId.substring(4)) + 1;
+//        }
+//        return String.format("%s%04d", year, nextNumber);
+//    }
 
     public Page<EmployeeDto.Get> findAllEmployee(int page, int size, String search) {
         Pageable pageable = PageRequest.of(page, size); // 페이징 정보 설정
@@ -207,8 +208,8 @@ public class EmployeeService {
                     empDto.setEmployeeName(emp.getEmployeeName());
                     empDto.setHireDate(emp.getHireDate());
                     empDto.setPosition(emp.getPosition().name());
-                    empDto.setDept(emp.getDepartmentId() == null ? "부서 정보 없음" : deptMap.get(emp.getDepartmentId()));
-                    empDto.setTeam(emp.getTeamId() == null ? "팀 정보 없음" : teamMap.get(emp.getTeamId()));
+                    empDto.setDept(emp.getDepartmentId() == null ? "부서 정보 없음" : EmployeeDataMapping.DEPT_MAP.get(emp.getDepartmentId()));
+                    empDto.setTeam(emp.getTeamId() == null ? "팀 정보 없음" : EmployeeDataMapping.TEAM_MAP.get(emp.getTeamId()));
                     empDto.setBaseSalary(emp.getBaseSalary());
                     return empDto;
                 })
@@ -265,44 +266,6 @@ public class EmployeeService {
     public String getPositionByUserId(String userId) {
         return employeeRepository.findPositionById(userId);
     }
-
-    public List<Map<String, Object>> getSalesDataByTeam(String teamId) {
-        List<EmployeeEntity> employees = employeeRepository.findByTeamId(teamId);
-        return employees.stream()
-                .map(employee -> {
-                    long opportunityCount = opportunitiesRepository.countByEmployeeIdAndStatus(employee.getEmployeeId());
-                    Map<String, Object> data = new HashMap<>();
-                    data.put("employeeName", employee.getEmployeeName());
-                    data.put("opportunityCount", opportunityCount);
-                    return data;
-                })
-                .collect(Collectors.toList());
-    }
-
-    public List<Map<String, Object>> getSalesDataByDepartment(String departmentId) {
-        List<EmployeeEntity> employees = employeeRepository.findByDepartmentId(departmentId);
-        return employees.stream()
-                .map(employee -> {
-                    long opportunityCount = opportunitiesRepository.countByEmployeeIdAndStatus(employee.getEmployeeId());
-                    Map<String, Object> data = new HashMap<>();
-                    data.put("employeeName", employee.getEmployeeName());
-                    data.put("opportunityCount", opportunityCount);
-                    return data;
-                })
-                .collect(Collectors.toList());
-    }
-
-
-    // Object[] 결과를 Map으로 변환
-    private List<Map<String, Object>> mapToSalesData(List<Object[]> results) {
-        return results.stream().map(result -> {
-            Map<String, Object> data = new HashMap<>();
-            data.put("employeeName", result[0]);
-            data.put("opportunityCount", result[1]);
-            return data;
-        }).collect(Collectors.toList());
-    }
-
 
 
     public EmployeeDto.Get getLoggedInUser() {

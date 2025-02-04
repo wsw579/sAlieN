@@ -5,9 +5,6 @@ import com.aivle.project.entity.HistoryEntity;
 import com.aivle.project.entity.LeadsEntity;
 import com.aivle.project.entity.OpportunitiesCommentEntity;
 import com.aivle.project.entity.OpportunitiesEntity;
-import com.aivle.project.enums.Dept;
-import com.aivle.project.enums.Team;
-import com.aivle.project.repository.OpportunitiesRepository;
 import com.aivle.project.entity.*;
 import com.aivle.project.service.*;
 import lombok.RequiredArgsConstructor;
@@ -26,8 +23,6 @@ import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.IntStream;
 
 
 @Controller
@@ -253,7 +248,7 @@ public class OpportunitiesController {
             // 성공 메시지를 RedirectAttributes에 저장 (리다이렉트 후에도 유지됨)
             redirectAttributes.addFlashAttribute("message", "기회가 성공적으로 수정되었습니다.");
 
-            return "redirect:/opportunities/detail/" + opportunityId;
+            return "redirect:/opportunities" ;
         } catch (Exception e) {
             // 실패 로그 기록
             crudLogsService.logCrudOperation("update", "opportunities", opportunityId.toString(), "False", "Error: " + e.getMessage());
@@ -322,21 +317,22 @@ public class OpportunitiesController {
             @RequestParam(required = false) String teamId,
             @RequestParam(required = false) String departmentId
     ) {
-        try {
-            if (teamId == null && departmentId == null) {
-                throw new IllegalArgumentException("팀 ID 또는 부서 ID가 필요합니다.");
-            }
-
-            // Service에서 데이터 가져오기
-            Map<String, Object> response = opportunitiesService.getSalesData(teamId, departmentId);
-
-            return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body("잘못된 팀 또는 부서 값: " + e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류: " + e.getMessage());
+        if (teamId == null && departmentId == null) {
+            return ResponseEntity.badRequest().body("팀 ID 또는 부서 ID가 필요합니다.");
         }
+
+        Map<String, Object> salesData;
+        try {
+            salesData = opportunitiesService.getSalesData(teamId, departmentId);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+
+        return ResponseEntity.ok(salesData);
     }
+
+
+
 
     private String getCurrentUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

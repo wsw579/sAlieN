@@ -7,10 +7,7 @@ import com.aivle.project.entity.OpportunitiesEntity;
 import com.aivle.project.entity.OrdersEntity;
 import com.aivle.project.enums.Dept;
 import com.aivle.project.enums.Team;
-import com.aivle.project.service.CrudLogsService;
-import com.aivle.project.service.EmployeeService;
-import com.aivle.project.service.PaginationService;
-import com.aivle.project.service.ProductsService;
+import com.aivle.project.service.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +34,7 @@ public class EmployeeController {
     private final EmployeeService employeeService;
     private final CrudLogsService crudLogsService;
     private final PaginationService paginationService;
+    private final SignupService signupService;
 
     @GetMapping("/login")
     public String login(@RequestParam(value = "error", required = false) String error, Model model) {
@@ -46,31 +44,31 @@ public class EmployeeController {
         return "user/login";
     }
 
-    @PostMapping("/signup")
-    public String user(EmployeeDto.Post memberDto, RedirectAttributes redirectAttributes){
-        try {
-            // 계정 생성
-            employeeService.join(memberDto);
-
-            // CRUD 작업 로깅
-            crudLogsService.logCrudOperation("create", "employee", "", "True", "Success");
-
-            return "redirect:/"; // 성공 시 메인 페이지로 이동
-        } catch (Exception e) {
-            // 실패 로그 기록
-            crudLogsService.logCrudOperation("create", "employee", "", "False", "Error: " + e.getMessage());
-
-            // 에러 메시지를 사용자에게 전달
-            redirectAttributes.addFlashAttribute("errorMessage", "ID 생성 중 오류가 발생했습니다. 다시 시도해주세요.");
-
-            return "redirect:/errorPage"; // 에러 발생 시 오류 페이지로 리다이렉트
-        }
-    }
-
-    @GetMapping("/signup")
-    public String signup(){
-        return "user/signup";
-    }
+//    @PostMapping("/signup")
+//    public String user(EmployeeDto.Post memberDto, RedirectAttributes redirectAttributes){
+//        try {
+//            // 계정 생성
+//            employeeService.join(memberDto);
+//
+//            // CRUD 작업 로깅
+//            crudLogsService.logCrudOperation("create", "employee", "", "True", "Success");
+//
+//            return "redirect:/"; // 성공 시 메인 페이지로 이동
+//        } catch (Exception e) {
+//            // 실패 로그 기록
+//            crudLogsService.logCrudOperation("create", "employee", "", "False", "Error: " + e.getMessage());
+//
+//            // 에러 메시지를 사용자에게 전달
+//            redirectAttributes.addFlashAttribute("errorMessage", "ID 생성 중 오류가 발생했습니다. 다시 시도해주세요.");
+//
+//            return "redirect:/errorPage"; // 에러 발생 시 오류 페이지로 리다이렉트
+//        }
+//    }
+//
+//    @GetMapping("/signup")
+//    public String signup(){
+//        return "user/signup";
+//    }
 
     @GetMapping("/logout")
     public String logout(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -132,14 +130,14 @@ public class EmployeeController {
     }
 
 
-    @GetMapping("/api/generateEmployeeId")
-    @ResponseBody // 반환값을 JSON으로 처리
-    public ResponseEntity<Map<String, String>> generateUserId(@RequestParam("year") int year) {
-        Map<String, String> response = new HashMap<>();
-        String employeeId = employeeService.makeNewEmployeeId(year+"");
-        response.put("employeeId", employeeId); // 예시 응답
-        return ResponseEntity.ok(response);
-    }
+//    @GetMapping("/api/generateEmployeeId")
+//    @ResponseBody // 반환값을 JSON으로 처리
+//    public ResponseEntity<Map<String, String>> generateUserId(@RequestParam("year") int year) {
+//        Map<String, String> response = new HashMap<>();
+//        String employeeId = employeeService.makeNewEmployeeId(year+"");
+//        response.put("employeeId", employeeId); // 예시 응답
+//        return ResponseEntity.ok(response);
+//    }
 
     // 멤버 페이지
     @GetMapping("/employee-list")
@@ -172,7 +170,7 @@ public class EmployeeController {
     public String adminEmployeeSignup(EmployeeDto.Post memberDto, RedirectAttributes redirectAttributes){
         try {
             // 계정 생성
-            employeeService.join(memberDto);
+            employeeService.registerUser(memberDto);
 
             // CRUD 작업 로깅
             crudLogsService.logCrudOperation("create", "employee", "", "True", "Success");

@@ -32,12 +32,12 @@
     {{#id}}
         {{#isAdmin}}
             <div class="navbar-text text-light me-3">
-                {{id}}님 오늘 하루도 화이팅 하세요.
+                {{id}}님 오늘 하루도 힘내세요.
             </div>  <!-- ✅ 관리자: ID만 표시 -->
         {{/isAdmin}}
         {{^isAdmin}}
             <div class="navbar-text text-light me-3">
-                {{name}}({{id}})님 오늘 하루도 화이팅 하세요.
+                {{name}}({{id}})님 오늘 하루도 힘내세요.
             </div> <!-- ✅ 일반 사용자: 이름 + ID 표시 -->
         {{/isAdmin}}
     {{/id}}
@@ -221,17 +221,6 @@
                         </nav>
                     </div>
 
-
-                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseNotebook" aria-expanded="false" aria-controls="collapseNotebook">
-                        <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
-                        Data Notebook
-                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                    </a>
-                    <div class="collapse" id="collapseNotebook" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
-                        <nav class="sb-sidenav-menu-nested nav">
-                            <a class="nav-link" href="/notebook">AI Analysis Notebook</a>
-                        </nav>
-                    </div>
 
 
                     <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLogs" aria-expanded="false" aria-controls="collapseLogs">
@@ -666,6 +655,3 @@
 
         });
     </script>
-
-
-

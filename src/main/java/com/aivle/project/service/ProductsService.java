@@ -1,10 +1,8 @@
 package com.aivle.project.service;
 
-import com.aivle.project.dto.ContractsDto;
+
 import com.aivle.project.dto.ProductsDto;
-import com.aivle.project.entity.ContractsEntity;
 import com.aivle.project.entity.EmployeeEntity;
-import com.aivle.project.entity.OrdersEntity;
 import com.aivle.project.entity.ProductsEntity;
 import com.aivle.project.enums.ProductCondition;
 import com.aivle.project.repository.EmployeeRepository;
@@ -17,17 +15,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @Service
 @Transactional
@@ -36,7 +30,7 @@ public class ProductsService {
 
     private final ProductsRepository productsRepository;
     private final EmployeeRepository employeeRepository;
-    private static final Logger logger = LoggerFactory.getLogger(ContractsService.class);
+    private static final Logger logger = LoggerFactory.getLogger(ProductsService.class);
 
 
     // Create
