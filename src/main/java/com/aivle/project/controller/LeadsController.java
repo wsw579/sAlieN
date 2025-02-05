@@ -8,16 +8,28 @@ import com.aivle.project.entity.*;
 import com.aivle.project.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.*;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 @Controller
@@ -205,6 +217,57 @@ public class LeadsController {
         response.put("leadCount", count);
         return ResponseEntity.ok(response);
     }
+
+    // AI 음성인식
+    @PostMapping("/auto")
+    public ResponseEntity<Map<String, Object>> handleFileUpload(@RequestPart("audioFile") MultipartFile audioFile) {
+        try {
+            // MIME 타입 검증
+            if (!audioFile.getContentType().equals("audio/mpeg")) {
+                throw new IllegalArgumentException("MP3 파일만 업로드 가능합니다.");
+            }
+
+            // FastAPI 서버 URL
+            String fastApiUrl = "http://127.0.0.1:8000/auto";
+
+            // RestTemplate 생성
+            RestTemplate restTemplate = new RestTemplate();
+
+            // HTTP 요청 헤더 설정
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+            // 요청 본문 생성
+            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+            body.add("audio_file", new InputStreamResource(audioFile.getInputStream()) {
+                @Override
+                public String getFilename() {
+                    return audioFile.getOriginalFilename();
+                }
+            });
+
+            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+
+            // FastAPI 서버로 POST 요청 보내기
+            ResponseEntity<String> response = restTemplate.postForEntity(fastApiUrl, requestEntity, String.class);
+
+            if (response.getStatusCode() == HttpStatus.OK) {
+                // JSON 응답 파싱 및 반환
+                Map<String, Object> responseBody = new HashMap<>();
+                responseBody.put("data", response.getBody());
+                return ResponseEntity.ok(responseBody);
+            } else {
+                return ResponseEntity.status(response.getStatusCode()).body(null);
+            }
+        } catch (IllegalArgumentException e) {
+            // MIME 타입 검증 실패 시 처리
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
 }
 
 

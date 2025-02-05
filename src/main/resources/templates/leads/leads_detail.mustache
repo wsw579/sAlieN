@@ -145,31 +145,56 @@
 
 
                 <div class="card-body">
-
                     <table id="leads_detail">
+                        <!-- 파일 업로드 및 처리 -->
+                    <div class="button-container mb-3">
+
+                        {{^leadId}}
+                            <!-- 숨겨진 파일 입력 필드 -->
+                            <input type="file" id="fileInput" accept=".webm, .mp3, .wav" style="display: none;">
+
+                            <!-- 자동 생성 버튼 -->
+                            <button type="button" class="btn btn-custom-auto btn-sm" id="autoButton">
+                                <i class="fas fa-file-text"></i> 자동 생성
+                            </button>
+                        {{/leadId}}
+
+                        <!-- Mustache 템플릿 -->
+                        <div id="dataContainer">
+                            <div id="renderedOutput"></div>
+                        </div>
+
+                        <!-- Mustache 템플릿 정의 -->
+                        <script id="template" type="x-tmpl-mustache">
+                            <ul>
+                            {{#leads}}
+                                <li><strong>리드 소스:</strong> {{leadSource}}</li>
+        <li><strong>회사 이름:</strong> {{companyName}}</li>
+        <li><strong>고객 담당자:</strong> {{customerRepresentitive}}</li>
+        <li><strong>연락처:</strong> {{c_tel}}</li>
+        <li><strong>고객 요구사항:</strong> {{customerRequirements}}</li>
+                            {{/leads}}
+                            </ul>
+                        </script>
+
+                        {{#leads}}
+                            <a href="/leads/detail/create" class="btn btn-custom-create btn-sm" id="createButton">
+                                <i class="fas fa-plus-circle"></i> 신규
+                            </a>
+
+                            <button class="btn btn-custom-delete btn-sm" id="deleteButton">
+                                <i class="fas fa-trash"></i> 삭제
+                            </button>
+
+                            <a href="/leads" class="btn btn-custom-select btn-sm" id="selectButton">
+                                <i class="fas fa-list"></i> 목록
+                            </a>
 
 
-                            <div class="button-container mb-3">
-                                {{^leadId}}
-                                <button type="button"  class="btn btn-custom-auto btn-sm"  id="autoButton">
-                                    <i class="fas fa-file-text"></i> 자동 생성
-                                </button>
-                                {{/leadId}}
+                    </div>
 
-                                {{#leads}}
-                                <a href="/leads/detail/create" class="btn btn-custom-create btn-sm" id="createButton">
-                                    <i class="fas fa-plus-circle"></i> 신규
-                                </a>
 
-                                    <button class="btn btn-custom-delete btn-sm" id="deleteButton">
-                                        <i class="fas fa-trash"></i> 삭제
-                                    </button>
 
-                                <a href="/leads" class="btn btn-custom-select btn-sm" id="selectButton">
-                                    <i class="fas fa-list"></i> 목록
-                                </a>
-
-                            </div>
 
                             {{#leadId}}
                             <form id="leadForm" action="/leads/detail/{{leadId}}/update" method="POST">
@@ -179,24 +204,28 @@
                             {{/leadId}}
 
 
+
                             <div class="mb-3 row">
                                 <label for="createdDate" class="col-sm-2 col-form-label">생성일자:</label>
                                 <div class="col-sm-10">
                                     <input type="date" class="form-control" id="createdDate" name="createdDate" value="{{createdDate}}" required>
                                 </div>
                             </div>
+
                             <div class="mb-3 row">
                                 <label for="targetCloseDate" class="col-sm-2 col-form-label">마감기한:</label>
                                 <div class="col-sm-10">
                                     <input type="date" class="form-control" id="targetCloseDate" name="targetCloseDate" value="{{targetCloseDate}}" required>
                                 </div>
                             </div>
+
                             <div class="mb-3 row">
                                 <label for="leadSource" class="col-sm-2 col-form-label">리드소스:</label>
                                 <div class="col-sm-10">
                                     <input type="text" class="form-control" id="leadSource" name="leadSource" value="{{leadSource}}" >
                                 </div>
                             </div>
+
                             <div class="mb-3 row">
                                 <label for="leadStatus" class="col-sm-2 col-form-label">리드상태:</label>
                                 <div class="col-sm-10">
@@ -251,6 +280,7 @@
                                     <input type="text" class="form-control" id="customerRepresentitive" name="customerRepresentitive" value="{{customerRepresentitive}}"required>
                                 </div>
                             </div>
+
                             <div class="mb-3 row">
                                 <label for="c_tel" class="col-sm-2 col-form-label">연락처:</label>
                                 <div class="col-sm-10">
@@ -269,22 +299,20 @@
                                 </button>
                             </div>
                         </form>
-
                         {{/leads}}
                     </form>
-
                     </table>
 
                 </div>
             </div>
         </div>
+
     </main>
 
 
     <script>
 
-
-                // Form 부분 리드상태 초기값 연동 JS (select Form은 html로 초기 value 지정이 안되어서 JS로 처리)
+ // Form 부분 리드상태 초기값 연동 JS (select Form은 html로 초기 value 지정이 안되어서 JS로 처리)
     {{#leads}}
         {{#leadId}}
         document.addEventListener("DOMContentLoaded", function() {
@@ -482,67 +510,79 @@
         });
     });
 
-// AI 리드 자동 생성
-document.addEventListener('DOMContentLoaded', function() {
-    const autoButton = document.getElementById('autoButton');
 
-    if (autoButton) {
-        autoButton.addEventListener('click', function() {
-            fetch('http://127.0.0.1:8000/auto', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({})
+     // AI 리드 자동 생성
+     document.addEventListener('DOMContentLoaded', function () {
+            const autoButton = document.getElementById('autoButton');
+            const fileInput = document.getElementById('fileInput');
+
+            // "자동 생성" 버튼 클릭 시 숨겨진 파일 입력 필드 클릭
+                autoButton.addEventListener('click', function () {
+                 fileInput.click(); // 숨겨진 파일 입력 필드를 클릭
+                });
+
+    // 파일 선택 이벤트 처리
+    fileInput.addEventListener('change', function (event) {
+        const selectedFile = event.target.files[0];
+
+        if (!selectedFile) {
+            alert('파일이 선택되지 않았습니다.');
+            return;
+        }
+
+        console.log('선택된 파일:', selectedFile.name);
+
+        // 서버로 파일 업로드
+        uploadFile(selectedFile);
+    });
+
+    // 파일 업로드 함수
+    function uploadFile(file) {
+        const formData = new FormData();
+        formData.append('audioData', file);
+
+                fetch('/leads/auto' ,  {
+                    method: 'POST',
+                     body: formData,
             })
-            .then(response => {
+            .then((response) => {
                 if (!response.ok) {
-                    throw new Error('Network response was not ok');
+                    throw new Error('파일 업로드 실패');
                 }
                 return response.json();
             })
-            .then(data => {
-                const parsedData = JSON.parse(data.replace(/'/g, '"'));
-                console.log('파싱된 데이터:', parsedData);
-                fillFormWithData(parsedData);
+            .then((data) => {
+                console.log('서버 응답 데이터:', data);
+                renderWithMustache(data); // Mustache.js로 데이터 렌더링
             })
-            .catch(error => {
-                console.error('에러:', error);
-                alert('데이터 가져오기 중 오류가 발생했습니다.');
+            .catch((error) => {
+                console.error('파일 업로드 중 오류 발생:', error);
+                alert('파일 업로드 중 오류가 발생했습니다.');
             });
-        });
+    }
+
+    // 폼에 데이터를 입력하는 함수
+    function populateForm(data) {
+        try {
+            const parsedData = JSON.parse(data);
+
+            document.getElementById('companyInput').value = parsedData.companyName || '';
+            document.getElementById('leadSource').value = parsedData.leadSource || '';
+            document.getElementById('customerRepresentitive').value = parsedData.customerRepresentitive || '';
+            document.getElementById('c_tel').value = parsedData.c_tel || '';
+            document.getElementById('customerRequirements').value = parsedData.customerRequirements || '';
+
+            alert('폼이 자동으로 채워졌습니다!');
+        } catch (error) {
+            console.error('JSON 파싱 오류:', error);
+        }
     }
 });
 
-// 폼에 데이터를 채우는 함수
-function fillFormWithData(data) {
-    console.log('Filling form with data:', data);
-
-    // 각 필드에 데이터 입력
-    setInputValue('leadSource', data.leadSource);
-    setInputValue('companyInput', data.companyInput);
-    // companyInput의 값을 accountName 필드에 설정
-    setInputValue('accountName', data.companyInput);
-     setInputValue('companyName', data.companyInput);
-    setInputValue('customerRepresentitive', data.customerRepresentitive);
-    setInputValue('c_tel', data.c_tel);
-    setInputValue('customerRequirements', data.customerRequirements);
-
-    alert('리드 데이터가 자동으로 입력되었습니다.');
-}
-
-function setInputValue(id, value) {
-    const element = document.getElementById(id);
-    if (element) {
-        element.value = value !== undefined ? value : '미지정';
-    } else {
-        console.warn(`Element with id ${id} not found`);
-    }
-}
-
     {{/leads}}
+
+
+
     </script>
 
-
-
-{{>main/footer}}
+    {{>main/footer}}

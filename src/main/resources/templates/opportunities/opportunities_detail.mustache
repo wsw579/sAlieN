@@ -196,10 +196,12 @@
                     <i class="fas fa-table me-1"></i>
                     Opportunities detail
                 </div>
+
                 <div class="card-body">
                     <table id="opportunities_detail">
                         {{#opportunities}}
                             <div class="button-container mb-3">
+
                                 <a href="/opportunities/detail/create" class="btn btn-custom-create btn-sm"
                                    id="createButton">
                                     <i class="fas fa-plus-circle"></i> 신규
@@ -232,6 +234,7 @@
                                            value="{{createdDate}}" required>
                                 </div>
                             </div>
+
                             <div class="mb-3 row">
                                 <label for="targetCloseDate" class="col-sm-2 col-form-label">마감기한:</label>
                                 <div class="col-sm-10">
@@ -239,6 +242,7 @@
                                            value="{{targetCloseDate}}" required>
                                 </div>
                             </div>
+
                             <div class="mb-3 row">
                                 <label for="opportunityStatus" class="col-sm-2 col-form-label">기회상태:</label>
                                 <div class="col-sm-10">
@@ -270,6 +274,7 @@
                                     </select>
                                 </div>
                             </div>
+
                             <div class="mb-3 row">
                                 <label for="opportunityName" class="col-sm-2 col-form-label">기회 명:</label>
                                 <div class="col-sm-10">
@@ -328,6 +333,7 @@
                                            name="companyRevenue" value="{{companyRevenue}}" required>
                                 </div>
                             </div>
+
                             <div class="mb-3 row">
                                 <label for="region" class="col-sm-2 col-form-label">배송지역:</label>
                                 <div class="col-sm-10">
@@ -741,39 +747,71 @@
 
 
 // AI 제안서
-document.getElementById('proposalButton').addEventListener('click', function() {
+document.getElementById('proposalButton').addEventListener('click', function(event) {
+event.preventDefault();
     try {
-        const employeeSelect = document.querySelector('#employeeId');
-        const productSelect = document.querySelector('#productId');
 
-        if (!employeeSelect.value) {
-            throw new Error('담당자를 선택해주세요.');
-        }
+            const employeeSelect = document.querySelector('#employeeId');
+            const productSelect = document.querySelector('#productId');
 
-        const selectedOption = employeeSelect.options[employeeSelect.selectedIndex];
-        const employeeInfo = selectedOption.textContent.trim();
-        // 담당자 이름
-        const employeeName = employeeInfo.split(' (')[0].replace(/^\s+|\s+$/g, '');
+           const accountSelect = document.querySelector('#accountId');
+           if (!accountSelect.value) {
+                  throw new Error('회사를 선택해주세요.');
+                 }
+            const selectedAccountOption = accountSelect.options[accountSelect.selectedIndex];
+            const accountInfo = selectedAccountOption.textContent.trim();
+            const accountName = accountInfo.split(' (')[0].replace(/^\s+|\s+$/g, '');
 
-        // 부서명
-        const deptMatch = employeeInfo.match(/Dept: (.+?)\)/);
-        const departmentName = deptMatch ? deptMatch[1].trim() : '미지정';
+            // 기회명
+            const opportunityName = document.getElementById('opportunityName').value.trim();
 
-        // 제품 이름
-        const productName = productSelect.options[productSelect.selectedIndex] ?
-        productSelect.options[productSelect.selectedIndex].textContent.split(' (')[0].replace(/^\s+|\s+$/g, '') : '미지정';
-        // 고객 요구사항
-        const opportunityInquiries = document.getElementById('opportunityInquiries').value.trim();
+
+              if (!employeeSelect.value) {
+                     throw new Error('담당자를 선택해주세요.');
+                    }
+
+              // 기회 담당자 이름
+            const selectedEmployeeOption = employeeSelect.options[employeeSelect.selectedIndex];
+            const employeeInfo = selectedEmployeeOption.textContent.trim();
+            const employeeName = employeeInfo.split(' (')[0].replace(/^\s+|\s+$/g, '');
+
+             // 부서명(파일명때문에 추가)
+             const deptMatch = employeeInfo.match(/Dept: (.+?)\)/);
+             const departmentName = deptMatch ? deptMatch[1].trim() : '미지정';
+
+            // 고객 담당자 이름
+            const customerEmployee = document.getElementById('customerEmployee').value.trim();
+
+             // 고객 요구사항
+            const opportunityInquiries = document.getElementById('opportunityInquiries').value.trim();
+
+             if (!productSelect.value) {
+                     throw new Error('제품을 선택해주세요.');
+                   }
+
+            // 제품 이름
+            const productName = productSelect.options[productSelect.selectedIndex] ?
+            productSelect.options[productSelect.selectedIndex].textContent.split(' (')[0].replace(/^\s+|\s+$/g, '') : '미지정';
+
+            // 수량
+             const quantity = document.getElementById('quantity').value.trim();
+            // 매출
+             const expectedRevenue = document.getElementById('expectedRevenue').value.trim();
 
         const dataToSend = {
-            담당자: employeeName,
-            부서: departmentName,
-            제품: productName,
-            고객요구사항: opportunityInquiries || '요구사항 없음'
+              회사명 : accountName ,
+              기회명 : opportunityName ,
+              기회담당자 : employeeName ,
+              고객담당자 : customerEmployee ,
+             고객요구사항 : opportunityInquiries || '요구사항 없음' ,
+             기회제품 : productName ,
+             수량 : quantity ,
+             기회매출 : expectedRevenue
         };
 
         console.log('전송할 데이터:', dataToSend);
-
+         // 다운로드 진행중 팝업창 생성
+         alert(' 다운로드 중 입니다. . . .  🚀 잠시만 기다려주세요. ');
         // Excel 생성 요청
         fetch('https://saiescrm.api.jyds.synology.me/generate-excel', {
             method: 'POST',
@@ -800,17 +838,17 @@ document.getElementById('proposalButton').addEventListener('click', function() {
             link.remove();
 
             // 다운로드 완료 팝업창 생성
-            alert('제안서 다운로드가 완료되었습니다.');
+            alert('제안서 다운로드가  완료되었습니다. 📂');
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('제안서 생성 중 오류가 발생했습니다. 다시 시도해 주세요.');
+            alert('제안서 생성 중 오류⚠️가 발생했습니다. 다시 시도해 주세요.');
         });
     } catch (error) {
         console.error('Error:', error);
-        alert(error.message || '입력 정보를 확인할 수 없습니다. 모든 필드가 올바르게 입력되었는지 확인해 주세요.');
+        alert(error.message || '입력 정보를 확인할 수 없습니다. ❗모든 필드가 올바르게 입력되었는지 확인해 주세요.❗');
     }
-});
+    });
 
 
         {{/opportunities}}
