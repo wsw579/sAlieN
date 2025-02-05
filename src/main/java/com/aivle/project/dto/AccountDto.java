@@ -29,7 +29,7 @@ public class AccountDto {
     @NotBlank(message = "대표전화 입력은  필수입니다.")
     private String contact;
 
-    @NotBlank(message = "사업 유형 입력은  필수입니다.")
+    @NotBlank(message = "사업 유형 입력은 필수입니다.")
     private String businessType;
 
     @NotBlank(message = "직원 입력은 필수입니다.")
@@ -44,7 +44,7 @@ public class AccountDto {
     @NotBlank(message = "직원 번호 입력은 필수입니다.")
     private String accountManagerContact;
 
-    @NotBlank(message = "계정상태 입력은필수입니다.")
+    @NotBlank(message = "계정 상태 입력은 필수입니다.")
     private String accountStatus;
 
     private LocalDate accountCreatedDate;

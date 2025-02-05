@@ -6,7 +6,9 @@ import com.aivle.project.dto.LeadsDto;
 import com.aivle.project.dto.PaginationDto;
 import com.aivle.project.entity.*;
 import com.aivle.project.service.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
@@ -219,16 +221,18 @@ public class LeadsController {
     }
 
     // AI 음성인식
-    @PostMapping("/auto")
-    public ResponseEntity<Map<String, Object>> handleFileUpload(@RequestPart("audioFile") MultipartFile audioFile) {
+    @PostMapping("/leads/auto")
+    public ResponseEntity<Map<String, Object>> handleFileUpload(@RequestPart("audio_file") MultipartFile audio_file) {
         try {
-            // MIME 타입 검증
-            if (!audioFile.getContentType().equals("audio/mpeg")) {
-                throw new IllegalArgumentException("MP3 파일만 업로드 가능합니다.");
+            // MIME 타입 검증 (MP3와 WAV 파일 허용)
+            String contentType = audio_file.getContentType();
+            if (!"audio/mpeg".equals(contentType) && !"audio/wav".equals(contentType) && !"audio/x-wav".equals(contentType)) {
+                throw new IllegalArgumentException("MP3 또는 WAV 파일만 업로드 가능합니다.");
             }
 
-            // FastAPI 서버 URL
-            String fastApiUrl = "http://127.0.0.1:8000/auto";
+
+            // fastApiUrl
+            String fastApiUrl = "http://127.0.0.1:8000/leads/auto";
 
             // RestTemplate 생성
             RestTemplate restTemplate = new RestTemplate();
@@ -237,14 +241,20 @@ public class LeadsController {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
-            // 요청 본문 생성
-            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-            body.add("audio_file", new InputStreamResource(audioFile.getInputStream()) {
+            // 파일 데이터를 바이트 배열로 변환
+            byte[] fileBytes = audio_file.getBytes();
+
+            // ByteArrayResource 생성
+            ByteArrayResource resource = new ByteArrayResource(fileBytes) {
                 @Override
                 public String getFilename() {
-                    return audioFile.getOriginalFilename();
+                    return audio_file.getOriginalFilename(); // 원본 파일 이름 반환
                 }
-            });
+            };
+
+            // 요청 본문 생성
+            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+            body.add("audio_file", resource);
 
             HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
@@ -267,6 +277,8 @@ public class LeadsController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+
+
 
 }
 

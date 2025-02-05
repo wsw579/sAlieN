@@ -19,11 +19,13 @@
         color: #721c24;
     }
 
+
     .btn-custom-proposal {
     background-color: #cce5ff; /* 연한 파란색 */
     color: #004085;
     border: 1px solid #b8daff;
 }
+
 
     .btn-custom-create:hover {
         background-color: #c3e6cb; /* 약간 어두운 그린 */
@@ -400,11 +402,17 @@
                             <div class="button-container d-flex justify-content-end gap-2 mb-3">
 
                                 <!-- 제안서 생성 버튼 -->
+                                <button type="button" id="proposalExcelButton" class="btn btn-custom-proposal btn-sm">
+
+                                    <i class= aria-hidden="true"></i>  💡AI 제안서 excel 파일 생성 💡
+                                </button>
+
+                                <!-- 제안서 생성 버튼 -->
                                 <button type="button" id="proposalButton" class="btn btn-custom-proposal btn-sm">
 
-                                    <i class="fas fa-download"></i> 제안서 생성
-
+                                    <i class= aria-hidden="true"></i>💡AI 제안서 ppt 파일 생성 💡
                                 </button>
+
 
                                 <!-- 저장 버튼 -->
                                 <div class="d-flex justify-content-end">
@@ -747,6 +755,111 @@
 
 
 // AI 제안서
+document.getElementById('proposalExcelButton').addEventListener('click', function(event) {
+event.preventDefault();
+    try {
+
+            const employeeSelect = document.querySelector('#employeeId');
+            const productSelect = document.querySelector('#productId');
+
+           const accountSelect = document.querySelector('#accountId');
+           if (!accountSelect.value) {
+                  throw new Error('회사를 선택해주세요.');
+                 }
+            const selectedAccountOption = accountSelect.options[accountSelect.selectedIndex];
+            const accountInfo = selectedAccountOption.textContent.trim();
+            const accountName = accountInfo.split(' (')[0].replace(/^\s+|\s+$/g, '');
+
+            // 기회명
+            const opportunityName = document.getElementById('opportunityName').value.trim();
+
+
+              if (!employeeSelect.value) {
+                     throw new Error('담당자를 선택해주세요.');
+                    }
+
+              // 기회 담당자 이름
+            const selectedEmployeeOption = employeeSelect.options[employeeSelect.selectedIndex];
+            const employeeInfo = selectedEmployeeOption.textContent.trim();
+            const employeeName = employeeInfo.split(' (')[0].replace(/^\s+|\s+$/g, '');
+
+             // 부서명(파일명때문에 추가)
+             const deptMatch = employeeInfo.match(/Dept: (.+?)\)/);
+             const departmentName = deptMatch ? deptMatch[1].trim() : '미지정';
+
+            // 고객 담당자 이름
+            const customerEmployee = document.getElementById('customerEmployee').value.trim();
+
+             // 고객 요구사항
+            const opportunityInquiries = document.getElementById('opportunityInquiries').value.trim();
+
+             if (!productSelect.value) {
+                     throw new Error('제품을 선택해주세요.');
+                   }
+
+            // 제품 이름
+            const productName = productSelect.options[productSelect.selectedIndex] ?
+            productSelect.options[productSelect.selectedIndex].textContent.split(' (')[0].replace(/^\s+|\s+$/g, '') : '미지정';
+
+            // 수량
+             const quantity = document.getElementById('quantity').value.trim();
+            // 매출
+             const expectedRevenue = document.getElementById('expectedRevenue').value.trim();
+
+        const dataToSend = {
+              회사명 : accountName,
+              기회명 : opportunityName,
+              기회담당자 : employeeName,
+              고객담당자 : customerEmployee,
+             고객요구사항 : opportunityInquiries || '요구사항 없음',
+             기회제품 : productName,
+             수량 : quantity,
+             기회매출 : expectedRevenue
+        };
+
+        console.log('전송할 데이터:', dataToSend);
+         // 다운로드 진행중 팝업창 생성
+         alert(' 다운로드 중 입니다. . . .  🚀 잠시만 기다려주세요. ');
+        // Excel 생성 요청
+        fetch('https://saiescrm.api.jyds.synology.me/generate-excel', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(dataToSend)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.blob();
+        })
+        .then(blob => {
+            // excel 파일을 사용자 PC에 다운로드
+            const url = window.URL.createObjectURL(new Blob([blob]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `${departmentName}_${employeeName}_${productName}_proposal.xlsx`);
+            document.body.appendChild(link);
+            link.click();
+            window.URL.revokeObjectURL(url);
+            link.remove();
+
+            // 다운로드 완료 팝업창 생성
+            alert('제안서 다운로드가  완료되었습니다. ✨');
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('제안서 생성 중 오류가 발생했습니다. 다시 시도해 주세요.⚠️');
+        });
+    } catch (error) {
+        console.error('Error:', error);
+        alert(error.message || '입력 정보를 확인할 수 없습니다. ❗모든 필드가 올바르게 입력되었는지 확인해 주세요.❗');
+    }
+    });
+
+
+ // AI 제안서
 document.getElementById('proposalButton').addEventListener('click', function(event) {
 event.preventDefault();
     try {
@@ -799,21 +912,21 @@ event.preventDefault();
              const expectedRevenue = document.getElementById('expectedRevenue').value.trim();
 
         const dataToSend = {
-              회사명 : accountName ,
-              기회명 : opportunityName ,
-              기회담당자 : employeeName ,
-              고객담당자 : customerEmployee ,
-             고객요구사항 : opportunityInquiries || '요구사항 없음' ,
-             기회제품 : productName ,
-             수량 : quantity ,
+              회사명 : accountName,
+              기회명 : opportunityName,
+              기회담당자 : employeeName,
+              고객담당자 : customerEmployee,
+             고객요구사항 : opportunityInquiries || '요구사항 없음',
+             기회제품 : productName,
+             수량 : quantity,
              기회매출 : expectedRevenue
         };
 
         console.log('전송할 데이터:', dataToSend);
          // 다운로드 진행중 팝업창 생성
-         alert(' 다운로드 중 입니다. . . .  🚀 잠시만 기다려주세요. ');
+         alert(' 다운로드 중 입니다 . . . .  🚀 잠시만 기다려주세요. ');
         // Excel 생성 요청
-        fetch('https://saiescrm.api.jyds.synology.me/generate-excel', {
+        fetch('https://saiescrm.api.jyds.synology.me/generate-ppt', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -838,18 +951,17 @@ event.preventDefault();
             link.remove();
 
             // 다운로드 완료 팝업창 생성
-            alert('제안서 다운로드가  완료되었습니다. 📂');
+            alert('제안서 다운로드가  완료되었습니다.✨');
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('제안서 생성 중 오류⚠️가 발생했습니다. 다시 시도해 주세요.');
+            alert('제안서 생성 중 오류가 발생했습니다. 다시 시도해 주세요.⚠️');
         });
     } catch (error) {
         console.error('Error:', error);
         alert(error.message || '입력 정보를 확인할 수 없습니다. ❗모든 필드가 올바르게 입력되었는지 확인해 주세요.❗');
     }
     });
-
 
         {{/opportunities}}
 
