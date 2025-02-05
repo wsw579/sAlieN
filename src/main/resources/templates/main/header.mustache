@@ -602,6 +602,8 @@
                         if (data.table === "leads"){
                             // 3. system_response 데이터를 URL의 쿼리 파라미터 형태로 변환
                             var queryParams = new URLSearchParams({
+                                accountId: systemData.accountId || '',
+                                employeeId: systemData.employeeId || '',
                                 createdDate: systemData.createdDate || '',
                                 targetCloseDate: systemData.targetCloseDate || '',
                                 leadSource: systemData.leadSource || '',
@@ -623,6 +625,7 @@
                         if (data.table === "accounts") {
                             // system_response 데이터를 URL의 쿼리 파라미터 형태로 변환
                             var queryParams = new URLSearchParams({
+                                employeeId: systemData.employeeId || '',
                                 accountCreatedDate: systemData.accountCreatedDate || '',
                                 accountStatus: systemData.accountStatus || '',
                                 accountName: systemData.accountName || '',
@@ -648,6 +651,9 @@
                         if (data.table === "opportunities") {
                             // system_response 데이터를 URL의 쿼리 파라미터 형태로 변환
                             var queryParams = new URLSearchParams({
+                                accountId: systemData.accountId || '',
+                                employeeId: systemData.employeeId || '',
+                                productId: systemData.productId || '',
                                 createdDate: systemData.createdDate || '',
                                 targetCloseDate: systemData.targetCloseDate || '',
                                 opportunityStatus: systemData.opportunityStatus || '',
@@ -676,6 +682,10 @@
                         if (data.table === "contracts") {
                             // system_response 데이터를 URL의 쿼리 파라미터 형태로 변환
                             var queryParams = new URLSearchParams({
+                                accountId: systemData.accountId || '',
+                                productId: systemData.productId || '',
+                                opportunityId: systemData.opportunityId || '',
+                                employeeId: systemData.employeeId || '',
                                 startDate: systemData.startDate || '',
                                 terminationDate: systemData.terminationDate || '',
                                 contractStatus: systemData.contractStatus || '',
@@ -699,6 +709,8 @@
                         if (data.table === "orders") {
                             // system_response 데이터를 URL의 쿼리 파라미터 형태로 변환
                             var queryParams = new URLSearchParams({
+                                contractId: systemData.contract_id || '',
+                                productId: systemData.productId || '',
                                 orderDate: systemData.orderDate || '',
                                 salesDate: systemData.salesDate || '',
                                 orderStatus: systemData.orderStatus || '',
@@ -719,6 +731,39 @@
                     }
 
 
+                    if (["select", "update", "delete"].includes(data.crudOperations)) {
+
+
+                        if (data.table === "leads") {
+                            var dataId = systemData?.leadId;
+                            console.log(`🔍 이동할 데이터 ID: ${dataId}`);
+                            formattedResponse += `<br><a href="/leads/detail/${dataId}" target="_blank">리드로 이동</a>`;
+                        }
+
+                        if (data.table === "accounts") {
+                            var dataId = systemData?.accountId;
+                            console.log(`🔍 이동할 데이터 ID: ${dataId}`);
+                            formattedResponse += `<br><a href="/account/detail/${dataId}" target="_blank">계정으로 이동</a>`;
+                        }
+
+                        if (data.table === "opportunities") {
+                            var dataId = systemData?.opportunityId;
+                            console.log(`🔍 이동할 데이터 ID: ${dataId}`);
+                            formattedResponse += `<br><a href="/opportunities/detail/${dataId}" target="_blank">기회로 이동</a>`;
+                        }
+
+                        if (data.table === "contracts") {
+                            var dataId = systemData?.contractId;
+                            console.log(`🔍 이동할 데이터 ID: ${dataId}`);
+                            formattedResponse += `<br><a href="/contracts/detail/${dataId}" target="_blank">계약으로 이동</a>`;
+                        }
+
+                        if (data.table === "orders") {
+                            var dataId = systemData?.orderId;
+                            console.log(`🔍 이동할 데이터 ID: ${dataId}`);
+                            formattedResponse += `<br><a href="/orders/detail/${dataId}" target="_blank">주문으로 이동</a>`;
+                        }
+                    }
 
 
 

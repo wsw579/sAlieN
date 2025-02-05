@@ -2,8 +2,8 @@ package com.aivle.project.controller;
 
 import com.aivle.project.dto.*;
 import com.aivle.project.entity.*;
-import com.aivle.project.repository.AccountRepository;
-import com.aivle.project.repository.EmployeeRepository;
+import com.aivle.project.enums.OrderStatus;
+import com.aivle.project.repository.*;
 import com.aivle.project.service.*;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,13 +31,28 @@ public class chatbotController {
     private final LeadsService leadsService;
     private final OpportunitiesService opportunitiesService;
     private final ContractsService contractsService;
+    private final ProductsRepository productsRepository;
+    private final OpportunitiesRepository opportunitiesRepository;
+    private final ContractsRepository contractsRepository;
 
     @GetMapping("/chatbot/create/leads")
     public String createLeads(@RequestParam Map<String,String> params, Model model) {
 
         LeadsEntity leads = new LeadsEntity();
+        AccountEntity account = new AccountEntity();
+
+        EmployeeEntity employee = employeeRepository.findById(params.get("employeeId")).get();
+
+        String accountId = params.get("accountId");
+        if(!accountId.isEmpty()) {
+            account = accountRepository.findById((long) Double.parseDouble(accountId)).get();
+        }
+
+        leads.setAccountId(account);
+        leads.setEmployeeId(employee);
+
         List<AccountDto> accounts = accountService.getAllAccountIdsAndNames();
-        List<EmployeeDto.GetId> employee = employeeService.getAllEmployeeIdsAndNamesAndDepartmentIds();
+        List<EmployeeDto.GetId> employees = employeeService.getAllEmployeeIdsAndNamesAndDepartmentIds();
 
         String createdDate = params.get("createdDate");
         if (!createdDate.isEmpty()) {
@@ -58,24 +73,38 @@ public class chatbotController {
         leads.setCustomerRequirements(params.get("customerRequirements"));
         leads.setC_tel(params.get("contact"));
         leads.setLeadStatus(params.get("leadStatus"));
+        leads.setCompanyName(params.get("companyName"));
+        leads.setCustomerRepresentitive(params.get("customerRepresentitive"));
 
 
         model.addAttribute("leads", leads);
         model.addAttribute("accounts", accounts);
-        model.addAttribute("employee", employee);
+        model.addAttribute("employee", employees);
 
         // 로깅
         params.forEach((key, value) -> System.out.println(key + ": " + value));
 
-        return "leads/leads_detail";
+        return "leads/chatbot_leads_detail";
     }
 
     @GetMapping("/chatbot/create/accounts")
     public String createAccount(@RequestParam Map<String,String> params, Model model) {
 
         AccountEntity account = new AccountEntity();
-        List<EmployeeEntity> employee = employeeRepository.findAll();
+        EmployeeEntity employee = employeeRepository.findById(params.get("employeeId")).get();
+        AccountEntity parentAccount = new AccountEntity();
+
+        String parentAccountId = params.get("parentAccount");
+        if(!parentAccountId.isEmpty()) {
+            parentAccount = accountRepository.findById((long) Double.parseDouble(parentAccountId)).get();
+        }
+
+        account.setEmployeeId(employee);
+        account.setParentAccount(parentAccount);
+
+        List<EmployeeEntity> employees = employeeRepository.findAll();
         List<AccountEntity> activeAccounts = accountRepository.findByAccountStatus("Active");
+        List<AccountEntity> parent = accountRepository.findByAccountStatus("Active");
 
 
         String createdDate = params.get("accountCreatedDate");
@@ -92,16 +121,20 @@ public class chatbotController {
         account.setAccountDetail(params.get("accountDetail"));
         account.setAddress(params.get("address"));
         account.setAccountManagerContact(params.get("accountManagerContact"));
+        account.setAccountStatus(params.get("accountStatus"));
+        account.setAccountType(params.get("accountType"));
+        account.setBusinessType(params.get("businessType"));
 
 
         model.addAttribute("account", account);
         model.addAttribute("accounts", activeAccounts);
-        model.addAttribute("employee", employee);
+        model.addAttribute("employee", employees);
+        model.addAttribute("parent", parent);
 
         // 로깅
         params.forEach((key, value) -> System.out.println(key + ": " + value));
 
-        return "account/account_detail";
+        return "account/chatbot_account_detail";
     }
 
     @GetMapping("/chatbot/create/opportunities")
@@ -110,8 +143,16 @@ public class chatbotController {
         OpportunitiesEntity opportunities = new OpportunitiesEntity();
         List<ProductsDto> products = productsService.getAllProductIdsAndNames();
         List<AccountDto> accounts = accountService.getAllAccountIdsAndNames();
-        List<EmployeeDto.GetId> employee = employeeService.getAllEmployeeIdsAndNamesAndDepartmentIds();
+        List<EmployeeDto.GetId> employees = employeeService.getAllEmployeeIdsAndNamesAndDepartmentIds();
         List<LeadsDto> leads = leadsService.getAllLeadIdsAndCompanyNames();
+
+        EmployeeEntity employee = employeeRepository.findById(params.get("employeeId")).get();
+        AccountEntity account = accountRepository.findById((long) Double.parseDouble(params.get("accountId"))).get();
+        ProductsEntity product = productsRepository.findById(Long.parseLong(params.get("productId"))).get();
+
+        opportunities.setEmployeeId(employee);
+        opportunities.setAccountId(account);
+        opportunities.setProductId(product);
 
 
         String createdDate = params.get("createdDate");
@@ -157,28 +198,39 @@ public class chatbotController {
         opportunities.setCustomerEmployee(params.get("customerEmployee"));
         opportunities.setOpportunityInquiries(params.get("opportunityInquiries"));
         opportunities.setOpportunityNotes(params.get("opportunityNotes"));
-
+        opportunities.setOpportunityStatus(params.get("opportunityStatus"));
 
         model.addAttribute("opportunities", opportunities);
         model.addAttribute("leads", leads);
         model.addAttribute("accounts", accounts);
-        model.addAttribute("employees", employee);
+        model.addAttribute("employee", employees);
         model.addAttribute("products", products);
 
         // 로깅
         params.forEach((key, value) -> System.out.println(key + ": " + value));
 
-        return "opportunities/opportunities_detail";
+        return "opportunities/chatbot_opportunities_detail";
     }
 
     @GetMapping("/chatbot/create/contracts")
     public String createContract(@RequestParam Map<String,String> params, Model model) {
 
         ContractsEntity contract = new ContractsEntity();
-        List<EmployeeEntity> employee = employeeRepository.findAll();
+        List<EmployeeEntity> employees = employeeRepository.findAll();
         List<AccountEntity> activeAccounts = accountRepository.findByAccountStatus("Active");
         List<ProductsDto> products = productsService.getAllProductIdsAndNames();
         List<OpportunitiesDto> opportunities = opportunitiesService.getAllOpportunityIdsAndNames();
+
+        EmployeeEntity employee = employeeRepository.findById(params.get("employeeId")).get();
+        AccountEntity account = accountRepository.findById((long) Double.parseDouble(params.get("accountId"))).get();
+        ProductsEntity product = productsRepository.findById(Long.parseLong(params.get("productId"))).get();
+        OpportunitiesEntity opportunity = opportunitiesRepository.findById(Long.parseLong(params.get("opportunityId"))).get();
+
+        contract.setEmployeeId(employee);
+        contract.setAccountId(account);
+        contract.setProductId(product);
+        contract.setOpportunityId(opportunity);
+
 
         String startDate = params.get("startDate");
         if (!startDate.isEmpty()) {
@@ -209,10 +261,12 @@ public class chatbotController {
         }
 
         contract.setContractDetail(params.get("contractDetail"));
+        contract.setContractStatus(params.get("contractStatus"));
+        contract.setContractClassification(params.get("contractClassification"));
 
         model.addAttribute("contracts", contract);
         model.addAttribute("accounts", activeAccounts);//
-        model.addAttribute("employee", employee);//
+        model.addAttribute("employee", employees);//
         model.addAttribute("products", products);
         model.addAttribute("opportunities", opportunities);
 
@@ -220,7 +274,7 @@ public class chatbotController {
         // 로깅
         params.forEach((key, value) -> System.out.println(key + ": " + value));
 
-        return "contracts/contracts_detail";
+        return "contracts/chatbot_contracts_detail";
     }
 
     @GetMapping("/chatbot/create/orders")
@@ -230,6 +284,12 @@ public class chatbotController {
         List<ProductsDto> products = productsService.getAllProductIdsAndNames();
         List<ContractsDto> contracts = contractsService.getAllContractIds();
 
+        ContractsEntity contract = contractsRepository.findById(Long.parseLong(params.get("contractId"))).get();
+        ProductsEntity product = productsRepository.findById(Long.parseLong(params.get("productId"))).get();
+
+
+        order.setContractId(contract);
+        order.setProductId(product);
 
         String orderDate = params.get("orderDate");
         if (!orderDate.isEmpty()) {
@@ -252,6 +312,9 @@ public class chatbotController {
             order.setOrderAmount(0.0f);
         }
 
+        order.setOrderStatus(OrderStatus.valueOf(params.get("orderStatus")));
+
+
         model.addAttribute("orders", order);
         model.addAttribute("products", products);
         model.addAttribute("contracts", contracts);
@@ -259,7 +322,7 @@ public class chatbotController {
         // 로깅
         params.forEach((key, value) -> System.out.println(key + ": " + value));
 
-        return "orders/orders_detail";
+        return "orders/chatbot_orders_detail";
     }
 
 
