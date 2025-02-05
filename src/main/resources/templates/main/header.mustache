@@ -30,9 +30,16 @@
     <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
 
     {{#id}}
-        <div class="navbar-text text-light me-3">
-            {{id}}님 오늘 하루도  힘내세요.
-        </div>
+        {{#isAdmin}}
+            <div class="navbar-text text-light me-3">
+                {{id}}님 오늘 하루도 힘내세요.
+            </div>  <!-- ✅ 관리자: ID만 표시 -->
+        {{/isAdmin}}
+        {{^isAdmin}}
+            <div class="navbar-text text-light me-3">
+                {{name}}({{id}})님 오늘 하루도 힘내세요.
+            </div> <!-- ✅ 일반 사용자: 이름 + ID 표시 -->
+        {{/isAdmin}}
     {{/id}}
 
 
@@ -425,8 +432,6 @@
 
 
 
-
-
     </style>
 
     <!-- Chatbot Button -->
@@ -650,4 +655,3 @@
 
         });
     </script>
-

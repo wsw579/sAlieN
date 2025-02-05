@@ -243,7 +243,10 @@
 </main>
 
     <script>
-
+        // CRUD 메시지
+        {{#message}}
+            alert("{{message}}");
+        {{/message}}
 
         document.addEventListener("DOMContentLoaded", function () {
 {{#orders}}

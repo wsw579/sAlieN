@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -183,59 +185,107 @@ public class AccountController {
 
     // 새 계정 생성
     @PostMapping("/account/detail/create")
-    public String accountCreateNew(@ModelAttribute @Valid AccountDto accountDto, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            // 유효성 검사 실패 시 에러 메시지 출력
-            return "account/account_detail"; // 에러가 있으면 폼으로 다시 이동
+    public String accountCreateNew(@ModelAttribute @Valid AccountDto accountDto, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+        try {
+            if (bindingResult.hasErrors()) {
+                // 유효성 검사 실패 시 에러 메시지 출력
+                return "account/account_detail"; // 에러가 있으면 폼으로 다시 이동
+            }
+            // 계정 생성
+            accountService.createAccount(accountDto);
+
+            // CRUD 작업 로깅
+            crudLogsService.logCrudOperation("create", "parent", "", "True", "Success");
+
+            // 성공 메시지를 RedirectAttributes에 저장 (리다이렉트 후에도 유지됨)
+            redirectAttributes.addFlashAttribute("message", "계정이 성공적으로 생성되었습니다.");
+
+            return "redirect:/account"; // 성공 시 계정 목록 페이지로 이동
+        } catch (Exception e) {
+            // 실패 로그 기록 (ID를 알 수 없는 경우 "")
+            crudLogsService.logCrudOperation("create", "parent", "", "False", "Error: " + e.getMessage());
+
+            // 에러 메시지를 사용자에게 전달
+            redirectAttributes.addFlashAttribute("errorMessage", "계정 생성 중 오류가 발생했습니다. 다시 시도해주세요.");
+
+            return "redirect:/errorPage"; // 에러 발생 시 오류 페이지로 리다이렉트
         }
 
-        accountService.createAccount(accountDto);
-
-        // CRUD 작업 로깅
-        crudLogsService.logCrudOperation("create", "parent", "", "True", "Success");
-
-        return "redirect:/account";
     }
 
 
     // 계정 정보 수정
     @PostMapping("/account/detail/{accountId}/update")
-    public String accountUpdate(@PathVariable("accountId") Long accountId,  @ModelAttribute @Valid AccountDto accountDto, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            // 유효성 검사 실패 시 에러 메시지 출력
-            return "account/account_detail"; // 에러가 있으면 폼으로 다시 이동
+    public String accountUpdate(@PathVariable("accountId") Long accountId,  @ModelAttribute @Valid AccountDto accountDto, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+        try {
+            if (bindingResult.hasErrors()) {
+                // 유효성 검사 실패 시 에러 메시지 출력
+                return "account/account_detail"; // 에러가 있으면 폼으로 다시 이동
+            }
+            // 계정 수정
+            accountService.updateAccount(accountId, accountDto);
+
+            // CRUD 작업 로깅
+            crudLogsService.logCrudOperation("update", "parent", accountId.toString(), "True", "Success");
+
+            // 성공 메시지를 RedirectAttributes에 저장 (리다이렉트 후에도 유지됨)
+            redirectAttributes.addFlashAttribute("message", "계정이 성공적으로 수정되었습니다.");
+
+            return "redirect:/account/detail/" + accountId; // 성공 시 계정 detail 페이지로 이동
+        } catch (Exception e) {
+            // 실패 로그 기록
+            crudLogsService.logCrudOperation("update", "parent", accountId.toString(), "False", "Error: " + e.getMessage());
+
+            // 에러 메시지를 사용자에게 전달
+            redirectAttributes.addFlashAttribute("errorMessage", "계정 수정 중 오류가 발생했습니다. 다시 시도해주세요.");
+
+            return "redirect:/errorPage"; // 에러 발생 시 오류 페이지로 리다이렉트
         }
-
-        accountService.updateAccount(accountId, accountDto);
-
-        // CRUD 작업 로깅
-        crudLogsService.logCrudOperation("update", "parent", "", "True", "Success");
-
-        return "redirect:/account";
     }
 
     // 단일 계정 삭제
-    @GetMapping("/account/detail/{accountId}/delete")
-    public String accountDeleteDetail(@PathVariable("accountId") Long accountId) {
-        accountService.delete(accountId);
+    @PostMapping("/account/detail/{accountId}/delete")
+    public ResponseEntity<Void> accountDeleteDetail(@PathVariable("accountId") Long accountId) {
+        try {
+            // 계정 삭제 실행
+            accountService.delete(accountId);
 
         // CRUD 작업 로깅
-        crudLogsService.logCrudOperation("delete", "parent", "", "True", "Success");
+        crudLogsService.logCrudOperation("delete", "parent", accountId.toString(), "True", "Success");
 
-        return "redirect:/account";
+            return ResponseEntity.ok().build(); // HTTP 200 응답 (삭제 성공)
+        } catch (Exception e) {
+            // 삭제 실패 로그 기록
+            crudLogsService.logCrudOperation("delete", "parent", accountId.toString(), "False", "Error: " + e.getMessage());
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // HTTP 500 응답 (삭제 실패)
+        }
     }
 
     // 다중 계정 삭제
     @PostMapping("/account/detail/delete")
     public ResponseEntity<Void> deleteAccounts(@RequestBody Map<String, List<Long>> request) {
         List<Long> ids = request.get("ids");
+        try {
+            // 계정 삭제 실행
+            accountService.deleteByIds(ids);
         logger.info("deleteAccounts Received IDs: {} " , ids);
         accountService.deleteByIds(ids);
 
-        // CRUD 작업 로깅
-        crudLogsService.logCrudOperation("delete", "parent", "[]", "True", "Success");
+            // 개별 ID에 대해 성공 로그 기록
+            for (Long id : ids) {
+                crudLogsService.logCrudOperation("delete", "parent", id.toString(), "True", "Success");
+            }
 
-        return ResponseEntity.ok().build();
+            return ResponseEntity.ok().build(); // HTTP 200 응답 (삭제 성공)
+        } catch (Exception e) {
+            // 개별 ID에 대해 실패 로그 기록
+            for (Long id : ids) {
+                crudLogsService.logCrudOperation("delete", "parent", id.toString(), "False", "Error: " + e.getMessage());
+            }
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // HTTP 500 응답 (삭제 실패)
+        }
     }
 
 
