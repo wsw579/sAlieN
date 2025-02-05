@@ -1,0 +1,81 @@
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="fas fa-table me-1"></i>
+        진행중 기회 목록
+    </div>
+    <div class="card-body">
+        <div class="button-container mb-3" style="display: flex; align-items: center; gap: 10px;">
+            <button class="btn btn-primary btn-lg" id="AIButton">
+                <i class="fas fa-robot"></i> AI 제안서 생성
+            </button>
+        </div>
+        <table id="datatablesSimple" class="table table-bordered">
+            <thead>
+            <tr>
+                <th></th>
+                <th>ID</th>
+                <th>기회명</th>
+                <th>상태</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{#pagination.contents}}
+                <tr data-index="{{opportunityId}}">
+                    <td><input type="checkbox" class="select-row" value="{{opportunityId}}"></td>
+                    <td>{{opportunityId}}</td>
+                    <td>
+                        <a href="/contracts/detail/{{opportunityId}}">
+                            {{opportunityName}}
+                        </a>
+                    </td>
+                    <td>{{opportunityStatus}}</td>
+                </tr>
+            {{/pagination.contents}}
+            </tbody>
+        </table>
+        <div class="pagination justify-content-center mt-3">
+            {{#pagination.hasPreviousPage}}
+                <button class="btn btn-outline-primary" onclick="window.location.href='/opportunities?page={{pagination.previousPage}}&size=10'">
+                이전
+                </button>
+            {{/pagination.hasPreviousPage}}
+            {{#pagination.pageNumbers}}
+                <button class="btn btn-outline-secondary {{#isActive}}active{{/isActive}}" onclick="window.location.href='/opportunities?page={{page}}&size=10'">
+                {{displayPage}}
+                </button>
+            {{/pagination.pageNumbers}}
+            {{#pagination.hasNextPage}}
+                <button class="btn btn-outline-primary" onclick="window.location.href='/opportunities?page={{pagination.nextPage}}&size=10'">
+                다음
+                </button>
+            {{/pagination.hasNextPage}}
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var AIButton = document.getElementById("AIButton");
+        AIButton.addEventListener("click", function() {
+            var selectedCheckboxes = document.querySelectorAll(".select-row:checked");
+
+            if (selectedCheckboxes.length > 1) {
+                alert("하나의 항목만 선택해주세요.");
+                return;
+            }
+
+            if (selectedCheckboxes.length === 0) {
+                alert("제안서를 생성할 항목을 선택해 주세요.");
+                return;
+            }
+
+            var opportunityId = selectedCheckboxes[0].value;
+            var confirmAI = confirm("선택한 항목의 제안서를 생성하시겠습니까?");
+
+            if (confirmAI) {
+                console.log("AI 제안서 생성 요청 for Opportunity ID:", opportunityId);
+                // API 호출 또는 추가 로직 추가
+            }
+        });
+    });
+</script>
