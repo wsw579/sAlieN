@@ -170,7 +170,12 @@ public class ContractsController {
     }
 
     @PostMapping("/contracts/detail/{contractId}/update")
-    public String contractsUpdate(@PathVariable("contractId") Long contractId, @ModelAttribute ContractsDto contractsDto) {
+    public String contractsUpdate(@PathVariable("contractId") Long contractId, @ModelAttribute @Valid ContractsDto contractsDto, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            // 유효성 검사 실패 시 에러 메시지 출력
+            return "contracts/contracts_detail"; // 에러가 있으면 폼으로 다시 이동
+        }
+
         contractsService.updateContracts(contractId, contractsDto);
 
         // CRUD 작업 로깅
