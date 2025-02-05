@@ -718,11 +718,31 @@
         }
 
         if (currentIndex !== -1) {
-            var progressWidth = (currentIndex / (steps.length - 1)) * 100;
+            var progressWidth = 100;
 
             // `Closed` 단계일 경우 한스텝 줄이기
             if (opportunityStatus.startsWith("Closed")) {
                 progressWidth -= (100 / steps.length);
+            }
+
+            // `Negotiation` 단계일 경우 줄이기
+            if (opportunityStatus.startsWith("Negotiation")) {
+                progressWidth -= ((100 / steps.length)*2);
+            }
+
+            // `Proposal` 단계일 경우 줄이기
+            if (opportunityStatus.startsWith("Proposal")) {
+                progressWidth -= ((100 / steps.length)*3);
+            }
+
+            // `Needs Analysis` 단계일 경우 줄이기
+            if (opportunityStatus.startsWith("Needs Analysis")) {
+                progressWidth -= ((100 / steps.length)*4);
+            }
+
+            // `Qualification` 단계일 경우 줄이기
+            if (opportunityStatus.startsWith("Qualification")) {
+                progressWidth -= ((100 / steps.length)*5);
             }
 
             progressBar.style.width = progressWidth + "%";
