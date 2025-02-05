@@ -20,11 +20,14 @@
             </thead>
             <tbody>
             {{#pagination.contents}}
-                <tr data-index="{{opportunityId}}">
+                <tr data-index="{{opportunityId}}"
+                    data-employee="{{employeeId.employeeName}}"
+                    data-product="{{productId.productName}}"
+                    data-opportunity-inquiries="{{opportunityInquiries}}">
                     <td><input type="checkbox" class="select-row" value="{{opportunityId}}"></td>
                     <td>{{opportunityId}}</td>
                     <td>
-                        <a href="/contracts/detail/{{opportunityId}}">
+                        <a href="/opportunities/detail/{{opportunityId}}">
                             {{opportunityName}}
                         </a>
                     </td>
@@ -54,28 +57,69 @@
 </div>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        var AIButton = document.getElementById("AIButton");
-        AIButton.addEventListener("click", function() {
-            var selectedCheckboxes = document.querySelectorAll(".select-row:checked");
 
-            if (selectedCheckboxes.length > 1) {
-                alert("하나의 항목만 선택해주세요.");
-                return;
+    document.addEventListener('click', function(event) {
+        if (event.target.closest('#AIButton')) { // AIButton 클릭 감지
+            try {
+                const selectedCheckboxes = document.querySelectorAll(".select-row:checked");
+
+                // 🔹 체크된 개수 확인 (1개만 허용)
+                if (selectedCheckboxes.length > 1) {
+                    alert("하나의 항목만 선택해 주세요.");
+                    return;
+                }
+
+                if (selectedCheckboxes.length === 0) {
+                    throw new Error("제안서를 생성할 항목을 선택해 주세요.");
+                }
+
+                const selectedRow = selectedCheckboxes[0].closest("tr"); // 체크된 행 가져오기
+
+                const employeeId = selectedRow.getAttribute("data-employee") || "미지정";
+                const productId = selectedRow.getAttribute("data-product") || "미지정";
+                const opportunityInquiries = selectedRow.getAttribute("data-opportunity-inquiries") || "요구사항 없음";
+
+                // 🔹 추가된 로그
+                console.log("선택된 행의 데이터:", selectedRow.outerHTML);
+                console.log("employeeId:", employeeId);
+                console.log("productId:", productId);
+                console.log("opportunityInquiries:", opportunityInquiries);
+
+                const dataToSend = {
+                    담당자: employeeId,
+                    제품: productId,
+                    고객요구사항: opportunityInquiries
+                };
+
+                console.log('전송할 데이터:', dataToSend);
+
+                fetch('https://saiescrm.api.jyds.synology.me/generate-excel', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(dataToSend)
+                })
+                .then(response => response.blob())
+                .then(blob => {
+                    const url = window.URL.createObjectURL(new Blob([blob]));
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.setAttribute('download', `proposal.xlsx`);
+                    document.body.appendChild(link);
+                    link.click();
+                    window.URL.revokeObjectURL(url);
+                    link.remove();
+                    alert('제안서 다운로드가 완료되었습니다.');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('제안서 생성 중 오류가 발생했습니다. 다시 시도해 주세요.');
+                });
+            } catch (error) {
+                console.error('Error:', error);
+                alert(error.message);
             }
-
-            if (selectedCheckboxes.length === 0) {
-                alert("제안서를 생성할 항목을 선택해 주세요.");
-                return;
-            }
-
-            var opportunityId = selectedCheckboxes[0].value;
-            var confirmAI = confirm("선택한 항목의 제안서를 생성하시겠습니까?");
-
-            if (confirmAI) {
-                console.log("AI 제안서 생성 요청 for Opportunity ID:", opportunityId);
-                // API 호출 또는 추가 로직 추가
-            }
-        });
+        }
     });
 </script>
