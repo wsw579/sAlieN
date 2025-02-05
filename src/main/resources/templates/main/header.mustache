@@ -649,6 +649,49 @@
                             formattedResponse += `<br><a href="/chatbot/create/opportunities?${queryParams}" target="_blank">새로 생성된 리소스 보기</a>`;
                         }
 
+                        if (data.table === "contracts") {
+                            // system_response 데이터를 URL의 쿼리 파라미터 형태로 변환
+                            var queryParams = new URLSearchParams({
+                                startDate: systemData.startDate || '',
+                                terminationDate: systemData.terminationDate || '',
+                                contractStatus: systemData.contractStatus || '',
+                                계정명: systemData["계정명"] || '',
+                                기회명: systemData["기회명"] || '',
+                                제품명: systemData["제품명"] || '',
+                                contractAmount: systemData.contractAmount || '',
+                                contractSales: systemData.contractSales || '',
+                                contractDetail: systemData.contractDetail || '',
+                                contractClassification: systemData.contractClassification || '',
+                                담당자명: systemData["담당자명"] || ''
+                            }).toString(); // 쿼리 문자열 생성
+
+                            // queryParams 값 로그 출력
+                            console.log("🔍 생성된 queryParams:", queryParams);
+
+                            // 특정 링크를 추가 (예: 새로 생성된 리소스 링크 제공)
+                            formattedResponse += `<br><a href="/chatbot/create/contracts?${queryParams}" target="_blank">새로 생성된 계약 리소스 보기</a>`;
+                        }
+
+                        if (data.table === "orders") {
+                            // system_response 데이터를 URL의 쿼리 파라미터 형태로 변환
+                            var queryParams = new URLSearchParams({
+                                orderDate: systemData.orderDate || '',
+                                salesDate: systemData.salesDate || '',
+                                orderStatus: systemData.orderStatus || '',
+                                orderAmount: systemData.orderAmount || '',
+                                제품명: systemData["제품명"] || ''
+                            }).toString(); // 쿼리 문자열 생성
+
+                            // queryParams 값 로그 출력
+                            console.log("🔍 생성된 queryParams:", queryParams);
+
+                            // 특정 링크를 추가 (예: 새로 생성된 리소스 링크 제공)
+                            formattedResponse += `<br><a href="/chatbot/create/orders?${queryParams}" target="_blank">새로 생성된 리소스 보기</a>`;
+                        }
+
+
+
+
                     }
 
 

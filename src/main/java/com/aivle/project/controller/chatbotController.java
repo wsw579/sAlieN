@@ -30,6 +30,7 @@ public class chatbotController {
     private final ProductsService productsService;
     private final LeadsService leadsService;
     private final OpportunitiesService opportunitiesService;
+    private final ContractsService contractsService;
 
     @GetMapping("/chatbot/create/leads")
     public String createLeads(@RequestParam Map<String,String> params, Model model) {
@@ -170,7 +171,96 @@ public class chatbotController {
         return "opportunities/opportunities_detail";
     }
 
+    @GetMapping("/chatbot/create/contracts")
+    public String createContract(@RequestParam Map<String,String> params, Model model) {
 
+        ContractsEntity contract = new ContractsEntity();
+        List<EmployeeEntity> employee = employeeRepository.findAll();
+        List<AccountEntity> activeAccounts = accountRepository.findByAccountStatus("Active");
+        List<ProductsDto> products = productsService.getAllProductIdsAndNames();
+        List<OpportunitiesDto> opportunities = opportunitiesService.getAllOpportunityIdsAndNames();
+
+        String startDate = params.get("startDate");
+        if (!startDate.isEmpty()) {
+            contract.setStartDate(LocalDate.parse(startDate));
+        } else{
+            contract.setStartDate(LocalDate.now());
+        }
+
+        String terminationDate = params.get("terminationDate");
+        if (!terminationDate.isEmpty()) {
+            contract.setTerminationDate(LocalDate.parse(terminationDate));
+        } else {
+            contract.setTerminationDate(LocalDate.now());
+        }
+
+        String contractAmount = params.get("contractAmount");
+        if (!contractAmount.isEmpty()) {
+            contract.setContractAmount(Float.parseFloat(contractAmount));
+        } else {
+            contract.setContractAmount(0.0f);
+        }
+
+        String contractSales = params.get("contractSales");
+        if (!contractSales.isEmpty()) {
+            contract.setContractSales(Float.parseFloat(contractSales));
+        } else {
+            contract.setContractSales(0.0f);
+        }
+
+        contract.setContractDetail(params.get("contractDetail"));
+
+        model.addAttribute("contracts", contract);
+        model.addAttribute("accounts", activeAccounts);//
+        model.addAttribute("employee", employee);//
+        model.addAttribute("products", products);
+        model.addAttribute("opportunities", opportunities);
+
+
+        // 로깅
+        params.forEach((key, value) -> System.out.println(key + ": " + value));
+
+        return "contracts/contracts_detail";
+    }
+
+    @GetMapping("/chatbot/create/orders")
+    public String createOrders(@RequestParam Map<String,String> params, Model model) {
+
+        OrdersEntity order = new OrdersEntity();
+        List<ProductsDto> products = productsService.getAllProductIdsAndNames();
+        List<ContractsDto> contracts = contractsService.getAllContractIds();
+
+
+        String orderDate = params.get("orderDate");
+        if (!orderDate.isEmpty()) {
+            order.setOrderDate(LocalDate.parse(orderDate));
+        } else{
+            order.setOrderDate(LocalDate.now());
+        }
+
+        String salesDate = params.get("salesDate");
+        if (!salesDate.isEmpty()) {
+            order.setSalesDate(LocalDate.parse(salesDate));
+        } else{
+            order.setSalesDate(LocalDate.now());
+        }
+
+        String orderAmount = params.get("orderAmount");
+        if (!orderAmount.isEmpty()) {
+            order.setOrderAmount(Float.parseFloat(orderAmount));
+        } else {
+            order.setOrderAmount(0.0f);
+        }
+
+        model.addAttribute("orders", order);
+        model.addAttribute("products", products);
+        model.addAttribute("contracts", contracts);
+
+        // 로깅
+        params.forEach((key, value) -> System.out.println(key + ": " + value));
+
+        return "orders/orders_detail";
+    }
 
 
 
