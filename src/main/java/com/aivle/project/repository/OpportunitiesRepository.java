@@ -94,8 +94,8 @@ public interface OpportunitiesRepository extends JpaRepository<OpportunitiesEnti
             "FROM OpportunitiesEntity o " +
             "JOIN o.employeeId e " +  // Employee와 JOIN
             "WHERE e.employeeId = :employeeId " + // employeeId 조건 추가
-            "AND MONTH(o.createdDate) = MONTH(CURRENT_DATE) " + // 같은 달 조건
-            "AND YEAR(o.createdDate) = YEAR(CURRENT_DATE) " +   // 같은 연도 조건
+//            "AND MONTH(o.createdDate) = MONTH(CURRENT_DATE) " + // 같은 달 조건
+//            "AND YEAR(o.createdDate) = YEAR(CURRENT_DATE) " +   // 같은 연도 조건
             "GROUP BY " +
             "CASE " +
             "   WHEN o.targetCloseDate < CURRENT_DATE AND o.opportunityStatus NOT LIKE 'Closed%' THEN 'Overdue' " +
@@ -104,6 +104,18 @@ public interface OpportunitiesRepository extends JpaRepository<OpportunitiesEnti
             "   WHEN o.opportunityStatus NOT LIKE 'Closed%' THEN 'Ongoing' " +
             "END")
     List<Object[]> countAllStatusesUser(@Param("employeeId") String employeeId);
+
+    // 진행 중인 기회 조회 쿼리 추가
+    @Query("SELECT o FROM OpportunitiesEntity o " +
+            "JOIN o.employeeId e " +
+            "WHERE e.employeeId = :employeeId " +
+//            "AND MONTH(o.createdDate) = MONTH(CURRENT_DATE) " + // 같은 달 조건
+//            "AND YEAR(o.createdDate) = YEAR(CURRENT_DATE) " +   // 같은 연도 조건
+            "AND o.opportunityStatus NOT LIKE 'Closed%' " +  // Closed 제외
+            "AND NOT (o.targetCloseDate < CURRENT_DATE AND o.opportunityStatus NOT LIKE 'Closed%') " + // Overdue 제외
+            "AND o.opportunityStatus <> 'Pending' " + // Pending 제외
+            "ORDER BY o.createdDate DESC")
+    Page<OpportunitiesEntity> findOngoingOpportunitiesByUser(@Param("employeeId") String employeeId, Pageable pageable);
 
 
 
