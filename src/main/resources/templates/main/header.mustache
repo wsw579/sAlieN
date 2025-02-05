@@ -51,50 +51,6 @@
         </div>
     </form>
 
-    <!-- 요금제 -->
-    <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
-        <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Basic Plan 사용중</a>
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                <li><a class="dropdown-item" href="/rate_plan">요금제 변경</a></li>
-            </ul>
-        </li>
-    </ul>
-
-
-    <!-- notification-->
-    <style>
-        .badge {
-            position: absolute;
-            top: 5px;
-            padding: 5px 10px;
-            border-radius: 50%;
-            background-color: red;
-            color: white;
-            font-size: 9px;
-            display: inline; /* 기본적으로 표시 */
-        }
-    </style>
-
-    <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
-        <li class="nav-item">
-            <a class="nav-link" id="navbarDropdown" href="/alarm" role="button">
-                <i class="fas fa-bell"></i>
-
-                    <!-- 안읽은 알림이 있다면 알림 수 아이콘으로 추가 표시-->
-                    {{#alarm}}
-                        <span class="badge">{{count}}</span>
-                    {{/alarm}}
-                    <!-- 테스트로 2개 띄워보기, 삭제예정-->
-                    {{^alarm}}
-                        <span class="badge">2</span>
-                    {{/alarm}}
-
-            </a>
-        </li>
-    </ul>
-
-
     <!-- profile-->
     <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
         <li class="nav-item dropdown">
