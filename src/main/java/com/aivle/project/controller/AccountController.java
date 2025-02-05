@@ -7,6 +7,7 @@ import com.aivle.project.repository.AccountRepository;
 import com.aivle.project.repository.EmployeeRepository;
 import com.aivle.project.service.AccountService;
 import com.aivle.project.service.CrudLogsService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +18,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -181,7 +183,12 @@ public class AccountController {
 
     // 새 계정 생성
     @PostMapping("/account/detail/create")
-    public String accountCreateNew(@ModelAttribute AccountDto accountDto) {
+    public String accountCreateNew(@ModelAttribute @Valid AccountDto accountDto, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            // 유효성 검사 실패 시 에러 메시지 출력
+            return "account/account_detail"; // 에러가 있으면 폼으로 다시 이동
+        }
+
         accountService.createAccount(accountDto);
 
         // CRUD 작업 로깅
@@ -193,7 +200,12 @@ public class AccountController {
 
     // 계정 정보 수정
     @PostMapping("/account/detail/{accountId}/update")
-    public String accountUpdate(@PathVariable("accountId") Long accountId,  @ModelAttribute AccountDto accountDto) {
+    public String accountUpdate(@PathVariable("accountId") Long accountId,  @ModelAttribute @Valid AccountDto accountDto, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            // 유효성 검사 실패 시 에러 메시지 출력
+            return "account/account_detail"; // 에러가 있으면 폼으로 다시 이동
+        }
+
         accountService.updateAccount(accountId, accountDto);
 
         // CRUD 작업 로깅
