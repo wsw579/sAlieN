@@ -177,7 +177,10 @@
 <div id="layoutSidenav_content">
     <main>
         <div class="container-fluid px-4">
-            <h1 class="mt-4">Opportunities</h1>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h1 class="mt-4">Opportunities</h1>
+                <button onclick="location.href='/opportunities'" class="back-btn">🔙</button>
+            </div>
             <ol class="breadcrumb mb-4">
                 <li class="breadcrumb-item active">Opportunities</li>
             </ol>
@@ -204,11 +207,11 @@
 
                                 {{#opportunityId}}
                                     <button class="btn btn-custom-delete btn-sm" id="deleteButton">
-                                        <i class="fas fa-plus-circle"></i> 삭제
+                                        <i class="fas fa-trash"></i> 삭제
                                     </button>
                                 {{/opportunityId}}
                                 <a href="/opportunities" class="btn btn-custom-select btn-sm" id="selectButton">
-                                    <i class="fas fa-plus-circle"></i> 목록
+                                    <i class="fas fa-list"></i> 목록
                                 </a>
 
                             </div>
@@ -298,13 +301,13 @@
                                 <div class="col-sm-10">
                                     <select id="employeeId" name="employeeId" required>
                                         <option value="">-- 담당자 선택 --</option>
-                                        {{#employees}}
+                                        {{#employee}}
                                             <option value="{{employeeId}}">
                                                 {{employeeName}} (ID: {{employeeId}}
                                                 Dept: {{#departmentId}}{{name}}{{/departmentId}}{{^departmentId}}
                                                 미지정{{/departmentId}})
                                             </option>
-                                        {{/employees}}
+                                        {{/employee}}
                                     </select>
                                 </div>
                             </div>
@@ -392,13 +395,15 @@
 
                                 <!-- 제안서 생성 버튼 -->
                                 <button type="button" id="proposalButton" class="btn btn-custom-proposal btn-sm">
-                                    <i class="fas fa-plus-circle"></i> AI 제안서 생성 (excel)
+
+                                    <i class="fas fa-download"></i> 제안서 생성
+
                                 </button>
 
                                 <!-- 저장 버튼 -->
                                 <div class="d-flex justify-content-end">
                                     <button type="submit" id="updateButton" class="btn btn-custom-update btn-sm">
-                                        <i class="fas fa-plus-circle"></i> 저장
+                                        <i class="fas fa-save"></i> 저장
                                     </button>
                                 </div>
 
@@ -549,7 +554,10 @@
 
 
     <script>
-
+        // CRUD 메시지
+        {{#message}}
+            alert("{{message}}");
+        {{/message}}
 
         // Form 부분 기회상태 초기값 연동 JS (select Form은 html로 초기 value 지정이 안되어서 JS로 처리)
 
@@ -726,8 +734,6 @@
 
 
 
-
-
         // 페이지 로드 시 댓글 섹션 스크롤 최하단으로 이동
         window.onload = function() {
             var commentSection = document.getElementById("commentSection");
@@ -736,7 +742,7 @@
 
 
 
-// AI 제안서 가능
+// AI 제안서
 document.getElementById('proposalButton').addEventListener('click', function() {
     try {
         const employeeSelect = document.querySelector('#employeeId');
@@ -748,15 +754,17 @@ document.getElementById('proposalButton').addEventListener('click', function() {
 
         const selectedOption = employeeSelect.options[employeeSelect.selectedIndex];
         const employeeInfo = selectedOption.textContent.trim();
+        // 담당자 이름
         const employeeName = employeeInfo.split(' (')[0].replace(/^\s+|\s+$/g, '');
 
-        // 부서 정보 추출
+        // 부서명
         const deptMatch = employeeInfo.match(/Dept: (.+?)\)/);
         const departmentName = deptMatch ? deptMatch[1].trim() : '미지정';
-        // 제품 정보 추출
+
+        // 제품 이름
         const productName = productSelect.options[productSelect.selectedIndex] ?
         productSelect.options[productSelect.selectedIndex].textContent.split(' (')[0].replace(/^\s+|\s+$/g, '') : '미지정';
-
+        // 고객 요구사항
         const opportunityInquiries = document.getElementById('opportunityInquiries').value.trim();
 
         const dataToSend = {
@@ -794,7 +802,7 @@ document.getElementById('proposalButton').addEventListener('click', function() {
             link.remove();
 
             // 다운로드 완료 팝업창 생성
-            alert('제안서가 성공적으로 다운로드되었습니다.');
+            alert('제안서 다운로드가 완료되었습니다.');
         })
         .catch(error => {
             console.error('Error:', error);

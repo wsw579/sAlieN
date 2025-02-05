@@ -24,14 +24,27 @@
                     <table id="datatablesSimple">
 
                         <div class="button-container mb-3">
+                            <div style="flex: 1; display: flex; align-items: center; gap: 10px; justify-content: flex-end;">
+                                <form method="GET" action="/employee-list" style="display: flex; align-items: center; gap: 5px;">
+                                    <!-- 검색어 -->
+                                    <input type="text" class="form-control" name="search" id="customSearch" placeholder="검색어를 입력하세요"
+                                           style="padding: 5px; width: 200px;" value="{{search}}">
+
+                                    <!-- 제출 버튼 -->
+                                    <button type="submit" class = "btn btn-custom-select btn-sm">검색</button>
+                                </form>
+
+                            </div>
+                            <div>
                             {{#isAdmin}}
                             <a href="/admin/employee-signup" class="btn btn-custom-create btn-sm" id="createButton">
                                 <i class="fas fa-plus-circle"></i>유저 계정 생성
                             </a>
                             <button class="btn btn-custom-delete btn-sm" id="deleteButton">
-                                <i class="fas fa-plus-circle"></i>삭제
+                                <i class="fas fa-trash"></i>삭제
                             </button>
                             {{/isAdmin}}
+                            </div>
                         </div>
 
                         <thead>
@@ -46,7 +59,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        {{#employeeList}}
+                        {{#pagination.contents}}
                             <tr data-index="{{employeeId}}">
                                 {{#isAdmin}}
                                 <td><input type="checkbox" class="select-row" value="{{employeeId}}"></td>
@@ -61,15 +74,44 @@
                                 <td>{{dept}}</td>
                                 <td>{{team}}</td>
                             </tr>
-                        {{/employeeList}}
+                        {{/pagination.contents}}
                         </tbody>
                     </table>
+                    <!--페이징 처리-->
+                    <div class="pagination justify-content-center">
+                        <!-- 이전 버튼 -->
+                        {{#pagination.hasPreviousPage}}
+                            <button onclick="window.location.href='/employee-list?page={{pagination.previousPage}}&size=10&search={{search}}'">
+                            이전
+                            </button>
+                        {{/pagination.hasPreviousPage}}
+
+                        <!-- 페이지 번호 버튼 -->
+                        {{#pagination.pageNumbers}}
+                            <button
+                                    onclick="window.location.href='/employee-list?page={{page}}&size=10&search={{search}}'"
+                            class="{{#isActive}}active{{/isActive}}">
+                            {{displayPage}}
+                            </button>
+                        {{/pagination.pageNumbers}}
+
+                        <!-- 다음 버튼 -->
+                        {{#pagination.hasNextPage}}
+                            <button onclick="window.location.href='/employee-list?page={{pagination.nextPage}}&size=10&search={{search}}'">
+                            다음
+                            </button>
+                        {{/pagination.hasNextPage}}
+                    </div>
                 </div>
             </div>
         </div>
     </main>
 
     <script>
+        // CRUD 메시지
+        {{#message}}
+            alert("{{message}}");
+        {{/message}}
         document.addEventListener("DOMContentLoaded", function() {
             var deleteButton = document.getElementById("deleteButton");
             if (deleteButton) {

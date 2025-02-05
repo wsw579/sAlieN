@@ -1,0 +1,81 @@
+{{>main/header}}
+<style>
+    #monthlySalesChart {
+        height: 400px; /* 원하는 높이로 설정 */
+    }
+</style>
+    <div id="layoutSidenav_content">
+        <main>
+            <div class="container-fluid px-4 mt-4">
+                <!-- 첫 번째 행 -->
+                <div class="row mb-4 align-items-stretch">
+                    <!-- 1행 1열 -->
+                    <div class="col-xl-4 col-md-6 d-flex">
+                        <div class="card h-100 w-100">
+                            <div class="card-header">
+                                <i class="fas fa-chart-area me-1"></i>
+                                기회 미처리 개수
+                            </div>
+                            <div class="card-body">
+                                <canvas id="teamOpportunitiesChart" style="width: 400px; height: 200px;"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 1행 2열 -->
+                    <div class="col-xl-4 col-md-6 d-flex">
+                        <div class="card h-100 w-100">
+                            <div class="card-header">
+                                <i class="fas fa-chart-bar me-1"></i>
+                                사원별 오더 현황
+                            </div>
+                            <div class="card-body">
+                                <div id="monthlySalesHeader"></div>
+                                <canvas id="employeeOrderChart" style="width: 500px; height: 200px;"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 1행 3열 -->
+                    <div class="col-xl-4 col-md-6 d-flex">
+                        <div class="card h-100 w-100">
+                            <div class="card-header">
+                                <i class="fas fa-chart-area me-1"></i>
+                                연도별 오더 처리 현황
+                            </div>
+                            <div class="card-body">
+                                <div id="yearlySalesHeader"></div>
+                                <canvas id="OrderStatusChart" style="width: 500px; height: 200px;"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 두 번째 행 -->
+                <div class="row mb-4 align-items-stretch">
+                    <!-- 한 행 전체 -->
+                    <div class="col-xl-12 d-flex">
+                        <div class="card h-100 w-100">
+                            <div class="card-header">
+                                <i class="fas fa-table me-1"></i>
+                                월별 매출현황
+                            </div>
+                            <div class="card-body">
+                                <canvas id="monthlySalesChart" style="width: 600px; height: 300px;"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </main>
+
+
+
+
+        <script src="/assets/demo/team-opportunities-chart.js"></script>
+        <script src="/assets/demo/monthly-sales-chart.js"></script>
+        <script src="/assets/demo/employee-order-chart.js"></script>
+        <script src="/assets/demo/order-status-chart.js"></script>
+{{>main/footer}}

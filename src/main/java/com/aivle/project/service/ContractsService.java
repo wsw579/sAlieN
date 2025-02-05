@@ -3,23 +3,25 @@ package com.aivle.project.service;
 import com.aivle.project.dto.ContractsDto;
 import com.aivle.project.entity.ContractsEntity;
 import com.aivle.project.entity.OrdersEntity;
+import com.aivle.project.enums.Team;
 import com.aivle.project.repository.ContractsRepository;
+import com.aivle.project.repository.EmployeeRepository;
 import com.aivle.project.repository.OrdersRepository;
+import com.aivle.project.utils.UserContext;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
@@ -33,6 +35,7 @@ public class ContractsService {
 
     private final ContractsRepository contractsRepository;
     private final OrdersRepository ordersRepository;
+    private final EmployeeRepository employeeRepository;
     private static final Logger logger = LoggerFactory.getLogger(ContractsService.class);
 
     // Create
@@ -44,12 +47,19 @@ public class ContractsService {
     // Read
     @Transactional(readOnly = true)
     public Page<ContractsEntity> readContracts(int page, int size, String search, String sortColumn, String sortDirection) {
+        String userid = UserContext.getCurrentUserId();
+        String userrole = UserContext.getCurrentUserRole();
+        String userposition = employeeRepository.findPositionById(userid);
+        String userteam = employeeRepository.findTeamById(userid);
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortDirection), sortColumn));
 
-        if (search != null && !search.isEmpty()) {
-            return contractsRepository.findByContractIdLike("%" + search + "%", pageable);
+        if ("ROLE_ADMIN".equals(userrole) || "GENERAL_MANAGER".equals(userposition) || "DEPARTMENT_HEAD".equals(userposition) || "TEAM_LEADER".equals(userposition)) {
+            return findContractsForManager(search, pageable);
+        } else if ("ROLE_USER".equals(userrole)) {
+            return findContractsForTeam(search, userteam, pageable);
+        } else {
+            throw new AccessDeniedException("권한이 없습니다.");
         }
-        return contractsRepository.findAll(pageable);
     }
 
     // Update
@@ -86,8 +96,22 @@ public class ContractsService {
     // Contract Status Counts
     @Transactional(readOnly = true)
     public Map<String, Long> getContractStatusCounts() {
-        return contractsRepository.countContractsByStatus().stream()
-                .collect(Collectors.toMap(result -> (String) result[0], result -> (Long) result[1]));
+        String userid = UserContext.getCurrentUserId();
+        String userrole = UserContext.getCurrentUserRole();
+        String userposition = employeeRepository.findPositionById(userid);
+        String userteam = employeeRepository.findTeamById(userid);
+
+// 적절한 쿼리 실행
+        List<Object[]> results = isManager(userrole, userposition)
+                ? contractsRepository.countContractsByStatusManager()
+                : contractsRepository.countContractsByStatusTeam(Team.valueOf(userteam));
+
+// Stream API 활용하여 데이터 변환
+        return results.stream()
+                .collect(Collectors.toMap(
+                        result -> (String) result[0],  // Key: Status
+                        result -> (Long) result[1]     // Value: Count
+                ));
     }
 
     @Transactional(readOnly = true)
@@ -169,7 +193,7 @@ public class ContractsService {
 
         if (accumulate) {
             accumulateMonthlyData(lastYearData);
-            accumulateMonthlyData(currentYearData);
+            accumulateMonthlyDataUntilCurrentMonth(currentYearData);
         }
 
         Map<String, List<Integer>> yearlyData = new HashMap<>();
@@ -184,7 +208,19 @@ public class ContractsService {
     }
 
     private void populateMonthlyData(int year, List<Integer> monthlyData) {
-        contractsRepository.getMonthlyContracts(year).forEach(row -> {
+        String userid = UserContext.getCurrentUserId();
+        String userrole = UserContext.getCurrentUserRole();
+        String userposition = employeeRepository.findPositionById(userid);
+        String userteam = employeeRepository.findTeamById(userid);
+
+
+// 데이터 조회 (관리자는 모든 데이터, 일반 사용자는 팀별 데이터)
+        List<Object[]> queryResult = isManager(userrole, userposition)
+                ? contractsRepository.getMonthlyContractsManager(year)
+                : contractsRepository.getMonthlyContractsTeam(year, Team.valueOf(userteam));
+
+// 공통 로직: 데이터 매핑
+        queryResult.forEach(row -> {
             int month = ((Number) row[0]).intValue() - 1;
             int count = ((Number) row[1]).intValue();
             monthlyData.set(month, count);
@@ -194,6 +230,17 @@ public class ContractsService {
     private void accumulateMonthlyData(List<Integer> monthlyData) {
         for (int i = 1; i < monthlyData.size(); i++) {
             monthlyData.set(i, monthlyData.get(i) + monthlyData.get(i - 1));
+        }
+    }
+
+    private void accumulateMonthlyDataUntilCurrentMonth(List<Integer> monthlyData) {
+        int currentMonth = LocalDate.now().getMonthValue();
+        for (int i = 1; i < currentMonth; i++) {
+            monthlyData.set(i, monthlyData.get(i) + monthlyData.get(i - 1));
+        }
+        // 현재 월 이후의 데이터는 0으로 유지
+        for (int i = currentMonth+1; i < monthlyData.size(); i++) {
+            monthlyData.set(i, 0);
         }
     }
 
@@ -222,5 +269,29 @@ public class ContractsService {
         ContractsDto dto = new ContractsDto();
         dto.setContractId(id);
         return dto;
+    }
+
+    // 권한별 조회
+    private Page<ContractsEntity> findContractsForManager(String search, Pageable pageable) {
+        // Manager 전용 로직
+        if (search != null && !search.isEmpty()) {
+            return contractsRepository.findByAccountNameLikeManager("%" + search + "%", pageable);
+        }
+        return contractsRepository.findAll(pageable);
+    }
+
+    private Page<ContractsEntity> findContractsForTeam(String search, String teamId, Pageable pageable) {
+        // User 전용 로직
+        if (search != null && !search.isEmpty()) {
+            return contractsRepository.findByAccountNameLikeTeam("%" + search + "%", Team.valueOf(teamId), pageable);
+        }
+        return contractsRepository.findByTeamId(Team.valueOf(teamId), pageable);
+    }
+
+    private boolean isManager(String userrole, String userposition) {
+        return "ROLE_ADMIN".equals(userrole) ||
+                "GENERAL_MANAGER".equals(userposition) ||
+                "DEPARTMENT_HEAD".equals(userposition) ||
+                "TEAM_LEADER".equals(userposition);
     }
 }

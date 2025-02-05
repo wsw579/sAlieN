@@ -12,10 +12,12 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.HashMap;
 import java.util.List;
@@ -42,6 +44,7 @@ public class ProductsController {
         String search = params.getOrDefault("search", "");
         String sortColumn = params.getOrDefault("sortColumn", "productName");
         String sortDirection = params.getOrDefault("sortDirection", "asc");
+        long AICount = productsService.countAIProducts();
 
         Page<ProductsEntity> productsPage = productsService.readProducts(page, size, search, sortColumn, sortDirection);
 
@@ -68,6 +71,10 @@ public class ProductsController {
         // 상태별 개수 추가
         model.addAttribute("availableCount", conditionCounts.getOrDefault("available", 0L));
         model.addAttribute("outOfStockCount", conditionCounts.getOrDefault("out_of_stock", 0L));
+        model.addAttribute("discontinuedCount", conditionCounts.getOrDefault("discontinued", 0L));
+
+        // AI 모델의 수
+        model.addAttribute("AICount",AICount);
 
         return "products/products_read";
     }
@@ -100,35 +107,71 @@ public class ProductsController {
 
     // Create new product
     @PostMapping("/products/detail/create")
-    public String productsCreateNew(@ModelAttribute ProductsDto productsDto) {
-        productsService.createProduct(productsDto);
+    public String productsCreateNew(@ModelAttribute ProductsDto productsDto, RedirectAttributes redirectAttributes) {
+        try {
+            // 제품 생성
+            productsService.createProduct(productsDto);
 
-        // CRUD 작업 로깅
-        crudLogsService.logCrudOperation("create", "products", "", "True", "Success");
+            // CRUD 작업 로깅
+            crudLogsService.logCrudOperation("create", "products", "", "True", "Success");
 
-        return "redirect:/products";
+            // 성공 메시지를 RedirectAttributes에 저장 (리다이렉트 후에도 유지됨)
+            redirectAttributes.addFlashAttribute("message", "제품이 성공적으로 생성되었습니다.");
+
+            return "redirect:/products"; // 성공 시 제품 목록 페이지로 이동
+        } catch (Exception e) {
+            // 실패 로그 기록
+            crudLogsService.logCrudOperation("create", "products", "", "False", "Error: " + e.getMessage());
+
+            // 에러 메시지를 사용자에게 전달
+            redirectAttributes.addFlashAttribute("errorMessage", "제품 생성 중 오류가 발생했습니다. 다시 시도해주세요.");
+
+            return "redirect:/errorPage"; // 에러 발생 시 오류 페이지로 리다이렉트
+        }
     }
 
     // Update detail page
     @PostMapping("/products/detail/{productId}/update")
-    public String productsUpdate(@PathVariable("productId") Long productId, @ModelAttribute ProductsDto productsDto) {
-        productsService.updateProduct(productId, productsDto);
+    public String productsUpdate(@PathVariable("productId") Long productId, @ModelAttribute ProductsDto productsDto, RedirectAttributes redirectAttributes) {
+        try {
+            // 제품 수정
+            productsService.updateProduct(productId, productsDto);
 
-        // CRUD 작업 로깅
-        crudLogsService.logCrudOperation("update", "products", "", "True", "Success");
+            // 성공 로그 기록
+            crudLogsService.logCrudOperation("update", "products", productId.toString(), "True", "Success");
 
-        return "redirect:/products/detail/" + productId;
+            // 성공 메시지를 RedirectAttributes에 저장 (리다이렉트 후에도 유지됨)
+            redirectAttributes.addFlashAttribute("message", "제품이 성공적으로 수정되었습니다.");
+
+            return "redirect:/products/detail/" + productId;
+        } catch (Exception e) {
+            // 실패 로그 기록
+            crudLogsService.logCrudOperation("update", "products", productId.toString(), "False", "Error: " + e.getMessage());
+
+            // 에러 메시지를 사용자에게 전달
+            redirectAttributes.addFlashAttribute("errorMessage", "제품 수정 중 오류가 발생했습니다. 다시 시도해주세요.");
+
+            return "redirect:/errorPage"; // 에러 발생 시 오류 페이지로 리다이렉트
+        }
     }
 
     // Delete detail page
     @PostMapping("/products/detail/{productId}/delete")
     public ResponseEntity<Void> deleteProduct(@PathVariable("productId") Long productId) {
-        productsService.deleteProduct(productId);
+        try {
+            // 제품 삭제 실행
+            productsService.deleteProduct(productId);
 
-        // CRUD 작업 로깅
-        crudLogsService.logCrudOperation("delete", "products", "", "True", "Success");
+            // CRUD 작업 로깅
+            crudLogsService.logCrudOperation("delete", "products", productId.toString(), "True", "Success");
 
-        return ResponseEntity.ok().build();
+            return ResponseEntity.ok().build(); // HTTP 200 응답 (삭제 성공)
+        } catch (Exception e) {
+            // 삭제 실패 로그 기록
+            crudLogsService.logCrudOperation("delete", "products", productId.toString(), "False", "Error: " + e.getMessage());
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // HTTP 500 응답 (삭제 실패)
+        }
     }
 
     // Delete products in bulk
@@ -136,11 +179,24 @@ public class ProductsController {
     public ResponseEntity<Void> deleteProducts(@RequestBody Map<String, List<Long>> request) {
         List<Long> ids = request.get("ids");
         logger.info("Deleting products with IDs: {}", ids); // 로그 추가
-        productsService.deleteProductsByIds(ids);
 
-        // CRUD 작업 로깅
-        crudLogsService.logCrudOperation("delete", "products", "", "True", "Success");
+        try {
+            // 주문 삭제 실행
+            productsService.deleteProductsByIds(ids);
 
-        return ResponseEntity.ok().build(); // 상태 코드 200 반환
+            // 개별 ID에 대해 성공 로그 기록
+            for (Long id : ids) {
+                crudLogsService.logCrudOperation("delete", "products", id.toString(), "True", "Success");
+            }
+
+            return ResponseEntity.ok().build(); // HTTP 200 응답 (삭제 성공)
+        } catch (Exception e) {
+            // 개별 ID에 대해 실패 로그 기록
+            for (Long id : ids) {
+                crudLogsService.logCrudOperation("delete", "products", id.toString(), "False", "Error: " + e.getMessage());
+            }
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // HTTP 500 응답 (삭제 실패)
+        }
     }
 }

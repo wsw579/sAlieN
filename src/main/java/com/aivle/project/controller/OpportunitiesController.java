@@ -5,25 +5,24 @@ import com.aivle.project.entity.HistoryEntity;
 import com.aivle.project.entity.LeadsEntity;
 import com.aivle.project.entity.OpportunitiesCommentEntity;
 import com.aivle.project.entity.OpportunitiesEntity;
-import com.aivle.project.repository.OpportunitiesRepository;
 import com.aivle.project.entity.*;
 import com.aivle.project.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.IntStream;
 
 
 @Controller
@@ -93,8 +92,8 @@ public class OpportunitiesController {
 
         // 직원 목록 추가
         List<EmployeeDto.GetId> employees = employeeService.getAllEmployeeIdsAndNamesAndDepartmentIds();
-
         model.addAttribute("employees", employees);
+
         // 디버깅을 위해 로그 출력
         System.out.println("Opportunities: " + opportunities);
         opportunitiesComments.forEach(comment -> System.out.println("Comment: " + comment.getContent() + ", Date: " + comment.getCommentCreatedDate()));
@@ -111,15 +110,28 @@ public class OpportunitiesController {
     }
 
     @PostMapping("/opportunities/detail/createcomment")
-    public String createComment(@RequestParam("content") String content, @RequestParam("opportunityId") Long opportunityId) {
+    public String createComment(@RequestParam("content") String content, @RequestParam("opportunityId") Long opportunityId, RedirectAttributes redirectAttributes) {
         String employeeId = getCurrentUserId();
+        try {
+            // 기회 코멘트 생성
+            opportunitiesService.createComment(content, opportunityId, employeeId);
 
-        opportunitiesService.createComment(content, opportunityId, employeeId);
+            // CRUD 작업 로깅
+            crudLogsService.logCrudOperation("create", "opportunities_comment", "", "True", "Success");
 
-        // CRUD 작업 로깅
-        crudLogsService.logCrudOperation("create", "opportunities_comment", "", "True", "Success");
+            // 성공 메시지를 RedirectAttributes에 저장 (리다이렉트 후에도 유지됨)
+            redirectAttributes.addFlashAttribute("message", "계약이 성공적으로 생성되었습니다.");
 
-        return "redirect:/opportunities/detail/" + opportunityId + "#commentSection";
+            return "redirect:/opportunities/detail/" + opportunityId + "#commentSection"; // 성공 시 기회 디테일 페이지로 이동
+        } catch (Exception e) {
+            // 실패 로그 기록
+            crudLogsService.logCrudOperation("create", "opportunities_comment", "", "False", "Error: " + e.getMessage());
+
+            // 에러 메시지를 사용자에게 전달
+            redirectAttributes.addFlashAttribute("errorMessage", "기회 코멘트 생성 중 오류가 발생했습니다. 다시 시도해주세요.");
+
+            return "redirect:/errorPage"; // 에러 발생 시 오류 페이지로 리다이렉트
+        }
     }
 
     @GetMapping("/opportunities/detail/create")
@@ -156,20 +168,43 @@ public class OpportunitiesController {
     }
 
     @PostMapping("/opportunities/detail/create")
-    public String opportunitiesCreateNew(@ModelAttribute OpportunitiesDto opportunitiesDto) {
-        opportunitiesService.createOpportunities(opportunitiesDto);
+    public String opportunitiesCreateNew(@ModelAttribute OpportunitiesDto opportunitiesDto, RedirectAttributes redirectAttributes) {
+        try {
+            // 기회 생성
+            opportunitiesService.createOpportunities(opportunitiesDto);
 
-        // CRUD 작업 로깅
-        crudLogsService.logCrudOperation("create", "opportunities", "", "True", "Success");
+            // CRUD 작업 로깅
+            crudLogsService.logCrudOperation("create", "opportunities", "", "True", "Success");
 
-        return "redirect:/opportunities";
+            // 성공 메시지를 RedirectAttributes에 저장 (리다이렉트 후에도 유지됨)
+            redirectAttributes.addFlashAttribute("message", "기회가 성공적으로 생성되었습니다.");
+
+            return "redirect:/opportunities"; // 성공 시 기회 목록 페이지로 이동
+        } catch (Exception e) {
+            // 실패 로그 기록
+            crudLogsService.logCrudOperation("create", "opportunities", "", "False", "Error: " + e.getMessage());
+
+            // 에러 메시지를 사용자에게 전달
+            redirectAttributes.addFlashAttribute("errorMessage", "기회 생성 중 오류가 발생했습니다. 다시 시도해주세요.");
+
+            return "redirect:/errorPage"; // 에러 발생 시 오류 페이지로 리다이렉트
+        }
     }
 
     @GetMapping("/opportunities/detail/{opportunityId}/history/create")
     public String historyCreate(@PathVariable Long opportunityId, Model model) {
         HistoryEntity history = new HistoryEntity();
+        OpportunitiesEntity opportunity = opportunitiesService.searchOpportunities(opportunityId);
+
+        history.setHistoryTitle("");
+        history.setCustomerRepresentative("");
         history.setHistoryDate(LocalDate.now());
         history.setHistoryTime(LocalTime.now());
+        history.setMeetingPlace("");
+        history.setActionTaken("");
+        history.setCompanySize("");
+        history.setCustomerRequirements("");
+        history.setOpportunity(new OpportunitiesEntity());
 
         model.addAttribute("history", history);
         model.addAttribute("opportunityId", opportunityId);
@@ -178,55 +213,126 @@ public class OpportunitiesController {
     }
 
     @PostMapping("/opportunities/detail/{opportunityId}/history/create")
-    public String createHistory(@PathVariable Long opportunityId, @ModelAttribute HistoryDto historyDto) {
-        opportunitiesService.createHistory(historyDto);
+    public String createHistory(@PathVariable Long opportunityId, @ModelAttribute HistoryDto historyDto, RedirectAttributes redirectAttributes) {
+        try {
+            // 기회 히스토리 생성
+            opportunitiesService.createHistory(historyDto);
 
-        // CRUD 작업 로깅
-        crudLogsService.logCrudOperation("create", "opportunities_history", "", "True", "Success");
+            // CRUD 작업 로깅
+            crudLogsService.logCrudOperation("create", "opportunities_history", "", "True", "Success");
 
+            // 성공 메시지를 RedirectAttributes에 저장 (리다이렉트 후에도 유지됨)
+            redirectAttributes.addFlashAttribute("message", "기회 히스토리가 성공적으로 생성되었습니다.");
 
-        return "redirect:/opportunities/detail/" + opportunityId;
+            return "redirect:/opportunities/detail/" + opportunityId; // 성공 시 기회 디테일 페이지로 이동
+        } catch (Exception e) {
+            // 실패 로그 기록
+            crudLogsService.logCrudOperation("create", "opportunities_history", "", "False", "Error: " + e.getMessage());
+
+            // 에러 메시지를 사용자에게 전달
+            redirectAttributes.addFlashAttribute("errorMessage", "기회 히스토리 생성 중 오류가 발생했습니다. 다시 시도해주세요.");
+
+            return "redirect:/errorPage"; // 에러 발생 시 오류 페이지로 리다이렉트
+        }
     }
 
     @PostMapping("/opportunities/detail/{opportunityId}/update")
-    public String opportunitiesUpdate(@PathVariable("opportunityId") Long opportunityId, @ModelAttribute OpportunitiesDto opportunitiesDto) {
-        opportunitiesService.updateOpportunities(opportunityId, opportunitiesDto);
+    public String opportunitiesUpdate(@PathVariable("opportunityId") Long opportunityId, @ModelAttribute OpportunitiesDto opportunitiesDto, RedirectAttributes redirectAttributes) {
+        try {
+            // 기회 수정
+            opportunitiesService.updateOpportunities(opportunityId, opportunitiesDto);
 
-        // CRUD 작업 로깅
-        crudLogsService.logCrudOperation("update", "opportunities", "", "True", "Success");
+            // 성공 로그 기록
+            crudLogsService.logCrudOperation("update", "opportunities", opportunityId.toString(), "True", "Success");
 
-        return "redirect:/opportunities/detail/" + opportunityId;
+            // 성공 메시지를 RedirectAttributes에 저장 (리다이렉트 후에도 유지됨)
+            redirectAttributes.addFlashAttribute("message", "기회가 성공적으로 수정되었습니다.");
+
+            return "redirect:/opportunities/detail/" + opportunityId;
+        } catch (Exception e) {
+            // 실패 로그 기록
+            crudLogsService.logCrudOperation("update", "opportunities", opportunityId.toString(), "False", "Error: " + e.getMessage());
+
+            // 에러 메시지를 사용자에게 전달
+            redirectAttributes.addFlashAttribute("errorMessage", "기회 수정 중 오류가 발생했습니다. 다시 시도해주세요.");
+
+            return "redirect:/errorPage"; // 에러 발생 시 오류 페이지로 리다이렉트
+        }
     }
 
 
     @PostMapping("/opportunities/detail/{opportunityId}/delete")
     public ResponseEntity<Void> deleteOpportunity(@PathVariable("opportunityId") Long opportunityId) {
-        opportunitiesService.deleteOpportunities(opportunityId);
+        try {
+            // 기회 삭제 실행
+            opportunitiesService.deleteOpportunities(opportunityId);
 
-        // CRUD 작업 로깅
-        crudLogsService.logCrudOperation("delete", "opportunities", "", "True", "Success");
+            // CRUD 작업 로깅
+            crudLogsService.logCrudOperation("delete", "opportunities", opportunityId.toString(), "True", "Success");
 
-        return ResponseEntity.ok().build();
+            return ResponseEntity.ok().build(); // HTTP 200 응답 (삭제 성공)
+        } catch (Exception e) {
+            // 삭제 실패 로그 기록
+            crudLogsService.logCrudOperation("delete", "opportunities", opportunityId.toString(), "False", "Error: " + e.getMessage());
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // HTTP 500 응답 (삭제 실패)
+        }
     }
 
     @PostMapping("/opportunities/detail/delete")
     public ResponseEntity<Void> deleteOpportunities(@RequestBody Map<String, List<Long>> request) {
-        opportunitiesService.deleteOpportunitiesByIds(request.get("ids"));
+        List<Long> ids = request.get("ids");
+        try {
+            // 기회 삭제 실행
+            opportunitiesService.deleteOpportunitiesByIds(ids);
 
-        // CRUD 작업 로깅
-        crudLogsService.logCrudOperation("delete", "opportunities", "", "True", "Success");
+            // 개별 ID에 대해 성공 로그 기록
+            for (Long id : ids) {
+                crudLogsService.logCrudOperation("delete", "opportunities", id.toString(), "True", "Success");
+            }
 
-        return ResponseEntity.ok().build();
+            return ResponseEntity.ok().build(); // HTTP 200 응답 (삭제 성공)
+        } catch (Exception e) {
+            // 개별 ID에 대해 실패 로그 기록
+            for (Long id : ids) {
+                crudLogsService.logCrudOperation("delete", "opportunities", id.toString(), "False", "Error: " + e.getMessage());
+            }
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // HTTP 500 응답 (삭제 실패)
+        }
     }
 
-    // 오늘 마감인 Leads 수 반환
+    // 기회카드
     @GetMapping("/api/opportunities/card-value")
     public ResponseEntity<Map<String, Object>> countStatusCardValue() {
-        Map<String, Long> statusCounts = opportunitiesService.getOpportunitiesStatusCountsTeam();
+        Map<String, Long> statusCounts = opportunitiesService.getOpportunitiesStatusCountsUser();
         Map<String, Object> response = new HashMap<>();
         response.put("statusCounts", statusCounts);
         return ResponseEntity.ok(response);
     }
+
+
+    @GetMapping("/api/salesData")
+    public ResponseEntity<?> getSalesData(
+            @RequestParam(required = false) String teamId,
+            @RequestParam(required = false) String departmentId
+    ) {
+        if (teamId == null && departmentId == null) {
+            return ResponseEntity.badRequest().body("팀 ID 또는 부서 ID가 필요합니다.");
+        }
+
+        Map<String, Object> salesData;
+        try {
+            salesData = opportunitiesService.getSalesData(teamId, departmentId);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+
+        return ResponseEntity.ok(salesData);
+    }
+
+
+
 
     private String getCurrentUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -234,11 +340,6 @@ public class OpportunitiesController {
                 ? authentication.getName()
                 : null;
     }
-
-
-
-
-
 }
 
 

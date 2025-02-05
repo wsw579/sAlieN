@@ -1,10 +1,8 @@
 package com.aivle.project.service;
 
-import com.aivle.project.dto.ContractsDto;
+
 import com.aivle.project.dto.ProductsDto;
-import com.aivle.project.entity.ContractsEntity;
 import com.aivle.project.entity.EmployeeEntity;
-import com.aivle.project.entity.OrdersEntity;
 import com.aivle.project.entity.ProductsEntity;
 import com.aivle.project.enums.ProductCondition;
 import com.aivle.project.repository.EmployeeRepository;
@@ -17,17 +15,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @Service
 @Transactional
@@ -36,7 +30,7 @@ public class ProductsService {
 
     private final ProductsRepository productsRepository;
     private final EmployeeRepository employeeRepository;
-    private static final Logger logger = LoggerFactory.getLogger(ContractsService.class);
+    private static final Logger logger = LoggerFactory.getLogger(ProductsService.class);
 
 
     // Create
@@ -58,7 +52,7 @@ public class ProductsService {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortDirection), sortColumn));
 
         if (search != null && !search.isEmpty()) {
-            return productsRepository.findByProductIdLike("%" + search + "%", pageable);
+            return productsRepository.findByProductNameLike("%" + search + "%", pageable);
         }
         return productsRepository.findAll(pageable);
     }
@@ -141,6 +135,11 @@ public class ProductsService {
     }
 
     private void updateEntityFromDto(ProductsEntity entity, ProductsDto dto) {
+        // 현재 사용자 정보 가져오기
+        String currentUserId = UserContext.getCurrentUserId();
+        // 데이터베이스에서 EmployeeEntity 로드
+        EmployeeEntity employee = employeeRepository.findByEmployeeId(currentUserId);
+
         entity.setProductName(dto.getProductName());
         entity.setFixedPrice(dto.getFixedPrice());
         entity.setDealerPrice(dto.getDealerPrice());
@@ -148,6 +147,7 @@ public class ProductsService {
         entity.setProductCondition(ProductCondition.valueOf(dto.getProductCondition()));
         entity.setProductDescription(dto.getProductDescription());
         entity.setProductFamily(dto.getProductFamily());
+        entity.setEmployeeId(employee);
         productsRepository.save(entity);
     }
 
@@ -155,5 +155,9 @@ public class ProductsService {
         ProductsDto dto = new ProductsDto();
         dto.setProductId(id);
         return dto;
+    }
+
+    public long countAIProducts() {
+        return productsRepository.countProductsByProductFamilyContaining("AI");
     }
 }

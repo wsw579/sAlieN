@@ -92,21 +92,6 @@
                                 <input type="text" class="form-control" name="search" id="customSearch" placeholder="검색어를 입력하세요"
                                        style="padding: 5px; width: 200px;" value="{{search}}">
 
-<!--                                &lt;!&ndash; 정렬 기준 &ndash;&gt;-->
-<!--                                <label>-->
-<!--                                    <select name="sortColumn">-->
-<!--                                        <option value="startDate" {{#sortColumn}} {{.}}=="startDate" ? 'selected' : '' {{/sortColumn}}>Start Date</option>-->
-<!--                                        <option value="terminationDate" {{#sortColumn}} {{.}}=="terminationDate" ? 'selected' : '' {{/sortColumn}}>Termination Date</option>-->
-<!--                                    </select>-->
-<!--                                </label>-->
-
-<!--                                &lt;!&ndash; 정렬 방향 &ndash;&gt;-->
-<!--                                <label>-->
-<!--                                    <select name="sortDirection">-->
-<!--                                        <option value="asc" {{#sortDirection}} {{.}}=="asc" ? 'selected' : '' {{/sortDirection}}>Ascending</option>-->
-<!--                                        <option value="desc" {{#sortDirection}} {{.}}=="desc" ? 'selected' : '' {{/sortDirection}}>Descending</option>-->
-<!--                                    </select>-->
-<!--                                </label>-->
 
                                 <!-- 제출 버튼 -->
                                 <button type="submit" class = "btn btn-custom-select btn-sm">검색</button>
@@ -191,6 +176,10 @@
 
 
     <script>
+        // CRUD 메시지
+        {{#message}}
+            alert("{{message}}");
+        {{/message}}
 
     document.addEventListener("DOMContentLoaded", function() {
         var deleteButton = document.getElementById("deleteButton");
@@ -218,6 +207,7 @@
                             body: JSON.stringify({ ids: selectedIds })
                         }).then(response => {
                             if (response.ok) {
+                                alert("삭제되었습니다.");
                                 // 서버 응답이 성공적이면 리다이렉트 수행
                                 window.location.href = "/contracts";
                             } else {

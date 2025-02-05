@@ -8,14 +8,18 @@ import com.aivle.project.repository.EmployeeRepository;
 import com.aivle.project.service.AccountService;
 import com.aivle.project.service.CrudLogsService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -32,16 +36,20 @@ public class AccountController {
     private final AccountRepository accountRepository;
     private final EmployeeRepository employeeRepository;
     private final CrudLogsService crudLogsService;
+    private static final Logger logger = LoggerFactory.getLogger(AccountService.class);
 
     @GetMapping("/account")
     public String account(Model model,
                           @RequestParam(value="page", defaultValue="1") int page,
                           @RequestParam(value="keyword", required=false) String keyword) {
 
-      //  int pageSize = 10;  // 한 페이지에 보여주는 데이터 개수
-
         // 페이징 정보 가져오기
         Page<AccountEntity> paging = getPagingInfo(page, keyword);
+
+        // 현재 로그인한 직원의 계정 수 가져오기
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentEmployeeId = authentication.getName();
+
 
         // 페이징 관련 변수 설정
         int totalPages = paging.getTotalPages(); // 총 페이지
@@ -49,30 +57,28 @@ public class AccountController {
         int startPage = getStartPage(currentPage);
         int endPage = getEndPage(currentPage, totalPages);
         int nextPage = getNextPage(currentPage, totalPages);
-        long totalAccounts = accountService.getTotalAccountCount(); // 총 계정 수를 가져오는 메서드
-
+        long totalAccounts = accountService.getTotalAccountCount();
+        long accountsThisYear = accountService.getAccountsCreatedThisYear();
+        long accountsLastYear = accountService.getAccountsCreatedLastYear();
+        long currentEmployeeAccountCount = accountService.getAccountCountForEmployee(currentEmployeeId);
 
         // 페이지 번호 리스트 생성
         List<Map<String, Object>> pageNumbers = getPageNumbers(startPage, endPage, currentPage);
 
 
-        // 현재 로그인한 직원의 계정 수 가져오기
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentEmployeeId = authentication.getName();
-        Long currentEmployeeAccountCount = accountService.getAccountCountForEmployee(currentEmployeeId);
-
         // 모델에 데이터 추가
-        addDataToModel(model, paging, pageNumbers, currentPage, nextPage, totalPages, keyword, totalAccounts, currentEmployeeId, currentEmployeeAccountCount);
+        addDataToModel(model, paging, pageNumbers, currentPage, nextPage, totalPages, keyword, totalAccounts,
+                currentEmployeeId, currentEmployeeAccountCount , accountsThisYear , accountsLastYear);
 
         return "account/account_read";
-
     }
 
     // 모델에 데이터 추가
     private void addDataToModel(Model model, Page<AccountEntity> paging,
                                 List<Map<String, Object>> pageNumbers,
                                 int currentPage, int nextPage, int totalPages, String keyword,
-                                long totalAccounts, String currentEmployeeId, Long currentEmployeeAccountCount) {
+                                long totalAccounts, String currentEmployeeId, Long currentEmployeeAccountCount ,
+                                long accountsThisYear , long accountsLastYear){
 
         model.addAttribute("paging", paging);
         model.addAttribute("pageNumbers", pageNumbers);
@@ -83,6 +89,8 @@ public class AccountController {
         model.addAttribute("totalAccounts", totalAccounts);
         model.addAttribute("currentEmployeeId", currentEmployeeId);
         model.addAttribute("currentEmployeeAccountCount", currentEmployeeAccountCount);
+        model.addAttribute("accountsThisYear", accountsThisYear);
+        model.addAttribute("accountsLastYear", accountsLastYear);
     }
 
 
@@ -96,6 +104,7 @@ public class AccountController {
                     return pageInfo;
                 })
                 .collect(Collectors.toList());
+
     }
 
     // 다음 페이지로 이동
@@ -113,7 +122,7 @@ public class AccountController {
         return Math.min(currentPage + 5, totalPages);
     }
 
-    // 검색 keyword 유무 , 테이블 목록 조회
+    // 검색 keyword 유무 별 테이블 목록 조회
     private Page<AccountEntity> getPagingInfo(int page, String keyword) {
         if (keyword != null && !keyword.isEmpty()) {
             return accountService.searchAccounts(keyword, PageRequest.of(page - 1, 10));
@@ -127,13 +136,16 @@ public class AccountController {
     public String accountDetail(@PathVariable Long accountId, Model model) {
         AccountEntity account = accountService.searchAccount(accountId);
 
-        List<AccountEntity> accounts = accountRepository.findAll();
         List<EmployeeEntity> employee = employeeRepository.findAll();
-        List<AccountEntity> activeAccounts = accountRepository.findByAccountStatus("Active");
+        // 상세페이지에서 상위계정 조회시 Active 상태만 조회 됨
+        List<AccountEntity> parent = accountRepository.findByAccountStatus("Active");
 
         model.addAttribute("account", account);
         model.addAttribute("employee", employee);
-        model.addAttribute("accounts", activeAccounts);
+        model.addAttribute("parent", parent);
+
+        System.out.println("Business Type: " + account.getBusinessType());
+        System.out.println("Account Type: " + account.getAccountType());
 
         return "account/account_detail";
     }
@@ -144,9 +156,8 @@ public class AccountController {
 
         AccountEntity account = new AccountEntity();
 
-        List<AccountEntity> accounts = accountRepository.findAll();
         List<EmployeeEntity> employee = employeeRepository.findAll();
-        List<AccountEntity> activeAccounts = accountRepository.findByAccountStatus("Active");
+        List<AccountEntity> parent = accountRepository.findByAccountStatus("Active");
 
         // 초기값 설정
         account.setAccountName("");
@@ -166,58 +177,118 @@ public class AccountController {
 
         model.addAttribute("account", account);
         model.addAttribute("employee", employee);
-        model.addAttribute("accounts", activeAccounts);
+        model.addAttribute("parent", parent);
 
         return "account/account_detail";
     }
 
     // 새 계정 생성
     @PostMapping("/account/detail/create")
-    public String accountCreateNew(@ModelAttribute AccountDto accountDto) {
-        accountService.createAccount(accountDto);
+    public String accountCreateNew(@ModelAttribute AccountDto accountDto, RedirectAttributes redirectAttributes) {
+        try {
+            // 계정 생성
+            accountService.createAccount(accountDto);
 
-        // CRUD 작업 로깅
-        crudLogsService.logCrudOperation("create", "accounts", "", "True", "Success");
+            // CRUD 작업 로깅
+            crudLogsService.logCrudOperation("create", "parent", "", "True", "Success");
 
-        return "redirect:/account";
+            // 성공 메시지를 RedirectAttributes에 저장 (리다이렉트 후에도 유지됨)
+            redirectAttributes.addFlashAttribute("message", "계정이 성공적으로 생성되었습니다.");
+
+            return "redirect:/account"; // 성공 시 계정 목록 페이지로 이동
+        } catch (Exception e) {
+            // 실패 로그 기록 (ID를 알 수 없는 경우 "")
+            crudLogsService.logCrudOperation("create", "parent", "", "False", "Error: " + e.getMessage());
+
+            // 에러 메시지를 사용자에게 전달
+            redirectAttributes.addFlashAttribute("errorMessage", "계정 생성 중 오류가 발생했습니다. 다시 시도해주세요.");
+
+            return "redirect:/errorPage"; // 에러 발생 시 오류 페이지로 리다이렉트
+        }
+
     }
 
 
     // 계정 정보 수정
     @PostMapping("/account/detail/{accountId}/update")
-    public String accountUpdate(@PathVariable("accountId") Long accountId,  @ModelAttribute AccountDto accountDto) {
-        accountService.updateAccount(accountId, accountDto);
+    public String accountUpdate(@PathVariable("accountId") Long accountId,  @ModelAttribute AccountDto accountDto, RedirectAttributes redirectAttributes) {
+        try {
+            // 계정 수정
+            accountService.updateAccount(accountId, accountDto);
 
-        // CRUD 작업 로깅
-        crudLogsService.logCrudOperation("update", "accounts", "", "True", "Success");
+            // CRUD 작업 로깅
+            crudLogsService.logCrudOperation("update", "parent", accountId.toString(), "True", "Success");
 
-        return "redirect:/account";
+            // 성공 메시지를 RedirectAttributes에 저장 (리다이렉트 후에도 유지됨)
+            redirectAttributes.addFlashAttribute("message", "계정이 성공적으로 수정되었습니다.");
+
+            return "redirect:/account/detail/" + accountId; // 성공 시 계정 detail 페이지로 이동
+        } catch (Exception e) {
+            // 실패 로그 기록
+            crudLogsService.logCrudOperation("update", "parent", accountId.toString(), "False", "Error: " + e.getMessage());
+
+            // 에러 메시지를 사용자에게 전달
+            redirectAttributes.addFlashAttribute("errorMessage", "계정 수정 중 오류가 발생했습니다. 다시 시도해주세요.");
+
+            return "redirect:/errorPage"; // 에러 발생 시 오류 페이지로 리다이렉트
+        }
     }
 
     // 단일 계정 삭제
-    @GetMapping("/account/detail/{accountId}/delete")
-    public String accountDeleteDetail(@PathVariable("accountId") Long accountId) {
-        accountService.delete(accountId);
+    @PostMapping("/account/detail/{accountId}/delete")
+    public ResponseEntity<Void> accountDeleteDetail(@PathVariable("accountId") Long accountId) {
+        try {
+            // 계정 삭제 실행
+            accountService.delete(accountId);
 
         // CRUD 작업 로깅
-        crudLogsService.logCrudOperation("delete", "accounts", "", "True", "Success");
+        crudLogsService.logCrudOperation("delete", "parent", accountId.toString(), "True", "Success");
 
-        return "redirect:/account";
+            return ResponseEntity.ok().build(); // HTTP 200 응답 (삭제 성공)
+        } catch (Exception e) {
+            // 삭제 실패 로그 기록
+            crudLogsService.logCrudOperation("delete", "parent", accountId.toString(), "False", "Error: " + e.getMessage());
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // HTTP 500 응답 (삭제 실패)
+        }
     }
 
     // 다중 계정 삭제
     @PostMapping("/account/detail/delete")
     public ResponseEntity<Void> deleteAccounts(@RequestBody Map<String, List<Long>> request) {
         List<Long> ids = request.get("ids");
-        System.out.println("deleteAccounts Received IDs: " + ids);
+        try {
+            // 계정 삭제 실행
+            accountService.deleteByIds(ids);
+        logger.info("deleteAccounts Received IDs: {} " , ids);
         accountService.deleteByIds(ids);
 
-        // CRUD 작업 로깅
-        crudLogsService.logCrudOperation("delete", "accounts", "[]", "True", "Success");
+            // 개별 ID에 대해 성공 로그 기록
+            for (Long id : ids) {
+                crudLogsService.logCrudOperation("delete", "parent", id.toString(), "True", "Success");
+            }
 
-        return ResponseEntity.ok().build();
+            return ResponseEntity.ok().build(); // HTTP 200 응답 (삭제 성공)
+        } catch (Exception e) {
+            // 개별 ID에 대해 실패 로그 기록
+            for (Long id : ids) {
+                crudLogsService.logCrudOperation("delete", "parent", id.toString(), "False", "Error: " + e.getMessage());
+            }
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // HTTP 500 응답 (삭제 실패)
+        }
     }
 
+
+    @GetMapping("/account/bar-data")
+    public ResponseEntity<Map<String, List<Integer>>> getBarData() {
+        return ResponseEntity.ok(accountService.getBarData());
+    }
+
+    @GetMapping("/account/chart-data")
+    public ResponseEntity<Map<String, List<Integer>>> getChartData() {
+        return ResponseEntity.ok(accountService.getChartData());
+    }
 
 }
 

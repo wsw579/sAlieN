@@ -64,7 +64,7 @@
                     <div class="card mb-4">
                         <div class="card-header">
                             <i class="fas fa-chart-area me-1"></i>
-                            연간 주문 현황
+                            연간 기회 전환 현황
                         </div>
                         <div class="card-body"><canvas id="leadsReadChart" width="100%" height="40"></canvas></div>
                     </div>
@@ -73,7 +73,7 @@
                     <div class="card mb-4">
                         <div class="card-header">
                             <i class="fas fa-chart-bar me-1"></i>
-                            연간 주문 누적 현황
+                            연간 기회 전환 누적 현황
                         </div>
                         <div class="card-body"><canvas id="leadsReadBar" width="100%" height="40"></canvas></div>
                     </div>
@@ -94,21 +94,6 @@
                                 <input type="text" class="form-control" name="search" id="customSearch" placeholder="검색어를 입력하세요"
                                        style="padding: 5px; width: 200px;" value="{{search}}">
 
-<!--                                &lt;!&ndash; 정렬 기준 &ndash;&gt;-->
-<!--                                <label>-->
-<!--                                    <select name="sortColumn">-->
-<!--                                        <option value="createdDate" {{#isCreatedDateSorted}}selected{{/isCreatedDateSorted}}>Created Date</option>-->
-<!--                                        <option value="targetCloseDate" {{#isTargetCloseDateSorted}}selected{{/isTargetCloseDateSorted}}>TargetClose Date</option>-->
-<!--                                    </select>-->
-<!--                                </label>-->
-
-<!--                                &lt;!&ndash; 정렬 방향 &ndash;&gt;-->
-<!--                                <label>-->
-<!--                                    <select name="sortDirection">-->
-<!--                                        <option value="asc" {{#isAscSorted}}selected{{/isAscSorted}}>Ascending</option>-->
-<!--                                        <option value="desc" {{#isDescSorted}}selected{{/isDescSorted}}>Descending</option>-->
-<!--                                    </select>-->
-<!--                                </label>-->
 
                                 <!-- 제출 버튼 -->
                                 <button type="submit" class = "btn btn-custom-select btn-sm">검색</button>
@@ -134,8 +119,6 @@
                             <th>ID</th>
                             <th>생성일자</th>
                             <th>회사이름</th>
-                            <!-- <th>영업담당자</th> -->
-                            <!-- <th>리드소스</th> -->
                             <th>리드소스</th>
                             <th>리드상태</th>
                             <th>마감일자</th>
@@ -150,8 +133,6 @@
                             <td>{{leadId}}</td>
                             <td>{{createdDate}}</td>
                             <td><a href="/leads/detail/{{leadId}}">{{companyName}}</a></td>
-                            <!-- <td>계정이름</td> -->
-                            <!-- <td>영업사원</td> -->
                             <td>{{leadSource}}</td>
                             <td>{{leadStatus}}</td>
                             <td>{{targetCloseDate}}</td>
@@ -196,6 +177,10 @@
 
     <script>
 
+        // CRUD 메시지
+        {{#message}}
+            alert("{{message}}");
+        {{/message}}
     document.addEventListener("DOMContentLoaded", function() {
         var deleteButton = document.getElementById("deleteButton");
         if (deleteButton) {
@@ -222,6 +207,7 @@
                             body: JSON.stringify({ ids: selectedIds })
                         }).then(response => {
                             if (response.ok) {
+                                alert("삭제되었습니다.");
                                 // 서버 응답이 성공적이면 리다이렉트 수행
                                 window.location.href = "/leads";
                             } else {

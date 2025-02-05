@@ -3,11 +3,6 @@
 <style>
 
 
-
-
-
-
-
 .progress-container {
     position: relative;
     width: 100%;
@@ -149,7 +144,7 @@
                         <div class="button-container mb-3">
                             {{#historyId}}
                                 <a href="/opportunities/detail/{{opportunityId}}/history/{{historyId}}/delete" class="btn btn-custom-delete btn-sm" id="deleteButton">
-                                    <i class="fas fa-plus-circle"></i> 삭제
+                                    <i class="fas fa-trash"></i> 삭제
                                 </a>
                             {{/historyId}}
                         </div>
@@ -220,7 +215,7 @@
                             </div>
                             <div class="d-flex justify-content-end">
                                 <button type="submit" id="updateButton" class="btn btn-custom-update btn-sm">
-                                    <i class="fas fa-plus-circle"></i> 저장
+                                    <i class="fas fa-save"></i> 저장
                                 </button>
                             </div>
                         </form>
@@ -232,7 +227,10 @@
 </div>
 
 <script>
-
+    // CRUD 메시지
+    {{#message}}
+        alert("{{message}}");
+    {{/message}}
     // Form 부분 기회상태 초기값 연동 JS (select Form은 html로 초기 value 지정이 안되어서 JS로 처리)
 
         {{#opportunities}}

@@ -94,7 +94,12 @@
 <div id="layoutSidenav_content">
     <main>
         <div class="container-fluid px-4">
-            <h1 class="mt-4">Orders</h1>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h1 class="mt-4">Orders</h1>
+                <button onclick="location.href='/orders'" class="back-btn">🔙</button>
+
+            </div>
+
             <ol class="breadcrumb mb-4">
                 <li class="breadcrumb-item active">Orders</li>
             </ol>
@@ -121,7 +126,7 @@
                             </button>
                         {{/orderId}}
                         <a href="/orders" class="btn btn-custom-select btn-sm" id="selectButton">
-                            <i class="fas fa-plus-circle"></i> 목록
+                            <i class="fas fa-list"></i> 목록
                         </a>
                     </div>
 
@@ -197,7 +202,7 @@
 
                     <div class="d-flex justify-content-end">
                         <button type="submit" id="updateButton" class="btn btn-custom-update btn-sm">
-                            <i class="fas fa-plus-circle"></i> 저장
+                            <i class="fas fa-save"></i> 저장
                         </button>
                     </div>
                 </form> <!-- 폼 닫기 -->
@@ -238,7 +243,10 @@
 </main>
 
     <script>
-
+        // CRUD 메시지
+        {{#message}}
+            alert("{{message}}");
+        {{/message}}
 
         document.addEventListener("DOMContentLoaded", function () {
 {{#orders}}

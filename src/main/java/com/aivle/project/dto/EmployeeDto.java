@@ -16,6 +16,7 @@ public class EmployeeDto {
         private String employeeId;
         private String employeeName;
         private String password;
+        private String confirmPassword;
         private String position;
         private String dept;
         private String team;

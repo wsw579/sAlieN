@@ -1,18 +1,12 @@
 package com.aivle.project.service;
-
-import com.aivle.project.dto.ContractsDto;
 import com.aivle.project.dto.OrdersDto;
-import com.aivle.project.entity.ContractsEntity;
 import com.aivle.project.entity.EmployeeEntity;
 import com.aivle.project.entity.OrdersEntity;
-import com.aivle.project.entity.ProductsEntity;
 import com.aivle.project.enums.Dept;
 import com.aivle.project.enums.OrderStatus;
 import com.aivle.project.enums.Team;
-import com.aivle.project.repository.ContractsRepository;
 import com.aivle.project.repository.EmployeeRepository;
 import com.aivle.project.repository.OrdersRepository;
-import com.aivle.project.repository.ProductsRepository;
 import com.aivle.project.utils.UserContext;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,9 +30,7 @@ import java.util.stream.IntStream;
 @RequiredArgsConstructor
 public class OrdersService {
 
-    private final ContractsRepository contractsRepository;
     private final OrdersRepository ordersRepository;
-    private final ProductsRepository productsRepository;
     private static final Logger logger = LoggerFactory.getLogger(OrdersService.class);
 
     private final EmployeeRepository employeeRepository;
@@ -54,14 +46,14 @@ public class OrdersService {
     public Page<OrdersEntity> readOrders(int page, int size, String search, String sortColumn, String sortDirection) {
         String userid = UserContext.getCurrentUserId();
         String userrole = UserContext.getCurrentUserRole();
-        String userdept = employeeRepository.findDeptById(userid);
+        String userposition = employeeRepository.findPositionById(userid);
         String userteam = employeeRepository.findTeamById(userid);
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortDirection), sortColumn));
 
-        if ("ROLE_ADMIN".equals(userrole)) {
-            return findOrdersForAdmin(search, pageable);
+        if ("ROLE_ADMIN".equals(userrole) || "GENERAL_MANAGER".equals(userposition) || "DEPARTMENT_HEAD".equals(userposition) || "TEAM_LEADER".equals(userposition)) {
+            return findOrdersForManager(search, pageable);
         } else if ("ROLE_USER".equals(userrole)) {
-            return findOrdersForUser(search, userdept, userteam, pageable);
+            return findOrdersForTeam(search, userteam, pageable);
         } else {
             throw new AccessDeniedException("권한이 없습니다.");
         }
@@ -116,19 +108,21 @@ public class OrdersService {
     @Transactional(readOnly = true)
     public Map<String, Long> getOrderStatusCounts() {
         String userid = UserContext.getCurrentUserId();
-        String userdept = employeeRepository.findDeptById(userid);
+        String userrole = UserContext.getCurrentUserRole();
+        String userposition = employeeRepository.findPositionById(userid);
         String userteam = employeeRepository.findTeamById(userid);
 
-        Map<String, Long> statusCounts = new HashMap<>();
-        List<Object[]> results = ordersRepository.countOrdersByStatusForCurrentUser(userid, Dept.valueOf(userdept), Team.valueOf(userteam));
+// 적절한 쿼리 실행
+        List<Object[]> results = isManager(userrole, userposition)
+                ? ordersRepository.countOrdersByStatusForCurrentManager()
+                : ordersRepository.countOrdersByStatusForCurrentTeam(Team.valueOf(userteam));
 
-        for (Object[] result : results) {
-            String status = (String) result[0];
-            Long count = (Long) result[1];
-            statusCounts.put(status, count);
-        }
-
-        return statusCounts;
+// Stream API 활용하여 데이터 변환
+        return results.stream()
+                .collect(Collectors.toMap(
+                        result -> (String) result[0],  // Key: Status
+                        result -> (Long) result[1]     // Value: Count
+                ));
     }
 
     // Bar 및 Chart Data
@@ -161,7 +155,7 @@ public class OrdersService {
 
         if (accumulate) {
             accumulateMonthlyData(lastYearData);
-            accumulateMonthlyData(currentYearData);
+            accumulateMonthlyDataUntilCurrentMonth(currentYearData);
         }
 
         Map<String, List<Integer>> yearlyData = new HashMap<>();
@@ -175,12 +169,23 @@ public class OrdersService {
     }
 
     private void populateMonthlyData(int year, List<Integer> monthlyData) {
-        ordersRepository.getMonthlyOrders(year)
-                .forEach(row -> {
-                    int month = ((Number) row[0]).intValue() - 1;
-                    int count = ((Number) row[1]).intValue();
-                    monthlyData.set(month, count);
-                });
+        String userid = UserContext.getCurrentUserId();
+        String userrole = UserContext.getCurrentUserRole();
+        String userposition = employeeRepository.findPositionById(userid);
+        String userteam = employeeRepository.findTeamById(userid);
+
+
+// 데이터 조회 (관리자는 모든 데이터, 일반 사용자는 팀별 데이터)
+        List<Object[]> queryResult = isManager(userrole, userposition)
+                ? ordersRepository.getMonthlyOrdersManager(year)
+                : ordersRepository.getMonthlyOrdersTeam(year, Team.valueOf(userteam));
+
+// 공통 로직: 데이터 매핑
+        queryResult.forEach(row -> {
+            int month = ((Number) row[0]).intValue() - 1;
+            int count = ((Number) row[1]).intValue();
+            monthlyData.set(month, count);
+        });
     }
 
     private void revenueMonthlyData(int year, List<Integer> monthlyData) {
@@ -197,6 +202,17 @@ public class OrdersService {
     private void accumulateMonthlyData(List<Integer> monthlyData) {
         for (int i = 1; i < monthlyData.size(); i++) {
             monthlyData.set(i, monthlyData.get(i) + monthlyData.get(i - 1));
+        }
+    }
+
+    private void accumulateMonthlyDataUntilCurrentMonth(List<Integer> monthlyData) {
+        int currentMonth = LocalDate.now().getMonthValue();
+        for (int i = 1; i < currentMonth; i++) {
+            monthlyData.set(i, monthlyData.get(i) + monthlyData.get(i - 1));
+        }
+        // 현재 월 이후의 데이터는 0으로 유지
+        for (int i = currentMonth+1; i < monthlyData.size(); i++) {
+            monthlyData.set(i, 0);
         }
     }
 
@@ -223,20 +239,27 @@ public class OrdersService {
         ordersRepository.save(entity);
     }
 
-    private Page<OrdersEntity> findOrdersForAdmin(String search, Pageable pageable) {
-        // Admin 전용 로직
+    private Page<OrdersEntity> findOrdersForManager(String search, Pageable pageable) {
+        // Manager 전용 로직
         if (search != null && !search.isEmpty()) {
-            return ordersRepository.findByOrderIdLikeAdmin("%" + search + "%", pageable);
+            return ordersRepository.findByOrderIdLikeManager("%" + search + "%", pageable);
         }
         return ordersRepository.findAll(pageable);
     }
 
-    private Page<OrdersEntity> findOrdersForUser(String search, String departmentId, String teamId, Pageable pageable) {
+    private Page<OrdersEntity> findOrdersForTeam(String search, String teamId, Pageable pageable) {
         // User 전용 로직
         if (search != null && !search.isEmpty()) {
-            return ordersRepository.findByOrderIdLikeUser("%" + search + "%", Dept.valueOf(departmentId), Team.valueOf(teamId), pageable);
+            return ordersRepository.findByOrderIdLikeTeam("%" + search + "%", Team.valueOf(teamId), pageable);
         }
-        return ordersRepository.findByDepartmentAndTeam(Dept.valueOf(departmentId), Team.valueOf(teamId), pageable);
+        return ordersRepository.findByTeamId(Team.valueOf(teamId), pageable);
+    }
+
+    private boolean isManager(String userrole, String userposition) {
+        return "ROLE_ADMIN".equals(userrole) ||
+                "GENERAL_MANAGER".equals(userposition) ||
+                "DEPARTMENT_HEAD".equals(userposition) ||
+                "TEAM_LEADER".equals(userposition);
     }
 
     // 영업 실적 그래프
@@ -257,12 +280,99 @@ public class OrdersService {
 
     // 주문현황 퍼센트 표시
     public double calculateDraftPercentage() {
-        long totalSalesThisMonth = ordersRepository.countTotalSalesThisMonth();
-        long draftSalesThisMonth = ordersRepository.countDraftSalesThisMonth();
+        String userid = UserContext.getCurrentUserId();
+        long totalSalesThisMonth = ordersRepository.countTotalSalesThisMonth(userid);
+        long draftSalesThisMonth = ordersRepository.countDraftSalesThisMonth(userid);
         if (totalSalesThisMonth == 0) {
             return 100.0; // 분모가 0인 경우 비율은 0
         }
 
         return (double) draftSalesThisMonth / totalSalesThisMonth * 100;
+    }
+
+    //관리자 페이지 매출현황
+    public Map<String, Integer> getAvailableYears() {
+        Object[] rawResult = ordersRepository.findMinAndMaxYears();
+
+        // 첫 번째 배열 추출
+        Object[] result = (Object[]) rawResult[0];
+        int minYear = ((Number) result[0]).intValue();
+        int maxYear = ((Number) result[1]).intValue();
+
+        Map<String, Integer> years = new HashMap<>();
+        years.put("minYear", minYear);
+        years.put("maxYear", maxYear);
+
+        return years;
+    }
+
+    public Map<String, Object> getMonthlyRevenueAndPurchase(String team, String department, int year) {
+        List<Object[]> result = ordersRepository.findMonthlyRevenueAndPurchaseByTeamAndDepartment(team, department, year);
+
+        List<String> labels = new ArrayList<>();
+        List<Double> revenues = new ArrayList<>();
+        List<Double> purchases = new ArrayList<>();
+
+        for (Object[] row : result) {
+            labels.add((String) row[0]); // month
+
+            // Float 값을 Double로 변환
+            revenues.add(((Number) row[1]).doubleValue()); // totalRevenue
+            purchases.add(((Number) row[2]).doubleValue()); // totalPurchase
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("labels", labels);
+        response.put("revenues", revenues);
+        response.put("purchases", purchases);
+
+        return response;
+    }
+
+    //대시보드 order 현황
+    public List<Map<String, Object>> getTeamOrdersGroupedByEmployee(String team, LocalDate startDate, LocalDate endDate) {
+        if (team == null || team.isEmpty()) {
+            throw new IllegalArgumentException("Team cannot be null or empty");
+        }
+
+        Team teamEnum;
+        try {
+            teamEnum = Team.valueOf(team.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid team value: " + team);
+        }
+
+        return ordersRepository.findTeamOrdersGroupedByEmployee(teamEnum, startDate, endDate).stream()
+                .map(result -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("employeeName", result[0]);
+                    map.put("totalOrders", ((Number) result[1]).longValue());
+                    map.put("completedOrders", ((Number) result[2]).longValue());
+                    return map;
+                })
+                .collect(Collectors.toList());
+    }
+
+    public List<Map<String, Object>> getDepartmentOrdersGroupedByEmployee(String department, LocalDate startDate, LocalDate endDate) {
+        if (department == null || department.isEmpty()) {
+            throw new IllegalArgumentException("Department cannot be null or empty");
+        }
+
+        Dept departmentEnum;
+        try {
+            departmentEnum = Dept.valueOf(department.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid department value: " + department);
+        }
+
+        return ordersRepository.findDepartmentOrdersGroupedByEmployee(departmentEnum, startDate, endDate).stream()
+                .map(result -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("employeeName", result[0]);
+                    map.put("totalOrders", ((Number) result[1]).longValue());
+                    map.put("completedOrders", ((Number) result[2]).longValue());
+                    return map;
+                })
+                .collect(Collectors.toList());
     }
 }

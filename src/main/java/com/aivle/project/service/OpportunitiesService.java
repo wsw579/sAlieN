@@ -2,7 +2,6 @@ package com.aivle.project.service;
 
 import com.aivle.project.dto.HistoryDto;
 import com.aivle.project.dto.OpportunitiesDto;
-import com.aivle.project.dto.ProductsDto;
 import com.aivle.project.entity.*;
 import com.aivle.project.enums.Team;
 import com.aivle.project.repository.EmployeeRepository;
@@ -16,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -49,11 +49,19 @@ public class OpportunitiesService {
 
     // Read
     public Page<OpportunitiesEntity> readOpportunities(int page, int size, String search, String sortColumn, String sortDirection) {
+        String userid = UserContext.getCurrentUserId();
+        String userrole = UserContext.getCurrentUserRole();
+        String userposition = employeeRepository.findPositionById(userid);
+        String userteam = employeeRepository.findTeamById(userid);
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortDirection), sortColumn));
-        if (search != null && !search.isEmpty()) {
-            return opportunitiesRepository.findByOpportunityIdLike("%" + search + "%", pageable);
+
+        if ("ROLE_ADMIN".equals(userrole) || "GENERAL_MANAGER".equals(userposition) || "DEPARTMENT_HEAD".equals(userposition) || "TEAM_LEADER".equals(userposition)) {
+            return findOpportunitiesForManager(search, pageable);
+        } else if ("ROLE_USER".equals(userrole)) {
+            return findOpportunitiesForTeam(search, userteam, pageable);
+        } else {
+            throw new AccessDeniedException("권한이 없습니다.");
         }
-        return opportunitiesRepository.findAll(pageable);
     }
 
     // Update
@@ -143,15 +151,27 @@ public class OpportunitiesService {
     }
 
     public Map<String, Long> getOpportunitiesStatusCounts() {
-        return opportunitiesRepository.countAllStatuses()
-                .stream()
-                .collect(Collectors.toMap(result -> (String) result[0], result -> (Long) result[1]));
-    }
-    // 내 팀의 상태 수 세기
-    public Map<String, Long> getOpportunitiesStatusCountsTeam() {
         String userid = UserContext.getCurrentUserId();
+        String userrole = UserContext.getCurrentUserRole();
+        String userposition = employeeRepository.findPositionById(userid);
         String userteam = employeeRepository.findTeamById(userid);
-        return opportunitiesRepository.countAllStatusesTeam(Team.valueOf(userteam))
+
+// 적절한 쿼리 실행
+        List<Object[]> results = isManager(userrole, userposition)
+                ? opportunitiesRepository.countAllStatusesManager()
+                : opportunitiesRepository.countAllStatusesTeam(Team.valueOf(userteam));
+
+// Stream API 활용하여 데이터 변환
+        return results.stream()
+                .collect(Collectors.toMap(
+                        result -> (String) result[0],  // Key: Status
+                        result -> (Long) result[1]     // Value: Count
+                ));
+    }
+    // 내 상태 수 세기
+    public Map<String, Long> getOpportunitiesStatusCountsUser() {
+        String userid = UserContext.getCurrentUserId();
+        return opportunitiesRepository.countAllStatusesUser(userid)
                 .stream()
                 .collect(Collectors.toMap(result -> (String) result[0], result -> (Long) result[1]));
     }
@@ -176,7 +196,7 @@ public class OpportunitiesService {
 
         if (accumulate) {
             accumulateMonthlyData(lastYearData);
-            accumulateMonthlyData(currentYearData);
+            accumulateMonthlyDataUntilCurrentMonth(currentYearData);
         }
 
         Map<String, List<Integer>> yearlyData = new HashMap<>();
@@ -190,17 +210,39 @@ public class OpportunitiesService {
     }
 
     private void populateMonthlyData(int year, List<Integer> monthlyData) {
-        opportunitiesRepository.getMonthlyOpportunities(year)
-                .forEach(row -> {
-                    int month = ((Number) row[0]).intValue() - 1;
-                    int count = ((Number) row[1]).intValue();
-                    monthlyData.set(month, count);
-                });
+        String userid = UserContext.getCurrentUserId();
+        String userrole = UserContext.getCurrentUserRole();
+        String userposition = employeeRepository.findPositionById(userid);
+        String userteam = employeeRepository.findTeamById(userid);
+
+
+// 데이터 조회 (관리자는 모든 데이터, 일반 사용자는 팀별 데이터)
+        List<Object[]> queryResult = isManager(userrole, userposition)
+                ? opportunitiesRepository.getMonthlyOpportunitiesManager(year)
+                : opportunitiesRepository.getMonthlyOpportunitiesTeam(year, Team.valueOf(userteam));
+
+// 공통 로직: 데이터 매핑
+        queryResult.forEach(row -> {
+            int month = ((Number) row[0]).intValue() - 1;
+            int count = ((Number) row[1]).intValue();
+            monthlyData.set(month, count);
+        });
     }
 
     private void accumulateMonthlyData(List<Integer> monthlyData) {
         for (int i = 1; i < monthlyData.size(); i++) {
             monthlyData.set(i, monthlyData.get(i) + monthlyData.get(i - 1));
+        }
+    }
+
+    private void accumulateMonthlyDataUntilCurrentMonth(List<Integer> monthlyData) {
+        int currentMonth = LocalDate.now().getMonthValue();
+        for (int i = 1; i < currentMonth; i++) {
+            monthlyData.set(i, monthlyData.get(i) + monthlyData.get(i - 1));
+        }
+        // 현재 월 이후의 데이터는 0으로 유지
+        for (int i = currentMonth+1; i < monthlyData.size(); i++) {
+            monthlyData.set(i, 0);
         }
     }
 
@@ -248,5 +290,67 @@ public class OpportunitiesService {
         entity.setOpportunity(dto.getOpportunityId());
     }
 
+
+    public Map<String, Object> getSalesData(String teamId, String departmentId) {
+
+        // 적절한 데이터 가져오기
+        List<Map<String, Object>> opportunities;
+        if (teamId != null) {
+            opportunities = getOpportunitiesByTeam(teamId);
+        } else {
+            opportunities = getOpportunitiesByDepartment(departmentId);
+        }
+
+        // 응답 데이터 생성
+        Map<String, Object> response = new HashMap<>();
+        response.put("labels", opportunities.stream().map(data -> data.get("employeeName")).collect(Collectors.toList()));
+        response.put("values", opportunities.stream().map(data -> data.get("opportunityCount")).collect(Collectors.toList()));
+
+        return response;
+    }
+
+    private List<Map<String, Object>> getOpportunitiesByTeam(String team) {
+        List<Object[]> results = opportunitiesRepository.findTop5ByTeamWithCount(team);
+        return mapOpportunities(results);
+    }
+
+    private List<Map<String, Object>> getOpportunitiesByDepartment(String dept) {
+        List<Object[]> results = opportunitiesRepository.findTop5ByDepartmentWithCount(dept);
+        return mapOpportunities(results);
+    }
+
+    // 데이터를 맵으로 변환
+    private List<Map<String, Object>> mapOpportunities(List<Object[]> results) {
+        return results.stream().map(result -> {
+            Map<String, Object> map = new HashMap<>();
+            map.put("employeeName", result[0]);
+            map.put("opportunityCount", result[1]);
+            return map;
+        }).collect(Collectors.toList());
+    }
+
+    // 권한별 조회
+    private Page<OpportunitiesEntity> findOpportunitiesForManager(String search, Pageable pageable) {
+        // Manager 전용 로직
+        if (search != null && !search.isEmpty()) {
+            return opportunitiesRepository.findByOpportunityNameLikeManager("%" + search + "%", pageable);
+        }
+        return opportunitiesRepository.findAll(pageable);
+    }
+
+    private Page<OpportunitiesEntity> findOpportunitiesForTeam(String search, String teamId, Pageable pageable) {
+        // User 전용 로직
+        if (search != null && !search.isEmpty()) {
+            return opportunitiesRepository.findByOpportunityNameLikeTeam("%" + search + "%", Team.valueOf(teamId), pageable);
+        }
+        return opportunitiesRepository.findByTeamId(Team.valueOf(teamId), pageable);
+    }
+
+    private boolean isManager(String userrole, String userposition) {
+        return "ROLE_ADMIN".equals(userrole) ||
+                "GENERAL_MANAGER".equals(userposition) ||
+                "DEPARTMENT_HEAD".equals(userposition) ||
+                "TEAM_LEADER".equals(userposition);
+    }
 
 }

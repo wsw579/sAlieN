@@ -11,11 +11,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // 상위 5명 데이터 (10000으로 나누기)
             const top5Labels = top5Data.map(item => item.employeeName);
-            const top5Sales = top5Data.map(item => item.totalSales / 10000); // 만원 단위로 변환
+            const top5Sales = top5Data.map(item => item.totalSales / 1000); // 천원 단위로 변환
 
             // 하위 5명 데이터 (10000으로 나누기)
             const bottom5Labels = bottom5Data.map(item => item.employeeName);
-            const bottom5Sales = bottom5Data.map(item => item.totalSales / 10000); // 만원 단위로 변환
+            const bottom5Sales = bottom5Data.map(item => item.totalSales / 1000); // 천원 단위로 변환
 
             // 상위 5명 그래프
             const top5Ctx = document.getElementById('topSalesChart').getContext('2d');
@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         callbacks: {
                             label: function (tooltipItem, data) {
                                 const value = tooltipItem.yLabel; // y축 값 가져오기
-                                return `${value.toFixed(1)} 만원`; // 툴팁 값에 "만원" 추가
+                                return `${value.toFixed(1)} k`; // 툴팁 값에 "k" 추가
                             }
                         }
                     },
@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             ticks: {
                                 beginAtZero: true,
                                 callback: function (value, index, values) {
-                                    return value + " 만원"; // 눈금 값 뒤에 "만원" 추가
+                                    return value + " k"; // 눈금 값 뒤에 "만원" 추가
                                 }
                             }
                         }],
@@ -77,7 +77,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         callbacks: {
                             label: function (tooltipItem, data) {
                                 const value = tooltipItem.yLabel; // y축 값 가져오기
-                                return `${value.toFixed(1)} 만원`; // 툴팁 값에 "만원" 추가
+                                return `${value.toFixed(1)} k`; // 툴팁 값에 "만원" 추가
                             }
                         }
                     },
@@ -86,7 +86,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             ticks: {
                                 beginAtZero: true,
                                 callback: function (value) {
-                                    return value + " 만원"; // 눈금 값 뒤에 "만원" 추가
+                                    return value + " k"; // 눈금 값 뒤에 "만원" 추가
                                 }
                             }
                         }],
