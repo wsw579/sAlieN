@@ -29,7 +29,7 @@
     position: relative;
     width: 100%;
     margin: 20px 0;
-    gap: 500px; /* ✅ 각 스텝 사이 간격 조정 */
+    gap: 300px;
 }
 
 .step {
@@ -136,23 +136,26 @@
                             </div>
 
                             <div class="mb-3 row">
-                                <label for="price" class="col-sm-2 col-form-label">원가:</label>
+                                <label for="fixedPrice" class="col-sm-2 col-form-label">원가:</label>
                                 <div class="col-sm-10">
-                                    <input type="number" class="form-control" id="fixedPrice" name="fixedPrice" value="{{fixedPrice}}" required>
+                                    <input type="text" class="form-control currency-input" id="fixedPrice" name="fixedPrice"
+                                           value="{{ fixedPrice }}" required>
                                 </div>
                             </div>
 
                             <div class="mb-3 row">
-                                <label for="price" class="col-sm-2 col-form-label">딜러가:</label>
+                                <label for="dealerPrice" class="col-sm-2 col-form-label">딜러가:</label>
                                 <div class="col-sm-10">
-                                    <input type="number" class="form-control" id="dealerPrice" name="dealerPrice" value="{{dealerPrice}}" required>
+                                    <input type="text" class="form-control currency-input" id="dealerPrice" name="dealerPrice"
+                                           value="{{ dealerPrice }}" required>
                                 </div>
                             </div>
 
                             <div class="mb-3 row">
-                                <label for="price" class="col-sm-2 col-form-label">정찰가:</label>
+                                <label for="costPrice" class="col-sm-2 col-form-label">정찰가:</label>
                                 <div class="col-sm-10">
-                                    <input type="number" class="form-control" id="costPrice" name="costPrice" value="{{costPrice}}" required>
+                                    <input type="text" class="form-control currency-input" id="costPrice" name="costPrice"
+                                           value="{{ costPrice }}" required>
                                 </div>
                             </div>
 
@@ -212,6 +215,42 @@
         {{#message}}
             alert("{{message}}");
         {{/message}}
+
+        // 원화 표시
+        document.addEventListener("DOMContentLoaded", function () {
+    let inputs = document.querySelectorAll(".currency-input");
+
+    // 🔹 초기값을 원화(₩) 형식으로 변환
+    inputs.forEach(input => {
+        if (input.value) {
+            input.value = formatCurrency(input.value); // 초기값 원화 변환
+        }
+
+        // 🔹 입력할 때 원화 형식 적용
+        input.addEventListener("input", function () {
+            let numericValue = input.value.replace(/[^0-9]/g, ''); // 숫자만 남기기
+            if (numericValue) {
+                input.value = formatCurrency(numericValue);
+            }
+        });
+
+        // 🔹 폼 제출 시 숫자만 서버로 전송 (₩, , 제거)
+        input.form.addEventListener("submit", function () {
+            let numericValue = input.value.replace(/[^0-9]/g, ''); // 숫자로 변환
+            input.value = numericValue;
+        });
+    });
+});
+
+// 원화 포맷 함수 (₩ 적용)
+function formatCurrency(value) {
+    let number = parseFloat(value);
+    if (!isNaN(number)) {
+        return new Intl.NumberFormat('ko-KR', { style: 'currency', currency: 'KRW' }).format(number);
+    }
+    return value;
+}
+
     {{#products}}
         document.addEventListener("DOMContentLoaded", function() {
             var productCondition = "{{productCondition}}";
