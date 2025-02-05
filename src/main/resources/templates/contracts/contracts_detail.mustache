@@ -233,7 +233,7 @@
                             <div class="mb-3 row">
                                 <label for="contractAmount" class="col-sm-2 col-form-label">계약 수량:</label>
                                 <div class="col-sm-10">
-                                    <input type="number" step="0.01" class="form-control" id="contractAmount" name="contractAmount" value="{{contractAmount}}" required>
+                                    <input type="number" step="0.01" class="form-control" id="contractAmount" name="contractAmount" value="{{contractAmount}}" required placeholder="계약 수량을 입력하세요">
                                 </div>
                             </div>
                             <div class="mb-3 row">
@@ -246,7 +246,7 @@
                             <div class="mb-3 row">
                                 <label for="contractDetail" class="col-sm-2 col-form-label">계약 세부내용:</label>
                                 <div class="col-sm-10">
-                                    <input type="text" class="form-control" id="contractDetail" name="contractDetail" value="{{contractDetail}}" required>
+                                    <input type="text" class="form-control" id="contractDetail" name="contractDetail" value="{{contractDetail}}" placeholder="계약 세부 내용을 입력하세요">
                                 </div>
                             </div>
                             <div class="mb-3 row">
@@ -379,6 +379,10 @@
 
 
     <script>
+        // CRUD 메시지
+        {{#message}}
+            alert("{{message}}");
+        {{/message}}
         document.addEventListener("DOMContentLoaded", function () {
             const fileContainer = document.querySelector("#fileContainer");
 
@@ -520,31 +524,31 @@
 
 
 
-                                                        document.addEventListener("DOMContentLoaded", function () {
-                                                    const displayInput = document.getElementById("contractSalesDisplay");
-                                                    const hiddenInput = document.getElementById("contractSales");
+    document.addEventListener("DOMContentLoaded", function () {
+        const displayInput = document.getElementById("contractSalesDisplay");
+        const hiddenInput = document.getElementById("contractSales");
 
-                                                    // 초기값 설정: 서버에서 전달된 값을 원화 형식으로 변환
-                                                    if (hiddenInput.value) {
-                                                        displayInput.value = formatCurrency(hiddenInput.value);
-                                                    }
+        // 초기값 설정: 서버에서 전달된 값을 원화 형식으로 변환
+        if (hiddenInput.value) {
+            displayInput.value = formatCurrency(hiddenInput.value);
+        }
 
-                                                    // 입력 시 원화 형식으로 변환
-                                                    displayInput.addEventListener("input", function () {
-                                                        const rawValue = displayInput.value.replace(/[^\d]/g, ""); // 숫자 이외의 문자 제거
-                                                        const formattedValue = formatCurrency(rawValue); // 원화 형식 변환
-                                                        displayInput.value = formattedValue; // 포맷된 값 표시
-                                                        hiddenInput.value = rawValue; // 실제 숫자 값을 hidden 필드에 저장
-                                                    });
+        // 입력 시 원화 형식으로 변환
+        displayInput.addEventListener("input", function () {
+            const rawValue = displayInput.value.replace(/[^\d]/g, ""); // 숫자 이외의 문자 제거
+            const formattedValue = formatCurrency(rawValue); // 원화 형식 변환
+            displayInput.value = formattedValue; // 포맷된 값 표시
+            hiddenInput.value = rawValue; // 실제 숫자 값을 hidden 필드에 저장
+        });
 
-                                                    // 원화 형식으로 변환하는 함수
-                                                    function formatCurrency(value) {
-                                                        if (!value) return "₩0";
-                                                        return `₩${parseInt(value, 10).toLocaleString("ko-KR")}`;
-                                                    }
-                                                });
+        // 원화 형식으로 변환하는 함수
+        function formatCurrency(value) {
+            if (!value) return "₩0";
+                return `₩${parseInt(value, 10).toLocaleString("ko-KR")}`;
+        }
+    });
 
-                                                            // Form 부분 기회상태 초기값 연동 JS (select Form은 html로 초기 value 지정이 안되어서 JS로 처리)
+// Form 부분 기회상태 초기값 연동 JS (select Form은 html로 초기 value 지정이 안되어서 JS로 처리)
 
         {{#contracts}}
             {{#contractId}}
@@ -633,6 +637,92 @@
             {{/contractId}}
     });
 
+    document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById("contractForm").addEventListener("submit", function (event) {
+            let isValid = true;
+
+            // 시작일자 검증 (오늘 또는 과거여야 함)
+            const startDate = document.getElementById("startDate").value;
+            if (!startDate) {
+                alert("시작일자를 입력하세요.");
+                isValid = false;
+            } else if (new Date(startDate) > new Date()) {
+                alert("시작일자는 오늘 또는 과거 날짜여야 합니다.");
+                isValid = false;
+            }
+
+            // 마감기한 검증 (오늘 또는 미래여야 함)
+            const terminationDate = document.getElementById("terminationDate").value;
+            if (!terminationDate) {
+                alert("마감기한을 입력하세요.");
+                isValid = false;
+            } else if (new Date(terminationDate) < new Date(startDate)) {
+                alert("마감기한은 시작일자 이후여야 합니다.");
+                isValid = false;
+            }
+
+            // 계약 상태 선택 여부 확인
+            const contractStatus = document.getElementById("contractStatus").value;
+            if (!contractStatus) {
+                alert("계약 상태를 선택하세요.");
+                isValid = false;
+            }
+
+            // 계정 선택 여부 확인
+            const accountId = document.getElementById("accountId").value;
+            if (!accountId) {
+                alert("계정을 선택하세요.");
+                isValid = false;
+            }
+
+            // 기회 선택 여부 확인
+            const opportunityId = document.getElementById("opportunityId").value;
+            if (!opportunityId) {
+                alert("기회를 선택하세요.");
+                isValid = false;
+            }
+
+            // 제품 선택 여부 확인
+            const productId = document.getElementById("productId").value;
+            if (!productId) {
+                alert("계약 제품을 선택하세요.");
+                isValid = false;
+            }
+
+            // 계약 수량 검증 (숫자, 0 이상)
+            const contractAmount = document.getElementById("contractAmount").value;
+            if (!contractAmount || isNaN(contractAmount) || contractAmount < 0) {
+                alert("계약 수량은 0 이상이어야 합니다.");
+                isValid = false;
+            }
+
+            // 계약 가격 검증 (숫자, 0 이상)
+            const contractSales = document.getElementById("contractSales").value;
+            if (!contractSales || isNaN(contractSales) || contractSales < 0) {
+                alert("계약 가격은 0 이상이어야 합니다.");
+                isValid = false;
+            }
+
+            // 계약 분류 선택 여부 확인
+            const contractClassification = document.getElementById("contractClassification").value;
+            if (!contractClassification) {
+                alert("계약 분류를 선택하세요.");
+                isValid = false;
+            }
+
+            // 계약 소유자 선택 여부 확인
+            const employeeId = document.getElementById("employeeId").value;
+            if (!employeeId) {
+                alert("계약 소유자를 선택하세요.");
+                isValid = false;
+            }
+
+            // 유효성 검사를 통과하지 못하면 폼 제출을 막음
+            if (!isValid) {
+                event.preventDefault();
+            }
+        });
+    });
 
 
 

@@ -3,6 +3,7 @@ package com.aivle.project.dto;
 import com.aivle.project.entity.AccountEntity;
 import com.aivle.project.entity.EmployeeEntity;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.*;
 import org.hibernate.validator.constraints.URL;
 
@@ -26,7 +27,9 @@ public class AccountDto {
     @URL(message = "올바른 웹사이트 URL을 입력해주세요.")
     private String website;
 
-    @NotBlank(message = "대표전화 입력은  필수입니다.")
+    @NotBlank(message = "대표전화 입력은 필수입니다.")
+    @Pattern(regexp = "^(\\+\\d{1,3}-)?(01[016789]-\\d{3,4}-\\d{4}|\\d{2,3}-\\d{3,4}-\\d{4})$",
+            message = "유효한 전화번호를 입력하세요. (예: +82-10-1234-5678, 010-1234-5678 또는 02-123-4567)")
     private String contact;
 
     @NotBlank(message = "사업 유형 입력은 필수입니다.")
@@ -42,6 +45,8 @@ public class AccountDto {
     private String address;
 
     @NotBlank(message = "직원 번호 입력은 필수입니다.")
+    @Pattern(regexp = "^(\\+\\d{1,3}-)?(01[016789]-\\d{3,4}-\\d{4}|\\d{2,3}-\\d{3,4}-\\d{4})$",
+            message = "유효한 전화번호를 입력하세요. (예: +82-10-1234-5678, 010-1234-5678 또는 02-123-4567)")
     private String accountManagerContact;
 
     @NotBlank(message = "계정 상태 입력은 필수입니다.")

@@ -187,6 +187,10 @@
 
     <script>
 
+        // CRUD 메시지
+        {{#message}}
+            alert("{{message}}");
+        {{/message}}
 
 
         // 로그인한 직원 계정 수
@@ -245,6 +249,7 @@
                                        body: JSON.stringify({ ids: selectedIds })
                                    }).then(response => {
                                        if (response.ok) {
+                                           alert("삭제되었습니다.");
                                            // 서버 응답이 성공적이면 리다이렉트 수행
                                            window.location.href = "/account";
                                        } else {

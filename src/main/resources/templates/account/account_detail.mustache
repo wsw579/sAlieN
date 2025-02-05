@@ -149,16 +149,11 @@
                                 </a>
 
                                 {{#accountId}}
-                                    <a href="/account/detail/{{accountId}}/delete" class="btn btn-custom-delete btn-sm"
-                                       id="deleteButton">
-                                        <i class="fas fa-trash"></i> 삭제
-                                    </a>
+                                    <button id = "deleteButton" class="btn btn-custom-delete btn-sm">
+                                        <i class="fas fa-trash-alt"></i> 삭제
+                                    </button>
                                 {{/accountId}}
-                                {{^accountId}}
-                                    <a href="/account" class="btn btn-custom-delete btn-sm" id="deleteButton">
-                                        <i class="fas fa-trash"></i> 삭제
-                                    </a>
-                                {{/accountId}}
+
                                 <a href="/account" class="btn btn-custom-select btn-sm" id="selectButton">
                                     <i class="fas fa-list"></i> 목록
                                 </a>
@@ -252,7 +247,7 @@
                                 <label for="website" class="col-sm-2 col-form-label">웹사이트:</label>
                                 <div class="col-sm-10">
                                     <input type="text" class="form-control" id="website" name="website"
-                                           value="{{website}}">
+                                           value="{{website}}" placeholder="https://www.example.com">
                                 </div>
                             </div>
 
@@ -260,7 +255,7 @@
                                 <label for="contact" class="col-sm-2 col-form-label">대표 전화:</label>
                                 <div class="col-sm-10">
                                     <input type="text" class="form-control" id="contact" name="contact"
-                                           value="{{contact}}">
+                                           value="{{contact}}" placeholder="02-123-4567">
                                 </div>
                             </div>
 
@@ -285,7 +280,7 @@
                                 <label for="accountManager" class="col-sm-2 col-form-label">직원:</label>
                                 <div class="col-sm-10">
                                     <input type="text" class="form-control" id="accountManager" name="accountManager"
-                                           value="{{accountManager}}" required>
+                                           value="{{accountManager}}" placeholder="예: 홍길동" required>
                                 </div>
                             </div>
 
@@ -293,7 +288,7 @@
                                 <label for="accountDetail" class="col-sm-2 col-form-label">설명:</label>
                                 <div class="col-sm-10">
                                     <input type="text" class="form-control" id="accountDetail" name="accountDetail"
-                                           value="{{accountDetail}}">
+                                           value="{{accountDetail}}" placeholder="예: 주요 고객사 정보">
                                 </div>
                             </div>
 
@@ -301,7 +296,7 @@
                                 <label for="address" class="col-sm-2 col-form-label">배송지:</label>
                                 <div class="col-sm-10">
                                     <input type="text" class="form-control" id="address" name="address"
-                                           value="{{address}}">
+                                           value="{{address}}" placeholder="예: 서울특별시 강남구 테헤란로 123">
                                 </div>
                             </div>
 
@@ -309,7 +304,7 @@
                                 <label for="accountManagerContact" class="col-sm-2 col-form-label">직원 전화번호:</label>
                                 <div class="col-sm-10">
                                     <input type="text" class="form-control" id="accountManagerContact"
-                                           name="accountManagerContact" value="{{accountManagerContact}}" required>
+                                           name="accountManagerContact" value="{{accountManagerContact}}" placeholder="010-1234-5678" required>
                                 </div>
                             </div>
 
@@ -335,6 +330,10 @@
 
 
     <script>
+        // CRUD 메시지
+        {{#message}}
+            alert("{{message}}");
+        {{/message}}
 
         // Form 부분  초기값 연동 JS (select Form 은 html 초기 value 지정이 안되어서 JS로 처리)
         {{#account}}
@@ -368,41 +367,113 @@
                        });
                     });
 
-               document.addEventListener("DOMContentLoaded", function() {
-               document.getElementById("deleteButton").addEventListener("click", function(event) {
-                   event.preventDefault(); // 기본 링크 동작을 막습니다.
+            // 삭제버튼
+            document.addEventListener("DOMContentLoaded", function() {
+            {{#accountId}}
+                var deleteButton = document.getElementById("deleteButton");
+                if (deleteButton) {
+                    deleteButton.addEventListener("click", function () {
+                        // 서버에서 렌더링된 accountId 가져오기
+                        var accountId = "{{accountId}}";
 
-                  // 사용자 확인 대화 상자 표시
-                   var confirmDelete = confirm("정말 삭제하시겠습니까?");
-               if (confirmDelete) {
-                   window.location.href = this.href;  // 올바른 리다이렉트 경로
-               }
-           });
-       });
+                if (accountId) {
+                    var confirmDelete = confirm("현재 항목을 삭제하시겠습니까?");
+                    if (confirmDelete) {
+                        fetch(`/account/detail/${accountId}/delete`, {
+                            method: "POST", // 서버 엔드포인트가 POST를 지원해야 함
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({ id: accountId }), // 올바른 데이터 전송
+                        })
+                            .then((response) => {
+                                if (response.ok) {
+                                    alert("삭제되었습니다.");
+                                    window.location.href = "/account"; // 삭제 후 이동
+                                } else {
+                                    alert("삭제 중 오류가 발생했습니다.");
+                                }
+                            })
+                            .catch((error) => {
+                                console.error("Error:", error);
+                                alert("삭제 중 오류가 발생했습니다.");
+                            });
+                    }
+                } else {
+                    alert("삭제할 ID가 없습니다.");
+                }
+            });
+            }
+            {{/accountId}}
+            });
 
 
+                           //Form 삭제버튼 클릭 시 현 주소가 create 인경우 create 로 action 주소 변경.
 
-           //Form 삭제버튼 클릭 시 현 주소가 create 인경우 create 로 action 주소 변경.
+                           document.addEventListener("DOMContentLoaded", function() {
+                               var form = document.getElementById("accountForm");
+                               var currentUrl = window.location.pathname;
 
-           document.addEventListener("DOMContentLoaded", function() {
-               var form = document.getElementById("accountForm");
-               var currentUrl = window.location.pathname;
+                               // 현재 URL "/account/detail/create"인 경우 폼 액션을 변경
+                               if (currentUrl === "/account/detail/create") {
+                                   form.action = "/account/detail/create";
+                               }
 
-               // 현재 URL "/account/detail/create"인 경우 폼 액션을 변경
-               if (currentUrl === "/account/detail/create") {
-                   form.action = "/account/detail/create";
-               }
+                               // 저장 버튼 클릭 시 변경사항 저장 여부 확인
+                               document.getElementById("updateButton").addEventListener("click", function(event) {
+                                   var confirmSave = confirm("변경사항을 저장하겠습니까?");
 
-               // 저장 버튼 클릭 시 변경사항 저장 여부 확인
-               document.getElementById("updateButton").addEventListener("click", function(event) {
-                   var confirmSave = confirm("변경사항을 저장하겠습니까?");
+                                   if (!confirmSave) {
+                                       // 사용자가 취소를 클릭한 경우 폼 제출 중단
+                                       event.preventDefault();
+                                   }
+                               });
+                           });
 
-                   if (!confirmSave) {
-                       // 사용자가 취소를 클릭한 경우 폼 제출 중단
-                       event.preventDefault();
-                   }
-               });
-           });
+        document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("accountForm");
+
+        form.addEventListener("submit", function (event) {
+            event.preventDefault(); // 폼 제출 방지
+
+            const website = document.getElementById("website").value;
+            const contact = document.getElementById("contact").value;
+            const phone = document.getElementById("accountManagerContact").value;
+
+            if (!validateWebsite(website)) {
+                alert("유효한 웹사이트 주소를 입력하세요. (예: https://www.example.com)");
+                return;
+            }
+
+            if (!validateContact(contact)) {
+                alert("유효한 전화번호를 입력하세요. (예: 02-123-4567)");
+                return;
+            }
+
+            if (!validatePhone(phone)) {
+                alert("유효한 전화번호를 입력하세요. (예: 010-1234-5678)");
+                return;
+            }
+
+            alert("입력값이 정상적입니다.");
+            form.submit(); // 유효성 검사를 통과하면 폼 제출
+        });
+    });
+
+    function validateWebsite(url) {
+        const websiteRegex = /^(https?:\/\/)?(www\.)?[a-zA-Z0-9-]+\.[a-zA-Z]{2,6}(\.[a-zA-Z]{2,6})?(\/.*)?$/;
+        return websiteRegex.test(url);
+    }
+
+    function validateContact(contact) {
+        const contactRegex = /^\d{2,3}-\d{3,4}-\d{4}$/; // 지역번호-XXX-XXXX (예: 02-123-4567)
+        return contactRegex.test(contact);
+    }
+
+    function validatePhone(phone) {
+        const phoneRegex = /^\d{10,11}$/; // 10~11자리 숫자
+        return phoneRegex.test(phone);
+    }
 
 
 
