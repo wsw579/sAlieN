@@ -102,7 +102,7 @@
             </div>
             <div class="row">
             </div>
-
+            {{#leadId}}
             <!-- 리드 상태 부분 -->
             <div class="card mb-4">
                 <div class="card-header">
@@ -113,7 +113,6 @@
                     <table id="lead_status">
 
 
-                        {{#leads}}
                             <div class="progress-container">
                                 <div class="progress-bar" id="progressBar"></div>
                                 <div class="progress-steps">
@@ -128,12 +127,12 @@
                                     </div>
                                 </div>
                             </div>
-                        {{/leads}}
 
 
                     </table>
                 </div>
             </div>
+            {{/leadId}}
 
 
             <!-- 리드 상세내용 부분 -->

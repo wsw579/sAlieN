@@ -24,10 +24,12 @@
 
 .progress-steps {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
+    align-items: center;
     position: relative;
     width: 100%;
     margin: 20px 0;
+    gap: 500px; /* ✅ 각 스텝 사이 간격 조정 */
 }
 
 .step {
@@ -176,8 +178,8 @@
                     </table>
                 </div>
             </div>
-        </div>
 
+        {{#productId}}
         <div class="card mb-4">
             <div class="card-header">
                 <i class="fas fa-table me-1"></i>
@@ -200,6 +202,8 @@
                     {{/products}}
                 </table>
             </div>
+        </div>
+        {{/productId}}
         </div>
     </main>
 
