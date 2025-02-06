@@ -7,6 +7,7 @@ import com.aivle.project.entity.OpportunitiesCommentEntity;
 import com.aivle.project.entity.OpportunitiesEntity;
 import com.aivle.project.entity.*;
 import com.aivle.project.service.*;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -222,8 +224,13 @@ public class OpportunitiesController {
     }
 
     @PostMapping("/opportunities/detail/{opportunityId}/history/create")
-    public String createHistory(@PathVariable Long opportunityId, @ModelAttribute HistoryDto historyDto, RedirectAttributes redirectAttributes) {
+    public String createHistory(@PathVariable Long opportunityId, @ModelAttribute @Valid HistoryDto historyDto,
+                                BindingResult bindingResult, RedirectAttributes redirectAttributes) {
         try {
+            if (bindingResult.hasErrors()) {
+                // 유효성 검사 실패 시 에러 메시지 출력
+                return "opportunities/opportunities_history_detail"; // 에러가 있으면 폼으로 다시 이동
+            }
             // 기회 히스토리 생성
             opportunitiesService.createHistory(historyDto);
 
@@ -248,9 +255,14 @@ public class OpportunitiesController {
     @PostMapping("/opportunities/detail/{opportunityId}/history/{historyId}/update")
     public String historyUpdate(@PathVariable("opportunityId") Long opportunityId,
                                 @PathVariable("historyId") Long historyId,
-                                @ModelAttribute HistoryDto historyDto,
+                                @ModelAttribute @Valid HistoryDto historyDto,
+                                BindingResult bindingResult,
                                 RedirectAttributes redirectAttributes) {
         try {
+            if (bindingResult.hasErrors()) {
+                // 유효성 검사 실패 시 에러 메시지 출력
+                return "opportunities/opportunities_history_detail"; // 에러가 있으면 폼으로 다시 이동
+            }
             // 기회 히스토리 수정
             opportunitiesService.updateHistory(historyId, historyDto);
 
