@@ -7,6 +7,7 @@ import com.aivle.project.repository.AccountRepository;
 import com.aivle.project.repository.EmployeeRepository;
 import com.aivle.project.service.AccountService;
 import com.aivle.project.service.CrudLogsService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +19,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -171,7 +173,6 @@ public class AccountController {
         account.setAccountManagerContact("");
         account.setAccountStatus("");
         account.setAccountCreatedDate(LocalDate.now());
-
         account.setEmployeeId(new EmployeeEntity());
         account.setParentAccount(new AccountEntity());
 
@@ -184,8 +185,12 @@ public class AccountController {
 
     // 새 계정 생성
     @PostMapping("/account/detail/create")
-    public String accountCreateNew(@ModelAttribute AccountDto accountDto, RedirectAttributes redirectAttributes) {
+    public String accountCreateNew(@ModelAttribute @Valid AccountDto accountDto, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
         try {
+            if (bindingResult.hasErrors()) {
+                // 유효성 검사 실패 시 에러 메시지 출력
+                return "account/account_detail"; // 에러가 있으면 폼으로 다시 이동
+            }
             // 계정 생성
             accountService.createAccount(accountDto);
 
@@ -211,8 +216,12 @@ public class AccountController {
 
     // 계정 정보 수정
     @PostMapping("/account/detail/{accountId}/update")
-    public String accountUpdate(@PathVariable("accountId") Long accountId,  @ModelAttribute AccountDto accountDto, RedirectAttributes redirectAttributes) {
+    public String accountUpdate(@PathVariable("accountId") Long accountId,  @ModelAttribute @Valid AccountDto accountDto, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
         try {
+            if (bindingResult.hasErrors()) {
+                // 유효성 검사 실패 시 에러 메시지 출력
+                return "account/account_detail"; // 에러가 있으면 폼으로 다시 이동
+            }
             // 계정 수정
             accountService.updateAccount(accountId, accountDto);
 

@@ -71,33 +71,20 @@
                         </div>
                         <div class="card-body">
                             <div class="row g-3 mb-3">
-                                <div class="col-6 col-md-3">
-                                    <div class="card bg-primary text-white h-100">
+                                <div class="col-12 col-md-6">
+                                    <div class="card bg-primary text-white h-100" data-bs-toggle="modal" data-bs-target="#progressModal">
                                         <div class="card-body">진행중</div>
                                         <div class="card-footer d-flex align-items-center justify-content-between">
                                             <h3 id="ongoingCountTeam">0 건</h3>
                                             <div class="small text-white">
-                                                <a href="/opportunities" class="text-white">
+                                                <a href="" class="text-white">
                                                     <i class="fas fa-angle-right"></i>
                                                 </a>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-6 col-md-3">
-                                    <div class="card bg-warning text-white h-100">
-                                        <div class="card-body">마감일자 초과</div>
-                                        <div class="card-footer d-flex align-items-center justify-content-between">
-                                            <h3 id="overdueCountTeam">0 건</h3>
-                                            <div class="small text-white">
-                                                <a href="/opportunities" class="text-white">
-                                                    <i class="fas fa-angle-right"></i>
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-6 col-md-3">
+                                <div class="col-12 col-md-6">
                                     <div class="card bg-success text-white h-100">
                                         <div class="card-body">계약전환 성공</div>
                                         <div class="card-footer d-flex align-items-center justify-content-between">
@@ -110,15 +97,20 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-6 col-md-3">
-                                    <div class="card bg-danger text-white h-100">
-                                        <div class="card-body">보류</div>
-                                        <div class="card-footer d-flex align-items-center justify-content-between">
-                                            <h3 id="pendingCountTeam">0 건</h3>
-                                            <div class="small text-white">
-                                                <a href="/opportunities" class="text-white">
-                                                    <i class="fas fa-angle-right"></i>
-                                                </a>
+
+                                <!-- 진행중 클릭 시 모달 창 -->
+                                <div class="modal fade" id="progressModal" tabindex="-1" aria-labelledby="progressModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="progressModalLabel">진행중 상세 정보</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body" id="progressContent">
+                                                {{> opportunities/ongoing-opportunities }}
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
                                             </div>
                                         </div>
                                     </div>
@@ -193,5 +185,6 @@
     <script src="/assets/demo/sales-performance.js"></script>
     <script src="/assets/demo/draft-percentage.js"></script>
     <script src="/assets/demo/opportunities-status-card-value.js"></script>
+    <script src="/assets/demo/opportunities-modal-loader.js"></script>
     <script src="/assets/demo/orders-revenue-chart.js"></script>
 {{>main/footer}}

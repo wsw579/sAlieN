@@ -37,8 +37,4 @@ public class OpportunitiesDto {
     private AccountEntity accountId;
     private ProductsEntity productId;
     private EmployeeEntity employeeId;
-
-
-    public OpportunitiesDto(Long aLong, String s) {
-    }
 }

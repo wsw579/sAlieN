@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="description" content="" />
     <meta name="author" content="" />
-    <title>sAIes CRM</title>
+    <title>sAIien</title>
     <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
     <link href="/css/main_style.css" rel="stylesheet" />
     <!-- jQuery 라이브러리 추가 -->
@@ -25,7 +25,7 @@
 <body class="sb-nav-fixed">
 <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
     <!-- Navbar Brand-->
-    <a class="navbar-brand ps-3" href="/">sAIes CRM - KT</a>
+    <a class="navbar-brand ps-3" href="/">sAIien - KT</a>
     <!-- Sidebar Toggle-->
     <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
 
@@ -50,50 +50,6 @@
 <!--            <button class="btn btn-primary" id="btnNavbarSearch" type="button"><i class="fas fa-search"></i></button>-->
         </div>
     </form>
-
-    <!-- 요금제 -->
-    <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
-        <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Basic Plan 사용중</a>
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                <li><a class="dropdown-item" href="/rate_plan">요금제 변경</a></li>
-            </ul>
-        </li>
-    </ul>
-
-
-    <!-- notification-->
-    <style>
-        .badge {
-            position: absolute;
-            top: 5px;
-            padding: 5px 10px;
-            border-radius: 50%;
-            background-color: red;
-            color: white;
-            font-size: 9px;
-            display: inline; /* 기본적으로 표시 */
-        }
-    </style>
-
-    <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
-        <li class="nav-item">
-            <a class="nav-link" id="navbarDropdown" href="/alarm" role="button">
-                <i class="fas fa-bell"></i>
-
-                    <!-- 안읽은 알림이 있다면 알림 수 아이콘으로 추가 표시-->
-                    {{#alarm}}
-                        <span class="badge">{{count}}</span>
-                    {{/alarm}}
-                    <!-- 테스트로 2개 띄워보기, 삭제예정-->
-                    {{^alarm}}
-                        <span class="badge">2</span>
-                    {{/alarm}}
-
-            </a>
-        </li>
-    </ul>
-
 
     <!-- profile-->
     <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
@@ -207,22 +163,6 @@
                         </nav>
                     </div>
 
-
-                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseMeeting" aria-expanded="false" aria-controls="collapseMeeting">
-                        <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
-                        Meeting
-                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                    </a>
-                    <div class="collapse" id="collapseMeeting" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
-                        <nav class="sb-sidenav-menu-nested nav">
-                            <a class="nav-link" href="/meeting_room_1">Meeting Room 1</a>
-                            <a class="nav-link" href="/meeting_room_2">Meeting Room 2</a>
-                            <a class="nav-link" href="/meeting_room_3">Meeting Room 3</a>
-                        </nav>
-                    </div>
-
-
-
                     <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLogs" aria-expanded="false" aria-controls="collapseLogs">
                         <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
                         Logs
@@ -242,7 +182,7 @@
             </div>
             <div class="sb-sidenav-footer">
                 <div class="small">Logged in as:</div>
-                sAies CRM
+                sAIien
             </div>
         </nav>
     </div>
@@ -448,7 +388,7 @@
     <div id="chatbotModal" class="chatbot-modal">
         <div class="chatbot-modal-content">
             <div class="chatbot-title-bar">
-                sAIes CRM chat bot
+                sAIien chat bot
                 <span class="close">&times;</span>
             </div>
             <div id="chatbotMessages" class="chat-container"></div>

@@ -2,11 +2,6 @@
 
 <style>
 
-
-
-
-
-
 <!--.progress-container {-->
 <!--    position: relative;-->
 <!--    width: 100%;-->
@@ -252,7 +247,7 @@
                                 <label for="website" class="col-sm-2 col-form-label">웹사이트:</label>
                                 <div class="col-sm-10">
                                     <input type="text" class="form-control" id="website" name="website"
-                                           value="{{website}}">
+                                           value="{{website}}" placeholder="https://www.example.com">
                                 </div>
                             </div>
 
@@ -260,7 +255,7 @@
                                 <label for="contact" class="col-sm-2 col-form-label">대표 전화:</label>
                                 <div class="col-sm-10">
                                     <input type="text" class="form-control" id="contact" name="contact"
-                                           value="{{contact}}">
+                                           value="{{contact}}" placeholder="02-123-4567">
                                 </div>
                             </div>
 
@@ -285,7 +280,7 @@
                                 <label for="accountManager" class="col-sm-2 col-form-label">직원:</label>
                                 <div class="col-sm-10">
                                     <input type="text" class="form-control" id="accountManager" name="accountManager"
-                                           value="{{accountManager}}" required>
+                                           value="{{accountManager}}" placeholder="예: 홍길동" required>
                                 </div>
                             </div>
 
@@ -293,7 +288,7 @@
                                 <label for="accountDetail" class="col-sm-2 col-form-label">설명:</label>
                                 <div class="col-sm-10">
                                     <input type="text" class="form-control" id="accountDetail" name="accountDetail"
-                                           value="{{accountDetail}}">
+                                           value="{{accountDetail}}" placeholder="예: 주요 고객사 정보">
                                 </div>
                             </div>
 
@@ -301,7 +296,7 @@
                                 <label for="address" class="col-sm-2 col-form-label">배송지:</label>
                                 <div class="col-sm-10">
                                     <input type="text" class="form-control" id="address" name="address"
-                                           value="{{address}}">
+                                           value="{{address}}" placeholder="예: 서울특별시 강남구 테헤란로 123">
                                 </div>
                             </div>
 
@@ -309,7 +304,7 @@
                                 <label for="accountManagerContact" class="col-sm-2 col-form-label">직원 전화번호:</label>
                                 <div class="col-sm-10">
                                     <input type="text" class="form-control" id="accountManagerContact"
-                                           name="accountManagerContact" value="{{accountManagerContact}}" required>
+                                           name="accountManagerContact" value="{{accountManagerContact}}" placeholder="010-1234-5678" required>
                                 </div>
                             </div>
 
@@ -434,6 +429,51 @@
                                    }
                                });
                            });
+
+        document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("accountForm");
+
+        form.addEventListener("submit", function (event) {
+            event.preventDefault(); // 폼 제출 방지
+
+            const website = document.getElementById("website").value;
+            const contact = document.getElementById("contact").value;
+            const phone = document.getElementById("accountManagerContact").value;
+
+            if (!validateWebsite(website)) {
+                alert("유효한 웹사이트 주소를 입력하세요. (예: https://www.example.com)");
+                return;
+            }
+
+            if (!validateContact(contact)) {
+                alert("유효한 전화번호를 입력하세요. (예: 02-123-4567)");
+                return;
+            }
+
+            if (!validatePhone(phone)) {
+                alert("유효한 전화번호를 입력하세요. (예: 010-1234-5678)");
+                return;
+            }
+
+            alert("입력값이 정상적입니다.");
+            form.submit(); // 유효성 검사를 통과하면 폼 제출
+        });
+    });
+
+    function validateWebsite(url) {
+        const websiteRegex = /^(https?:\/\/)?(www\.)?[a-zA-Z0-9-]+\.[a-zA-Z]{2,6}(\.[a-zA-Z]{2,6})?(\/.*)?$/;
+        return websiteRegex.test(url);
+    }
+
+    function validateContact(contact) {
+        const contactRegex = /^\d{2,3}-\d{3,4}-\d{4}$/; // 지역번호-XXX-XXXX (예: 02-123-4567)
+        return contactRegex.test(contact);
+    }
+
+    function validatePhone(phone) {
+        const phoneRegex = /^\d{10,11}$/; // 10~11자리 숫자
+        return phoneRegex.test(phone);
+    }
 
 
 

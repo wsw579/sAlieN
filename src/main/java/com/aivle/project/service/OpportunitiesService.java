@@ -98,6 +98,11 @@ public class OpportunitiesService {
         OpportunitiesCommentEntity comment = new OpportunitiesCommentEntity(content, LocalDateTime.now(), author, opportunity);
         opportunitiesCommentRepository.save(comment);
     }
+    // 히스토리 id로 찾기
+    public HistoryEntity searchHistory(Long historyId) {
+        return historyRepository.findById(historyId)
+                .orElseThrow(()->new IllegalArgumentException("error"));
+    }
 
     // History Operations
     public List<HistoryEntity> getHistoryByOpportunityId(Long opportunityId) {
@@ -174,6 +179,13 @@ public class OpportunitiesService {
         return opportunitiesRepository.countAllStatusesUser(userid)
                 .stream()
                 .collect(Collectors.toMap(result -> (String) result[0], result -> (Long) result[1]));
+    }
+
+    // 진행 중인 기회 페이징 처리하여 조회
+    public Page<OpportunitiesEntity> getOngoingOpportunities(int page) {
+        String userId = UserContext.getCurrentUserId();
+        Pageable pageable = PageRequest.of(page, 10, Sort.by("createdDate").descending());
+        return opportunitiesRepository.findOngoingOpportunitiesByUser(userId, pageable);
     }
 
     public Map<String, List<Integer>> getBarData() {

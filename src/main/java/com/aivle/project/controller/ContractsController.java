@@ -4,6 +4,7 @@ import com.aivle.project.dto.*;
 import com.aivle.project.entity.*;
 import com.aivle.project.repository.*;
 import com.aivle.project.service.*;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -90,7 +92,7 @@ public class ContractsController {
         List<OrdersEntity> orders = contractsService.getOrdersByContractId(contractId);
 
         List<ProductsDto> products = productsService.getAllProductIdsAndNames();
-       List<AccountDto> accounts = accountService.getAllAccountIdsAndNames();
+        List<AccountDto> accounts = accountService.getAllAccountIdsAndNames();
         List<EmployeeDto.GetId> employee = employeeService.getAllEmployeeIdsAndNamesAndDepartmentIds();
         List<OpportunitiesDto> opportunities = opportunitiesService.getAllOpportunityIdsAndNames();
 
@@ -155,8 +157,12 @@ public class ContractsController {
     }
 
     @PostMapping("/contracts/detail/create")
-    public String contractsCreateNew(@ModelAttribute ContractsDto contractsDto, RedirectAttributes redirectAttributes) {
+    public String contractsCreateNew(@ModelAttribute @Valid ContractsDto contractsDto, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
         try {
+            if (bindingResult.hasErrors()) {
+                // 유효성 검사 실패 시 에러 메시지 출력
+                return "contracts/contracts_detail"; // 에러가 있으면 폼으로 다시 이동
+            }
             // 계약 생성
             contractsService.createContracts(contractsDto);
 
@@ -179,8 +185,12 @@ public class ContractsController {
     }
 
     @PostMapping("/contracts/detail/{contractId}/update")
-    public String contractsUpdate(@PathVariable("contractId") Long contractId, @ModelAttribute ContractsDto contractsDto, RedirectAttributes redirectAttributes) {
+    public String contractsUpdate(@PathVariable("contractId") Long contractId, @ModelAttribute @Valid ContractsDto contractsDto, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
         try {
+            if (bindingResult.hasErrors()) {
+                // 유효성 검사 실패 시 에러 메시지 출력
+                return "contracts/contracts_detail"; // 에러가 있으면 폼으로 다시 이동
+            }
             // 계약 수정
             contractsService.updateContracts(contractId, contractsDto);
 
