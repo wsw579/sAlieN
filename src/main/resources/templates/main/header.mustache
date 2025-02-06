@@ -565,7 +565,9 @@
                 }, 100); // 딜레이 조정 가능
 
                 // API 호출 부분
-                fetch('https://saiescrm.api.jyds.synology.me/chatbot', { // 서버
+
+                fetch('http://127.0.0.1:8000/chatbot', { // 로컬
+                //fetch('https://saiescrm.api.jyds.synology.me/chatbot', { // 서버
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
