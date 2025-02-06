@@ -63,7 +63,8 @@ public class IndexController {
 
     //order 관련 api
     @GetMapping("/api/sales-performance")
-    public ResponseEntity<List<Map<String, Object>>> getSalesPerformanceWithNames() {
+    public ResponseEntity<List<Map<String, Object>>> getSalesPerformanceWithNames(@RequestParam int year,
+                                                                                  @RequestParam int month) {
         String userId = UserContext.getCurrentUserId();
         Role userRole = Role.valueOf(UserContext.getCurrentUserRole());
         Position userPosition = Position.valueOf(employeeService.getPositionByUserId(userId));
@@ -74,11 +75,11 @@ public class IndexController {
         List<Map<String, Object>> salesPerformance;
 
         if (Role.ROLE_ADMIN.equals(userRole) || Position.GENERAL_MANAGER.equals(userPosition) || Position.DEPARTMENT_HEAD.equals(userPosition)) {
-            salesPerformance = ordersService.getDepartmentSalesPerformance();
+            salesPerformance = ordersService.getDepartmentSalesPerformance(year, month);
         } else if (Position.TEAM_LEADER.equals(userPosition)) {
-            salesPerformance = ordersService.getTeamSalesPerformance();
+            salesPerformance = ordersService.getTeamSalesPerformance(year, month);
         } else {
-            salesPerformance = ordersService.getEmployeeSalesPerformanceWithNames();
+            salesPerformance = ordersService.getEmployeeSalesPerformanceWithNames(year, month);
         }
 
         System.out.println("반환 데이터: " + salesPerformance.size() + " 개");
@@ -87,8 +88,9 @@ public class IndexController {
     }
 
     @GetMapping("/api/draft-percentage")
-    public ResponseEntity<Map<String, Double>> getDraftPercentage() {
-        double percentage = 100.0 - ordersService.calculateDraftPercentage();
+    public ResponseEntity<Map<String, Double>> getDraftPercentage(@RequestParam int year,
+                                                                  @RequestParam int month) {
+        double percentage = 100.0 - ordersService.calculateDraftPercentage(year, month);
         Map<String, Double> response = new HashMap<>();
         response.put("draftPercentage", percentage);
         return ResponseEntity.ok(response);
