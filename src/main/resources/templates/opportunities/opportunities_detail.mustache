@@ -19,11 +19,13 @@
         color: #721c24;
     }
 
+
     .btn-custom-proposal {
     background-color: #cce5ff; /* 연한 파란색 */
     color: #004085;
     border: 1px solid #b8daff;
 }
+
 
     .btn-custom-create:hover {
         background-color: #c3e6cb; /* 약간 어두운 그린 */
@@ -196,10 +198,12 @@
                     <i class="fas fa-table me-1"></i>
                     Opportunities detail
                 </div>
+
                 <div class="card-body">
                     <table id="opportunities_detail">
                         {{#opportunities}}
                             <div class="button-container mb-3">
+
                                 <a href="/opportunities/detail/create" class="btn btn-custom-create btn-sm"
                                    id="createButton">
                                     <i class="fas fa-plus-circle"></i> 신규
@@ -232,6 +236,7 @@
                                            value="{{createdDate}}" required>
                                 </div>
                             </div>
+
                             <div class="mb-3 row">
                                 <label for="targetCloseDate" class="col-sm-2 col-form-label">마감기한:</label>
                                 <div class="col-sm-10">
@@ -239,6 +244,7 @@
                                            value="{{targetCloseDate}}" required>
                                 </div>
                             </div>
+
                             <div class="mb-3 row">
                                 <label for="opportunityStatus" class="col-sm-2 col-form-label">기회상태:</label>
                                 <div class="col-sm-10">
@@ -270,11 +276,12 @@
                                     </select>
                                 </div>
                             </div>
+
                             <div class="mb-3 row">
                                 <label for="opportunityName" class="col-sm-2 col-form-label">기회 명:</label>
                                 <div class="col-sm-10">
                                     <input type="text" class="form-control" id="opportunityName" name="opportunityName"
-                                           value="{{opportunityName}}" required>
+                                           value="{{opportunityName}}" placeholder="예: 기존 네트워크 시스템 업데이트 건" required>
                                 </div>
                             </div>
                             <div class="mb-3 row">
@@ -318,7 +325,7 @@
                                 <label for="successRate" class="col-sm-2 col-form-label">성공률:</label>
                                 <div class="col-sm-10">
                                     <input type="text" class="form-control" id="displaySuccessRate" name="displaySuccessRate"
-                                           value="{{successRate}}" required>
+                                           value="{{successRate}}" placeholder="예: 0.2" required>
                                 </div>
                             </div>
                             <!-- 실제 DB에 저장될 값 -->
@@ -328,35 +335,36 @@
                                 <label for="companyRevenue" class="col-sm-2 col-form-label">회사 매출:</label>
                                 <div class="col-sm-10">
                                     <input type="number" step="0.01" class="form-control" id="companyRevenue"
-                                           name="companyRevenue" value="{{companyRevenue}}" required>
+                                           name="companyRevenue" value="{{companyRevenue}}" placeholder="예: 1,000,000,000" required>
                                 </div>
                             </div>
+
                             <div class="mb-3 row">
                                 <label for="region" class="col-sm-2 col-form-label">배송지역:</label>
                                 <div class="col-sm-10">
                                     <input type="text" class="form-control" id="region" name="region" value="{{region}}"
-                                           required>
+                                           placeholder="예: 서울특별시 강남구 테헤란로 123" required>
                                 </div>
                             </div>
                             <div class="mb-3 row">
                                 <label for="customerEmployee" class="col-sm-2 col-form-label">고객사 담당자:</label>
                                 <div class="col-sm-10">
                                     <input type="text" class="form-control" id="customerEmployee"
-                                           name="customerEmployee" value="{{customerEmployee}}" required>
+                                           name="customerEmployee" value="{{customerEmployee}}" placeholder="예: 홍길동" required>
                                 </div>
                             </div>
                             <div class="mb-3 row">
                                 <label for="opportunityInquiries" class="col-sm-2 col-form-label">고객문의사항:</label>
                                 <div class="col-sm-10">
                                     <input type="text" class="form-control" id="opportunityInquiries"
-                                           name="opportunityInquiries" value="{{opportunityInquiries}}" required>
+                                           name="opportunityInquiries" value="{{opportunityInquiries}}" placeholder="고객 문의사항을 입력하세요" required>
                                 </div>
                             </div>
                             <div class="mb-3 row">
                                 <label for="opportunityNotes" class="col-sm-2 col-form-label">기회 세부내용:</label>
                                 <div class="col-sm-10">
                                     <input type="text" class="form-control" id="opportunityNotes"
-                                           name="opportunityNotes" value="{{opportunityNotes}}" required>
+                                           name="opportunityNotes" value="{{opportunityNotes}}" placeholder="기회 세부내용을 입력하세요" required>
                                 </div>
                             </div>
 
@@ -382,25 +390,32 @@
                                 <label for="quantity" class="col-sm-2 col-form-label">기회 수량:</label>
                                 <div class="col-sm-10">
                                     <input type="number" step="0.01" class="form-control" id="quantity" name="quantity"
-                                           value="{{quantity}}" required>
+                                           value="{{quantity}}" placeholder="기회 수량을 입력하세요" required>
                                 </div>
                             </div>
                             <div class="mb-3 row">
                                 <label for="expectedRevenue" class="col-sm-2 col-form-label">기회 매출:</label>
                                 <div class="col-sm-10">
                                     <input type="text" class="form-control" id="expectedRevenue" name="expectedRevenue"
-                                           value="{{ expectedRevenue }}" required>
+                                           value="{{ expectedRevenue }}" placeholder="₩0" required>
                                 </div>
                             </div>
+
 
                             <div class="button-container d-flex justify-content-end gap-2 mb-3">
 
                                 <!-- 제안서 생성 버튼 -->
+                                <button type="button" id="proposalExcelButton" class="btn btn-custom-proposal btn-sm">
+
+                                    <i class= aria-hidden="true"></i>  💡AI 제안서 excel 파일 생성 💡
+                                </button>
+
+                                <!-- 제안서 생성 버튼 -->
                                 <button type="button" id="proposalButton" class="btn btn-custom-proposal btn-sm">
 
-                                    <i class="fas fa-download"></i> 제안서 생성
-
+                                    <i class= aria-hidden="true"></i>💡AI 제안서 ppt 파일 생성 💡
                                 </button>
+
 
                                 <!-- 저장 버튼 -->
                                 <div class="d-flex justify-content-end">
@@ -633,6 +648,7 @@ function formatCurrency(value) {
             // select 폼데이터 조회 기능 (main/header와 footer에 CSS 추가, 상단에 Selectize CSS, JS로 명시)
 
 
+
             document.addEventListener("DOMContentLoaded", function() {
                 // 계정 검색
                 $('#accountId').selectize({
@@ -836,40 +852,73 @@ function formatCurrency(value) {
         };
 
 
+
 // AI 제안서
-document.getElementById('proposalButton').addEventListener('click', function() {
+document.getElementById('proposalExcelButton').addEventListener('click', function(event) {
+event.preventDefault();
     try {
-        const employeeSelect = document.querySelector('#employeeId');
-        const productSelect = document.querySelector('#productId');
 
-        if (!employeeSelect.value) {
-            throw new Error('담당자를 선택해주세요.');
-        }
+            const employeeSelect = document.querySelector('#employeeId');
+            const productSelect = document.querySelector('#productId');
 
-        const selectedOption = employeeSelect.options[employeeSelect.selectedIndex];
-        const employeeInfo = selectedOption.textContent.trim();
-        // 담당자 이름
-        const employeeName = employeeInfo.split(' (')[0].replace(/^\s+|\s+$/g, '');
+           const accountSelect = document.querySelector('#accountId');
+           if (!accountSelect.value) {
+                  throw new Error('회사를 선택해주세요.');
+                 }
+            const selectedAccountOption = accountSelect.options[accountSelect.selectedIndex];
+            const accountInfo = selectedAccountOption.textContent.trim();
+            const accountName = accountInfo.split(' (')[0].replace(/^\s+|\s+$/g, '');
 
-        // 부서명
-        const deptMatch = employeeInfo.match(/Dept: (.+?)\)/);
-        const departmentName = deptMatch ? deptMatch[1].trim() : '미지정';
+            // 기회명
+            const opportunityName = document.getElementById('opportunityName').value.trim();
 
-        // 제품 이름
-        const productName = productSelect.options[productSelect.selectedIndex] ?
-        productSelect.options[productSelect.selectedIndex].textContent.split(' (')[0].replace(/^\s+|\s+$/g, '') : '미지정';
-        // 고객 요구사항
-        const opportunityInquiries = document.getElementById('opportunityInquiries').value.trim();
+
+              if (!employeeSelect.value) {
+                     throw new Error('담당자를 선택해주세요.');
+                    }
+
+              // 기회 담당자 이름
+            const selectedEmployeeOption = employeeSelect.options[employeeSelect.selectedIndex];
+            const employeeInfo = selectedEmployeeOption.textContent.trim();
+            const employeeName = employeeInfo.split(' (')[0].replace(/^\s+|\s+$/g, '');
+
+             // 부서명(파일명때문에 추가)
+             const deptMatch = employeeInfo.match(/Dept: (.+?)\)/);
+             const departmentName = deptMatch ? deptMatch[1].trim() : '미지정';
+
+            // 고객 담당자 이름
+            const customerEmployee = document.getElementById('customerEmployee').value.trim();
+
+             // 고객 요구사항
+            const opportunityInquiries = document.getElementById('opportunityInquiries').value.trim();
+
+             if (!productSelect.value) {
+                     throw new Error('제품을 선택해주세요.');
+                   }
+
+            // 제품 이름
+            const productName = productSelect.options[productSelect.selectedIndex] ?
+            productSelect.options[productSelect.selectedIndex].textContent.split(' (')[0].replace(/^\s+|\s+$/g, '') : '미지정';
+
+            // 수량
+             const quantity = document.getElementById('quantity').value.trim();
+            // 매출
+             const expectedRevenue = document.getElementById('expectedRevenue').value.trim();
 
         const dataToSend = {
-            담당자: employeeName,
-            부서: departmentName,
-            제품: productName,
-            고객요구사항: opportunityInquiries || '요구사항 없음'
+              회사명 : accountName,
+              기회명 : opportunityName,
+              기회담당자 : employeeName,
+              고객담당자 : customerEmployee,
+             고객요구사항 : opportunityInquiries || '요구사항 없음',
+             기회제품 : productName,
+             수량 : quantity,
+             기회매출 : expectedRevenue
         };
 
         console.log('전송할 데이터:', dataToSend);
-
+         // 다운로드 진행중 팝업창 생성
+         alert(' 다운로드 중 입니다. . . .  🚀 잠시만 기다려주세요. ');
         // Excel 생성 요청
         fetch('https://saiescrm.api.jyds.synology.me/generate-excel', {
             method: 'POST',
@@ -896,18 +945,122 @@ document.getElementById('proposalButton').addEventListener('click', function() {
             link.remove();
 
             // 다운로드 완료 팝업창 생성
-            alert('제안서 다운로드가 완료되었습니다.');
+            alert('제안서 다운로드가  완료되었습니다. ✨');
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('제안서 생성 중 오류가 발생했습니다. 다시 시도해 주세요.');
+            alert('제안서 생성 중 오류가 발생했습니다. 다시 시도해 주세요.⚠️');
         });
     } catch (error) {
         console.error('Error:', error);
-        alert(error.message || '입력 정보를 확인할 수 없습니다. 모든 필드가 올바르게 입력되었는지 확인해 주세요.');
+        alert(error.message || '입력 정보를 확인할 수 없습니다. ❗모든 필드가 올바르게 입력되었는지 확인해 주세요.❗');
     }
-});
+    });
 
+
+ // AI 제안서
+document.getElementById('proposalButton').addEventListener('click', function(event) {
+event.preventDefault();
+    try {
+
+            const employeeSelect = document.querySelector('#employeeId');
+            const productSelect = document.querySelector('#productId');
+
+           const accountSelect = document.querySelector('#accountId');
+           if (!accountSelect.value) {
+                  throw new Error('회사를 선택해주세요.');
+                 }
+            const selectedAccountOption = accountSelect.options[accountSelect.selectedIndex];
+            const accountInfo = selectedAccountOption.textContent.trim();
+            const accountName = accountInfo.split(' (')[0].replace(/^\s+|\s+$/g, '');
+
+            // 기회명
+            const opportunityName = document.getElementById('opportunityName').value.trim();
+
+
+              if (!employeeSelect.value) {
+                     throw new Error('담당자를 선택해주세요.');
+                    }
+
+              // 기회 담당자 이름
+            const selectedEmployeeOption = employeeSelect.options[employeeSelect.selectedIndex];
+            const employeeInfo = selectedEmployeeOption.textContent.trim();
+            const employeeName = employeeInfo.split(' (')[0].replace(/^\s+|\s+$/g, '');
+
+             // 부서명(파일명때문에 추가)
+             const deptMatch = employeeInfo.match(/Dept: (.+?)\)/);
+             const departmentName = deptMatch ? deptMatch[1].trim() : '미지정';
+
+            // 고객 담당자 이름
+            const customerEmployee = document.getElementById('customerEmployee').value.trim();
+
+             // 고객 요구사항
+            const opportunityInquiries = document.getElementById('opportunityInquiries').value.trim();
+
+             if (!productSelect.value) {
+                     throw new Error('제품을 선택해주세요.');
+                   }
+
+            // 제품 이름
+            const productName = productSelect.options[productSelect.selectedIndex] ?
+            productSelect.options[productSelect.selectedIndex].textContent.split(' (')[0].replace(/^\s+|\s+$/g, '') : '미지정';
+
+            // 수량
+             const quantity = document.getElementById('quantity').value.trim();
+            // 매출
+             const expectedRevenue = document.getElementById('expectedRevenue').value.trim();
+
+        const dataToSend = {
+              회사명 : accountName,
+              기회명 : opportunityName,
+              기회담당자 : employeeName,
+              고객담당자 : customerEmployee,
+             고객요구사항 : opportunityInquiries || '요구사항 없음',
+             기회제품 : productName,
+             수량 : quantity,
+             기회매출 : expectedRevenue
+        };
+
+        console.log('전송할 데이터:', dataToSend);
+         // 다운로드 진행중 팝업창 생성
+         alert(' 다운로드 중 입니다 . . . .  🚀 잠시만 기다려주세요. ');
+        // Excel 생성 요청
+        fetch('https://saiescrm.api.jyds.synology.me/generate-ppt', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(dataToSend)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.blob();
+        })
+        .then(blob => {
+            // excel 파일을 사용자 PC에 다운로드
+            const url = window.URL.createObjectURL(new Blob([blob]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `${departmentName}_${employeeName}_${productName}_proposal.xlsx`);
+            document.body.appendChild(link);
+            link.click();
+            window.URL.revokeObjectURL(url);
+            link.remove();
+
+            // 다운로드 완료 팝업창 생성
+            alert('제안서 다운로드가  완료되었습니다.✨');
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('제안서 생성 중 오류가 발생했습니다. 다시 시도해 주세요.⚠️');
+        });
+    } catch (error) {
+        console.error('Error:', error);
+        alert(error.message || '입력 정보를 확인할 수 없습니다. ❗모든 필드가 올바르게 입력되었는지 확인해 주세요.❗');
+    }
+    });
 
         {{/opportunities}}
 

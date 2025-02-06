@@ -368,6 +368,16 @@ public class OpportunitiesController {
         return ResponseEntity.ok(response);
     }
 
+    // 진행중 기회 목록 API 추가
+    @GetMapping("/api/opportunities/ongoing")
+    public String getOngoingOpportunities(@RequestParam(defaultValue = "0") int page, Model model) {
+        Page<OpportunitiesEntity> ongoingOpportunities = opportunitiesService.getOngoingOpportunities(page);
+        PaginationDto<OpportunitiesEntity> paginationDto = paginationService.createPaginationData(ongoingOpportunities, page, 5);
+
+        model.addAttribute("pagination", paginationDto);
+        return "opportunities/ongoing-opportunities";  // 기존 Mustache 템플릿을 그대로 반환
+    }
+
 
     @GetMapping("/api/salesData")
     public ResponseEntity<?> getSalesData(

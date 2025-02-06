@@ -124,14 +124,14 @@
                             <div class="mb-3 row">
                                 <label for="productName" class="col-sm-2 col-form-label">제품명:</label>
                                 <div class="col-sm-10">
-                                    <input type="text" class="form-control" id="productName" name="productName" value="{{productName}}" required>
+                                    <input type="text" class="form-control" id="productName" name="productName" value="{{productName}}" placeholder="예: AI Cloud" required>
                                 </div>
                             </div>
 
                             <div class="mb-3 row">
                                 <label for="category" class="col-sm-2 col-form-label">제품군:</label>
                                 <div class="col-sm-10">
-                                    <input type="text" class="form-control" id="productFamily" name="productFamily" value="{{productFamily}}" required>
+                                    <input type="text" class="form-control" id="productFamily" name="productFamily" value="{{productFamily}}" placeholder="예: AI Contact Center" required>
                                 </div>
                             </div>
 
@@ -139,7 +139,7 @@
                                 <label for="fixedPrice" class="col-sm-2 col-form-label">원가:</label>
                                 <div class="col-sm-10">
                                     <input type="text" class="form-control currency-input" id="fixedPrice" name="fixedPrice"
-                                           value="{{ fixedPrice }}" required>
+                                           value="{{ fixedPrice }}" placeholder="예: 50,000" required>
                                 </div>
                             </div>
 
@@ -147,7 +147,7 @@
                                 <label for="dealerPrice" class="col-sm-2 col-form-label">딜러가:</label>
                                 <div class="col-sm-10">
                                     <input type="text" class="form-control currency-input" id="dealerPrice" name="dealerPrice"
-                                           value="{{ dealerPrice }}" required>
+                                           value="{{ dealerPrice }}" placeholder="예: 45,000" required>
                                 </div>
                             </div>
 
@@ -155,7 +155,7 @@
                                 <label for="costPrice" class="col-sm-2 col-form-label">정찰가:</label>
                                 <div class="col-sm-10">
                                     <input type="text" class="form-control currency-input" id="costPrice" name="costPrice"
-                                           value="{{ costPrice }}" required>
+                                           value="{{ costPrice }}" placeholder="예: 55,000" required>
                                 </div>
                             </div>
 
@@ -181,6 +181,7 @@
                     </table>
                 </div>
             </div>
+        </div>
 
         {{#productId}}
         <div class="card mb-4">

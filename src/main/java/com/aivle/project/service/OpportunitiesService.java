@@ -181,6 +181,13 @@ public class OpportunitiesService {
                 .collect(Collectors.toMap(result -> (String) result[0], result -> (Long) result[1]));
     }
 
+    // 진행 중인 기회 페이징 처리하여 조회
+    public Page<OpportunitiesEntity> getOngoingOpportunities(int page) {
+        String userId = UserContext.getCurrentUserId();
+        Pageable pageable = PageRequest.of(page, 10, Sort.by("createdDate").descending());
+        return opportunitiesRepository.findOngoingOpportunitiesByUser(userId, pageable);
+    }
+
     public Map<String, List<Integer>> getBarData() {
         return getYearlyData(true);
     }
