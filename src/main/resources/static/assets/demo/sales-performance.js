@@ -2,104 +2,79 @@ document.addEventListener("DOMContentLoaded", function () {
     fetch('/api/sales-performance')
         .then(response => response.json())
         .then(data => {
+            if (!data || data.length === 0) {
+                console.error('No data received.');
+                return;
+            }
+
+            // 데이터 키 확인 (부서/팀/직원 구분)
+            const keyName = data[0].departmentName ? "departmentName"
+                          : data[0].teamName ? "teamName"
+                          : "employeeName"; // 기본값은 직원 이름
+
             // totalSales 기준으로 내림차순 정렬
             const sortedData = data.sort((a, b) => b.totalSales - a.totalSales);
 
-            // 상위 5명과 하위 5명 추출
+            // 상위 5개와 하위 5개 추출
             const top5Data = sortedData.slice(0, 5);
             const bottom5Data = sortedData.slice(-5);
 
-            // 상위 5명 데이터 (10000으로 나누기)
-            const top5Labels = top5Data.map(item => item.employeeName);
-            const top5Sales = top5Data.map(item => item.totalSales / 1000); // 천원 단위로 변환
+            // 라벨 및 매출액 추출 (천원 단위 변환)
+            const top5Labels = top5Data.map(item => item[keyName]);
+            const top5Sales = top5Data.map(item => item.totalSales / 1000);
 
-            // 하위 5명 데이터 (10000으로 나누기)
-            const bottom5Labels = bottom5Data.map(item => item.employeeName);
-            const bottom5Sales = bottom5Data.map(item => item.totalSales / 1000); // 천원 단위로 변환
+            const bottom5Labels = bottom5Data.map(item => item[keyName]);
+            const bottom5Sales = bottom5Data.map(item => item.totalSales / 1000);
 
-            // 상위 5명 그래프
-            const top5Ctx = document.getElementById('topSalesChart').getContext('2d');
-            new Chart(top5Ctx, {
-                type: 'bar',
-                data: {
-                    labels: top5Labels,
-                    datasets: [{
-                        label: '상위 5명 영업 실적',
-                        data: top5Sales,
-                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    tooltips: {
-                        callbacks: {
-                            label: function (tooltipItem, data) {
-                                const value = tooltipItem.yLabel; // y축 값 가져오기
-                                return `${value.toFixed(1)} k`; // 툴팁 값에 "k" 추가
-                            }
-                        }
-                    },
-                    scales: {
-                        yAxes: [{ // 2.x에서는 y축 설정에 yAxes 배열 사용
-                            ticks: {
-                                beginAtZero: true,
-                                callback: function (value, index, values) {
-                                    return value + " k"; // 눈금 값 뒤에 "만원" 추가
-                                }
-                            }
-                        }],
-                        xAxes: [{ // x축도 xAxes 배열 사용
-                            ticks: {
-                                autoSkip: false // x축 레이블 자동 생략 방지
-                            }
-                        }]
-                    }
-                }
-            });
+            // 상위 5개 그래프
+            createBarChart('topSalesChart', '영업 실적 Top 5', top5Labels, top5Sales, 'rgba(54, 162, 235, 0.2)', 'rgba(54, 162, 235, 1)');
 
-            // 하위 5명 그래프
-            const bottom5Ctx = document.getElementById('bottomSalesChart').getContext('2d');
-            new Chart(bottom5Ctx, {
-                type: 'bar',
-                data: {
-                    labels: bottom5Labels,
-                    datasets: [{
-                        label: '하위 5명 영업 실적',
-                        data: bottom5Sales,
-                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                        borderColor: 'rgba(255, 99, 132, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    tooltips: {
-                        callbacks: {
-                            label: function (tooltipItem, data) {
-                                const value = tooltipItem.yLabel; // y축 값 가져오기
-                                return `${value.toFixed(1)} k`; // 툴팁 값에 "만원" 추가
-                            }
-                        }
-                    },
-                    scales: {
-                        yAxes: [{ // y축 설정
-                            ticks: {
-                                beginAtZero: true,
-                                callback: function (value) {
-                                    return value + " k"; // 눈금 값 뒤에 "만원" 추가
-                                }
-                            }
-                        }],
-                        xAxes: [{ // x축 설정
-                            ticks: {
-                                autoSkip: false
-                            }
-                        }]
-                    }
-
-
-                }
-            });
+            // 하위 5개 그래프
+            createBarChart('bottomSalesChart', '영업 실적 Bottom 5', bottom5Labels, bottom5Sales, 'rgba(255, 99, 132, 0.2)', 'rgba(255, 99, 132, 1)');
         })
         .catch(error => console.error('Error:', error));
 });
+
+/**
+ * 차트를 생성하는 함수
+ */
+function createBarChart(canvasId, label, labels, data, bgColor, borderColor) {
+    const ctx = document.getElementById(canvasId).getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: label,
+                data: data,
+                backgroundColor: bgColor,
+                borderColor: borderColor,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            tooltips: {
+                callbacks: {
+                    label: function (tooltipItem) {
+                        return `${tooltipItem.yLabel.toFixed(1)} k`;
+                    }
+                }
+            },
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true,
+                        callback: function (value) {
+                            return value + " k";
+                        }
+                    }
+                }],
+                xAxes: [{
+                    ticks: {
+                        autoSkip: false
+                    }
+                }]
+            }
+        }
+    });
+}
