@@ -241,16 +241,16 @@ public class EmployeeController {
     }
 
 
-    @GetMapping("/api/getLoggedInUser")
-    @ResponseBody
-    public ResponseEntity<EmployeeDto.Get> getLoggedInUser() {
-        try {
-            EmployeeDto.Get loggedInUser = employeeService.getLoggedInUser();
-            return ResponseEntity.ok(loggedInUser);
-        } catch (IllegalStateException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-        }
-    }
+//    @GetMapping("/api/getLoggedInUser")
+//    @ResponseBody
+//    public ResponseEntity<EmployeeDto.Get> getLoggedInUser() {
+//        try {
+//            EmployeeDto.Get loggedInUser = employeeService.getLoggedInUser();
+//            return ResponseEntity.ok(loggedInUser);
+//        } catch (IllegalStateException e) {
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+//        }
+//    }
 
     // 부서 정보 추가
     @GetMapping("/employees")

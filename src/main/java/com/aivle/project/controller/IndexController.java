@@ -1,21 +1,27 @@
 package com.aivle.project.controller;
 
+import com.aivle.project.dto.EmployeeDto;
+import com.aivle.project.dto.PaginationDto;
 import com.aivle.project.entity.CrudLogsEntity;
+import com.aivle.project.entity.OpportunitiesEntity;
 import com.aivle.project.enums.Position;
 import com.aivle.project.enums.Role;
-import com.aivle.project.service.EmployeeService;
-import com.aivle.project.service.OrdersService;
+import com.aivle.project.service.*;
 import com.aivle.project.utils.UserContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.User;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -27,6 +33,9 @@ import java.util.*;
 public class IndexController {
     private final EmployeeService employeeService;
     private final OrdersService ordersService;
+    private final LeadsService leadsService;
+    private final OpportunitiesService opportunitiesService;
+    private final PaginationService paginationService;
 
     @GetMapping("/")
     public String index(Model model) {
@@ -141,6 +150,85 @@ public class IndexController {
         return (team != null)
                 ? ordersService.getTeamOrdersGroupedByEmployee(team, start, end)
                 : ordersService.getDepartmentOrdersGroupedByEmployee(department, start, end);
+    }
+
+    // 오늘 추가된 Leads 수 반환
+    @GetMapping("/api/leads/today")
+    public ResponseEntity<Map<String, Object>> getTodayLeads() {
+        long count = leadsService.getTodayLeadsForTeam();
+        Map<String, Object> response = new HashMap<>();
+        response.put("todayLeads", count);
+        return ResponseEntity.ok(response);
+    }
+
+    // 특정 상태의 Leads 수 반환
+    @GetMapping("/api/leads/status")
+    public ResponseEntity<Map<String, Object>> countLeadsByStatus(@RequestParam String leadStatus) {
+        long count = leadsService.countLeadsByStatusAndTeam(leadStatus);
+        Map<String, Object> response = new HashMap<>();
+        response.put("leadStatus", leadStatus);
+        response.put("leadCount", count);
+        return ResponseEntity.ok(response);
+    }
+
+    // 오늘 마감인 Leads 수 반환
+    @GetMapping("/api/leads/target-close-today")
+    public ResponseEntity<Map<String, Object>> countLeadsWithTargetCloseDateToday() {
+        long count = leadsService.countLeadsWithTargetCloseDateTodayForTeam();
+        Map<String, Object> response = new HashMap<>();
+        response.put("targetCloseDate", "Today");
+        response.put("leadCount", count);
+        return ResponseEntity.ok(response);
+    }
+
+    // 기회카드
+    @GetMapping("/api/opportunities/card-value")
+    public ResponseEntity<Map<String, Object>> countStatusCardValue() {
+        Map<String, Long> statusCounts = opportunitiesService.getOpportunitiesStatusCountsUser();
+        Map<String, Object> response = new HashMap<>();
+        response.put("statusCounts", statusCounts);
+        return ResponseEntity.ok(response);
+    }
+
+    // 진행중 기회 목록 API 추가
+    @GetMapping("/api/opportunities/ongoing")
+    public String getOngoingOpportunities(@RequestParam(defaultValue = "0") int page, Model model) {
+        Page<OpportunitiesEntity> ongoingOpportunities = opportunitiesService.getOngoingOpportunities(page);
+        PaginationDto<OpportunitiesEntity> paginationDto = paginationService.createPaginationData(ongoingOpportunities, page, 5);
+
+        model.addAttribute("pagination", paginationDto);
+        return "opportunities/ongoing-opportunities";  // 기존 Mustache 템플릿을 그대로 반환
+    }
+
+
+    @GetMapping("/api/salesData")
+    public ResponseEntity<?> getSalesData(
+            @RequestParam(required = false) String teamId,
+            @RequestParam(required = false) String departmentId
+    ) {
+        if (teamId == null && departmentId == null) {
+            return ResponseEntity.badRequest().body("팀 ID 또는 부서 ID가 필요합니다.");
+        }
+
+        Map<String, Object> salesData;
+        try {
+            salesData = opportunitiesService.getSalesData(teamId, departmentId);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+
+        return ResponseEntity.ok(salesData);
+    }
+
+    @GetMapping("/api/getLoggedInUser")
+    @ResponseBody
+    public ResponseEntity<EmployeeDto.Get> getLoggedInUser() {
+        try {
+            EmployeeDto.Get loggedInUser = employeeService.getLoggedInUser();
+            return ResponseEntity.ok(loggedInUser);
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
     }
 
 

@@ -359,44 +359,44 @@ public class OpportunitiesController {
         }
     }
 
-    // 기회카드
-    @GetMapping("/api/opportunities/card-value")
-    public ResponseEntity<Map<String, Object>> countStatusCardValue() {
-        Map<String, Long> statusCounts = opportunitiesService.getOpportunitiesStatusCountsUser();
-        Map<String, Object> response = new HashMap<>();
-        response.put("statusCounts", statusCounts);
-        return ResponseEntity.ok(response);
-    }
-
-    // 진행중 기회 목록 API 추가
-    @GetMapping("/api/opportunities/ongoing")
-    public String getOngoingOpportunities(@RequestParam(defaultValue = "0") int page, Model model) {
-        Page<OpportunitiesEntity> ongoingOpportunities = opportunitiesService.getOngoingOpportunities(page);
-        PaginationDto<OpportunitiesEntity> paginationDto = paginationService.createPaginationData(ongoingOpportunities, page, 5);
-
-        model.addAttribute("pagination", paginationDto);
-        return "opportunities/ongoing-opportunities";  // 기존 Mustache 템플릿을 그대로 반환
-    }
-
-
-    @GetMapping("/api/salesData")
-    public ResponseEntity<?> getSalesData(
-            @RequestParam(required = false) String teamId,
-            @RequestParam(required = false) String departmentId
-    ) {
-        if (teamId == null && departmentId == null) {
-            return ResponseEntity.badRequest().body("팀 ID 또는 부서 ID가 필요합니다.");
-        }
-
-        Map<String, Object> salesData;
-        try {
-            salesData = opportunitiesService.getSalesData(teamId, departmentId);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
-
-        return ResponseEntity.ok(salesData);
-    }
+//    // 기회카드
+//    @GetMapping("/api/opportunities/card-value")
+//    public ResponseEntity<Map<String, Object>> countStatusCardValue() {
+//        Map<String, Long> statusCounts = opportunitiesService.getOpportunitiesStatusCountsUser();
+//        Map<String, Object> response = new HashMap<>();
+//        response.put("statusCounts", statusCounts);
+//        return ResponseEntity.ok(response);
+//    }
+//
+//    // 진행중 기회 목록 API 추가
+//    @GetMapping("/api/opportunities/ongoing")
+//    public String getOngoingOpportunities(@RequestParam(defaultValue = "0") int page, Model model) {
+//        Page<OpportunitiesEntity> ongoingOpportunities = opportunitiesService.getOngoingOpportunities(page);
+//        PaginationDto<OpportunitiesEntity> paginationDto = paginationService.createPaginationData(ongoingOpportunities, page, 5);
+//
+//        model.addAttribute("pagination", paginationDto);
+//        return "opportunities/ongoing-opportunities";  // 기존 Mustache 템플릿을 그대로 반환
+//    }
+//
+//
+//    @GetMapping("/api/salesData")
+//    public ResponseEntity<?> getSalesData(
+//            @RequestParam(required = false) String teamId,
+//            @RequestParam(required = false) String departmentId
+//    ) {
+//        if (teamId == null && departmentId == null) {
+//            return ResponseEntity.badRequest().body("팀 ID 또는 부서 ID가 필요합니다.");
+//        }
+//
+//        Map<String, Object> salesData;
+//        try {
+//            salesData = opportunitiesService.getSalesData(teamId, departmentId);
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+//        }
+//
+//        return ResponseEntity.ok(salesData);
+//    }
 
 
 
