@@ -109,6 +109,15 @@ public class OpportunitiesController {
         return "opportunities/opportunities_detail";
     }
 
+    // History Detail page
+    @GetMapping("/opportunities/detail/{opportunityId}/history/{historyId}")
+    public String opportunityHistory(@PathVariable Long historyId, @PathVariable Long opportunityId, Model model) {
+        HistoryEntity opportunityHistory = opportunitiesService.searchHistory(historyId);
+        model.addAttribute("history", opportunityHistory);
+        model.addAttribute("opportunityId", opportunityId);
+        return "opportunities/opportunities_history_detail";
+    }
+
     @PostMapping("/opportunities/detail/createcomment")
     public String createComment(@RequestParam("content") String content, @RequestParam("opportunityId") Long opportunityId, RedirectAttributes redirectAttributes) {
         String employeeId = getCurrentUserId();
@@ -236,6 +245,54 @@ public class OpportunitiesController {
         }
     }
 
+    @PostMapping("/opportunities/detail/{opportunityId}/history/{historyId}/update")
+    public String historyUpdate(@PathVariable("opportunityId") Long opportunityId,
+                                @PathVariable("historyId") Long historyId,
+                                @ModelAttribute HistoryDto historyDto,
+                                RedirectAttributes redirectAttributes) {
+        try {
+            // 기회 히스토리 수정
+            opportunitiesService.updateHistory(historyId, historyDto);
+
+            // 성공 로그 기록
+            crudLogsService.logCrudOperation("update", "opportunities_history", historyId.toString(), "True", "Success");
+
+            // 성공 메시지를 RedirectAttributes에 저장 (리다이렉트 후에도 유지됨)
+            redirectAttributes.addFlashAttribute("message", "기회 히스토리가 성공적으로 수정되었습니다.");
+
+            return "redirect:/opportunities/detail/" + opportunityId + "/history/" + historyId;
+        } catch (Exception e) {
+            // 실패 로그 기록
+            crudLogsService.logCrudOperation("update", "opportunities_history", historyId.toString(), "False", "Error: " + e.getMessage());
+
+            // 에러 메시지를 사용자에게 전달
+            redirectAttributes.addFlashAttribute("errorMessage", "기회 수정 중 오류가 발생했습니다. 다시 시도해주세요.");
+
+            return "redirect:/errorPage"; // 에러 발생 시 오류 페이지로 리다이렉트
+        }
+    }
+
+
+    @PostMapping("/opportunities/detail/{opportunityId}/history/{historyId}/delete")
+    public ResponseEntity<Void> historyDeleteDetail(@PathVariable("opportunityId") Long opportunityId,
+                                      @PathVariable("historyId") Long historyId) {
+        try {
+            // 계정 삭제 실행
+            opportunitiesService.deleteHistory(historyId);
+
+            // CRUD 작업 로깅
+            crudLogsService.logCrudOperation("delete", "opportunities_history", historyId.toString(), "True", "Success");
+
+            return ResponseEntity.ok().build(); // HTTP 200 응답 (삭제 성공)
+        } catch (Exception e) {
+            // 삭제 실패 로그 기록
+            crudLogsService.logCrudOperation("delete", "opportunities_history", historyId.toString(), "False", "Error: " + e.getMessage());
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // HTTP 500 응답 (삭제 실패)
+        }
+    }
+
+
     @PostMapping("/opportunities/detail/{opportunityId}/update")
     public String opportunitiesUpdate(@PathVariable("opportunityId") Long opportunityId, @ModelAttribute OpportunitiesDto opportunitiesDto, RedirectAttributes redirectAttributes) {
         try {
@@ -309,6 +366,16 @@ public class OpportunitiesController {
         Map<String, Object> response = new HashMap<>();
         response.put("statusCounts", statusCounts);
         return ResponseEntity.ok(response);
+    }
+
+    // 진행중 기회 목록 API 추가
+    @GetMapping("/api/opportunities/ongoing")
+    public String getOngoingOpportunities(@RequestParam(defaultValue = "0") int page, Model model) {
+        Page<OpportunitiesEntity> ongoingOpportunities = opportunitiesService.getOngoingOpportunities(page);
+        PaginationDto<OpportunitiesEntity> paginationDto = paginationService.createPaginationData(ongoingOpportunities, page, 5);
+
+        model.addAttribute("pagination", paginationDto);
+        return "opportunities/ongoing-opportunities";  // 기존 Mustache 템플릿을 그대로 반환
     }
 
 

@@ -2,7 +2,12 @@ package com.aivle.project.repository;
 
 import com.aivle.project.entity.ChatbotLogsEntity;
 import com.aivle.project.entity.CrudLogsEntity;
+import com.aivle.project.entity.OrdersEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -10,5 +15,7 @@ import java.util.List;
 @Repository
 public interface CrudLogsRepository  extends JpaRepository<CrudLogsEntity, Long> {
 
-    List<CrudLogsEntity> findAllByOrderByLogsIdDesc(); // logsId 기준 내림차순
+    // ✅ 특정 키워드를 포함하는 로그 검색 + 페이징 지원
+    @Query("SELECT c FROM CrudLogsEntity c WHERE c.userId LIKE %:keyword% ORDER BY c.logsId DESC")
+    Page<CrudLogsEntity> findAllByKeyword(@Param("keyword") String keyword, Pageable pageable);
 }
