@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Repository
@@ -47,6 +48,7 @@ public interface AccountRepository extends JpaRepository<AccountEntity, Long> {
     List<Object[]> findAllAccountIdAndAccountName();
 
 
+    Optional<AccountEntity> findByAccountName(String companyName);
 
     //    Page<AccountEntity> findByAccountNameContainingOrAccountTypeContaining(String name, String type, Pageable pageable);
 }
