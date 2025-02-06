@@ -259,15 +259,36 @@ public class OrdersService {
     }
 
     // 영업 실적 그래프
+    public List<Map<String, Object>> getDepartmentSalesPerformance(int year, int month) {
+        String userId = UserContext.getCurrentUserId();
+        String userDepartment = employeeRepository.findDepartmentById(userId);
+        List<Object[]> data = ordersRepository.getAllDepartmentSales(year, month);
+
+        return mapToSalesPerformanceList(data, "departmentId", "departmentName");
+    }
+
+    public List<Map<String, Object>> getTeamSalesPerformance(int year, int month) {
+        String userId = UserContext.getCurrentUserId();
+        String userDepartment = employeeRepository.findDepartmentById(userId);
+        List<Object[]> data = ordersRepository.getTeamSalesByDepartment(year, month, Dept.valueOf(userDepartment));
+
+        return mapToSalesPerformanceList(data, "teamId", "teamName");
+    }
+
     public List<Map<String, Object>> getEmployeeSalesPerformanceWithNames(int year, int month) {
-        String userid = UserContext.getCurrentUserId();
-        String userteam = employeeRepository.findTeamById(userid);
-        List<Object[]> data = ordersRepository.getSalesByEmployeeWithNames(year, month, Team.valueOf(userteam));
+        String userId = UserContext.getCurrentUserId();
+        String userTeam = employeeRepository.findTeamById(userId);
+        List<Object[]> data = ordersRepository.getSalesByEmployeeWithNames(year, month, Team.valueOf(userTeam));
+
+        return mapToSalesPerformanceList(data, "employeeId", "employeeName");
+    }
+
+    private List<Map<String, Object>> mapToSalesPerformanceList(List<Object[]> data, String idKey, String nameKey) {
         List<Map<String, Object>> result = new ArrayList<>();
         for (Object[] row : data) {
             Map<String, Object> map = new HashMap<>();
-            map.put("employeeId", row[0]);
-            map.put("employeeName", row[1]);
+            map.put(idKey, row[0]);
+            map.put(nameKey, row[1]);
             map.put("totalSales", row[2]);
             result.add(map);
         }

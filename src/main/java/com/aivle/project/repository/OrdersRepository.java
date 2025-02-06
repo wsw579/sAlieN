@@ -92,6 +92,51 @@ public interface OrdersRepository extends JpaRepository<OrdersEntity, Long> {
             @Param("month") int month,
             @Param("teamId") Team teamId);
 
+    @Query("SELECT e.departmentId AS departmentId, " +
+            "CASE e.departmentId " +
+            "   WHEN 'STRATEGY_DEPT' THEN '전략고객본부' " +
+            "   WHEN 'PUBLIC_DEPT' THEN '공공고객본부' " +
+            "   WHEN 'FINANCE_DEPT' THEN '금융고객본부' " +
+            "   WHEN 'CORPORATE_DEPT' THEN '법인영업본부' " +
+            "   ELSE '기타' END AS departmentName, " +
+            "SUM(o.orderAmount * p.fixedPrice) AS totalSales " +
+            "FROM OrdersEntity o " +
+            "JOIN o.productId p " +
+            "JOIN o.employeeId e " +
+            "WHERE MONTH(o.salesDate) = MONTH(CURRENT_DATE) " +
+            "AND YEAR(o.salesDate) = YEAR(CURRENT_DATE) " +
+            "GROUP BY e.departmentId " +
+            "ORDER BY totalSales DESC")
+    List<Object[]> getAllDepartmentSales();
+
+    @Query("SELECT e.teamId AS teamId, " +
+            "CASE e.teamId " +
+            "   WHEN 'STRATEGY_CUST_SECTOR' THEN '전략고객섹터담당' " +
+            "   WHEN 'STRATEGY_CUST_1' THEN '전략고객1담당' " +
+            "   WHEN 'STRATEGY_CUST_2' THEN '전략고객2담당' " +
+            "   WHEN 'PUBLIC_CUST_SECTOR' THEN '공공고객섹터담당' " +
+            "   WHEN 'PUBLIC_CUST_1' THEN '공공고객1담당' " +
+            "   WHEN 'PUBLIC_CUST_2' THEN '공공고객2담당' " +
+            "   WHEN 'FINANCE_CUST_SECTOR' THEN '금융고객섹터담당' " +
+            "   WHEN 'FINANCE_CUST_1' THEN '금융고객1담당' " +
+            "   WHEN 'FINANCE_CUST_2' THEN '금융고객2담당' " +
+            "   WHEN 'CORPORATE_SALES_PLANNING' THEN '법인영업기획담당' " +
+            "   WHEN 'CORPORATE_CUST' THEN '법인고객담당' " +
+            "   WHEN 'CORPORATE_RETAIL' THEN '법인유통담당' " +
+            "   WHEN 'CORPORATE_SALES_SECTOR' THEN '법인섹터담당' " +
+            "   ELSE '기타' END AS teamName, " +
+            "SUM(o.orderAmount * p.fixedPrice) AS totalSales " +
+            "FROM OrdersEntity o " +
+            "JOIN o.productId p " +
+            "JOIN o.employeeId e " +
+            "WHERE e.departmentId = :departmentId " +  // 부서 ID 필터링 추가
+            "AND MONTH(o.salesDate) = MONTH(CURRENT_DATE) " +
+            "AND YEAR(o.salesDate) = YEAR(CURRENT_DATE) " +
+            "GROUP BY e.teamId " +
+            "ORDER BY totalSales DESC")
+    List<Object[]> getTeamSalesByDepartment(@Param("departmentId") Dept departmentId);
+
+
     // 이번달 주문 현황 퍼센트 표시
     @Query("SELECT COUNT(o) FROM OrdersEntity o " +
             "JOIN o.employeeId e " +

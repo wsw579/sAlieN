@@ -61,15 +61,19 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.warn(`⚠️ ${year}년 ${month}월 데이터 없음`);
                 return;
             }
+            // 데이터 키 확인 (부서/팀/직원 구분)
+                        const keyName = data[0].departmentName ? "departmentName"
+                                      : data[0].teamName ? "teamName"
+                                      : "employeeName"; // 기본값은 직원
 
             const sortedData = data.sort((a, b) => b.totalSales - a.totalSales);
             const top5Data = sortedData.slice(0, 5);
             const bottom5Data = sortedData.slice(-5);  // 하위 5명 추가
 
-            const top5Labels = top5Data.map(item => item.employeeName);
+            const top5Labels = top5Data.map(item => item[keyName]);
             const top5Sales = top5Data.map(item => item.totalSales / 1000);
 
-            const bottom5Labels = bottom5Data.map(item => item.employeeName);
+            const bottom5Labels = bottom5Data.map(item => item[keyName]);
             const bottom5Sales = bottom5Data.map(item => item.totalSales / 1000);
 
             updateChart("topSalesChart", "상위 5명 영업 실적", top5Labels, top5Sales, "rgba(54, 162, 235, 0.2)", "rgba(54, 162, 235, 1)");
