@@ -103,11 +103,12 @@ public interface OrdersRepository extends JpaRepository<OrdersEntity, Long> {
             "FROM OrdersEntity o " +
             "JOIN o.productId p " +
             "JOIN o.employeeId e " +
-            "WHERE MONTH(o.salesDate) = MONTH(CURRENT_DATE) " +
-            "AND YEAR(o.salesDate) = YEAR(CURRENT_DATE) " +
+            "WHERE MONTH(o.salesDate) = :month " +
+            "AND YEAR(o.salesDate) = :year " +
             "GROUP BY e.departmentId " +
             "ORDER BY totalSales DESC")
-    List<Object[]> getAllDepartmentSales();
+    List<Object[]> getAllDepartmentSales(@Param("year") int year,
+                                         @Param("month") int month);
 
     @Query("SELECT e.teamId AS teamId, " +
             "CASE e.teamId " +
@@ -130,11 +131,13 @@ public interface OrdersRepository extends JpaRepository<OrdersEntity, Long> {
             "JOIN o.productId p " +
             "JOIN o.employeeId e " +
             "WHERE e.departmentId = :departmentId " +  // 부서 ID 필터링 추가
-            "AND MONTH(o.salesDate) = MONTH(CURRENT_DATE) " +
-            "AND YEAR(o.salesDate) = YEAR(CURRENT_DATE) " +
+            "AND MONTH(o.salesDate) = :month " +
+            "AND YEAR(o.salesDate) = :year " +
             "GROUP BY e.teamId " +
             "ORDER BY totalSales DESC")
-    List<Object[]> getTeamSalesByDepartment(@Param("departmentId") Dept departmentId);
+    List<Object[]> getTeamSalesByDepartment(@Param("year") int year,
+                                            @Param("month") int month,
+                                            @Param("departmentId") Dept departmentId);
 
 
     // 이번달 주문 현황 퍼센트 표시
