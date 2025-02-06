@@ -312,7 +312,13 @@ public class chatbotController {
             order.setOrderAmount(0.0f);
         }
 
-        order.setOrderStatus(OrderStatus.valueOf(params.get("orderStatus")));
+        String orderStatus = params.get("orderStatus");
+        if (!orderStatus.isEmpty()) {
+            order.setOrderStatus(OrderStatus.valueOf(params.get("orderStatus")));
+        } else {
+            order.setOrderStatus(OrderStatus.valueOf("activated"));
+        }
+
 
 
         model.addAttribute("orders", order);
