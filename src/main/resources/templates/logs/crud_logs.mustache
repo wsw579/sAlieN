@@ -16,68 +16,6 @@
             <ol class="breadcrumb mb-4">
                 <li class="breadcrumb-item active">CRUD Logs</li>
             </ol>
-            <!-- 상단 데이터 요약 카드 바 -->
-<!--            <div class="row">-->
-<!--                <div class="col-xl-3 col-md-6">-->
-<!--                    <div class="card bg-primary text-white mb-4">-->
-<!--                        <div class="card-body">오늘 생성 로그</div>-->
-<!--                        <div class="card-footer d-flex align-items-center justify-content-between">-->
-<!--                            <h3 id="allCount">건</h3>-->
-<!--                            <div class="small text-white"><i class="fas fa-angle-right"></i></div>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--                <div class="col-xl-3 col-md-6">-->
-<!--                    <div class="card bg-warning text-white mb-4">-->
-<!--                        <div class="card-body">전체 로그</div>-->
-<!--                        <div class="card-footer d-flex align-items-center justify-content-between">-->
-<!--                            <h3 id="proposalCount">건</h3>-->
-<!--                            <div class="small text-white"><i class="fas fa-angle-right"></i></div>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--                <div class="col-xl-3 col-md-6">-->
-<!--                    <div class="card bg-success text-white mb-4">-->
-<!--                        <div class="card-body">성공 로그</div>-->
-<!--                        <div class="card-footer d-flex align-items-center justify-content-between">-->
-<!--                            <h3 id="reviewCount">건</h3>-->
-<!--                            <div class="small text-white"><i class="fas fa-angle-right"></i></div>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--                <div class="col-xl-3 col-md-6">-->
-<!--                    <div class="card bg-danger text-white mb-4">-->
-<!--                        <div class="card-body">실패 로그</div>-->
-<!--                        <div class="card-footer d-flex align-items-center justify-content-between">-->
-<!--                            <h3 id="acceptedCount">건</h3>-->
-<!--                            <div class="small text-white"><i class="fas fa-angle-right"></i></div>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </div>-->
-
-<!--            </div>-->
-
-<!--            &lt;!&ndash; 차트 &ndash;&gt;-->
-<!--            <div class="row">-->
-<!--                <div class="col-xl-6">-->
-<!--                    <div class="card mb-4">-->
-<!--                        <div class="card-header">-->
-<!--                            <i class="fas fa-chart-area me-1"></i>-->
-<!--                            연간 성공 로그-->
-<!--                        </div>-->
-<!--                        <div class="card-body"><canvas id="leadsReadChart" width="100%" height="40"></canvas></div>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--                <div class="col-xl-6">-->
-<!--                    <div class="card mb-4">-->
-<!--                        <div class="card-header">-->
-<!--                            <i class="fas fa-chart-bar me-1"></i>-->
-<!--                            연간 실패 로그-->
-<!--                        </div>-->
-<!--                        <div class="card-body"><canvas id="leadsReadBar" width="100%" height="40"></canvas></div>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--            </div>-->
 
             <!-- 로그 테이블 -->
             <div class="card mb-4">
@@ -88,10 +26,10 @@
                 <div class="card-body">
                     <div class="button-container mb-3" style="display: flex; align-items: center; gap: 10px;">
                         <div style="flex: 1; display: flex; align-items: center; gap: 10px; justify-content: flex-end;">
-                            <form method="GET" action="/chatbot_logs" style="display: flex; align-items: center; gap: 5px;">
+                            <form method="GET" action="/crud_logs" style="display: flex; align-items: center; gap: 5px;">
                                 <!-- 검색어 -->
-                                <input type="text" class="form-control" name="search" id="customSearch" placeholder="검색어를 입력하세요"
-                                       style="padding: 5px; width: 200px;" value="">
+                                <input type="text" class="form-control" name="search" id="customSearch" placeholder="User ID를 입력하세요"
+                                       style="padding: 5px; width: 200px;" value="{{search}}">
 
                                 <button type="submit" class = "btn btn-custom-select btn-sm">검색</button>
                             </form>
@@ -114,7 +52,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        {{#logs}}
+                        {{#pagination.contents}}
                             <tr data-index="{{logsId}}">
                                 <td>{{logsId}}</td>
                                 <td>{{logDate}}</td>
@@ -125,14 +63,37 @@
                                 <td>{{isSuccess}}</td>
                                 <td>{{logMessage}}</td>
                             </tr>
-                        {{/logs}}
-                        {{^logs}}
+                        {{/pagination.contents}}
+                        {{^pagination.contents}}
 
-                        {{/logs}}
+                        {{/pagination.contents}}
                         </tbody>
 
                     </table>
+                    <div class="pagination justify-content-center">
+                        <!-- 이전 버튼 -->
+                        {{#pagination.hasPreviousPage}}
+                            <button onclick="window.location.href='/crud_logs?page={{pagination.previousPage}}&size=20&search={{search}}'">
+                            이전
+                            </button>
+                        {{/pagination.hasPreviousPage}}
 
+                        <!-- 페이지 번호 버튼 -->
+                        {{#pagination.pageNumbers}}
+                            <button
+                                    onclick="window.location.href='/crud_logs?page={{page}}&size=20&search={{search}}'"
+                            class="{{#isActive}}active{{/isActive}}">
+                            {{displayPage}}
+                            </button>
+                        {{/pagination.pageNumbers}}
+
+                        <!-- 다음 버튼 -->
+                        {{#pagination.hasNextPage}}
+                            <button onclick="window.location.href='/crud_logs?page={{pagination.nextPage}}&size=20&search={{search}}'">
+                            다음
+                            </button>
+                        {{/pagination.hasNextPage}}
+                    </div>
 
                 </div>
             </div>
@@ -146,8 +107,5 @@
 
 
     </script>
-
-    <script src="/assets/demo/leads-read-chart.js"></script>
-    <script src="/assets/demo/leads-read-bar.js"></script>
 
 {{>main/footer}}

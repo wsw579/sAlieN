@@ -3,6 +3,8 @@ package com.aivle.project.entity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,30 +26,30 @@ public class LeadsEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long leadId;
 
-    @Column(nullable = true, length = 50)
+    @Column(nullable = false)
     private String leadStatus;
 
-    @Column(nullable = true, length = 255)
+    @Column(nullable = false, length = 255)
     private String leadSource;
 
-    @Column(nullable = true)
+    @Column(nullable = false)
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate createdDate;
 
-    @Column(nullable = true)
+    @Column(nullable = false)
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate targetCloseDate;
 
-    @Column(nullable = true) // 리드내용
+    @Column(nullable = false , length = 1000)  // 리드내용
     private String customerRequirements;
 
-    @Column(nullable = true) // 계정명
+    @Column(nullable = false) // 계정명
     private String companyName;
 
-    @Column(nullable = true) // 계정 담당자
+    @Column(nullable = false) // 계정 담당자
     private String customerRepresentitive;
 
-    @Column(nullable = true)  // 연락처
+    @Column(nullable = false)  // 연락처
     private String c_tel;
 
 

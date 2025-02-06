@@ -4,60 +4,74 @@
 
 
 
-    .progress-container {
-            position: relative;
-            width: 100%;
-            height: 70px; /* 높이를 조금 늘립니다 */
-            margin: 20px 0;
-        }
+.progress-container {
+    position: relative;
+    width: 100%;
+    height: 70px;
+    margin: 20px 0;
+}
 
-        .progress-bar {
-            position: absolute;
-            top: 38%; /* 중앙 정렬 */
-            left: 10%; /* Qualification 원의 중앙에서 시작하도록 조정합니다 */
-            transform: translateY(-50%);
-            width: 0;
-            max-width: calc(100% - 20%); /* ✅ 마지막 `step`을 초과하지 않도록 제한 */
-            height: 10px;
-            background-color: green;
-            transition: width 0.4s ease;
-        }
+/* 바(—):
+   - 지름 20px 원에 맞춰, 양쪽 10px 띄움
+   - 따라서 "왼쪽 원 중심" ~ "오른쪽 원 중심"까지가 바 */
+.progress-bar {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 10px;
+    right: 10px;
+    height: 10px;
+    background-color: green;
+    border-radius: 5px; /* 둥글려주면 원과 자연스럽게 이어짐 */
+    transition: width 0.4s ease;
+    z-index: 0;
+}
 
-        .progress-steps {
-            display: flex;
-            justify-content: space-between;
-            position: absolute;
-            top: 50%; /* 중앙 정렬 */
-            width: 100%;
-            transform: translateY(-50%);
-        }
+/* 각 스텝(원 + 텍스트) 가로로 균등 분배 */
+.progress-steps {
+    display: flex;
+    justify-content: space-between;
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    transform: translateY(-50%);
+}
 
-        .step {
-            width: 20%;
-            text-align: center;
-            position: relative;
-            padding-top: 30px; /* 텍스트를 아래로 내리기 위해 패딩 추가 */
-        }
+/* 스텝 */
+.step {
+    text-align: center;
+    position: relative;
+}
 
+/* 원(●):
+   - "step"의 가로 중앙에 찍되,
+     정확히 -50%만큼만 이동해서 완벽한 중앙 */
+.step::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* -45% 등으로 바꾸면 틀어짐! */
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: white;
+    border: 2px solid green;
+    transition: background-color 0.4s ease, border-color 0.4s ease;
+    z-index: 1; /* 바 위로 표시 */
+}
 
-        .step::before {
-            content: '';
-            position: absolute;
-            top: 16%; /* 원의 위치를 조정합니다 */
-            left: 50%;
-            transform: translateX(-50%);
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background-color: white;
-            border: 2px solid green;
-            transition: background-color 0.4s ease, border-color 0.4s ease;
-        }
+/* 활성화된(채워진) 원(●) */
+.step.active::before {
+    background-color: green;
+    border-color: green;
+}
 
-        .step.active::before {
-            background-color: green;
-            border-color: green;
-        }
+/* 텍스트를 원 아래로 내리고 싶다면 */
+.step span {
+    display: block;
+    margin-top: 30px; /* 적당히 조정 */
+}
 
 
 
@@ -83,6 +97,39 @@
             </div>
             <div class="row">
             </div>
+
+            <!-- 계약 상태 부분 -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-table me-1"></i>
+                    Contracts Status
+                </div>
+                <div class="card-body">
+                    <table id="contracts_status">
+
+
+                        {{#contracts}}
+                            <div class="progress-container">
+                                <div class="progress-bar" id="progressBar"></div>
+                                <div class="progress-steps">
+                                    <div class="step" data-step="Draft">
+                                        <span>Draft</span>
+                                    </div>
+                                    <div class="step" data-step="In Approval Process">
+                                        <span>In Approval Process</span>
+                                    </div>
+                                    <div class="step" data-step="Activated">
+                                        <span>Activated</span>
+                                    </div>
+                                </div>
+                            </div>
+                        {{/contracts}}
+
+
+                    </table>
+                </div>
+            </div>
+
 
             <!-- 계약 상세내용 부분 -->
             <div class="card mb-4">
@@ -186,7 +233,7 @@
                             <div class="mb-3 row">
                                 <label for="contractAmount" class="col-sm-2 col-form-label">계약 수량:</label>
                                 <div class="col-sm-10">
-                                    <input type="number" step="0.01" class="form-control" id="contractAmount" name="contractAmount" value="{{contractAmount}}" required placeholder="계약 수량을 입력하세요">
+                                    <input type="number" step="0.01" class="form-control" id="contractAmount" name="contractAmount" value="{{contractAmount}}" required>
                                 </div>
                             </div>
                             <div class="mb-3 row">
@@ -199,7 +246,7 @@
                             <div class="mb-3 row">
                                 <label for="contractDetail" class="col-sm-2 col-form-label">계약 세부내용:</label>
                                 <div class="col-sm-10">
-                                    <input type="text" class="form-control" id="contractDetail" name="contractDetail" value="{{contractDetail}}" placeholder="계약 세부 내용을 입력하세요">
+                                    <input type="text" class="form-control" id="contractDetail" name="contractDetail" value="{{contractDetail}}" required>
                                 </div>
                             </div>
                             <div class="mb-3 row">
@@ -245,7 +292,6 @@
                 </div>
             </div>
 
-
             <div class="card mb-4">
                 <div class="card-header">
                     <i class="fas fa-file-upload me-1"></i> 계약서 첨부
@@ -276,39 +322,7 @@
                 {{/contractId}}
             </div>
 
-            {{#contractId}}
-                <!-- 계약 상태 부분 -->
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <i class="fas fa-table me-1"></i>
-                        Contracts Status
-                    </div>
-                    <div class="card-body">
-                        <table id="contracts_status">
 
-
-                            {{#contracts}}
-                                <div class="progress-container">
-                                    <div class="progress-bar" id="progressBar"></div>
-                                    <div class="progress-steps">
-                                        <div class="step" data-step="Draft">
-                                            <span>Draft</span>
-                                        </div>
-                                        <div class="step" data-step="In Approval Process">
-                                            <span>In Approval Process</span>
-                                        </div>
-                                        <div class="step" data-step="Activated">
-                                            <span>Activated</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            {{/contracts}}
-
-
-                        </table>
-                    </div>
-                </div>
-            {{/contractId}}
 
             <!-- 주문 부분 -->
             {{#contracts.contractId}}
@@ -510,34 +524,33 @@
 
 
 
-    document.addEventListener("DOMContentLoaded", function () {
-        const displayInput = document.getElementById("contractSalesDisplay");
-        const hiddenInput = document.getElementById("contractSales");
+                                                        document.addEventListener("DOMContentLoaded", function () {
+                                                    const displayInput = document.getElementById("contractSalesDisplay");
+                                                    const hiddenInput = document.getElementById("contractSales");
 
-        // 초기값 설정: 서버에서 전달된 값을 원화 형식으로 변환
-        if (hiddenInput.value) {
-            displayInput.value = formatCurrency(hiddenInput.value);
-        }
+                                                    // 초기값 설정: 서버에서 전달된 값을 원화 형식으로 변환
+                                                    if (hiddenInput.value) {
+                                                        displayInput.value = formatCurrency(hiddenInput.value);
+                                                    }
 
-        // 입력 시 원화 형식으로 변환
-        displayInput.addEventListener("input", function () {
-            const rawValue = displayInput.value.replace(/[^\d]/g, ""); // 숫자 이외의 문자 제거
-            const formattedValue = formatCurrency(rawValue); // 원화 형식 변환
-            displayInput.value = formattedValue; // 포맷된 값 표시
-            hiddenInput.value = rawValue; // 실제 숫자 값을 hidden 필드에 저장
-        });
+                                                    // 입력 시 원화 형식으로 변환
+                                                    displayInput.addEventListener("input", function () {
+                                                        const rawValue = displayInput.value.replace(/[^\d]/g, ""); // 숫자 이외의 문자 제거
+                                                        const formattedValue = formatCurrency(rawValue); // 원화 형식 변환
+                                                        displayInput.value = formattedValue; // 포맷된 값 표시
+                                                        hiddenInput.value = rawValue; // 실제 숫자 값을 hidden 필드에 저장
+                                                    });
 
-        // 원화 형식으로 변환하는 함수
-        function formatCurrency(value) {
-            if (!value) return "₩0";
-                return `₩${parseInt(value, 10).toLocaleString("ko-KR")}`;
-        }
-    });
+                                                    // 원화 형식으로 변환하는 함수
+                                                    function formatCurrency(value) {
+                                                        if (!value) return "₩0";
+                                                        return `₩${parseInt(value, 10).toLocaleString("ko-KR")}`;
+                                                    }
+                                                });
 
-// Form 부분 기회상태 초기값 연동 JS (select Form은 html로 초기 value 지정이 안되어서 JS로 처리)
+                                                            // Form 부분 기회상태 초기값 연동 JS (select Form은 html로 초기 value 지정이 안되어서 JS로 처리)
 
         {{#contracts}}
-            {{#contractId}}
             document.addEventListener("DOMContentLoaded", function() {
                 // Mustache 템플릿에서 서버 데이터를 가져옴
                 var contractStatus = "{{contractStatus}}";
@@ -555,7 +568,6 @@
                 document.getElementById("opportunityId").value = opportunityId;
                 document.getElementById("employeeId").value = employeeId;
             });
-            {{/contractId}}
 
             document.addEventListener("DOMContentLoaded", function() {
                 // 계정 검색
@@ -623,92 +635,6 @@
             {{/contractId}}
     });
 
-    document.addEventListener("DOMContentLoaded", function () {
-        document.getElementById("contractForm").addEventListener("submit", function (event) {
-            let isValid = true;
-
-            // 시작일자 검증 (오늘 또는 과거여야 함)
-            const startDate = document.getElementById("startDate").value;
-            if (!startDate) {
-                alert("시작일자를 입력하세요.");
-                isValid = false;
-            } else if (new Date(startDate) > new Date()) {
-                alert("시작일자는 오늘 또는 과거 날짜여야 합니다.");
-                isValid = false;
-            }
-
-            // 마감기한 검증 (오늘 또는 미래여야 함)
-            const terminationDate = document.getElementById("terminationDate").value;
-            if (!terminationDate) {
-                alert("마감기한을 입력하세요.");
-                isValid = false;
-            } else if (new Date(terminationDate) < new Date(startDate)) {
-                alert("마감기한은 시작일자 이후여야 합니다.");
-                isValid = false;
-            }
-
-            // 계약 상태 선택 여부 확인
-            const contractStatus = document.getElementById("contractStatus").value;
-            if (!contractStatus) {
-                alert("계약 상태를 선택하세요.");
-                isValid = false;
-            }
-
-            // 계정 선택 여부 확인
-            const accountId = document.getElementById("accountId").value;
-            if (!accountId) {
-                alert("계정을 선택하세요.");
-                isValid = false;
-            }
-
-            // 기회 선택 여부 확인
-            const opportunityId = document.getElementById("opportunityId").value;
-            if (!opportunityId) {
-                alert("기회를 선택하세요.");
-                isValid = false;
-            }
-
-            // 제품 선택 여부 확인
-            const productId = document.getElementById("productId").value;
-            if (!productId) {
-                alert("계약 제품을 선택하세요.");
-                isValid = false;
-            }
-
-            // 계약 수량 검증 (숫자, 0 이상)
-            const contractAmount = document.getElementById("contractAmount").value;
-            if (!contractAmount || isNaN(contractAmount) || contractAmount < 0) {
-                alert("계약 수량은 0 이상이어야 합니다.");
-                isValid = false;
-            }
-
-            // 계약 가격 검증 (숫자, 0 이상)
-            const contractSales = document.getElementById("contractSales").value;
-            if (!contractSales || isNaN(contractSales) || contractSales < 0) {
-                alert("계약 가격은 0 이상이어야 합니다.");
-                isValid = false;
-            }
-
-            // 계약 분류 선택 여부 확인
-            const contractClassification = document.getElementById("contractClassification").value;
-            if (!contractClassification) {
-                alert("계약 분류를 선택하세요.");
-                isValid = false;
-            }
-
-            // 계약 소유자 선택 여부 확인
-            const employeeId = document.getElementById("employeeId").value;
-            if (!employeeId) {
-                alert("계약 소유자를 선택하세요.");
-                isValid = false;
-            }
-
-            // 유효성 검사를 통과하지 못하면 폼 제출을 막음
-            if (!isValid) {
-                event.preventDefault();
-            }
-        });
-    });
 
 
 
@@ -735,35 +661,26 @@
     });
 
 
+
     {{#contractId}}
     document.addEventListener("DOMContentLoaded", function () {
-
         const progressSteps = document.querySelectorAll(".step");
         const progressBar = document.getElementById("progressBar");
-        var contractStatus = "{{contractStatus}}"; // 현재 진행상황
+        const contractStatus = "{{contractStatus}}" || "Draft";
 
-        // 단계 목록
+        // 단계 목록 (예: Draft, In Approval Process, Activated)
         const steps = ["Draft", "In Approval Process", "Activated"];
+        const currentIndex = steps.indexOf(contractStatus);
+        if (currentIndex === -1) return;
 
-        var currentIndex = -1;
+        // 스텝 개수가 3개면, 구간이 2개 => currentIndex에 따라 0%, 50%, 100%로 계산
+        const intervals = steps.length - 1; // 3 - 1 = 2
+        const progressPercent = (currentIndex / intervals) * 100;
+        //   currentIndex: 0 => 0%
+        //   currentIndex: 1 => 50%
+        //   currentIndex: 2 => 100%
 
-        // 진행상황 업데이트
-        if (contractStatus === "Activated") {
-            currentIndex = steps.indexOf("Activated");
-        } else {
-            currentIndex = steps.indexOf(contractStatus);
-        }
-
-        // 진행 퍼센트 계산
-
-        const intervals = steps.length - 1;
-        const progressPercent = (currentIndex / intervals) * 80;
-        console.log(currentIndex)
-        console.log(intervals)
-        console.log(progressPercent)
-
-
-        // 진행 바 너비 설정
+        // 진행 바 너비 설정 (퍼센트로만!)
         progressBar.style.width = progressPercent + "%";
 
         // 활성화된 스텝 표시

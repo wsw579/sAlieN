@@ -2,72 +2,86 @@
 
 <style>
 
-    .progress-container {
-        position: relative;
-        width: 100%;
-        height: 70px; /* 높이를 조금 늘립니다 */
-        margin: 20px 0;
-    }
+.progress-container {
+    position: relative;
+    width: 100%;
+    height: 70px;
+    margin: 20px 0;
+}
 
-    .progress-bar {
-        position: absolute;
-        top: 38%; /* 중앙 정렬 */
-        left: 10%; /* Qualification 원의 중앙에서 시작하도록 조정합니다 */
-        transform: translateY(-50%);
-        width: 0;
-        max-width: calc(100% - 20%); /* ✅ 마지막 `step`을 초과하지 않도록 제한 */
-        height: 10px;
-        background-color: green;
-        transition: width 0.4s ease;
-    }
+/* 바(—):
+   - 지름 20px 원에 맞춰, 양쪽 10px 띄움
+   - 따라서 "왼쪽 원 중심" ~ "오른쪽 원 중심"까지가 바 */
+.progress-bar {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 10px;
+    right: 10px;
+    height: 10px;
+    background-color: green;
+    border-radius: 5px; /* 둥글려주면 원과 자연스럽게 이어짐 */
+    transition: width 0.4s ease;
+    z-index: 0;
+}
 
-    .progress-steps {
-        display: flex;
-        justify-content: space-between;
-        position: absolute;
-        top: 50%; /* 중앙 정렬 */
-        width: 100%;
-        transform: translateY(-50%);
-    }
+/* 각 스텝(원 + 텍스트) 가로로 균등 분배 */
+.progress-steps {
+    display: flex;
+    justify-content: space-between;
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    transform: translateY(-50%);
+}
 
-    .step {
-        width: 20%;
-        text-align: center;
-        position: relative;
-        padding-top: 30px; /* 텍스트를 아래로 내리기 위해 패딩 추가 */
-    }
+/* 스텝 */
+.step {
+    text-align: center;
+    position: relative;
+}
 
+/* 원(●):
+   - "step"의 가로 중앙에 찍되,
+     정확히 -50%만큼만 이동해서 완벽한 중앙 */
+.step::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* -45% 등으로 바꾸면 틀어짐! */
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: white;
+    border: 2px solid green;
+    transition: background-color 0.4s ease, border-color 0.4s ease;
+    z-index: 1; /* 바 위로 표시 */
+}
 
-    .step::before {
-        content: '';
-        position: absolute;
-        top: 16%; /* 원의 위치를 조정합니다 */
-        left: 50%;
-        transform: translateX(-50%);
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
-        background-color: white;
-        border: 2px solid green;
-        transition: background-color 0.4s ease, border-color 0.4s ease;
-    }
+/* 활성화된(채워진) 원(●) */
+.step.active::before {
+    background-color: green;
+    border-color: green;
+}
 
-    .step.active::before {
-        background-color: green;
-        border-color: green;
-    }
+/* 텍스트를 원 아래로 내리고 싶다면 */
+.step span {
+    display: block;
+    margin-top: 30px; /* 적당히 조정 */
+}
 
-    .btn-custom-auto {
-        background-color: #cce5ff; /* 연한 파란색 */
-        color: #004085;
-        border: 1px solid #b8daff;
-    }
+.btn-custom-auto {
+    background-color: #cce5ff; /* 연한 파란색 */
+    color: #004085;
+    border: 1px solid #b8daff;
+}
 
-    .btn-custom-auto:hover {
-        background-color: #c0c0c0;
-        border-color: #b0b0b0;
-        color: #1a1a1a;
-    }
+.btn-custom-auto:hover {
+    background-color: #c0c0c0;
+    border-color: #b0b0b0;
+    color: #1a1a1a;
+}
 
 
 </style>
@@ -89,6 +103,37 @@
             <div class="row">
             </div>
 
+            <!-- 리드 상태 부분 -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-table me-1"></i>
+                    Lead Status
+                </div>
+                <div class="card-body">
+                    <table id="lead_status">
+
+
+                        {{#leads}}
+                            <div class="progress-container">
+                                <div class="progress-bar" id="progressBar"></div>
+                                <div class="progress-steps">
+                                    <div class="step" data-step="Proposal">
+                                        <span>Proposal</span>
+                                    </div>
+                                    <div class="step" data-step="UnderReview">
+                                        <span>UnderReview</span>
+                                    </div>
+                                    <div class="step" data-step="Closed">
+                                        <span>Closed</span>
+                                    </div>
+                                </div>
+                            </div>
+                        {{/leads}}
+
+
+                    </table>
+                </div>
+            </div>
 
 
             <!-- 리드 상세내용 부분 -->
@@ -100,40 +145,31 @@
 
 
                 <div class="card-body">
+
                     <table id="leads_detail">
-                        <!-- 파일 업로드 및 처리 -->
-                    <div class="button-container mb-3">
-
-                        {{^leadId}}
-                            <!-- 숨겨진 파일 입력 필드 -->
-                            <input type="file" id="fileInput" accept=".webm, .mp3, .wav" style="display: none;">
-
-                            <!-- 자동 생성 버튼 -->
-                            <button type="button" class="btn btn-custom-auto btn-sm" id="autoButton">
-                                <i class= aria-hidden="true"></i> 💡 AI 자동 생성 💡
-                            </button>
-                        {{/leadId}}
 
 
+                            <div class="button-container mb-3">
+                                {{^leadId}}
+                                <button type="button"  class="btn btn-custom-auto btn-sm"  id="autoButton">
+                                    <i class="fas fa-file-text"></i> 자동 생성
+                                </button>
+                                {{/leadId}}
 
-                        {{#leads}}
-                            <a href="/leads/detail/create" class="btn btn-custom-create btn-sm" id="createButton">
-                                <i class="fas fa-plus-circle"></i> 신규
-                            </a>
+                                {{#leads}}
+                                <a href="/leads/detail/create" class="btn btn-custom-create btn-sm" id="createButton">
+                                    <i class="fas fa-plus-circle"></i> 신규
+                                </a>
 
-                            <button class="btn btn-custom-delete btn-sm" id="deleteButton">
-                                <i class="fas fa-trash"></i> 삭제
-                            </button>
+                                    <button class="btn btn-custom-delete btn-sm" id="deleteButton">
+                                        <i class="fas fa-trash"></i> 삭제
+                                    </button>
 
-                            <a href="/leads" class="btn btn-custom-select btn-sm" id="selectButton">
-                                <i class="fas fa-list"></i> 목록
-                            </a>
+                                <a href="/leads" class="btn btn-custom-select btn-sm" id="selectButton">
+                                    <i class="fas fa-list"></i> 목록
+                                </a>
 
-
-                    </div>
-
-
-
+                            </div>
 
                             {{#leadId}}
                             <form id="leadForm" action="/leads/detail/{{leadId}}/update" method="POST">
@@ -143,28 +179,24 @@
                             {{/leadId}}
 
 
-
                             <div class="mb-3 row">
                                 <label for="createdDate" class="col-sm-2 col-form-label">생성일자:</label>
                                 <div class="col-sm-10">
                                     <input type="date" class="form-control" id="createdDate" name="createdDate" value="{{createdDate}}" required>
                                 </div>
                             </div>
-
                             <div class="mb-3 row">
                                 <label for="targetCloseDate" class="col-sm-2 col-form-label">마감기한:</label>
                                 <div class="col-sm-10">
                                     <input type="date" class="form-control" id="targetCloseDate" name="targetCloseDate" value="{{targetCloseDate}}" required>
                                 </div>
                             </div>
-
                             <div class="mb-3 row">
                                 <label for="leadSource" class="col-sm-2 col-form-label">리드소스:</label>
                                 <div class="col-sm-10">
-                                    <input type="text" class="form-control" id="leadSource" name="leadSource" value="{{leadSource}}" placeholder="예: 미팅, 이메일, 팩스">
+                                    <input type="text" class="form-control" id="leadSource" name="leadSource" value="{{leadSource}}" >
                                 </div>
                             </div>
-
                             <div class="mb-3 row">
                                 <label for="leadStatus" class="col-sm-2 col-form-label">리드상태:</label>
                                 <div class="col-sm-10">
@@ -216,20 +248,19 @@
                             <div class="mb-3 row">
                                 <label for="customerRepresentitive" class="col-sm-2 col-form-label">계정 담당자:</label>
                                 <div class="col-sm-10">
-                                    <input type="text" class="form-control" id="customerRepresentitive" name="customerRepresentitive" value="{{customerRepresentitive}}" placeholder="담당자 이름 입력" required>
+                                    <input type="text" class="form-control" id="customerRepresentitive" name="customerRepresentitive" value="{{customerRepresentitive}}"required>
                                 </div>
                             </div>
-
                             <div class="mb-3 row">
                                 <label for="c_tel" class="col-sm-2 col-form-label">연락처:</label>
                                 <div class="col-sm-10">
-                                    <input type="text" class="form-control" id="c_tel" name="c_tel" value="{{c_tel}}" placeholder="예: 010-1234-5678" required>
+                                    <input type="text" class="form-control" id="c_tel" name="c_tel" value="{{c_tel}}" required>
                                 </div>
                             </div>
                             <div class="mb-3 row">
                                 <label for="customerRequirements" class="col-sm-2 col-form-label">리드 내용:</label>
                                 <div class="col-sm-10">
-                                    <input type="text" class="form-control" id="customerRequirements" name="customerRequirements" value="{{customerRequirements}}" placeholder="고객 요구사항 입력" required>
+                                    <input type="text" class="form-control" id="customerRequirements" name="customerRequirements" value="{{customerRequirements}}" required>
                                 </div>
                             </div>
                             <div class="d-flex justify-content-end">
@@ -238,46 +269,15 @@
                                 </button>
                             </div>
                         </form>
+
                         {{/leads}}
                     </form>
+
                     </table>
 
                 </div>
             </div>
-
-            {{#leadId}}
-                <!-- 리드 상태 부분 -->
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <i class="fas fa-table me-1"></i>
-                        Lead Status
-                    </div>
-                    <div class="card-body">
-                        <table id="lead_status">
-
-
-                            <div class="progress-container">
-                                <div class="progress-bar" id="progressBar"></div>
-                                <div class="progress-steps">
-                                    <div class="step" data-step="Proposal">
-                                        <span>Proposal</span>
-                                    </div>
-                                    <div class="step" data-step="UnderReview">
-                                        <span>UnderReview</span>
-                                    </div>
-                                    <div class="step" data-step="Closed">
-                                        <span>Closed</span>
-                                    </div>
-                                </div>
-                            </div>
-
-
-                        </table>
-                    </div>
-                </div>
-            {{/leadId}}
         </div>
-
     </main>
 
 
@@ -290,7 +290,6 @@
 
                 // Form 부분 리드상태 초기값 연동 JS (select Form은 html로 초기 value 지정이 안되어서 JS로 처리)
     {{#leads}}
-        {{#leadId}}
         document.addEventListener("DOMContentLoaded", function() {
             // Mustache 템플릿에서 서버 데이터를 가져옴
             var leadStatus = "{{leadStatus}}";
@@ -316,7 +315,6 @@
             document.getElementById("companyName").value = companyName;
             document.getElementById("companyInput").value = companyName;
         });
-        {{/leadId}}
 
         // select 폼데이터 조회 기능 (main/header와 footer에 CSS 추가, 상단에 Selectize CSS, JS로 명시)
 
@@ -470,13 +468,8 @@
         if (currentIndex === -1) return;
 
         // 진행 퍼센트 계산
-
         const intervals = steps.length - 1;
-        const progressPercent = (currentIndex / intervals) * 80;
-        console.log(currentIndex)
-        console.log(intervals)
-        console.log(progressPercent)
-
+        const progressPercent = (currentIndex / intervals) * 100;
 
         // 진행 바 너비 설정
         progressBar.style.width = progressPercent + "%";
@@ -491,100 +484,67 @@
         });
     });
 
-
-// AI 리드 자동생성
-    document.addEventListener('DOMContentLoaded', function () {
+// AI 리드 자동 생성
+document.addEventListener('DOMContentLoaded', function() {
     const autoButton = document.getElementById('autoButton');
-    const fileInput = document.getElementById('fileInput');
 
-    // "자동 생성" 버튼 클릭 시 숨겨진 파일 입력 필드 클릭
-    autoButton.addEventListener('click', function () {
-        fileInput.click(); // 숨겨진 파일 입력 필드를 클릭
-    });
-
-    // 파일 선택 이벤트 처리
-    fileInput.addEventListener('change', function (event) {
-        const selectedFile = event.target.files[0];
-
-        if (!selectedFile) {
-            alert('파일이 선택되지 않았습니다.');
-            return;
-        }
-
-        console.log('선택된 파일:', selectedFile.name);
-
-        // 서버로 파일 업로드
-        uploadFile(selectedFile);
-    });
-
-    // 파일 업로드 함수
-    function uploadFile(file) {
-        const formData = new FormData();
-        formData.append('audio_file', file);
-
-         // "제안서 생성 중입니다" 알림창 표시
-        alert('생성 중입니다 . . . . 🚀  잠시만 기다려 주세요. ');
-
-        fetch('/leads/auto' , {
-            method: 'POST',
-            body: formData,
-        })
-        .then((response) => {
-            if (!response.ok) {
-                throw new Error('파일 업로드 실패');
-            }
-            return response.json(); // JSON 형식으로 응답 받기
-        })
-        .then((data) => {
-            console.log('서버 응답 데이터:', data);
-
-            // 폼에 데이터 채우기
-            populateForm(data.data); // 서버에서 받은 데이터를 populateForm 함수로 전달
-        })
-        .catch((error) => {
-            console.error('파일 업로드 중 오류 발생:', error);
-            alert('파일 업로드 중 오류가 발생했습니다.🚨');
+    if (autoButton) {
+        autoButton.addEventListener('click', function() {
+            fetch('http://127.0.0.1:8000/auto', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({})
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                const parsedData = JSON.parse(data.replace(/'/g, '"'));
+                console.log('파싱된 데이터:', parsedData);
+                fillFormWithData(parsedData);
+            })
+            .catch(error => {
+                console.error('에러:', error);
+                alert('데이터 가져오기 중 오류가 발생했습니다.');
+            });
         });
     }
-
-    // 폼에 데이터를 입력하는 함수
-    function populateForm(data) {
-        try {
-            // 서버에서 받은 JSON 데이터를 파싱
-            const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
-
-            // 입력 필드에 데이터 채우기
-            document.getElementById('companyInput').value = parsedData.companyInput || '';
-            if (!companyInput.value) {
-                  throw new Error('회사를 입력해주세요.');
-                 }
-            document.getElementById('companyName').value =  companyInput.value;
-            document.getElementById('leadSource').value = parsedData.leadSource || '';
-             if (!leadSource.value) {
-                  throw new Error('리드소스를 입력해주세요.');
-                 }
-            document.getElementById('customerRepresentitive').value = parsedData.customerRepresentitive || '';
-              if (!customerRepresentitive.value) {
-                  throw new Error('리드담당자를 입력해주세요.');
-                 }
-            document.getElementById('c_tel').value = parsedData.c_tel || '';
-              if (!c_tel.value) {
-                  throw new Error('연락처를 입력해주세요.');
-                 }
-            document.getElementById('customerRequirements').value = parsedData.customerRequirements || '';
-              if (!customerRequirements.value) {
-                  throw new Error('리드내용을 입력해주세요.');
-                 }
-
-            alert('리드 자동생성이 완료되었습니다.✨');
-        } catch (error) {
-            console.error('JSON 파싱 오류:', error);
-            alert('데이터를 처리하는 중 오류가 발생했습니다. 다시 시도해 주세요.⚠️');
-        }
-    }
 });
+
+// 폼에 데이터를 채우는 함수
+function fillFormWithData(data) {
+    console.log('Filling form with data:', data);
+
+    // 각 필드에 데이터 입력
+    setInputValue('leadSource', data.leadSource);
+    setInputValue('companyInput', data.companyInput);
+    // companyInput의 값을 accountName 필드에 설정
+    setInputValue('accountName', data.companyInput);
+     setInputValue('companyName', data.companyInput);
+    setInputValue('customerRepresentitive', data.customerRepresentitive);
+    setInputValue('c_tel', data.c_tel);
+    setInputValue('customerRequirements', data.customerRequirements);
+
+    alert('리드 데이터가 자동으로 입력되었습니다.');
+}
+
+function setInputValue(id, value) {
+    const element = document.getElementById(id);
+    if (element) {
+        element.value = value !== undefined ? value : '미지정';
+    } else {
+        console.warn(`Element with id ${id} not found`);
+    }
+}
 
     {{/leads}}
     </script>
 
-    {{>main/footer}}
+
+
+{{>main/footer}}

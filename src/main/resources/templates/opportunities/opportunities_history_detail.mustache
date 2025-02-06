@@ -126,7 +126,10 @@
 <div id="layoutSidenav_content">
     <main>
         <div class="container-fluid px-4">
-            <h1 class="mt-4">Opportunities History</h1>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h1 class="mt-4">Opportunities History</h1>
+                <button onclick="location.href='/opportunities/detail/{{opportunityId}}'" class="back-btn">🔙</button>
+            </div>
             <ol class="breadcrumb mb-4">
                 <li class="breadcrumb-item active">Opportunities History</li>
             </ol>
@@ -143,9 +146,9 @@
                     {{#history}}
                         <div class="button-container mb-3">
                             {{#historyId}}
-                                <a href="/opportunities/detail/{{opportunityId}}/history/{{historyId}}/delete" class="btn btn-custom-delete btn-sm" id="deleteButton">
-                                    <i class="fas fa-trash"></i> 삭제
-                                </a>
+                                <button id = "deleteButton" class="btn btn-custom-delete btn-sm">
+                                    <i class="fas fa-trash-alt"></i> 삭제
+                                </button>
                             {{/historyId}}
                         </div>
                         {{#historyId}}
@@ -220,11 +223,11 @@
                             </div>
                         </form>
                     {{/history}}
+                    </form>
                 </div>
             </div>
         </div>
     </main>
-</div>
 
 <script>
     // CRUD 메시지
@@ -303,12 +306,48 @@
     });
 
 
-    document.addEventListener("DOMContentLoaded", function () {
-        document.getElementById("deleteButton").addEventListener("click", function (event) {
-            event.preventDefault();
-            if (confirm("정말 삭제하시겠습니까?")) {
-                window.location.href = this.href;
+    // 삭제버튼
+            document.addEventListener("DOMContentLoaded", function() {
+    {{#historyId}}
+        var deleteButton = document.getElementById("deleteButton");
+        if (deleteButton) {
+            deleteButton.addEventListener("click", function () {
+                // 서버에서 렌더링된 historyId 가져오기
+                var historyId = "{{historyId}}";
+                var opportunityId = "{{opportunityId}}";
+
+                if (historyId) {
+                    var confirmDelete = confirm("현재 항목을 삭제하시겠습니까?");
+                    if (confirmDelete) {
+                        fetch(`/opportunities/detail/${opportunityId}/history/${historyId}/delete`, {
+                            method: "POST", // 서버 엔드포인트가 POST를 지원해야 함
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({ id: historyId }), // 올바른 데이터 전송
+                        })
+                            .then((response) => {
+                                if (response.ok) {
+                                    alert("삭제되었습니다.");
+                                    window.location.href = "/opportunities/detail/{{opportunityId}}"; // 삭제 후 이동
+                                } else {
+                                    alert("삭제 중 오류가 발생했습니다.");
+                                    window.location.href = "/errorPage"; // 삭제 후 이동
+                                }
+                            })
+                            .catch((error) => {
+                                console.error("Error:", error);
+                                alert("삭제 중 오류가 발생했습니다.");
+                                window.location.href = "/errorPage"; // 삭제 후 이동
+                            });
+                    }
+                } else {
+                    alert("삭제할 ID가 없습니다.");
+                }
+            });
             }
-        });
+    {{/historyId}}
     });
 </script>
+
+{{>main/footer}}

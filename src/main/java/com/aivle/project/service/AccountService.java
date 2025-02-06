@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.Map;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -215,7 +216,9 @@ public class AccountService {
                 .collect(Collectors.toList());
     }
 
-
+    public Optional<AccountEntity> findAccountByName(String companyName) {
+        return accountRepository.findByAccountName(companyName);
+    }
 
 //       // 페이지네이션 조회
 //    public Page<AccountEntity> readAccount(Pageable pageable) {
@@ -230,7 +233,6 @@ public class AccountService {
 //        // 키워드가 포함된 계정을 검색하는 메서드
 //        return accountRepository.findByAccountNameContainingIgnoreCase(keyword, pageable);
 //    }
-
 
 }
 

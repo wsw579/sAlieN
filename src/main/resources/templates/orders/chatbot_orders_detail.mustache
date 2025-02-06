@@ -27,9 +27,7 @@
     justify-content: space-between;
     position: relative;
     width: 100%;
-    margin: 10px 0;
-    top: 50%; /* 중앙 정렬 */
-    transform: translateY(-50%);
+    margin: 20px 0;
 }
 
 .step {
@@ -37,6 +35,7 @@
     height: 30px;
     border: 2px solid #ccc;
     border-radius: 50%;
+    display: inline-block;
     position: relative;
     text-align: center;
     line-height: 30px;
@@ -45,7 +44,6 @@
     background-color: #ccc;
     transition: background-color 0.3s ease, border-color 0.3s ease;
 }
-
 
 /* 텍스트 스타일 */
 .step::after {
@@ -170,7 +168,7 @@
                     <div class="mb-3 row">
                         <label for="orderAmount" class="col-sm-2 col-form-label">수량:</label>
                         <div class="col-sm-10">
-                            <input type="number" class="form-control" id="orderAmount" name="orderAmount" value="{{orderAmount}}" placeholder="수량을 입력하세요" required>
+                            <input type="number" class="form-control" id="orderAmount" name="orderAmount" value="{{orderAmount}}" required>
                         </div>
                     </div>
 
@@ -214,36 +212,34 @@
 
                 </div>
             </div>
+        </div>
 
 
-        {{#orderId}}
-        <div class="card mb-4">
-            <div class="card-header">
-                <i class="fas fa-table me-1"></i>
-                Orders Status
-            </div>
-            <div class="card-body">
-                <table id="orders_status">
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="fas fa-table me-1"></i>
+            Orders Status
+        </div>
+        <div class="card-body">
+            <table id="orders_status">
 
 
-                    {{#orders}}
-                        <tbody>
-                        <div class="progress-container">
-                            <div class="progress-steps">
-                                <div class="step none" data-step="none"></div>
-                                <div class="step draft" data-step="draft"></div>
-                                <div class="step completed" data-step="completed"></div>
-                                <div class="step activated" data-step="activated"></div>
-                                <div class="step cancelled" data-step="cancelled"></div>
-                            </div>
+                {{#orders}}
+                    <tbody>
+                    <div class="progress-container">
+                        <div class="progress-steps">
+                            <div class="step none" data-step="none"></div>
+                            <div class="step draft" data-step="draft"></div>
+                            <div class="step completed" data-step="completed"></div>
+                            <div class="step activated" data-step="activated"></div>
+                            <div class="step cancelled" data-step="cancelled"></div>
                         </div>
-                        </tbody>
-                    {{/orders}}
-                </table>
-            </div>
+                    </div>
+                    </tbody>
+                {{/orders}}
+            </table>
         </div>
-        {{/orderId}}
-        </div>
+    </div>
 </main>
 
     <script>
@@ -255,7 +251,6 @@
         document.addEventListener("DOMContentLoaded", function () {
 {{#orders}}
 
-    {{#orderId}}
         // Mustache 템플릿에서 서버 데이터를 가져옴
             var orderStatus = "{{orderStatus}}";
             var productId = "{{productId.productId}}";
@@ -265,7 +260,6 @@
             document.getElementById("orderStatus").value = orderStatus;
             document.getElementById("productId").value = productId;
             document.getElementById("contractId").value = contractId;
-    {{/orderId}}
 
         // Selectize 초기화
         $('#contractId').selectize({
