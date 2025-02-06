@@ -102,34 +102,30 @@
                 <div class="card-body">
                     <table id="leads_detail">
                         <!-- 파일 업로드 및 처리 -->
-                    <div class="button-container mb-3">
-
+                    <div class="button-container mb-3 d-flex align-items-center">
+                        <!-- 자동 생성 버튼을 왼쪽에 정렬 -->
                         {{^leadId}}
-                            <!-- 숨겨진 파일 입력 필드 -->
                             <input type="file" id="fileInput" accept=".webm, .mp3, .wav" style="display: none;">
-
-                            <!-- 자동 생성 버튼 -->
                             <button type="button" class="btn btn-custom-auto btn-sm" id="autoButton">
-                                <i class= aria-hidden="true"></i> 💡 AI 자동 생성 💡
+                                <i class="bi bi-mic"></i> 🎙️ AI 자동 생성
                             </button>
                         {{/leadId}}
 
+                        <!-- 나머지 버튼들은 오른쪽으로 정렬 -->
+                        <div class="ms-auto d-flex">
+                            {{#leads}}
+                                <a href="/leads/detail/create" class="btn btn-custom-create btn-sm me-2" id="createButton">
+                                    <i class="fas fa-plus-circle"></i> 신규
+                                </a>
 
+                                <button class="btn btn-custom-delete btn-sm me-2" id="deleteButton">
+                                    <i class="fas fa-trash"></i> 삭제
+                                </button>
 
-                        {{#leads}}
-                            <a href="/leads/detail/create" class="btn btn-custom-create btn-sm" id="createButton">
-                                <i class="fas fa-plus-circle"></i> 신규
-                            </a>
-
-                            <button class="btn btn-custom-delete btn-sm" id="deleteButton">
-                                <i class="fas fa-trash"></i> 삭제
-                            </button>
-
-                            <a href="/leads" class="btn btn-custom-select btn-sm" id="selectButton">
-                                <i class="fas fa-list"></i> 목록
-                            </a>
-
-
+                                <a href="/leads" class="btn btn-custom-select btn-sm" id="selectButton">
+                                    <i class="fas fa-list"></i> 목록
+                                </a>
+                        </div>
                     </div>
 
 
