@@ -18,7 +18,7 @@ public interface EmployeeRepository extends JpaRepository<EmployeeEntity, String
     boolean existsByAccessPermission(Role role);
 
     @Query("SELECT e.departmentId FROM EmployeeEntity e WHERE e.employeeId = :employeeId")
-    String findDeptById(@Param("employeeId") String employeeId);
+    String findDepartmentById(@Param("employeeId") String employeeId);
 
     @Query("SELECT e.teamId FROM EmployeeEntity e WHERE e.employeeId = :employeeId")
     String findTeamById(@Param("employeeId") String employeeId);

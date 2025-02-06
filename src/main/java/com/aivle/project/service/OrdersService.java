@@ -263,15 +263,36 @@ public class OrdersService {
     }
 
     // 영업 실적 그래프
+    public List<Map<String, Object>> getDepartmentSalesPerformance() {
+        String userId = UserContext.getCurrentUserId();
+        String userDepartment = employeeRepository.findDepartmentById(userId);
+        List<Object[]> data = ordersRepository.getAllDepartmentSales();
+
+        return mapToSalesPerformanceList(data, "departmentId", "departmentName");
+    }
+
+    public List<Map<String, Object>> getTeamSalesPerformance() {
+        String userId = UserContext.getCurrentUserId();
+        String userDepartment = employeeRepository.findDepartmentById(userId);
+        List<Object[]> data = ordersRepository.getTeamSalesByDepartment(Dept.valueOf(userDepartment));
+
+        return mapToSalesPerformanceList(data, "teamId", "teamName");
+    }
+
     public List<Map<String, Object>> getEmployeeSalesPerformanceWithNames() {
-        String userid = UserContext.getCurrentUserId();
-        String userteam = employeeRepository.findTeamById(userid);
-        List<Object[]> data = ordersRepository.getSalesByEmployeeWithNames(Team.valueOf(userteam));
+        String userId = UserContext.getCurrentUserId();
+        String userTeam = employeeRepository.findTeamById(userId);
+        List<Object[]> data = ordersRepository.getSalesByEmployeeWithNames(Team.valueOf(userTeam));
+
+        return mapToSalesPerformanceList(data, "employeeId", "employeeName");
+    }
+
+    private List<Map<String, Object>> mapToSalesPerformanceList(List<Object[]> data, String idKey, String nameKey) {
         List<Map<String, Object>> result = new ArrayList<>();
         for (Object[] row : data) {
             Map<String, Object> map = new HashMap<>();
-            map.put("employeeId", row[0]);
-            map.put("employeeName", row[1]);
+            map.put(idKey, row[0]);
+            map.put(nameKey, row[1]);
             map.put("totalSales", row[2]);
             result.add(map);
         }
