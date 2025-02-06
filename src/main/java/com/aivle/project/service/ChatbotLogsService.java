@@ -23,8 +23,9 @@ public class ChatbotLogsService {
     private final ChatbotLogsRepository chatbotLogsRepository;
 
     // Read
-    public List<ChatbotLogsEntity> readChatbotLogs() {
-        return chatbotLogsRepository.findAllByOrderByLogsIdDesc(); // 내림차순으로 로그 가져오기
+    public Page<ChatbotLogsEntity> readChatbotLogs(int page, int size, String search) {
+        Pageable pageable = PageRequest.of(page, size);
+        return chatbotLogsRepository.findAllByKeyword(search, pageable); // 내림차순으로 로그 가져오기
     }
 }
 
