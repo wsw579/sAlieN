@@ -557,7 +557,7 @@
                                 companyName: systemData.companyName || '',
                                 customerRequirements: systemData.customerRequirements || '',
                                 customerRepresentitive: systemData.customerRepresentitive || '',
-                                accountManager: systemData["계정담당자"] || '',
+                                // accountManager: systemData["계정담당자"] || '',
                                 contact: systemData.c_tel || ''
                             }).toString(); // 쿼리 문자열 생성
 
@@ -573,7 +573,7 @@
                             formattedResponse += `<strong>리드 상태</strong>: ${systemData.leadStatus || '정보 없음'}<br>`;
                             formattedResponse += `<strong>회사명</strong>: ${systemData.companyName || '정보 없음'}<br>`;
                             formattedResponse += `<strong>리드 내용</strong>: ${systemData.customerRequirements || '정보 없음'}<br>`;
-                            formattedResponse += `<strong>계정 담당자</strong>: ${systemData["계정담당자"] || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>계정 담당자</strong>: ${systemData.customerRepresentitive || '정보 없음'}<br>`;
                             formattedResponse += `<strong>연락처</strong>: ${systemData.c_tel || '정보 없음'}<br>`;
 
                             // 특정 링크를 추가 (예: 새로 생성된 리소스 링크 제공)
@@ -587,7 +587,7 @@
                                 accountCreatedDate: systemData.accountCreatedDate || '',
                                 accountStatus: systemData.accountStatus || '',
                                 accountName: systemData.accountName || '',
-                                담당자명: systemData["담당자명"] || '',
+                                employeeName: systemData.employeeName || '',
                                 accountType: systemData.accountType || '',
                                 parentAccount: systemData.parentAccount || '',
                                 website: systemData.website || '',
@@ -607,7 +607,7 @@
                             formattedResponse += `<strong>생성 일자</strong>: ${systemData.accountCreatedDate || '정보 없음'}<br>`;
                             formattedResponse += `<strong>계정 상태</strong>: ${systemData.accountStatus || '정보 없음'}<br>`;
                             formattedResponse += `<strong>계정 이름</strong>: ${systemData.accountName || '정보 없음'}<br>`;
-                            formattedResponse += `<strong>계약 소유자</strong>: ${systemData["담당자명"] || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>계약 소유자</strong>: ${systemData.employeeName || '정보 없음'}<br>`;
                             formattedResponse += `<strong>유형</strong>: ${systemData.accountType || '정보 없음'}<br>`;
                             formattedResponse += `<strong>상위 계정</strong>: ${systemData.parentAccount || '정보 없음'}<br>`;
                             formattedResponse += `<strong>웹사이트</strong>: ${systemData.website || '정보 없음'}<br>`;
@@ -653,17 +653,17 @@
                             formattedResponse += `<strong>생성일자</strong>: ${systemData.createdDate || '정보 없음'}<br>`;
                             formattedResponse += `<strong>마감기한</strong>: ${systemData.targetCloseDate || '정보 없음'}<br>`;
                             formattedResponse += `<strong>기회상태</strong>: ${systemData.opportunityStatus || '정보 없음'}<br>`;
-                            formattedResponse += `<strong>리드 명</strong>: ${systemData["리드명"] || '정보 없음'}<br>`;
+                            // formattedResponse += `<strong>리드 명</strong>: ${systemData["리드명"] || '정보 없음'}<br>`;
                             formattedResponse += `<strong>기회 명</strong>: ${systemData.opportunityName || '정보 없음'}<br>`;
-                            formattedResponse += `<strong>계정 명</strong>: ${systemData["계정명"] || '정보 없음'}<br>`;
-                            formattedResponse += `<strong>기회 담당자</strong>: ${systemData["담당자명"] || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>계정 명</strong>: ${systemData.accountName || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>기회 담당자</strong>: ${systemData.employeeName || '정보 없음'}<br>`;
                             formattedResponse += `<strong>성공률</strong>: ${systemData.successRate || '정보 없음'}<br>`;
                             formattedResponse += `<strong>회사 매출</strong>: ${systemData.companyRevenue || '정보 없음'}<br>`;
                             formattedResponse += `<strong>배송지역</strong>: ${systemData.region || '정보 없음'}<br>`;
                             formattedResponse += `<strong>고객사 담당자</strong>: ${systemData.customerEmployee || '정보 없음'}<br>`;
                             formattedResponse += `<strong>고객문의사항</strong>: ${systemData.opportunityInquiries || '정보 없음'}<br>`;
                             formattedResponse += `<strong>기회 세부내용</strong>: ${systemData.opportunityNotes || '정보 없음'}<br>`;
-                            formattedResponse += `<strong>기회 제품</strong>: ${systemData["제품명"] || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>기회 제품</strong>: ${systemData.productName || '정보 없음'}<br>`;
                             formattedResponse += `<strong>기회 수량</strong>: ${systemData.quantity || '정보 없음'}<br>`;
                             formattedResponse += `<strong>기회 매출</strong>: ${systemData.expectedRevenue || '정보 없음'}<br>`;
 
@@ -699,14 +699,14 @@
                             formattedResponse += `<strong>시작일자</strong>: ${systemData.startDate || '정보 없음'}<br>`;
                             formattedResponse += `<strong>마감기한</strong>: ${systemData.terminationDate || '정보 없음'}<br>`;
                             formattedResponse += `<strong>계약 상태</strong>: ${systemData.contractStatus || '정보 없음'}<br>`;
-                            formattedResponse += `<strong>계정명</strong>: ${systemData["계정명"] || '정보 없음'}<br>`;
-                            formattedResponse += `<strong>기회명</strong>: ${systemData["기회명"] || '정보 없음'}<br>`;
-                            formattedResponse += `<strong>기회 제품</strong>: ${systemData["제품명"] || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>계정명</strong>: ${systemData.accountName || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>기회명</strong>: ${systemData.opportunityName || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>기회 제품</strong>: ${systemData.productName || '정보 없음'}<br>`;
                             formattedResponse += `<strong>기회 수량</strong>: ${systemData.contractAmount || '정보 없음'}<br>`;
                             formattedResponse += `<strong>계약 가격</strong>: ${systemData.contractSales || '정보 없음'}<br>`;
                             formattedResponse += `<strong>계약 세부내용</strong>: ${systemData.contractDetail || '정보 없음'}<br>`;
                             formattedResponse += `<strong>계약 분류</strong>: ${systemData.contractClassification || '정보 없음'}<br>`;
-                            formattedResponse += `<strong>계약 소유자</strong>: ${systemData["담당자명"] || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>계약 소유자</strong>: ${systemData.employeeName || '정보 없음'}<br>`;
 
 
                             // 특정 링크를 추가 (예: 새로 생성된 리소스 링크 제공)
@@ -729,13 +729,11 @@
                             console.log("🔍 생성된 queryParams:", queryParams);
 
                             formattedResponse += "<strong>📌 AI CRM 어시스턴트 추천 주문 정보:</strong><br>";
-                            formattedResponse += `<strong>Contract ID</strong>: ${systemData.contract_id || '정보 없음'}<br>`;
-                            formattedResponse += `<strong>Product ID</strong>: ${systemData.productId || '정보 없음'}<br>`;
                             formattedResponse += `<strong>발주일자</strong>: ${systemData.orderDate || '정보 없음'}<br>`;
                             formattedResponse += `<strong>매출일자</strong>: ${systemData.salesDate || '정보 없음'}<br>`;
                             formattedResponse += `<strong>주문상태</strong>: ${systemData.orderStatus || '정보 없음'}<br>`;
                             formattedResponse += `<strong>수량</strong>: ${systemData.orderAmount || '정보 없음'}<br>`;
-                            formattedResponse += `<strong>제품</strong>: ${systemData["제품명"] || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>제품</strong>: ${systemData.productName || '정보 없음'}<br>`;
 
                             // 특정 링크를 추가 (예: 새로 생성된 리소스 링크 제공)
                             formattedResponse += `<br><a href="/chatbot/create/orders?${queryParams}" target="_blank">AI추천 데이터로 이동</a>`;
@@ -755,7 +753,7 @@
                             formattedResponse += `<strong>리드 상태</strong>: ${systemData.leadStatus || '정보 없음'}<br>`;
                             formattedResponse += `<strong>회사명</strong>: ${systemData.companyName || '정보 없음'}<br>`;
                             formattedResponse += `<strong>리드 내용</strong>: ${systemData.customerRequirements || '정보 없음'}<br>`;
-                            formattedResponse += `<strong>계정 담당자</strong>: ${systemData["계정담당자"] || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>계정 담당자</strong>: ${systemData.employeeName || '정보 없음'}<br>`;
                             formattedResponse += `<strong>연락처</strong>: ${systemData.c_tel || '정보 없음'}<br>`;
 
                             var dataId = systemData?.leadId;
@@ -768,7 +766,7 @@
                             formattedResponse += `<strong>생성 일자</strong>: ${systemData.accountCreatedDate || '정보 없음'}<br>`;
                             formattedResponse += `<strong>계정 상태</strong>: ${systemData.accountStatus || '정보 없음'}<br>`;
                             formattedResponse += `<strong>계정 이름</strong>: ${systemData.accountName || '정보 없음'}<br>`;
-                            formattedResponse += `<strong>계약 소유자</strong>: ${systemData["담당자명"] || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>계약 소유자</strong>: ${systemData.employeeName || '정보 없음'}<br>`;
                             formattedResponse += `<strong>유형</strong>: ${systemData.accountType || '정보 없음'}<br>`;
                             formattedResponse += `<strong>상위 계정</strong>: ${systemData.parentAccount || '정보 없음'}<br>`;
                             formattedResponse += `<strong>웹사이트</strong>: ${systemData.website || '정보 없음'}<br>`;
@@ -790,17 +788,16 @@
                             formattedResponse += `<strong>생성일자</strong>: ${systemData.createdDate || '정보 없음'}<br>`;
                             formattedResponse += `<strong>마감기한</strong>: ${systemData.targetCloseDate || '정보 없음'}<br>`;
                             formattedResponse += `<strong>기회상태</strong>: ${systemData.opportunityStatus || '정보 없음'}<br>`;
-                            formattedResponse += `<strong>리드 명</strong>: ${systemData["리드명"] || '정보 없음'}<br>`;
                             formattedResponse += `<strong>기회 명</strong>: ${systemData.opportunityName || '정보 없음'}<br>`;
-                            formattedResponse += `<strong>계정 명</strong>: ${systemData["계정명"] || '정보 없음'}<br>`;
-                            formattedResponse += `<strong>기회 담당자</strong>: ${systemData["담당자명"] || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>계정 명</strong>: ${systemData.accountName || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>기회 담당자</strong>: ${systemData.employeeName || '정보 없음'}<br>`;
                             formattedResponse += `<strong>성공률</strong>: ${systemData.successRate || '정보 없음'}<br>`;
                             formattedResponse += `<strong>회사 매출</strong>: ${systemData.companyRevenue || '정보 없음'}<br>`;
                             formattedResponse += `<strong>배송지역</strong>: ${systemData.region || '정보 없음'}<br>`;
                             formattedResponse += `<strong>고객사 담당자</strong>: ${systemData.customerEmployee || '정보 없음'}<br>`;
                             formattedResponse += `<strong>고객문의사항</strong>: ${systemData.opportunityInquiries || '정보 없음'}<br>`;
                             formattedResponse += `<strong>기회 세부내용</strong>: ${systemData.opportunityNotes || '정보 없음'}<br>`;
-                            formattedResponse += `<strong>기회 제품</strong>: ${systemData["제품명"] || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>기회 제품</strong>: ${systemData.productName || '정보 없음'}<br>`;
                             formattedResponse += `<strong>기회 수량</strong>: ${systemData.quantity || '정보 없음'}<br>`;
                             formattedResponse += `<strong>기회 매출</strong>: ${systemData.expectedRevenue || '정보 없음'}<br>`;
                             var dataId = systemData?.opportunityId;
@@ -813,14 +810,14 @@
                             formattedResponse += `<strong>시작일자</strong>: ${systemData.startDate || '정보 없음'}<br>`;
                             formattedResponse += `<strong>마감기한</strong>: ${systemData.terminationDate || '정보 없음'}<br>`;
                             formattedResponse += `<strong>계약 상태</strong>: ${systemData.contractStatus || '정보 없음'}<br>`;
-                            formattedResponse += `<strong>계정명</strong>: ${systemData["계정명"] || '정보 없음'}<br>`;
-                            formattedResponse += `<strong>기회명</strong>: ${systemData["기회명"] || '정보 없음'}<br>`;
-                            formattedResponse += `<strong>기회 제품</strong>: ${systemData["제품명"] || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>계정명</strong>: ${systemData.accountName || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>기회명</strong>: ${systemData.opportunityName || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>기회 제품</strong>: ${systemData.productName || '정보 없음'}<br>`;
                             formattedResponse += `<strong>기회 수량</strong>: ${systemData.contractAmount || '정보 없음'}<br>`;
                             formattedResponse += `<strong>계약 가격</strong>: ${systemData.contractSales || '정보 없음'}<br>`;
                             formattedResponse += `<strong>계약 세부내용</strong>: ${systemData.contractDetail || '정보 없음'}<br>`;
                             formattedResponse += `<strong>계약 분류</strong>: ${systemData.contractClassification || '정보 없음'}<br>`;
-                            formattedResponse += `<strong>계약 소유자</strong>: ${systemData["담당자명"] || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>계약 소유자</strong>: ${systemData.employeeName || '정보 없음'}<br>`;
                             var dataId = systemData?.contractId;
                             console.log(`🔍 이동할 데이터 ID: ${dataId}`);
                             formattedResponse += `<br><a href="/contracts/detail/${dataId}" target="_blank">계약으로 이동</a>`;
@@ -828,13 +825,11 @@
 
                         if (data.table === "orders") {
                             formattedResponse += "<strong>📌 AI CRM 어시스턴트 검색 주문 정보:</strong><br>";
-                            formattedResponse += `<strong>Contract ID</strong>: ${systemData.contract_id || '정보 없음'}<br>`;
-                            formattedResponse += `<strong>Product ID</strong>: ${systemData.productId || '정보 없음'}<br>`;
                             formattedResponse += `<strong>발주일자</strong>: ${systemData.orderDate || '정보 없음'}<br>`;
                             formattedResponse += `<strong>매출일자</strong>: ${systemData.salesDate || '정보 없음'}<br>`;
                             formattedResponse += `<strong>주문상태</strong>: ${systemData.orderStatus || '정보 없음'}<br>`;
                             formattedResponse += `<strong>수량</strong>: ${systemData.orderAmount || '정보 없음'}<br>`;
-                            formattedResponse += `<strong>제품</strong>: ${systemData["제품명"] || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>제품</strong>: ${systemData.productName || '정보 없음'}<br>`;
                             var dataId = systemData?.orderId;
                             console.log(`🔍 이동할 데이터 ID: ${dataId}`);
                             formattedResponse += `<br><a href="/orders/detail/${dataId}" target="_blank">주문으로 이동</a>`;
