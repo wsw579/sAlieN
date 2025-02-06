@@ -1,8 +1,5 @@
 package com.aivle.project.repository;
-
-import com.aivle.project.entity.ChatbotLogsEntity;
 import com.aivle.project.entity.CrudLogsEntity;
-import com.aivle.project.entity.OrdersEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

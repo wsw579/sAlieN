@@ -83,11 +83,14 @@ public interface OrdersRepository extends JpaRepository<OrdersEntity, Long> {
             "JOIN o.productId p " +
             "JOIN o.employeeId e " +
             "WHERE e.teamId = :teamId " +
-            "AND MONTH(o.salesDate) = MONTH(CURRENT_DATE) " + // 같은 달 조건
-            "AND YEAR(o.salesDate) = YEAR(CURRENT_DATE) " +   // 같은 연도 조건
+            "AND MONTH(o.salesDate) = :month " + // 같은 달 조건
+            "AND YEAR(o.salesDate) = :year " +   // 같은 연도 조건
             "GROUP BY e.employeeId, e.employeeName " +
             "ORDER BY totalSales DESC")
-    List<Object[]> getSalesByEmployeeWithNames(@Param("teamId") Team teamId);
+    List<Object[]> getSalesByEmployeeWithNames(
+            @Param("year") int year,
+            @Param("month") int month,
+            @Param("teamId") Team teamId);
 
     @Query("SELECT e.departmentId AS departmentId, " +
             "CASE e.departmentId " +
@@ -100,11 +103,12 @@ public interface OrdersRepository extends JpaRepository<OrdersEntity, Long> {
             "FROM OrdersEntity o " +
             "JOIN o.productId p " +
             "JOIN o.employeeId e " +
-            "WHERE MONTH(o.salesDate) = MONTH(CURRENT_DATE) " +
-            "AND YEAR(o.salesDate) = YEAR(CURRENT_DATE) " +
+            "WHERE MONTH(o.salesDate) = :month " +
+            "AND YEAR(o.salesDate) = :year " +
             "GROUP BY e.departmentId " +
             "ORDER BY totalSales DESC")
-    List<Object[]> getAllDepartmentSales();
+    List<Object[]> getAllDepartmentSales(@Param("year") int year,
+                                         @Param("month") int month);
 
     @Query("SELECT e.teamId AS teamId, " +
             "CASE e.teamId " +
@@ -127,21 +131,26 @@ public interface OrdersRepository extends JpaRepository<OrdersEntity, Long> {
             "JOIN o.productId p " +
             "JOIN o.employeeId e " +
             "WHERE e.departmentId = :departmentId " +  // 부서 ID 필터링 추가
-            "AND MONTH(o.salesDate) = MONTH(CURRENT_DATE) " +
-            "AND YEAR(o.salesDate) = YEAR(CURRENT_DATE) " +
+            "AND MONTH(o.salesDate) = :month " +
+            "AND YEAR(o.salesDate) = :year " +
             "GROUP BY e.teamId " +
             "ORDER BY totalSales DESC")
-    List<Object[]> getTeamSalesByDepartment(@Param("departmentId") Dept departmentId);
+    List<Object[]> getTeamSalesByDepartment(@Param("year") int year,
+                                            @Param("month") int month,
+                                            @Param("departmentId") Dept departmentId);
 
 
     // 이번달 주문 현황 퍼센트 표시
     @Query("SELECT COUNT(o) FROM OrdersEntity o " +
             "JOIN o.employeeId e " +
             "WHERE e.employeeId = :employeeId " +
-            "AND EXTRACT(MONTH FROM o.salesDate) = EXTRACT(MONTH FROM CURRENT_DATE) " +
-            "AND EXTRACT(YEAR FROM o.salesDate) = EXTRACT(YEAR FROM CURRENT_DATE) " +
+            "AND EXTRACT(MONTH FROM o.salesDate) = :month " +
+            "AND EXTRACT(YEAR FROM o.salesDate) = :year " +
             "AND o.orderStatus IN ('draft', 'completed', 'activated')")
-    long countTotalSalesThisMonth(@Param("employeeId") String employeeId);
+    long countTotalSalesThisMonth(
+            @Param("year") int year,
+            @Param("month") int month,
+            @Param("employeeId") String employeeId);
 
     @Query("SELECT COUNT(o) FROM OrdersEntity o " +
             "JOIN o.employeeId e " +
