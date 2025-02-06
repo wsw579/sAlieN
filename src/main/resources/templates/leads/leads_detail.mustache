@@ -365,14 +365,86 @@
 
 
     // 폼 제출 시 회사명이 비어 있는지 확인
-    document.querySelector("form").addEventListener("submit", function (e) {
-        const companyNameField = document.getElementById("companyName");
+    document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("leadForm");
 
-        if (!companyNameField.value.trim()) {
-            alert("회사 명을 입력하거나 선택해주세요!");
-            e.preventDefault(); // 폼 제출 중단
+        form.addEventListener("submit", function (event) {
+            event.preventDefault(); // 폼 제출 방지
+
+            if (validateForm()) {
+                form.submit(); // 검증 통과 시 제출
+            }
+        });
+
+        function validateForm() {
+            let isValid = true;
+
+            // 생성일자와 마감기한 유효성 검사
+            const createdDate = document.getElementById("createdDate");
+            const targetCloseDate = document.getElementById("targetCloseDate");
+            if (createdDate.value && targetCloseDate.value) {
+                if (new Date(createdDate.value) > new Date()) {
+                    alert("리드 시작일은 과거 또는 현재여야 합니다.");
+                    isValid = false;
+                }
+                if (new Date(targetCloseDate.value) < new Date()) {
+                    alert("리드 종료일은 미래 또는 현재여야 합니다.");
+                    isValid = false;
+                }
+                if (new Date(targetCloseDate.value) < new Date(createdDate.value)) {
+                    alert("마감기한은 생성일자보다 이후여야 합니다.");
+                    isValid = false;
+                }
+            }
+
+            // 리드 상태 검증
+            const leadStatus = document.getElementById("leadStatus");
+            const validStatuses = ["Proposal", "Under Review", "Accepted", "Rejected", "Pending"];
+            if (!validStatuses.includes(leadStatus.value)) {
+                alert("리드 상태는 'Proposal', 'Under Review', 'Accepted', 'Rejected', 'Pending' 중 하나여야 합니다.");
+                isValid = false;
+            }
+
+            // 리드 소스 검증 (255자 이하)
+            const leadSource = document.getElementById("leadSource");
+            if (leadSource.value.length > 255) {
+                alert("리드 소스는 255자 이내로 입력해야 합니다.");
+                isValid = false;
+            }
+
+            // 고객 요구사항 검증 (1000자 이하)
+            const customerRequirements = document.getElementById("customerRequirements");
+            if (customerRequirements.value.length > 1000) {
+                alert("고객 문의사항은 1,000자 이내로 입력해야 합니다.");
+                isValid = false;
+            }
+
+            // 회사명 검증
+            const companyInput = document.getElementById("companyInput");
+            if (!companyInput.value.trim()) {
+                alert("회사명은 필수입니다.");
+                isValid = false;
+            }
+
+            // 계정 담당자 검증
+            const customerRepresentitive = document.getElementById("customerRepresentitive");
+            if (!customerRepresentitive.value.trim()) {
+                alert("계정 담당자 입력은 필수입니다.");
+                isValid = false;
+            }
+
+            // 전화번호 검증
+            const c_tel = document.getElementById("c_tel");
+            const phoneRegex = /^(\+\d{1,3}-)?(01[016789]-\d{3,4}-\d{4}|\d{2,3}-\d{3,4}-\d{4})$/;
+            if (!phoneRegex.test(c_tel.value)) {
+                alert("유효한 전화번호를 입력하세요. (예: +82-10-1234-5678, 010-1234-5678 또는 02-123-4567)");
+                isValid = false;
+            }
+
+            return isValid;
         }
     });
+
 
         document.addEventListener("DOMContentLoaded", function() {
         {{#leadId}}
