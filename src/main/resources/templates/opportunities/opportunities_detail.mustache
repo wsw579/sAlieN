@@ -901,9 +901,12 @@ event.preventDefault();
             productSelect.options[productSelect.selectedIndex].textContent.split(' (')[0].replace(/^\s+|\s+$/g, '') : '미지정';
 
             // 수량
-             const quantity = document.getElementById('quantity').value.trim();
-            // 매출
-             const expectedRevenue = document.getElementById('expectedRevenue').value.trim();
+            const quantity = document.getElementById('quantity').value.trim();
+            const quantityFloat = parseFloat(quantity);
+
+            // 매출 (원화 표시 제거 후 변환)
+            const expectedRevenue = document.getElementById('expectedRevenue').value.trim();
+            const expectedRevenueFloat = parseFloat(expectedRevenue.replace(/[^\d.-]/g, ''));
 
         const dataToSend = {
               회사명 : accountName,
@@ -912,14 +915,16 @@ event.preventDefault();
               고객담당자 : customerEmployee,
              고객요구사항 : opportunityInquiries || '요구사항 없음',
              기회제품 : productName,
-             수량 : quantity,
-             기회매출 : expectedRevenue
+             수량 : quantityFloat,
+             기회매출 : expectedRevenueFloat
         };
 
         console.log('전송할 데이터:', dataToSend);
          // 다운로드 진행중 팝업창 생성
          alert(' 다운로드 중 입니다. . . .  🚀 잠시만 기다려주세요. ');
         // Excel 생성 요청
+
+        //fetch('http://127.0.0.1:8000/generate-excel', {
         fetch('https://saiescrm.api.jyds.synology.me/generate-excel', {
             method: 'POST',
             headers: {
@@ -1006,9 +1011,14 @@ event.preventDefault();
             productSelect.options[productSelect.selectedIndex].textContent.split(' (')[0].replace(/^\s+|\s+$/g, '') : '미지정';
 
             // 수량
-             const quantity = document.getElementById('quantity').value.trim();
-            // 매출
-             const expectedRevenue = document.getElementById('expectedRevenue').value.trim();
+            const quantity = document.getElementById('quantity').value.trim();
+            const quantityFloat = parseFloat(quantity);
+
+            // 매출 (원화 표시 제거 후 변환)
+            const expectedRevenue = document.getElementById('expectedRevenue').value.trim();
+            const expectedRevenueFloat = parseFloat(expectedRevenue.replace(/[^\d.-]/g, ''));
+
+
 
         const dataToSend = {
               회사명 : accountName,
@@ -1017,14 +1027,15 @@ event.preventDefault();
               고객담당자 : customerEmployee,
              고객요구사항 : opportunityInquiries || '요구사항 없음',
              기회제품 : productName,
-             수량 : quantity,
-             기회매출 : expectedRevenue
+             수량 : quantityFloat,
+             기회매출 : expectedRevenueFloat
         };
 
         console.log('전송할 데이터:', dataToSend);
          // 다운로드 진행중 팝업창 생성
          alert(' 다운로드 중 입니다 . . . .  🚀 잠시만 기다려주세요. ');
         // Excel 생성 요청
+        //fetch('http://127.0.0.1:8000/generate-ppt', {
         fetch('https://saiescrm.api.jyds.synology.me/generate-ppt', {
             method: 'POST',
             headers: {
