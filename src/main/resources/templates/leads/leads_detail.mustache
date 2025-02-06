@@ -524,8 +524,8 @@
 
          // "제안서 생성 중입니다" 알림창 표시
         alert('생성 중입니다 . . . . 🚀  잠시만 기다려 주세요. ');
-
-        fetch('/leads/auto' , {
+        fetch('https://saiescrm.api.jyds.synology.me/leads/auto' , {
+        //fetch('http://127.0.0.1:8000/leads/auto' , {
             method: 'POST',
             body: formData,
         })
@@ -533,13 +533,14 @@
             if (!response.ok) {
                 throw new Error('파일 업로드 실패');
             }
+            console.log('응답받은 데이터 타입:', typeof response);
             return response.json(); // JSON 형식으로 응답 받기
         })
         .then((data) => {
             console.log('서버 응답 데이터:', data);
 
             // 폼에 데이터 채우기
-            populateForm(data.data); // 서버에서 받은 데이터를 populateForm 함수로 전달
+            populateForm(data); // 서버에서 받은 데이터를 populateForm 함수로 전달
         })
         .catch((error) => {
             console.error('파일 업로드 중 오류 발생:', error);
@@ -551,18 +552,23 @@
     function populateForm(data) {
         try {
             // 서버에서 받은 JSON 데이터를 파싱
-            const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
-
+            const parsedData = data;
+            console.log(parsedData);
             // 입력 필드에 데이터 채우기
+            console.log(parsedData.companyInput);
+
             document.getElementById('companyInput').value = parsedData.companyInput || '';
             if (!companyInput.value) {
                   throw new Error('회사를 입력해주세요.');
                  }
+            console.log('companyInput done');
             document.getElementById('companyName').value =  companyInput.value;
+            console.log('companyName done');
             document.getElementById('leadSource').value = parsedData.leadSource || '';
              if (!leadSource.value) {
                   throw new Error('리드소스를 입력해주세요.');
                  }
+            console.log('leadSource done');
             document.getElementById('customerRepresentitive').value = parsedData.customerRepresentitive || '';
               if (!customerRepresentitive.value) {
                   throw new Error('리드담당자를 입력해주세요.');
