@@ -324,10 +324,13 @@
                             <div class="mb-3 row">
                                 <label for="successRate" class="col-sm-2 col-form-label">성공률:</label>
                                 <div class="col-sm-10">
-                                    <input type="text" class="form-control" id="successRate" name="successRate"
+                                    <input type="text" class="form-control" id="displaySuccessRate" name="displaySuccessRate"
                                            value="{{successRate}}" placeholder="예: 0.2" required>
                                 </div>
                             </div>
+                            <!-- 실제 DB에 저장될 값 -->
+                            <input type="hidden" id="successRate" name="successRate" value="{{successRate}}" required>
+
                             <div class="mb-3 row">
                                 <label for="companyRevenue" class="col-sm-2 col-form-label">회사 매출:</label>
                                 <div class="col-sm-10">
@@ -393,8 +396,8 @@
                             <div class="mb-3 row">
                                 <label for="expectedRevenue" class="col-sm-2 col-form-label">기회 매출:</label>
                                 <div class="col-sm-10">
-                                    <input type="number" step="0.01" class="form-control" id="expectedRevenue"
-                                           name="expectedRevenue" value="{{expectedRevenue}}" placeholder="₩0" required>
+                                    <input type="text" class="form-control" id="expectedRevenue" name="expectedRevenue"
+                                           value="{{ expectedRevenue }}" placeholder="₩0" required>
                                 </div>
                             </div>
 
@@ -436,7 +439,7 @@
                 </div>
             </div>
 
-
+            {{#opportunityId}}
             <!-- 기회 단계 부분 -->
             <div class="card mb-4">
                 <div class="card-header">
@@ -467,7 +470,7 @@
                     </table>
                 </div>
             </div>
-
+            {{/opportunityId}}
 
             {{#opportunities.opportunityId}}
                 <!-- 기회 히스토리 부분 -->
@@ -575,6 +578,36 @@
             alert("{{message}}");
         {{/message}}
 
+
+
+        // 기회 매출 원화 표시
+        document.addEventListener("DOMContentLoaded", function () {
+    let input = document.getElementById("expectedRevenue");
+    if (input.value) {
+        input.value = formatCurrency(input.value); // 초기값을 원화 형식으로 변환
+    }
+
+    input.addEventListener("input", function () {
+        let numericValue = input.value.replace(/[^0-9]/g, ''); // 숫자만 남기기
+        if (numericValue) {
+            input.value = formatCurrency(numericValue);
+        }
+    });
+
+    input.form.addEventListener("submit", function () {
+        let numericValue = input.value.replace(/[^0-9]/g, ''); // 숫자만 서버로 전송
+        input.value = numericValue;
+    });
+});
+
+function formatCurrency(value) {
+    let number = parseFloat(value);
+    if (!isNaN(number)) {
+        return new Intl.NumberFormat('ko-KR', { style: 'currency', currency: 'KRW' }).format(number);
+    }
+    return value;
+}
+
         // Form 부분 기회상태 초기값 연동 JS (select Form은 html로 초기 value 지정이 안되어서 JS로 처리)
 
         {{#opportunities}}
@@ -642,7 +675,50 @@
                 });
             });
 
+            document.addEventListener("DOMContentLoaded", function () {
+    const displayInput = document.getElementById("displaySuccessRate"); // 사용자 UI용 input
+    const hiddenInput = document.getElementById("successRate"); // DB 저장용 input
 
+    // ✅ DB에서 불러온 값이 있으면 UI에 100을 곱해서 %로 변환
+    function updateDisplayFromDB() {
+        let dbValue = parseFloat(hiddenInput.value); // DB에서 불러온 값 (예: 0.25)
+        if (!isNaN(dbValue)) {
+            displayInput.value = (dbValue * 100).toFixed(2) + "%"; // UI에는 25.00%로 보이게
+        }
+    }
+
+    // ✅ 사용자가 입력할 때는 % 숨김
+    displayInput.addEventListener("focus", function () {
+        this.value = this.value.replace('%', ''); // % 제거하여 숫자만 입력 가능하게
+    });
+
+    // ✅ 사용자가 입력할 때마다 hidden input 값 업데이트 (실시간 변환)
+    displayInput.addEventListener("input", function () {
+        let value = this.value.trim();
+        if (!isNaN(value) && value !== "") {
+            let numericValue = parseFloat(value);
+
+            // ✅ 입력값이 100을 초과하면 100으로 제한
+            if (numericValue > 100) numericValue = 100;
+
+            // ✅ 입력값이 0보다 작으면 0으로 제한
+            if (numericValue < 0) numericValue = 0;
+
+            hiddenInput.value = (numericValue / 100).toFixed(2); // DB 저장용 값 변환
+        }
+    });
+
+    // ✅ 사용자가 입력을 마치면 % 추가
+    displayInput.addEventListener("blur", function () {
+        let value = this.value.trim();
+        if (!isNaN(value) && value !== "") {
+            this.value = parseFloat(value).toFixed(2) + "%"; // UI에는 25.00%로 표시
+        }
+    });
+
+    // ✅ 페이지 로드 시 기존 DB 값 반영 (UI에 % 추가)
+    updateDisplayFromDB();
+});
 
 
 
@@ -732,11 +808,31 @@
         }
 
         if (currentIndex !== -1) {
-            var progressWidth = (currentIndex / (steps.length - 1)) * 100;
+            var progressWidth = 100;
 
             // `Closed` 단계일 경우 한스텝 줄이기
             if (opportunityStatus.startsWith("Closed")) {
                 progressWidth -= (100 / steps.length);
+            }
+
+            // `Negotiation` 단계일 경우 줄이기
+            if (opportunityStatus.startsWith("Negotiation")) {
+                progressWidth -= ((100 / steps.length)*2);
+            }
+
+            // `Proposal` 단계일 경우 줄이기
+            if (opportunityStatus.startsWith("Proposal")) {
+                progressWidth -= ((100 / steps.length)*3);
+            }
+
+            // `Needs Analysis` 단계일 경우 줄이기
+            if (opportunityStatus.startsWith("Needs Analysis")) {
+                progressWidth -= ((100 / steps.length)*4);
+            }
+
+            // `Qualification` 단계일 경우 줄이기
+            if (opportunityStatus.startsWith("Qualification")) {
+                progressWidth -= ((100 / steps.length)*5);
             }
 
             progressBar.style.width = progressWidth + "%";
