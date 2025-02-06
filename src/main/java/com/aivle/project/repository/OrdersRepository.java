@@ -83,20 +83,26 @@ public interface OrdersRepository extends JpaRepository<OrdersEntity, Long> {
             "JOIN o.productId p " +
             "JOIN o.employeeId e " +
             "WHERE e.teamId = :teamId " +
-            "AND MONTH(o.salesDate) = MONTH(CURRENT_DATE) " + // 같은 달 조건
-            "AND YEAR(o.salesDate) = YEAR(CURRENT_DATE) " +   // 같은 연도 조건
+            "AND MONTH(o.salesDate) = :month " + // 같은 달 조건
+            "AND YEAR(o.salesDate) = :year " +   // 같은 연도 조건
             "GROUP BY e.employeeId, e.employeeName " +
             "ORDER BY totalSales DESC")
-    List<Object[]> getSalesByEmployeeWithNames(@Param("teamId") Team teamId);
+    List<Object[]> getSalesByEmployeeWithNames(
+            @Param("year") int year,
+            @Param("month") int month,
+            @Param("teamId") Team teamId);
 
     // 이번달 주문 현황 퍼센트 표시
     @Query("SELECT COUNT(o) FROM OrdersEntity o " +
             "JOIN o.employeeId e " +
             "WHERE e.employeeId = :employeeId " +
-            "AND EXTRACT(MONTH FROM o.salesDate) = EXTRACT(MONTH FROM CURRENT_DATE) " +
-            "AND EXTRACT(YEAR FROM o.salesDate) = EXTRACT(YEAR FROM CURRENT_DATE) " +
+            "AND EXTRACT(MONTH FROM o.salesDate) = :month " +
+            "AND EXTRACT(YEAR FROM o.salesDate) = :year " +
             "AND o.orderStatus IN ('draft', 'completed', 'activated')")
-    long countTotalSalesThisMonth(@Param("employeeId") String employeeId);
+    long countTotalSalesThisMonth(
+            @Param("year") int year,
+            @Param("month") int month,
+            @Param("employeeId") String employeeId);
 
     @Query("SELECT COUNT(o) FROM OrdersEntity o " +
             "JOIN o.employeeId e " +
