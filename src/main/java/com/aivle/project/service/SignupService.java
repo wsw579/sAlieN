@@ -10,6 +10,7 @@ import com.aivle.project.enums.Role;
 import com.aivle.project.enums.Team;
 import com.aivle.project.repository.EmployeeRepository;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -26,16 +27,6 @@ public class SignupService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public void registerUser(EmployeeDto.Post employeeDto) {
-        // 비밀번호 유효성 검사
-        if (!PasswordValidator.isValidPassword(employeeDto.getPassword())) {
-            throw new IllegalArgumentException("비밀번호는 8~16자의 영문 대/소문자, 숫자, 특수문자를 포함해야 합니다.");
-        }
-
-        // 비밀번호 확인 검사
-        if (!employeeDto.getPassword().equals(employeeDto.getConfirmPassword())) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
-        }
-
         // EmployeeEntity 생성 및 저장
         EmployeeEntity employee = new EmployeeEntity();
         employee.setEmployeeId(employeeDto.getEmployeeId());

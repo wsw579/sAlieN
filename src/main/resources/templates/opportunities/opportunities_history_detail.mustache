@@ -262,6 +262,7 @@
         });
 
 
+
         // Form 삭제버튼 클릭 시 현 주소가 create인경우 create로 action주소 변경.
 
         document.addEventListener("DOMContentLoaded", function() {
@@ -304,7 +305,102 @@
             }
         });
     });
+        document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("historyForm"); // 폼 선택
+    const updateButton = document.getElementById("updateButton");
 
+    updateButton.addEventListener("click", function (event) {
+        event.preventDefault(); // 기본 제출 방지
+
+        if (!validateForm()) {
+            return; // 유효성 검사 실패 시 중단
+        }
+
+        form.submit(); // 유효성 검사 통과 시 폼 제출
+    });
+
+    function validateForm() {
+        // 각 입력 필드 값 가져오기
+        const historyTitle = document.getElementById("historyTitle").value.trim();
+        const customerRepresentative = document.getElementById("customerRepresentative").value.trim();
+        const historyDate = document.getElementById("historyDate").value;
+        const historyTime = document.getElementById("historyTime").value;
+        const meetingPlace = document.getElementById("meetingPlace").value.trim();
+        const companySize = document.getElementById("companySize").value;
+        const actionTaken = document.getElementById("actionTaken").value;
+        const customerRequirements = document.getElementById("customerRequirements").value.trim();
+
+        // 에러 메시지를 저장할 변수
+        let errorMessage = "";
+
+        // 제목 검증 (1~255자)
+        if (historyTitle.length === 0) {
+            errorMessage += "제목을 입력하세요.\n";
+        } else if (historyTitle.length > 255) {
+            errorMessage += "제목은 255자 이내여야 합니다.\n";
+        }
+
+        // 담당자 검증 (비어 있으면 안됨)
+        if (customerRepresentative.length === 0) {
+            errorMessage += "담당자를 입력하세요.\n";
+        }
+
+        // 미팅 날짜 검증 (비어 있으면 안됨)
+        if (!historyDate) {
+            errorMessage += "미팅 날짜를 선택하세요.\n";
+        }
+
+        // 미팅 시간 검증 (비어 있으면 안됨)
+        if (!historyTime) {
+            errorMessage += "미팅 시간을 선택하세요.\n";
+        } else {
+            // 업무 시간(09:00~18:00) 범위 체크
+            const minTime = "09:00";
+            const maxTime = "18:00";
+            if (historyTime < minTime || historyTime > maxTime) {
+                errorMessage += "미팅 시간은 09:00~18:00 사이여야 합니다.\n";
+            }
+        }
+
+        // 미팅 장소 검증 (비어 있으면 안됨)
+        if (meetingPlace.length === 0) {
+            errorMessage += "미팅 장소를 입력하세요.\n";
+        }
+
+        // 회사 규모 검증 (올바른 값인지 확인)
+        const validCompanySizes = ["대기업", "중견기업", "중소기업", "기타"];
+        if (!validCompanySizes.includes(companySize)) {
+            errorMessage += "회사 규모는 '대기업', '중견기업', '중소기업', '기타' 중 하나여야 합니다.\n";
+        }
+
+        // 액션 검증 (올바른 값인지 확인)
+        const validActions = [
+            "후속 미팅 요청",
+            "제안서 전달 및 검토",
+            "계약 조율",
+            "계약 및 클로징",
+            "고객 관리 및 대응"
+        ];
+        if (!validActions.includes(actionTaken)) {
+            errorMessage += "액션은 올바른 값을 선택해야 합니다.\n";
+        }
+
+        // 고객 문의사항 검증 (1~1000자)
+        if (customerRequirements.length === 0) {
+            errorMessage += "고객 문의사항을 입력하세요.\n";
+        } else if (customerRequirements.length > 1000) {
+            errorMessage += "고객 문의사항은 1000자 이내여야 합니다.\n";
+        }
+
+        // 에러 메시지가 있으면 경고창 띄우고 false 반환
+        if (errorMessage) {
+            alert(errorMessage);
+            return false;
+        }
+
+        return true; // 모든 유효성 검사 통과
+    }
+});
 
     // 삭제버튼
             document.addEventListener("DOMContentLoaded", function() {

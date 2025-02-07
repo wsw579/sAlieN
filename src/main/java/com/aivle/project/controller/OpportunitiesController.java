@@ -7,6 +7,7 @@ import com.aivle.project.entity.OpportunitiesCommentEntity;
 import com.aivle.project.entity.OpportunitiesEntity;
 import com.aivle.project.entity.*;
 import com.aivle.project.service.*;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -222,8 +224,13 @@ public class OpportunitiesController {
     }
 
     @PostMapping("/opportunities/detail/{opportunityId}/history/create")
-    public String createHistory(@PathVariable Long opportunityId, @ModelAttribute HistoryDto historyDto, RedirectAttributes redirectAttributes) {
+    public String createHistory(@PathVariable Long opportunityId, @ModelAttribute @Valid HistoryDto historyDto,
+                                BindingResult bindingResult, RedirectAttributes redirectAttributes) {
         try {
+            if (bindingResult.hasErrors()) {
+                // 유효성 검사 실패 시 에러 메시지 출력
+                return "opportunities/opportunities_history_detail"; // 에러가 있으면 폼으로 다시 이동
+            }
             // 기회 히스토리 생성
             opportunitiesService.createHistory(historyDto);
 
@@ -248,9 +255,14 @@ public class OpportunitiesController {
     @PostMapping("/opportunities/detail/{opportunityId}/history/{historyId}/update")
     public String historyUpdate(@PathVariable("opportunityId") Long opportunityId,
                                 @PathVariable("historyId") Long historyId,
-                                @ModelAttribute HistoryDto historyDto,
+                                @ModelAttribute @Valid HistoryDto historyDto,
+                                BindingResult bindingResult,
                                 RedirectAttributes redirectAttributes) {
         try {
+            if (bindingResult.hasErrors()) {
+                // 유효성 검사 실패 시 에러 메시지 출력
+                return "opportunities/opportunities_history_detail"; // 에러가 있으면 폼으로 다시 이동
+            }
             // 기회 히스토리 수정
             opportunitiesService.updateHistory(historyId, historyDto);
 
@@ -359,44 +371,44 @@ public class OpportunitiesController {
         }
     }
 
-    // 기회카드
-    @GetMapping("/api/opportunities/card-value")
-    public ResponseEntity<Map<String, Object>> countStatusCardValue() {
-        Map<String, Long> statusCounts = opportunitiesService.getOpportunitiesStatusCountsUser();
-        Map<String, Object> response = new HashMap<>();
-        response.put("statusCounts", statusCounts);
-        return ResponseEntity.ok(response);
-    }
-
-    // 진행중 기회 목록 API 추가
-    @GetMapping("/api/opportunities/ongoing")
-    public String getOngoingOpportunities(@RequestParam(defaultValue = "0") int page, Model model) {
-        Page<OpportunitiesEntity> ongoingOpportunities = opportunitiesService.getOngoingOpportunities(page);
-        PaginationDto<OpportunitiesEntity> paginationDto = paginationService.createPaginationData(ongoingOpportunities, page, 5);
-
-        model.addAttribute("pagination", paginationDto);
-        return "opportunities/ongoing-opportunities";  // 기존 Mustache 템플릿을 그대로 반환
-    }
-
-
-    @GetMapping("/api/salesData")
-    public ResponseEntity<?> getSalesData(
-            @RequestParam(required = false) String teamId,
-            @RequestParam(required = false) String departmentId
-    ) {
-        if (teamId == null && departmentId == null) {
-            return ResponseEntity.badRequest().body("팀 ID 또는 부서 ID가 필요합니다.");
-        }
-
-        Map<String, Object> salesData;
-        try {
-            salesData = opportunitiesService.getSalesData(teamId, departmentId);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
-
-        return ResponseEntity.ok(salesData);
-    }
+//    // 기회카드
+//    @GetMapping("/api/opportunities/card-value")
+//    public ResponseEntity<Map<String, Object>> countStatusCardValue() {
+//        Map<String, Long> statusCounts = opportunitiesService.getOpportunitiesStatusCountsUser();
+//        Map<String, Object> response = new HashMap<>();
+//        response.put("statusCounts", statusCounts);
+//        return ResponseEntity.ok(response);
+//    }
+//
+//    // 진행중 기회 목록 API 추가
+//    @GetMapping("/api/opportunities/ongoing")
+//    public String getOngoingOpportunities(@RequestParam(defaultValue = "0") int page, Model model) {
+//        Page<OpportunitiesEntity> ongoingOpportunities = opportunitiesService.getOngoingOpportunities(page);
+//        PaginationDto<OpportunitiesEntity> paginationDto = paginationService.createPaginationData(ongoingOpportunities, page, 5);
+//
+//        model.addAttribute("pagination", paginationDto);
+//        return "opportunities/ongoing-opportunities";  // 기존 Mustache 템플릿을 그대로 반환
+//    }
+//
+//
+//    @GetMapping("/api/salesData")
+//    public ResponseEntity<?> getSalesData(
+//            @RequestParam(required = false) String teamId,
+//            @RequestParam(required = false) String departmentId
+//    ) {
+//        if (teamId == null && departmentId == null) {
+//            return ResponseEntity.badRequest().body("팀 ID 또는 부서 ID가 필요합니다.");
+//        }
+//
+//        Map<String, Object> salesData;
+//        try {
+//            salesData = opportunitiesService.getSalesData(teamId, departmentId);
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+//        }
+//
+//        return ResponseEntity.ok(salesData);
+//    }
 
 
 

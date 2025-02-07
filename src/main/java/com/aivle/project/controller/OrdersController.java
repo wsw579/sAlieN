@@ -92,10 +92,10 @@ public class OrdersController {
         return ResponseEntity.ok(ordersService.getChartData());
     }
 
-    @GetMapping("/orders/revenue-chart-data")
-    public ResponseEntity<Map<String, List<Integer>>> getRevenueChartData() {
-        return ResponseEntity.ok(ordersService.getChartRevenueData());
-    }
+//    @GetMapping("/orders/revenue-chart-data")
+//    public ResponseEntity<Map<String, List<Integer>>> getRevenueChartData() {
+//        return ResponseEntity.ok(ordersService.getChartRevenueData());
+//    }
 
 
     // Detail page
@@ -237,14 +237,23 @@ public class OrdersController {
     }
 
 //    @GetMapping("/api/sales-performance")
-//    public ResponseEntity<List<Map<String, Object>>> getSalesPerformanceWithNames() {
-//        List<Map<String, Object>> salesPerformance = ordersService.getEmployeeSalesPerformanceWithNames();
+//    public ResponseEntity<List<Map<String, Object>>> getSalesPerformanceWithNames(
+//            @RequestParam int year,
+//            @RequestParam int month) {
+//
+//        List<Map<String, Object>> salesPerformance = ordersService.getEmployeeSalesPerformanceWithNames(year, month);
+//
+//        if (salesPerformance == null || salesPerformance.isEmpty()) {
+//            return ResponseEntity.noContent().build();
+//        }
+//
 //        return ResponseEntity.ok(salesPerformance);
 //    }
 //
 //    @GetMapping("/api/draft-percentage")
-//    public ResponseEntity<Map<String, Double>> getDraftPercentage() {
-//        double percentage = 100.0 - ordersService.calculateDraftPercentage();
+//    public ResponseEntity<Map<String, Double>> getDraftPercentage(@RequestParam int year,
+//                                                                  @RequestParam int month) {
+//        double percentage = 100.0 - ordersService.calculateDraftPercentage(year, month);
 //        Map<String, Double> response = new HashMap<>();
 //        response.put("draftPercentage", percentage);
 //        return ResponseEntity.ok(response);
