@@ -4,72 +4,71 @@
         height: 400px; /* 원하는 높이로 설정 */
     }
 </style>
-    <div id="layoutSidenav_content">
-        <main>
-            <div class="container-fluid px-4 mt-4">
-                <!-- 첫 번째 행 -->
-                <div class="row mb-4 align-items-stretch">
-                    <!-- 1행 1열 -->
-                    <div class="col-xl-8 col-md-6">
-                        <div class="card h-100">
-                            <div class="card-header">
-                                <i class="fas fa-chart-bar me-1"></i>
-                                기회
-                            </div>
-                            <div class="card-body">
-                                <div class="row g-3 mb-3">
-                                    <div class="col-8 col-md-4">
-                                        <div class="card bg-primary text-white h-100" style="min-height: 180px;" data-bs-toggle="modal" data-bs-target="#progressModal">
-                                            <div class="card-body" style="font-size: 1.5rem; font-weight: bold;">진행중</div>
-                                            <div class="card-footer d-flex align-items-center justify-content-between">
-                                                <h3 id="ongoingCountTeam">0 건</h3>
-                                                <div class="small text-white">
-                                                    <a href="" class="text-white">
-                                                        <i class="fas fa-angle-right"></i>
-                                                    </a>
-                                                </div>
+<div id="layoutSidenav_content">
+    <main>
+        <div class="container-fluid px-4 mt-4">
+            <!-- 첫 번째 행 -->
+            <div class="row mb-4 align-items-stretch">
+                <!-- 1행 1열 -->
+                <div class="col-xl-8 col-md-6">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <i class="fas fa-chart-bar me-1"></i>
+                            기회
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3 mb-3">
+                                <div class="col-8 col-md-4">
+                                    <div class="card bg-card text-black h-100" style="min-height: 180px;" data-bs-toggle="modal" data-bs-target="#progressModal">
+                                        <div class="card-body" style="font-size: 1.5rem; font-weight: bold;">진행중</div>
+                                        <div class="card-footer d-flex align-items-center justify-content-between">
+                                            <h3 id="ongoingCountTeam">0 건</h3>
+                                            <div class="small text-white">
+                                                <a href="" class="text-white">
+                                                    <i class="fas fa-angle-right"></i>
+                                                </a>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-8 col-md-4">
-                                        <div class="card bg-success text-white h-100" style="min-height: 180px;">
-                                            <div class="card-body" style="font-size: 1.5rem; font-weight: bold;">마감일자 초과</div>
-                                            <div class="card-footer d-flex align-items-center justify-content-between">
-                                                <h3 id="overdueCountTeam">0 건</h3>
-                                                <div class="small text-white">
-                                                    <a href="/opportunities" class="text-white">
-                                                    </a>
-                                                </div>
+                                </div>
+                                <div class="col-8 col-md-4">
+                                    <div class="card bg-card text-black h-100" style="min-height: 180px;">
+                                        <div class="card-body" style="font-size: 1.5rem; font-weight: bold;">마감일자 초과</div>
+                                        <div class="card-footer d-flex align-items-center justify-content-between">
+                                            <h3 id="overdueCountTeam">0 건</h3>
+                                            <div class="small text-white">
+                                                <a href="/opportunities" class="text-white">
+                                                </a>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-8 col-md-4">
-                                        <div class="card bg-success text-white h-100" style="min-height: 180px;">
-                                            <div class="card-body" style="font-size: 1.5rem; font-weight: bold;">계약전환 성공</div>
-                                            <div class="card-footer d-flex align-items-center justify-content-between">
-                                                <h3 id="closedCountTeam">0 건</h3>
-                                                <div class="small text-white">
-                                                    <a href="/opportunities" class="text-white">
-                                                    </a>
-                                                </div>
+                                </div>
+                                <div class="col-8 col-md-4">
+                                    <div class="card bg-card text-black h-100" style="min-height: 180px;">
+                                        <div class="card-body" style="font-size: 1.5rem; font-weight: bold;">계약전환 성공</div>
+                                        <div class="card-footer d-flex align-items-center justify-content-between">
+                                            <h3 id="closedCountTeam">0 건</h3>
+                                            <div class="small text-white">
+                                                <a href="/opportunities" class="text-white">
+                                                </a>
                                             </div>
                                         </div>
                                     </div>
+                                </div>
 
-                                    <!-- 진행중 클릭 시 모달 창 -->
-                                    <div class="modal fade" id="progressModal" tabindex="-1" aria-labelledby="progressModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog modal-lg">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title" id="progressModalLabel">진행중 상세 정보</h5>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                </div>
-                                                <div class="modal-body" id="progressContent">
-                                                    {{> opportunities/ongoing-opportunities }}
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-                                                </div>
+                                <!-- 진행중 클릭 시 모달 창 -->
+                                <div class="modal fade" id="progressModal" tabindex="-1" aria-labelledby="progressModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="progressModalLabel">진행중 상세 정보</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body" id="progressContent">
+                                                {{> opportunities/ongoing-opportunities }}
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
                                             </div>
                                         </div>
                                     </div>
@@ -77,52 +76,53 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- 1행 2열 -->
-                    <div class="col-xl-4 col-md-6 d-flex">
-                        <div class="card h-100 w-100">
-                            <div class="card-header" id = "employeeOrderChartHeader">
-                                <i class="fas fa-chart-bar me-1"></i>
-                                사원별 오더 처리 현황
-                            </div>
-                            <div class="card-body">
-                                <canvas id="employeeOrderChart" style="width: 500px; height: 200px;"></canvas>
-                            </div>
-                        </div>
-                    </div>
-
-<!--                    &lt;!&ndash; 1행 3열 &ndash;&gt;-->
-<!--                    <div class="col-xl-4 col-md-6 d-flex">-->
-<!--                        <div class="card h-100 w-100">-->
-<!--                            <div class="card-header" id="yearlySalesHeader">-->
-<!--                                <i class="fas fa-chart-area me-1"></i>-->
-<!--                                연도별 오더 처리 현황-->
-<!--                            </div>-->
-<!--                            <div class="card-body">-->
-<!--                                <canvas id="OrderStatusChart" style="width: 500px; height: 200px;"></canvas>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!--                    </div>-->
                 </div>
 
-                <!-- 두 번째 행 -->
-                <div class="row mb-4 align-items-stretch">
-                    <!-- 한 행 전체 -->
-                    <div class="col-xl-12 d-flex">
-                        <div class="card h-100 w-100">
-                            <div class="card-header" id="monthlySalesChartHeader">
-                                <i class="fas fa-table me-1"></i>
-                                월별 매출현황
-                            </div>
-                            <div class="card-body">
-                                <canvas id="monthlySalesChart" style="width: 600px; height: 300px;"></canvas>
-                            </div>
+                <!-- 1행 2열 -->
+                <div class="col-xl-4 col-md-6 d-flex">
+                    <div class="card h-100 w-100">
+                        <div class="card-header" id = "employeeOrderChartHeader">
+                            <i class="fas fa-chart-bar me-1"></i>
+                            사원별 오더 처리 현황
+                        </div>
+                        <div class="card-body">
+                            <canvas id="employeeOrderChart" style="width: 500px; height: 200px;"></canvas>
                         </div>
                     </div>
                 </div>
 
-                <!--            세번째 행-->
-                <div class="row mb-4 align-items-stretch">
+                <!--                    &lt;!&ndash; 1행 3열 &ndash;&gt;-->
+                <!--                    <div class="col-xl-4 col-md-6 d-flex">-->
+                <!--                        <div class="card h-100 w-100">-->
+                <!--                            <div class="card-header" id="yearlySalesHeader">-->
+                <!--                                <i class="fas fa-chart-area me-1"></i>-->
+                <!--                                연도별 오더 처리 현황-->
+                <!--                            </div>-->
+                <!--                            <div class="card-body">-->
+                <!--                                <canvas id="OrderStatusChart" style="width: 500px; height: 200px;"></canvas>-->
+                <!--                            </div>-->
+                <!--                        </div>-->
+                <!--                    </div>-->
+            </div>
+
+            <!-- 두 번째 행 -->
+            <div class="row mb-4 align-items-stretch">
+                <!-- 한 행 전체 -->
+                <div class="col-xl-12 d-flex">
+                    <div class="card h-100 w-100">
+                        <div class="card-header" id="monthlySalesChartHeader">
+                            <i class="fas fa-table me-1"></i>
+                            월별 매출현황
+                        </div>
+                        <div class="card-body">
+                            <canvas id="monthlySalesChart" style="width: 600px; height: 300px;"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--            세번째 행-->
+            <div class="row mb-4 align-items-stretch">
                 <div class="col-xl-8-12 d-flex">
                     <div class="card h-100 w-100">
                         <div class="card-header" id="salesPerformanceHeader">
@@ -150,21 +150,21 @@
                         </div>
                     </div>
                 </div>
-                </div>
-
-
-
             </div>
-        </main>
+
+
+
+        </div>
+    </main>
 
 
 
 
-<!--        <script src="/assets/demo/team-opportunities-chart.js"></script>-->
-        <script src="/assets/demo/opportunities-status-card-value-manager.js"></script>
-        <script src="/assets/demo/opportunities-modal-loader.js"></script>
-        <script src="/assets/demo/monthly-sales-chart.js"></script>
-        <script src="/assets/demo/employee-order-chart.js"></script>
-        <script src="/assets/demo/order-status-chart.js"></script>
-        <script src="/assets/demo/sales-performance.js"></script>
+    <!--        <script src="/assets/demo/team-opportunities-chart.js"></script>-->
+    <script src="/assets/demo/opportunities-status-card-value-manager.js"></script>
+    <script src="/assets/demo/opportunities-modal-loader.js"></script>
+    <script src="/assets/demo/monthly-sales-chart.js"></script>
+    <script src="/assets/demo/employee-order-chart.js"></script>
+    <script src="/assets/demo/order-status-chart.js"></script>
+    <script src="/assets/demo/sales-performance.js"></script>
 {{>main/footer}}

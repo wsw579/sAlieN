@@ -13,11 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.jaxb.SpringDataJaxb;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -25,8 +22,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @Controller
 @RequiredArgsConstructor
@@ -92,10 +87,10 @@ public class OrdersController {
         return ResponseEntity.ok(ordersService.getChartData());
     }
 
-//    @GetMapping("/orders/revenue-chart-data")
-//    public ResponseEntity<Map<String, List<Integer>>> getRevenueChartData() {
-//        return ResponseEntity.ok(ordersService.getChartRevenueData());
-//    }
+    @GetMapping("/orders/revenue-chart-data")
+    public ResponseEntity<Map<String, List<Integer>>> getRevenueChartData() {
+        return ResponseEntity.ok(ordersService.getChartRevenueData());
+    }
 
 
     // Detail page
@@ -237,23 +232,14 @@ public class OrdersController {
     }
 
 //    @GetMapping("/api/sales-performance")
-//    public ResponseEntity<List<Map<String, Object>>> getSalesPerformanceWithNames(
-//            @RequestParam int year,
-//            @RequestParam int month) {
-//
-//        List<Map<String, Object>> salesPerformance = ordersService.getEmployeeSalesPerformanceWithNames(year, month);
-//
-//        if (salesPerformance == null || salesPerformance.isEmpty()) {
-//            return ResponseEntity.noContent().build();
-//        }
-//
+//    public ResponseEntity<List<Map<String, Object>>> getSalesPerformanceWithNames() {
+//        List<Map<String, Object>> salesPerformance = ordersService.getEmployeeSalesPerformanceWithNames();
 //        return ResponseEntity.ok(salesPerformance);
 //    }
 //
 //    @GetMapping("/api/draft-percentage")
-//    public ResponseEntity<Map<String, Double>> getDraftPercentage(@RequestParam int year,
-//                                                                  @RequestParam int month) {
-//        double percentage = 100.0 - ordersService.calculateDraftPercentage(year, month);
+//    public ResponseEntity<Map<String, Double>> getDraftPercentage() {
+//        double percentage = 100.0 - ordersService.calculateDraftPercentage();
 //        Map<String, Double> response = new HashMap<>();
 //        response.put("draftPercentage", percentage);
 //        return ResponseEntity.ok(response);

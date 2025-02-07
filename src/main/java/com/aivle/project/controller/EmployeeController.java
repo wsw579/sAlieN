@@ -2,15 +2,9 @@ package com.aivle.project.controller;
 
 import com.aivle.project.dto.EmployeeDto;
 import com.aivle.project.dto.PaginationDto;
-import com.aivle.project.entity.EmployeeEntity;
-import com.aivle.project.entity.OpportunitiesEntity;
-import com.aivle.project.entity.OrdersEntity;
-import com.aivle.project.enums.Dept;
-import com.aivle.project.enums.Team;
 import com.aivle.project.service.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -20,14 +14,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+
 
 @Controller
 @RequiredArgsConstructor
@@ -89,7 +82,7 @@ public class EmployeeController {
 
     @PostMapping("/password-edit")
     @ResponseBody
-    public ResponseEntity<String> passwordEdit(@RequestBody @Valid EmployeeDto.Patch employeeDto, RedirectAttributes redirectAttributes) {
+    public ResponseEntity<String> passwordEdit(@RequestBody EmployeeDto.Patch employeeDto, RedirectAttributes redirectAttributes) {
         try {
             // 비밀번호 변경 로직
             String employeeId = employeeService.editPassword(employeeDto);
@@ -169,12 +162,8 @@ public class EmployeeController {
     }
 
     @PostMapping("/admin/signup")
-    public String adminEmployeeSignup(@Valid EmployeeDto.Post memberDto, BindingResult bindingResult, RedirectAttributes redirectAttributes){
+    public String adminEmployeeSignup(EmployeeDto.Post memberDto, RedirectAttributes redirectAttributes){
         try {
-            if (bindingResult.hasErrors()) {
-                // 유효성 검사 실패 시, 다시 폼 페이지로 이동
-                return "admin/signup"; // 페이지 반환
-            }
             // 계정 생성
             signupService.registerUser(memberDto);
 
@@ -247,16 +236,16 @@ public class EmployeeController {
     }
 
 
-//    @GetMapping("/api/getLoggedInUser")
-//    @ResponseBody
-//    public ResponseEntity<EmployeeDto.Get> getLoggedInUser() {
-//        try {
-//            EmployeeDto.Get loggedInUser = employeeService.getLoggedInUser();
-//            return ResponseEntity.ok(loggedInUser);
-//        } catch (IllegalStateException e) {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-//        }
-//    }
+    @GetMapping("/api/getLoggedInUser")
+    @ResponseBody
+    public ResponseEntity<EmployeeDto.Get> getLoggedInUser() {
+        try {
+            EmployeeDto.Get loggedInUser = employeeService.getLoggedInUser();
+            return ResponseEntity.ok(loggedInUser);
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+    }
 
     // 부서 정보 추가
     @GetMapping("/employees")
