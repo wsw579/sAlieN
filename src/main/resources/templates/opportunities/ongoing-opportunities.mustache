@@ -58,18 +58,18 @@ border: 1px solid #b8daff;
         </table>
         <div class="pagination justify-content-center mt-3">
             {{#pagination.hasPreviousPage}}
-                <button class="btn btn-outline-primary" onclick="window.location.href='/opportunities?page={{pagination.previousPage}}&size=10'">
-                이전
+                <button class="btn btn-outline-primary pagination-button" data-page="{{pagination.previousPage}}">
+                    이전
                 </button>
             {{/pagination.hasPreviousPage}}
             {{#pagination.pageNumbers}}
-                <button class="btn btn-outline-secondary {{#isActive}}active{{/isActive}}" onclick="window.location.href='/opportunities?page={{page}}&size=10'">
-                {{displayPage}}
+                <button class="btn btn-outline-secondary pagination-button {{#isActive}}active{{/isActive}}" data-page="{{page}}">
+                    {{displayPage}}
                 </button>
             {{/pagination.pageNumbers}}
             {{#pagination.hasNextPage}}
-                <button class="btn btn-outline-primary" onclick="window.location.href='/opportunities?page={{pagination.nextPage}}&size=10'">
-                다음
+                <button class="btn btn-outline-primary pagination-button" data-page="{{pagination.nextPage}}">
+                    다음
                 </button>
             {{/pagination.hasNextPage}}
         </div>
@@ -78,136 +78,190 @@ border: 1px solid #b8daff;
 
 <script>
 
-    document.addEventListener('click', function(event) {
-        if (event.target.closest('#proposalExcelButton')) { // AIButton 클릭 감지
-            try {
-                const selectedCheckboxes = document.querySelectorAll(".select-row:checked");
+    document.addEventListener("DOMContentLoaded", function () {
+        // ✅ 이벤트 위임 방식으로 변경하여 클릭 감지
+        document.addEventListener("click", function (event) {
+            const target = event.target.closest(".pagination-button");
+            if (!target) return; // pagination 버튼이 아닌 경우 무시
 
-                // 🔹 체크된 개수 확인 (1개만 허용)
-                if (selectedCheckboxes.length > 1) {
-                    alert("하나의 항목만 선택해 주세요.");
-                    return;
-                }
+            event.preventDefault(); // 기본 동작 방지
 
-                if (selectedCheckboxes.length === 0) {
-                    throw new Error("제안서를 생성할 항목을 선택해 주세요.");
-                }
+            let page = target.getAttribute("data-page");
+            if (!page) return;
 
-                const selectedRow = selectedCheckboxes[0].closest("tr"); // 체크된 행 가져오기
+            let url = `/api/opportunities/ongoing?page=${page}&size=10`;
 
-                const employeeId = selectedRow.getAttribute("data-employee") || "미지정";
-                const productId = selectedRow.getAttribute("data-product") || "미지정";
-                const opportunityInquiries = selectedRow.getAttribute("data-opportunity-inquiries") || "요구사항 없음";
+            // URL 상태 변경 (뒤로 가기 가능)
+            window.history.pushState({}, "", url);
 
-                // 🔹 추가된 로그
-                console.log("선택된 행의 데이터:", selectedRow.outerHTML);
-                console.log("employeeId:", employeeId);
-                console.log("productId:", productId);
-                console.log("opportunityInquiries:", opportunityInquiries);
+            // 데이터를 비동기적으로 불러오기
+            loadOpportunities(url);
+        });
+    });
 
-                const dataToSend = {
-                    담당자: employeeId,
-                    제품: productId,
-                    고객요구사항: opportunityInquiries
-                };
+    function loadOpportunities(url) {
+        fetch(url, {
+            method: "GET",
+            headers: { "X-Requested-With": "XMLHttpRequest" } // AJAX 요청임을 명시
+        })
+        .then(response => response.text())
+        .then(html => {
+            let parser = new DOMParser();
+            let doc = parser.parseFromString(html, "text/html");
 
-                console.log('전송할 데이터:', dataToSend);
+            // ✅ 테이블만 업데이트 (모달 삭제 방지)
+            let newTable = doc.querySelector("#datatablesSimple"); // 새 테이블 가져오기
+            let newPagination = doc.querySelector(".pagination"); // 새 페이지네이션 가져오기
 
-                fetch('https://saiescrm.api.jyds.synology.me/generate-excel', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(dataToSend)
-                })
-                .then(response => response.blob())
-                .then(blob => {
-                    const url = window.URL.createObjectURL(new Blob([blob]));
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.setAttribute('download', `proposal.xlsx`);
-                    document.body.appendChild(link);
-                    link.click();
-                    window.URL.revokeObjectURL(url);
-                    link.remove();
-                    alert('제안서 다운로드가 완료되었습니다.');
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('제안서 생성 중 오류가 발생했습니다. 다시 시도해 주세요.');
-                });
-            } catch (error) {
-                console.error('Error:', error);
-                alert(error.message);
+            if (newTable) {
+                document.querySelector("#datatablesSimple").innerHTML = newTable.innerHTML;
             }
-        }
+            if (newPagination) {
+                document.querySelector(".pagination").innerHTML = newPagination.innerHTML;
+            }
+        })
+        .catch(error => console.error("Error loading opportunities:", error));
+    }
+
+    // ✅ 뒤로 가기/앞으로 가기 이벤트 처리
+    window.addEventListener("popstate", function () {
+        loadOpportunities(window.location.href);
     });
 
 
-    document.addEventListener('click', function(event) {
-        if (event.target.closest('#proposalButton')) { // AIButton 클릭 감지
-            try {
-                const selectedCheckboxes = document.querySelectorAll(".select-row:checked");
 
-                // 🔹 체크된 개수 확인 (1개만 허용)
-                if (selectedCheckboxes.length > 1) {
-                    alert("하나의 항목만 선택해 주세요.");
-                    return;
-                }
 
-                if (selectedCheckboxes.length === 0) {
-                    throw new Error("제안서를 생성할 항목을 선택해 주세요.");
-                }
 
-                const selectedRow = selectedCheckboxes[0].closest("tr"); // 체크된 행 가져오기
+            document.addEventListener('click', function(event) {
+                    if (event.target.closest('#proposalExcelButton')) { // AIButton 클릭 감지
+                        try {
+                            const selectedCheckboxes = document.querySelectorAll(".select-row:checked");
 
-                const employeeId = selectedRow.getAttribute("data-employee") || "미지정";
-                const productId = selectedRow.getAttribute("data-product") || "미지정";
-                const opportunityInquiries = selectedRow.getAttribute("data-opportunity-inquiries") || "요구사항 없음";
+                            // 🔹 체크된 개수 확인 (1개만 허용)
+                            if (selectedCheckboxes.length > 1) {
+                                alert("하나의 항목만 선택해 주세요.");
+                                return;
+                            }
 
-                // 🔹 추가된 로그
-                console.log("선택된 행의 데이터:", selectedRow.outerHTML);
-                console.log("employeeId:", employeeId);
-                console.log("productId:", productId);
-                console.log("opportunityInquiries:", opportunityInquiries);
+                            if (selectedCheckboxes.length === 0) {
+                                throw new Error("제안서를 생성할 항목을 선택해 주세요.");
+                            }
 
-                const dataToSend = {
-                    담당자: employeeId,
-                    제품: productId,
-                    고객요구사항: opportunityInquiries
-                };
+                            const selectedRow = selectedCheckboxes[0].closest("tr"); // 체크된 행 가져오기
 
-                console.log('전송할 데이터:', dataToSend);
+                            const employeeId = selectedRow.getAttribute("data-employee") || "미지정";
+                            const productId = selectedRow.getAttribute("data-product") || "미지정";
+                            const opportunityInquiries = selectedRow.getAttribute("data-opportunity-inquiries") || "요구사항 없음";
 
-                fetch('https://saiescrm.api.jyds.synology.me/generate-ppt', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(dataToSend)
-                })
-                .then(response => response.blob())
-                .then(blob => {
-                    const url = window.URL.createObjectURL(new Blob([blob]));
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.setAttribute('download', `proposal.xlsx`);
-                    document.body.appendChild(link);
-                    link.click();
-                    window.URL.revokeObjectURL(url);
-                    link.remove();
-                    alert('제안서 다운로드가 완료되었습니다.');
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('제안서 생성 중 오류가 발생했습니다. 다시 시도해 주세요.');
+                            // 🔹 추가된 로그
+                            console.log("선택된 행의 데이터:", selectedRow.outerHTML);
+                            console.log("employeeId:", employeeId);
+                            console.log("productId:", productId);
+                            console.log("opportunityInquiries:", opportunityInquiries);
+
+                            const dataToSend = {
+                                담당자: employeeId,
+                                제품: productId,
+                                고객요구사항: opportunityInquiries
+                            };
+
+                            console.log('전송할 데이터:', dataToSend);
+
+                            fetch('https://saiescrm.api.jyds.synology.me/generate-excel', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify(dataToSend)
+                            })
+                            .then(response => response.blob())
+                            .then(blob => {
+                                const url = window.URL.createObjectURL(new Blob([blob]));
+                                const link = document.createElement('a');
+                                link.href = url;
+                                link.setAttribute('download', `proposal.xlsx`);
+                                document.body.appendChild(link);
+                                link.click();
+                                window.URL.revokeObjectURL(url);
+                                link.remove();
+                                alert('제안서 다운로드가 완료되었습니다.');
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                alert('제안서 생성 중 오류가 발생했습니다. 다시 시도해 주세요.');
+                            });
+                        } catch (error) {
+                            console.error('Error:', error);
+                            alert(error.message);
+                        }
+                    }
                 });
-            } catch (error) {
-                console.error('Error:', error);
-                alert(error.message);
-            }
-        }
-    });
+
+
+                document.addEventListener('click', function(event) {
+                    if (event.target.closest('#proposalButton')) { // AIButton 클릭 감지
+                        try {
+                            const selectedCheckboxes = document.querySelectorAll(".select-row:checked");
+
+                            // 🔹 체크된 개수 확인 (1개만 허용)
+                            if (selectedCheckboxes.length > 1) {
+                                alert("하나의 항목만 선택해 주세요.");
+                                return;
+                            }
+
+                            if (selectedCheckboxes.length === 0) {
+                                throw new Error("제안서를 생성할 항목을 선택해 주세요.");
+                            }
+
+                            const selectedRow = selectedCheckboxes[0].closest("tr"); // 체크된 행 가져오기
+
+                            const employeeId = selectedRow.getAttribute("data-employee") || "미지정";
+                            const productId = selectedRow.getAttribute("data-product") || "미지정";
+                            const opportunityInquiries = selectedRow.getAttribute("data-opportunity-inquiries") || "요구사항 없음";
+
+                            // 🔹 추가된 로그
+                            console.log("선택된 행의 데이터:", selectedRow.outerHTML);
+                            console.log("employeeId:", employeeId);
+                            console.log("productId:", productId);
+                            console.log("opportunityInquiries:", opportunityInquiries);
+
+                            const dataToSend = {
+                                담당자: employeeId,
+                                제품: productId,
+                                고객요구사항: opportunityInquiries
+                            };
+
+                            console.log('전송할 데이터:', dataToSend);
+
+                            fetch('https://saiescrm.api.jyds.synology.me/generate-ppt', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify(dataToSend)
+                            })
+                            .then(response => response.blob())
+                            .then(blob => {
+                                const url = window.URL.createObjectURL(new Blob([blob]));
+                                const link = document.createElement('a');
+                                link.href = url;
+                                link.setAttribute('download', `proposal.pptx`);
+                                document.body.appendChild(link);
+                                link.click();
+                                window.URL.revokeObjectURL(url);
+                                link.remove();
+                                alert('제안서 다운로드가 완료되었습니다.');
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                alert('제안서 생성 중 오류가 발생했습니다. 다시 시도해 주세요.');
+                            });
+                        } catch (error) {
+                            console.error('Error:', error);
+                            alert(error.message);
+                        }
+                    }
+                });
 
 
 </script>
