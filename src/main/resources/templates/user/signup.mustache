@@ -274,6 +274,14 @@
             e.preventDefault();
             alert("개인정보 동의 체크를 선택하시오.");
 
+    document.addEventListener("DOMContentLoaded", function () {
+        // 이벤트 리스너 추가
+        document.getElementById("password").addEventListener("input", validatePassword);
+        document.getElementById("confirmPassword").addEventListener("input", validatePassword);
+        document.getElementById("signupForm").addEventListener("submit", handleFormSubmit);
+    });
+
+    // 비밀번호 유효성 검사
     function validatePassword() {
         var password = document.getElementById("password").value;
         var confirmPassword = document.getElementById("confirmPassword").value;
@@ -313,30 +321,97 @@
         if (password !== confirmPassword || confirmPassword === "") {
             confirmMsg.style.color = wrongColor;
             confirmMsg.innerHTML = "❌ 비밀번호가 일치하지 않습니다.";
+            return false;
         } else {
             confirmMsg.style.color = correctColor;
             confirmMsg.innerHTML = "✅ 비밀번호가 일치합니다.";
+            return true;
         }
     }
 
+    // 이름 유효성 검사 (한글 또는 영문만 허용)
+    function validateName() {
+        const name = document.getElementById("name").value;
+        const namePattern = /^[가-힣a-zA-Z\s]+$/;
 
-    // 비밀번호 및 확인 비밀번호 입력 시 유효성 검사 실행
-    document.getElementById("password").addEventListener("input", validatePassword);
-    document.getElementById("confirmPassword").addEventListener("input", validatePassword);
+        if (!namePattern.test(name) || name.length < 2 || name.length > 50) {
+            alert("이름은 한글 또는 영문으로 최소 2자 이상, 최대 50자 이내여야 합니다.");
+            return false;
+        }
+        return true;
+    }
 
+    // 부서, 직급, 팀 선택 검사 (필수 선택)
+    function validateSelectFields() {
+        const dept = document.getElementById("position").value;
+        const position = document.getElementById("salary").value;
+        const team = document.getElementById("team").value;
 
-    document.getElementById("signupForm").addEventListener("submit", async function(event) {
-        event.preventDefault();
+        if (dept === "") {
+            alert("부서를 선택하세요.");
+            return false;
+        }
+        if (position === "") {
+            alert("직급을 선택하세요.");
+            return false;
+        }
+        if (team === "") {
+            alert("팀을 선택하세요.");
+            return false;
+        }
+        return true;
+    }
 
-        const formData = new FormData(this);  // 폼 데이터 수집
-        const jsonObject = Object.fromEntries(formData.entries());  // JSON 변환
+    // 입사일 검사 (미래 날짜 입력 방지)
+    function validateHireDate() {
+        const hireDate = document.getElementById("joinDate").value;
+        const today = new Date().toISOString().split("T")[0];
 
-        // 회원가입 API 호출
+        if (!hireDate) {
+            alert("입사일을 입력하세요.");
+            return false;
+        }
+        if (hireDate > today) {
+            alert("입사일은 미래 날짜로 설정할 수 없습니다.");
+            return false;
+        }
+        return true;
+    }
+
+    // 비밀번호 찾기 질문 답변 유효성 검사 (최소 2자 이상)
+    function validateSecurityAnswer() {
+        const answer = document.getElementById("securityAnswer").value;
+
+        if (answer.trim().length < 2) {
+            alert("비밀번호 찾기 답변은 최소 2자 이상 입력해야 합니다.");
+            return false;
+        }
+        return true;
+    }
+
+    // 폼 제출 이벤트 핸들러 (최종 유효성 검사)
+    async function handleFormSubmit(event) {
+        event.preventDefault(); // 기본 제출 방지
+
+        // 개별 유효성 검사 실행
+        if (!validateName()) return;
+        if (!validateSelectFields()) return;
+        if (!validateHireDate()) return;
+        if (!validateSecurityAnswer()) return;
+        if (!validatePassword()) {
+            alert("비밀번호가 유효한지 확인하세요.");
+            return;
+        }
+
+        // 폼 데이터 수집 및 JSON 변환
+        const formData = new FormData(document.getElementById("signupForm"));
+        const jsonObject = Object.fromEntries(formData.entries());
+
         try {
             const response = await fetch("/api/signup/register", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(jsonObject)
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(jsonObject)
             });
 
             const result = await response.text();
@@ -349,7 +424,6 @@
         } catch (error) {
             alert("서버 오류 발생! 다시 시도해주세요.");
         }
-    });
 </script>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

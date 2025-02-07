@@ -153,58 +153,113 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 
+    document.addEventListener("DOMContentLoaded", function () {
+        // 모달이 열릴 때 이벤트 처리 (사용자 ID 설정)
+        const passwordModal = document.getElementById("passwordModal");
+        passwordModal.addEventListener("show.bs.modal", function (event) {
+            const button = event.relatedTarget;
+            document.getElementById("modal-userId").value = button.getAttribute("data-id");
+        });
 
-    // 모달이 열릴 때 이벤트 처리
-    const passwordModal = document.getElementById('passwordModal');
-    passwordModal.addEventListener('show.bs.modal', function (event) {
-        // 버튼에서 data-id 속성을 가져옴
-        const button = event.relatedTarget;
-        const userId = button.getAttribute('data-id');
+        // 비밀번호 입력 시 실시간 검사
+        document.getElementById("new-password").addEventListener("input", validateNewPassword);
+        document.getElementById("confirm-password").addEventListener("input", validatePasswordMatch);
 
-        // 숨겨진 input 필드에 userId 값을 설정
-        const userIdInput = document.getElementById('modal-userId');
-        userIdInput.value = userId;
-    });
+        // 폼 제출 시 유효성 검사 실행 후 서버 요청
+        document.getElementById("password-change-form").addEventListener("submit", async function (event) {
+            event.preventDefault();
 
-    $(document).ready(function () {
-        $("#password-change-form").submit(function (event) {
-            event.preventDefault(); // form이 기본적으로 제출되지 않도록 방지
+            if (!validatePasswordForm()) return;
 
-            // 입력된 데이터를 가져옵니다.
-            var formData = {
-                employeeId: $('#modal-userId').val(),
-                passwordAnswer: $('#password-answer').val(),
-                existPassword: $('#current-password').val(),
-                newPassword: $('#new-password').val()
-            };
+            const formData = new FormData(this);
+            const jsonObject = Object.fromEntries(formData.entries());
 
-            // Ajax 요청
-            $.ajax({
-                type: "POST",
-                url: "/password-edit",  // 비밀번호 변경 요청 URL
-                contentType: "application/json",
-                data: JSON.stringify(formData),
-                success: function (response) {
-                    // 비밀번호 변경 성공 시 페이지 이동
-                    alert(response); // 서버에서 반환된 성공 메시지 사용
-                    $('#passwordModal').modal('hide');
-                },
-                error: function (xhr) {
-                    // 에러 처리
-                    if (xhr.status === 400) {
-                        // 서버에서 반환된 오류 메시지 출력
-                        const errorMessage = xhr.responseText;
-                        $('#error-message').text(errorMessage).fadeIn();
-                        setTimeout(function () {
-                            $('#error-message').fadeOut();
-                        }, 3000);
-                    } else {
-                        $('#error-message').text('서버와의 통신 중 문제가 발생했습니다.').fadeIn();
-                    }
+            try {
+                const response = await fetch("/api/password/change", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(jsonObject)
+                });
+
+                const result = await response.text();
+                if (response.ok) {
+                    alert("비밀번호 변경 성공! 다시 로그인해 주세요.");
+                    window.location.href = "user/login";
+                } else {
+                    showErrorMessage(result);
                 }
-            });
+            } catch (error) {
+                showErrorMessage("서버 오류 발생! 다시 시도해주세요.");
+            }
         });
     });
+
+    /* 유효성 검사 함수 */
+
+    // 비밀번호 찾기 답변 검사 (최소 2자 이상)
+    function validateSecurityAnswer() {
+        return validateInput("password-answer", "비밀번호 찾기 답변을 입력하세요.", 2);
+    }
+
+    // 기존 비밀번호 입력 검사 (필수 입력)
+    function validateCurrentPassword() {
+        return validateInput("current-password", "기존 비밀번호를 입력하세요.");
+    }
+
+    // 새 비밀번호 유효성 검사 (8~16자, 대/소문자, 숫자, 특수문자 포함)
+    function validateNewPassword() {
+        const newPassword = document.getElementById("new-password").value;
+        const passwordPattern = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,16}$/;
+
+        if (!passwordPattern.test(newPassword)) {
+            showErrorMessage("비밀번호는 8~16자의 영문 대/소문자, 숫자, 특수문자를 포함해야 합니다.");
+            return false;
+        }
+        return true;
+    }
+
+    // 새 비밀번호 확인 검사 (일치 여부 확인)
+    function validatePasswordMatch() {
+        const newPassword = document.getElementById("new-password").value;
+        const confirmPassword = document.getElementById("confirm-password").value;
+
+        if (newPassword !== confirmPassword) {
+            showErrorMessage("새 비밀번호가 일치하지 않습니다.");
+            return false;
+        }
+        return true;
+    }
+
+    // 폼 전체 유효성 검사 실행
+    function validatePasswordForm() {
+        hideErrorMessage();
+        return validateSecurityAnswer() && validateCurrentPassword() && validateNewPassword() && validatePasswordMatch();
+    }
+
+    /* 유틸리티 함수 */
+
+    // 일반적인 입력 필드 검사 (길이 제한 포함)
+    function validateInput(inputId, errorMessage, minLength = 1) {
+        const inputValue = document.getElementById(inputId).value.trim();
+        if (inputValue.length < minLength) {
+            showErrorMessage(errorMessage);
+            return false;
+        }
+        return true;
+    }
+
+    // 오류 메시지 표시
+    function showErrorMessage(message) {
+        const errorMessage = document.getElementById("error-message");
+        errorMessage.innerText = message;
+        errorMessage.style.display = "block";
+    }
+
+    // 오류 메시지 숨기기
+    function hideErrorMessage() {
+        document.getElementById("error-message").style.display = "none";
+    }
+
 
 </script>
 

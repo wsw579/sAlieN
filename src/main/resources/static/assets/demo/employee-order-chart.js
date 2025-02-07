@@ -9,12 +9,15 @@
     const { team, dept } = loggedInUser;
     const now = new Date();
     let selectedYear = now.getFullYear();
-    let selectedMonth = now.getMonth();
+    let selectedMonth = now.getMonth() + 1; // 1부터 시작하도록 수정
+
+    const maxYear = now.getFullYear(); // 최대 연도 = 현재 연도
+    const maxMonth = now.getMonth() + 1; // 최대 월 = 현재 월
 
     // 시작일과 종료일 계산
     const getFirstAndLastDay = (year, month) => {
-        const firstDay = new Date(year, month, 1).toISOString().split('T')[0];
-        const lastDay = new Date(year, month + 1, 0).toISOString().split('T')[0];
+        const firstDay = new Date(year, month - 1, 1).toISOString().split('T')[0];
+        const lastDay = new Date(year, month, 0).toISOString().split('T')[0];
         return { firstDay, lastDay };
     };
 
@@ -23,15 +26,20 @@
     // API URL 생성
     const buildApiUrl = (startDate, endDate) => {
         let apiUrl = '/api/ordersData';
+        let params = [];
+
         if (team) {
-            apiUrl += `?team=${team}`;
+            params.push(`team=${team}`);
         } else if (dept) {
-            apiUrl += `?department=${dept}`;
+            params.push(`department=${dept}`);
         } else {
             console.error("No team or department available.");
             return null;
         }
-        apiUrl += `&startDate=${startDate}&endDate=${endDate}`;
+
+        params.push(`startDate=${startDate}`, `endDate=${endDate}`);
+        apiUrl += '?' + params.join('&');
+
         return apiUrl;
     };
 
@@ -66,7 +74,7 @@
                 chartInstance.destroy();
             }
 
-            // Chart.js 2 문법으로 차트 생성
+            // Chart.js 2.x 문법 유지
             chartInstance = new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -120,18 +128,6 @@
                             },
                         },
                     },
-                    plugins: {
-                        zoom: {
-                            pan: {
-                                enabled: true,
-                                mode: 'x', // x축 방향으로만 스크롤
-                            },
-                            zoom: {
-                                enabled: true,
-                                mode: 'x', // x축 방향으로만 확대/축소
-                            },
-                        },
-                    },
                 },
             });
         } catch (error) {
@@ -140,40 +136,70 @@
     };
 
     // 월 변경 버튼 추가
-    const monthlySalesHeader = document.getElementById('monthlySalesHeader');
-    if (!monthlySalesHeader) {
-        console.error("monthlySalesHeader 요소를 찾을 수 없습니다.");
+    const employeeOrderChartHeader = document.getElementById('employeeOrderChartHeader');
+    if (!employeeOrderChartHeader) {
+        console.error("employeeOrderChartHeader 요소를 찾을 수 없습니다.");
         return;
     }
 
-    const monthControlDiv = document.createElement('div');
+    const monthControlDiv = document.createElement("div");
+    monthControlDiv.classList.add("d-flex", "align-items-center", "mx-auto");
     monthControlDiv.innerHTML = `
-        <button id="prevMonthBtn">&lt;</button>
-        <span id="selectedMonth">${selectedMonth + 1}</span>월
-        <button id="nextMonthBtn">&gt;</button>
+        <button id="prevMonthBtn" class="btn btn-outline-secondary btn-sm">&lt;</button>
+        <span id="selectedMonthYear" class="mx-2">${selectedYear}년 ${selectedMonth}월</span>
+        <button id="nextMonthBtn" class="btn btn-outline-secondary btn-sm">&gt;</button>
     `;
-    monthlySalesHeader.appendChild(monthControlDiv);
 
-    const prevMonthBtn = document.getElementById('prevMonthBtn');
-    const nextMonthBtn = document.getElementById('nextMonthBtn');
-    const selectedMonthSpan = document.getElementById('selectedMonth');
+    employeeOrderChartHeader.classList.add("d-flex", "align-items-center", "position-relative");
+    employeeOrderChartHeader.appendChild(monthControlDiv);
+    monthControlDiv.style.position = "absolute";
+    monthControlDiv.style.left = "50%";
+    monthControlDiv.style.transform = "translateX(-50%)";
 
-    const changeMonth = (direction) => {
-        selectedMonth += direction;
-        if (selectedMonth < 0) {
-            selectedMonth = 11;
-            selectedYear -= 1;
-        } else if (selectedMonth > 11) {
-            selectedMonth = 0;
-            selectedYear += 1;
+    const prevMonthBtn = document.getElementById("prevMonthBtn");
+    const nextMonthBtn = document.getElementById("nextMonthBtn");
+    const selectedMonthYear = document.getElementById("selectedMonthYear");
+
+    const minYear = 2020;
+
+    function updateNavigation() {
+        selectedMonthYear.textContent = `${selectedYear}년 ${selectedMonth}월`;
+
+        prevMonthBtn.disabled = selectedYear === minYear && selectedMonth === 1;
+        nextMonthBtn.disabled = selectedYear === maxYear && selectedMonth >= maxMonth;
+    }
+
+    function changeMonth(delta) {
+        let newMonth = selectedMonth + delta;
+        let newYear = selectedYear;
+
+        if (newMonth < 1) {
+            if (selectedYear > minYear) {
+                newYear--;
+                newMonth = 12;
+            } else {
+                return;
+            }
+        } else if (newMonth > 12) {
+            if (selectedYear < maxYear) {
+                newYear++;
+                newMonth = 1;
+            } else if (selectedYear === maxYear && newMonth > maxMonth) {
+                return;
+            }
+        } else if (selectedYear === maxYear && newMonth > maxMonth) {
+            return;
         }
-        selectedMonthSpan.textContent = selectedMonth + 1;
-        const { firstDay: newFirstDay, lastDay: newLastDay } = getFirstAndLastDay(selectedYear, selectedMonth);
-        updateChart(newFirstDay, newLastDay);
-    };
 
-    prevMonthBtn.addEventListener('click', () => changeMonth(-1));
-    nextMonthBtn.addEventListener('click', () => changeMonth(1));
+        selectedYear = newYear;
+        selectedMonth = newMonth;
+
+        updateNavigation();
+        updateChart(...Object.values(getFirstAndLastDay(selectedYear, selectedMonth)));
+    }
+
+    prevMonthBtn.addEventListener("click", () => changeMonth(-1));
+    nextMonthBtn.addEventListener("click", () => changeMonth(1));
 
     updateChart(firstDay, lastDay);
 })();
