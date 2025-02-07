@@ -130,9 +130,6 @@ public class OpportunitiesController {
             // CRUD 작업 로깅
             crudLogsService.logCrudOperation("create", "opportunities_comment", "", "True", "Success");
 
-            // 성공 메시지를 RedirectAttributes에 저장 (리다이렉트 후에도 유지됨)
-            redirectAttributes.addFlashAttribute("message", "계약이 성공적으로 생성되었습니다.");
-
             return "redirect:/opportunities/detail/" + opportunityId + "#commentSection"; // 성공 시 기회 디테일 페이지로 이동
         } catch (Exception e) {
             // 실패 로그 기록
