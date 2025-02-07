@@ -1,51 +1,51 @@
 document.addEventListener("DOMContentLoaded", function () {
-//    let selectedYear = new Date().getFullYear(); // 현재 연도를 기본값으로 설정
-    let selectedYear = 2024;
-    let minYear = selectedYear; // 최소 연도
-    let maxYear = selectedYear; // 최대 연도
+    let selectedYear = new Date().getFullYear();
+    let minYear = selectedYear;
+    let maxYear = selectedYear;
 
-    const cardHeaders = Array.from(document.querySelectorAll('.card-header'));
-    const monthlySalesHeader = cardHeaders.find(header => header.textContent.includes('월별 매출현황'));
-    const canvas = document.getElementById('monthlySalesChart');
-
-    if (!monthlySalesHeader || !canvas) {
-        console.error('월별 매출현황 card-header 또는 차트 캔버스를 찾을 수 없습니다.');
+    const monthlySalesHeader = document.getElementById('monthlySalesChartHeader');
+    if (!monthlySalesHeader) {
+        console.error("⚠️ 'monthlySalesChartUserHeader' 요소를 찾을 수 없습니다.");
         return;
     }
 
-    // 연도 변경 버튼 추가
-    const yearControlDiv = document.createElement('div');
+    const yearControlDiv = document.createElement("div");
+    yearControlDiv.classList.add("d-flex", "align-items-center", "mx-auto");
     yearControlDiv.innerHTML = `
-        <button id="prevYearBtn">&lt;</button>
-        <span id="selectedYear">${selectedYear}</span>
-        <button id="nextYearBtn">&gt;</button>
+        <button id="prevYearBtn" class="btn btn-outline-secondary btn-sm mx-1">&lt;</button>
+        <span id="selectedYear" class="mx-2">${selectedYear}</span>
+        <button id="nextYearBtn" class="btn btn-outline-secondary btn-sm mx-1">&gt;</button>
     `;
+
+    monthlySalesHeader.classList.add("d-flex", "align-items-center", "position-relative");
     monthlySalesHeader.appendChild(yearControlDiv);
+    yearControlDiv.style.position = "absolute";
+    yearControlDiv.style.left = "50%";
+    yearControlDiv.style.transform = "translateX(-50%)";
 
-    const prevYearBtn = document.getElementById('prevYearBtn');
-    const nextYearBtn = document.getElementById('nextYearBtn');
-    const selectedYearSpan = document.getElementById('selectedYear');
+    const prevYearBtn = document.getElementById("prevYearBtn");
+    const nextYearBtn = document.getElementById("nextYearBtn");
+    const selectedYearSpan = document.getElementById("selectedYear");
 
-    // 버튼 클릭 이벤트만 추가
-    prevYearBtn.addEventListener('click', function () {
+    prevYearBtn.addEventListener("click", function () {
         changeYear(-1);
     });
 
-    nextYearBtn.addEventListener('click', function () {
+    nextYearBtn.addEventListener("click", function () {
         changeYear(1);
     });
 
     async function fetchAvailableYears() {
         try {
-            const response = await fetch('/api/available-years');
+            const response = await fetch("/api/available-years");
             if (!response.ok) {
-                throw new Error('Failed to fetch available years');
+                throw new Error("Failed to fetch available years");
             }
             const data = await response.json();
             minYear = data.minYear;
             maxYear = data.maxYear;
         } catch (error) {
-            console.error('Error fetching available years:', error.message || error);
+            console.error("Error fetching available years:", error.message || error);
         }
     }
 

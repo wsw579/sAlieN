@@ -192,11 +192,31 @@ public class IndexController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/api/opportunities/card-value-manager")
+    public ResponseEntity<Map<String, Object>> countStatusCardValueManager() {
+        Map<String, Long> statusCounts = opportunitiesService.getOpportunitiesStatusCountsManager();
+        Map<String, Object> response = new HashMap<>();
+        response.put("statusCounts", statusCounts);
+        return ResponseEntity.ok(response);
+    }
+
     // 진행중 기회 목록 API 추가
     @GetMapping("/api/opportunities/ongoing")
     public String getOngoingOpportunities(@RequestParam(defaultValue = "0") int page, Model model) {
-        Page<OpportunitiesEntity> ongoingOpportunities = opportunitiesService.getOngoingOpportunities(page);
-        PaginationDto<OpportunitiesEntity> paginationDto = paginationService.createPaginationData(ongoingOpportunities, page, 5);
+
+        String userId = UserContext.getCurrentUserId();
+        Role userRole = Role.valueOf(UserContext.getCurrentUserRole());
+        Position userPosition = Position.valueOf(employeeService.getPositionByUserId(userId));
+
+        PaginationDto<OpportunitiesEntity> paginationDto;
+
+        if (Role.ROLE_ADMIN.equals(userRole) || Position.GENERAL_MANAGER.equals(userPosition) || Position.DEPARTMENT_HEAD.equals(userPosition) || Position.TEAM_LEADER.equals(userPosition)) {
+            Page<OpportunitiesEntity> ongoingOpportunities = opportunitiesService.getOngoingOpportunitiesManager(page);
+            paginationDto = paginationService.createPaginationData(ongoingOpportunities, page, 5);
+        } else {
+            Page<OpportunitiesEntity> ongoingOpportunities = opportunitiesService.getOngoingOpportunities(page);
+            paginationDto = paginationService.createPaginationData(ongoingOpportunities, page, 5);
+        }
 
         model.addAttribute("pagination", paginationDto);
         return "opportunities/ongoing-opportunities";  // 기존 Mustache 템플릿을 그대로 반환
