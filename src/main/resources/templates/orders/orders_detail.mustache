@@ -341,6 +341,71 @@
         {{/orderId}}
     });
 {{/orders}}
+
+        document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("orderForm");
+
+        form.addEventListener("submit", function (event) {
+            event.preventDefault(); // 폼 제출 방지
+
+            if (validateForm()) {
+                form.submit(); // 검증 통과 시 제출
+            }
+        });
+
+        function validateForm() {
+            let isValid = true;
+
+            // 주문 일자 검증 (필수 입력, 과거 또는 현재여야 함)
+            const orderDate = document.getElementById("orderDate");
+            if (!orderDate.value.trim()) {
+                alert("주문 일자는 필수입니다.");
+                isValid = false;
+            } else if (new Date(orderDate.value) > new Date()) {
+                alert("주문 일자는 과거 또는 현재여야 합니다.");
+                isValid = false;
+            }
+
+            // 매출 일자 검증 (필수 입력)
+            const salesDate = document.getElementById("salesDate");
+            if (!salesDate.value.trim()) {
+                alert("매출 일자는 필수입니다.");
+                isValid = false;
+            }
+
+            // 주문 수량 검증 (필수 입력, 숫자 확인)
+            const orderAmount = document.getElementById("orderAmount");
+            if (!orderAmount.value.trim() || isNaN(orderAmount.value)) {
+                alert("주문 수량은 필수이며 숫자여야 합니다.");
+                isValid = false;
+            }
+
+            // 주문 상태 검증 (`none`, `draft`, `activated`, `completed`, `cancelled` 중 하나)
+            const orderStatus = document.getElementById("orderStatus");
+            const validStatuses = ["none", "draft", "activated", "completed", "cancelled"];
+            if (!validStatuses.includes(orderStatus.value)) {
+                alert("주문 상태는 'none', 'draft', 'activated', 'completed', 'cancelled' 중 하나여야 합니다.");
+                isValid = false;
+            }
+
+            // 계약 ID 검증 (필수 입력)
+            const contractId = document.getElementById("contractId");
+            if (!contractId.value.trim()) {
+                alert("계약 ID는 필수입니다.");
+                isValid = false;
+            }
+
+            // 제품 ID 검증 (필수 입력)
+            const productId = document.getElementById("productId");
+            if (!productId.value.trim()) {
+                alert("제품 ID는 필수입니다.");
+                isValid = false;
+            }
+
+            return isValid;
+        }
+    });
+
     </script>
 
 
