@@ -16,12 +16,12 @@ document.addEventListener("DOMContentLoaded", function () {
                     datasets: [
                         {
                             label: "Last Year",
-                            backgroundColor: "rgba(2,117,216,1)",
+                            backgroundColor: "rgba(255, 165, 0, 0.8)",
                             data: data.lastYearData
                         },
                         {
                             label: "This Year",
-                            backgroundColor: "rgba(255,0,0,1)",
+                            backgroundColor: "rgba(0, 0, 255, 0.8)",
                             data: data.currentYearData
                         }
                     ]
