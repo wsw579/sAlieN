@@ -32,7 +32,6 @@
 </head>
 <body class="sb-nav-fixed">
 <nav class="sb-topnav navbar navbar-expand navbar-dark">
-<nav class="sb-topnav navbar navbar-expand navbar-dark bg-custom">
     <!-- Navbar Brand-->
     <a class="navbar-brand ps-3" href="/">sAIien - KT</a>
     <!-- Sidebar Toggle-->
@@ -55,8 +54,8 @@
     <!-- Navbar Search-->
     <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
         <div class="input-group">
-<!--            <input class="form-control" type="text" placeholder="Search for..." aria-label="Search for..." aria-describedby="btnNavbarSearch" />-->
-<!--            <button class="btn btn-primary" id="btnNavbarSearch" type="button"><i class="fas fa-search"></i></button>-->
+            <!--            <input class="form-control" type="text" placeholder="Search for..." aria-label="Search for..." aria-describedby="btnNavbarSearch" />-->
+            <!--            <button class="btn btn-primary" id="btnNavbarSearch" type="button"><i class="fas fa-search"></i></button>-->
         </div>
     </form>
 
@@ -91,7 +90,7 @@
 
 <div id="layoutSidenav">
     <div id="layoutSidenav_nav">
-        <nav class="sb-sidenav accordion bg-custom" id="sidenavAccordion">
+        <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
             <div class="sb-sidenav-menu">
                 <div class="nav">
 
@@ -388,8 +387,7 @@
         .btn-primary:hover {
             background-color: #5a6268;
         }
-
-        .bg-card {
+         .bg-card {
         background-color: rgba(20, 31, 47,0.2);   !important;
         }
 
@@ -432,9 +430,6 @@
         .card-footer h3 {
         color: black; /* h3 텍스트를 검정색으로 설정 */
         }
-
-
-
 
 
 
@@ -495,7 +490,7 @@
     </div>️
 
 
-<!-- JavaScript -->
+    <!-- JavaScript -->
     <script>
 
         // 챗봇 버튼
@@ -724,8 +719,8 @@
 
                 // API 호출 부분
 
-                fetch('http://127.0.0.1:8000/chatbot', { // 로컬
-                //fetch('https://saiescrm.api.jyds.synology.me/chatbot', { // 서버
+                // fetch('http://127.0.0.1:8000/chatbot', { // 로컬
+                fetch('https://saiescrm.api.jyds.synology.me/chatbot', { // 서버
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -761,6 +756,69 @@
                         } catch (e) {
                             console.error("❌ system_response JSON 파싱 오류:", e);
                         }
+                    }
+
+                    if (data.crudOperations === "proposal"){
+                        var employeeName = systemData.employeeName?.trim() || "미지정";
+                        var productName = systemData.productName?.trim() || "미지정";
+
+                        const dataToSend = {
+                            회사명 : systemData.accountName || '',
+                            기회명 : systemData.opportunityName || '',
+                            기회담당자 : systemData.employeeName || '',
+                            고객담당자 : systemData.customerEmployee || '',
+                            고객요구사항 : systemData.opportunityInquiries || '',
+                            기회제품 : systemData.productName || '',
+                            수량 : systemData.quantity || '',
+                            기회매출 : systemData.expectedRevenue || ''
+                        };
+
+                        formattedResponse += "<strong>📌 AI CRM 어시스턴트 제안서 생성 정보:</strong><br>";
+                        formattedResponse += `아래의 정보를 바탕으로 생성한 제안서를 다운로드 합니다.<br>`;
+                        formattedResponse += `<strong>회사명</strong>: ${systemData.accountName || '정보 없음'}<br>`;
+                        formattedResponse += `<strong>기회명</strong>: ${systemData.opportunityName || '정보 없음'}<br>`;
+                        formattedResponse += `<strong>기회담당자</strong>: ${systemData.employeeName || '정보 없음'}<br>`;
+                        formattedResponse += `<strong>고객 담당자</strong>: ${systemData.customerEmployee || '정보 없음'}<br>`;
+                        formattedResponse += `<strong>고객요구사항</strong>: ${systemData.opportunityInquiries || '정보 없음'}<br>`;
+                        formattedResponse += `<strong>기회제품</strong>: ${systemData.productName || '정보 없음'}<br>`;
+                        formattedResponse += `<strong>수량</strong>: ${systemData.quantity || '정보 없음'}<br>`;
+                        formattedResponse += `<strong>기회매출</strong>: ${systemData.expectedRevenue || '정보 없음'}<br>`;
+
+                        console.log('전송할 데이터:', dataToSend);
+                        // 다운로드 진행중 팝업창 생성
+                        // alert(' 다운로드 중 입니다. . . .  🚀 잠시만 기다려주세요. ');
+                        // Excel 생성 요청
+                        fetch('https://saiescrm.api.jyds.synology.me/generate-excel', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(dataToSend)
+                        })
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error('Network response was not ok');
+                                    }
+                                    return response.blob();
+                                })
+                                .then(blob => {
+                                    // excel 파일을 사용자 PC에 다운로드
+                                    const url = window.URL.createObjectURL(new Blob([blob]));
+                                    const link = document.createElement('a');
+                                    link.href = url;
+                                    link.setAttribute('download', `${employeeName}_${productName}_proposal.xlsx`);
+                                    document.body.appendChild(link);
+                                    link.click();
+                                    window.URL.revokeObjectURL(url);
+                                    link.remove();
+
+                                    // 다운로드 완료 팝업창 생성
+                                    alert('제안서 다운로드가  완료되었습니다. ✨');
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                    alert('제안서 생성 중 오류가 발생했습니다. 다시 시도해 주세요.⚠️');
+                                });
                     }
 
 
@@ -869,7 +927,13 @@
                             // queryParams 값 로그 출력
                             console.log("🔍 생성된 queryParams:", queryParams);
 
-                            formattedResponse += "<strong>📌 AI CRM 어시스턴트 추천 기회 정보:</strong><br>";
+
+                            if (data.crudOperations === "create") {
+                                formattedResponse += "<strong>📌 AI CRM 어시스턴트 추천 기회 정보:</strong><br>";
+                            } else {
+                                formattedResponse += "<strong>📌 AI CRM 어시스턴트 추천 제안서 정보:</strong><br>";
+                            }
+
                             formattedResponse += `<strong>생성일자</strong>: ${systemData.createdDate || '정보 없음'}<br>`;
                             formattedResponse += `<strong>마감기한</strong>: ${systemData.targetCloseDate || '정보 없음'}<br>`;
                             formattedResponse += `<strong>기회상태</strong>: ${systemData.opportunityStatus || '정보 없음'}<br>`;
@@ -887,9 +951,13 @@
                             formattedResponse += `<strong>기회 수량</strong>: ${systemData.quantity || '정보 없음'}<br>`;
                             formattedResponse += `<strong>기회 매출</strong>: ${systemData.expectedRevenue || '정보 없음'}<br>`;
 
-
-                            // 특정 링크를 추가 (예: 새로 생성된 리소스 링크 제공)
-                            formattedResponse += `<br><a href="/chatbot/create/opportunities?${queryParams}" target="_blank">AI추천 데이터로 이동</a>`;
+                            if (data.crudOperations === "create") {
+                                // 특정 링크를 추가 (예: 새로 생성된 리소스 링크 제공)
+                                formattedResponse += `<br><a href="/chatbot/create/opportunities?${queryParams}" target="_blank">AI추천 데이터로 이동</a>`;
+                            } else {
+                                // 특정 링크를 추가 (예: 새로 생성된 리소스 링크 제공)
+                                formattedResponse += `<br><a href="/chatbot/create/opportunities?${queryParams}" target="_blank">AI추천 제안서 생성으로 이동</a>`;
+                            }
                         }
 
                         if (data.table === "contracts") {
@@ -1136,6 +1204,4 @@
 
 
         });
-
-
     </script>

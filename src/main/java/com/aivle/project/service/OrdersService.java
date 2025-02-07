@@ -134,29 +134,33 @@ public class OrdersService {
         return getYearlyData(false, false);
     }
 
-//    public Map<String, List<Integer>> getChartRevenueData() {
-//        return getYearlyData(false, true);
-//    }
+    public Map<String, List<Integer>> getChartRevenueData() {
+        return getYearlyData(false, true);
+    }
 
     private Map<String, List<Integer>> getYearlyData(boolean accumulate, boolean revenue) {
         int currentYear = LocalDate.now().getYear();
-        Map<String, List<Integer>> yearlyData = new HashMap<>();
+        int lastYear = currentYear - 1;
 
-        for (int year = currentYear; year > currentYear - 10; year--) {
-            List<Integer> yearData = initializeMonthlyData();
+        List<Integer> lastYearData = initializeMonthlyData();
+        List<Integer> currentYearData = initializeMonthlyData();
 
-            if (revenue) {
-                revenueMonthlyData(year, yearData);
-            } else {
-                populateMonthlyData(year, yearData);
-            }
-
-            if (accumulate) {
-                accumulateMonthlyDataUntilCurrentMonth(yearData);
-            }
-
-            yearlyData.put(String.valueOf(year), yearData);
+        if (revenue){
+            revenueMonthlyData(lastYear, lastYearData);
+            revenueMonthlyData(currentYear, currentYearData);
+        } else{
+            populateMonthlyData(lastYear, lastYearData);
+            populateMonthlyData(currentYear, currentYearData);
         }
+
+        if (accumulate) {
+            accumulateMonthlyData(lastYearData);
+            accumulateMonthlyDataUntilCurrentMonth(currentYearData);
+        }
+
+        Map<String, List<Integer>> yearlyData = new HashMap<>();
+        yearlyData.put("lastYearData", lastYearData);
+        yearlyData.put("currentYearData", currentYearData);
         return yearlyData;
     }
 
@@ -259,26 +263,26 @@ public class OrdersService {
     }
 
     // 영업 실적 그래프
-    public List<Map<String, Object>> getDepartmentSalesPerformance(int year, int month) {
+    public List<Map<String, Object>> getDepartmentSalesPerformance() {
         String userId = UserContext.getCurrentUserId();
         String userDepartment = employeeRepository.findDepartmentById(userId);
-        List<Object[]> data = ordersRepository.getAllDepartmentSales(year, month);
+        List<Object[]> data = ordersRepository.getAllDepartmentSales();
 
         return mapToSalesPerformanceList(data, "departmentId", "departmentName");
     }
 
-    public List<Map<String, Object>> getTeamSalesPerformance(int year, int month) {
+    public List<Map<String, Object>> getTeamSalesPerformance() {
         String userId = UserContext.getCurrentUserId();
         String userDepartment = employeeRepository.findDepartmentById(userId);
-        List<Object[]> data = ordersRepository.getTeamSalesByDepartment(year, month, Dept.valueOf(userDepartment));
+        List<Object[]> data = ordersRepository.getTeamSalesByDepartment(Dept.valueOf(userDepartment));
 
         return mapToSalesPerformanceList(data, "teamId", "teamName");
     }
 
-    public List<Map<String, Object>> getEmployeeSalesPerformanceWithNames(int year, int month) {
+    public List<Map<String, Object>> getEmployeeSalesPerformanceWithNames() {
         String userId = UserContext.getCurrentUserId();
         String userTeam = employeeRepository.findTeamById(userId);
-        List<Object[]> data = ordersRepository.getSalesByEmployeeWithNames(year, month, Team.valueOf(userTeam));
+        List<Object[]> data = ordersRepository.getSalesByEmployeeWithNames(Team.valueOf(userTeam));
 
         return mapToSalesPerformanceList(data, "employeeId", "employeeName");
     }
@@ -296,9 +300,9 @@ public class OrdersService {
     }
 
     // 주문현황 퍼센트 표시
-    public double calculateDraftPercentage(int year, int month) {
+    public double calculateDraftPercentage() {
         String userid = UserContext.getCurrentUserId();
-        long totalSalesThisMonth = ordersRepository.countTotalSalesThisMonth(year, month, userid);
+        long totalSalesThisMonth = ordersRepository.countTotalSalesThisMonth(userid);
         long draftSalesThisMonth = ordersRepository.countDraftSalesThisMonth(userid);
         if (totalSalesThisMonth == 0) {
             return 100.0; // 분모가 0인 경우 비율은 0

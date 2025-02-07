@@ -14,16 +14,16 @@ document.addEventListener("DOMContentLoaded", function () {
                 data: {
                     labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
                     datasets: [
-                        {
-                            label: "Last Year",
-                            backgroundColor: "rgba(255, 165, 0, 0.8)",
-                            data: data.lastYearData
-                        },
-                        {
-                            label: "This Year",
-                            backgroundColor: "rgba(0, 0, 255, 0.8)",
-                            data: data.currentYearData
-                        }
+                       {
+                        label: "Last Year",
+                         backgroundColor: "rgba(255, 165, 0, 0.8)",
+                         data: data.lastYearData
+                           },
+                          {
+                          label: "This Year",
+                           backgroundColor: "rgba(0, 0, 255, 0.8)",
+                          data: data.currentYearData
+                         }
                     ]
                 },
                 options: {

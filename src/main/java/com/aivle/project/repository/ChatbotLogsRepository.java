@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 
 @Repository
 public interface ChatbotLogsRepository extends JpaRepository<ChatbotLogsEntity, Long> {
@@ -17,4 +16,3 @@ public interface ChatbotLogsRepository extends JpaRepository<ChatbotLogsEntity, 
     Page<ChatbotLogsEntity> findAllByKeyword(@Param("keyword") String keyword, Pageable pageable);
 
 }
-

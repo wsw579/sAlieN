@@ -82,27 +82,6 @@ public interface OpportunitiesRepository extends JpaRepository<OpportunitiesEnti
             "END")
     List<Object[]> countAllStatusesTeam(@Param("teamId") Team teamId);
 
-    // 우리 부서의 상태 수 세기
-    @Query("SELECT " +
-            "CASE " +
-            "   WHEN o.targetCloseDate < CURRENT_DATE AND o.opportunityStatus NOT LIKE 'Closed%' THEN 'Overdue' " +
-            "   WHEN o.opportunityStatus = 'Pending' THEN 'Pending' " +
-            "   WHEN o.opportunityStatus LIKE 'Closed%' THEN 'Closed' " +
-            "   WHEN o.opportunityStatus NOT LIKE 'Closed%' THEN 'Ongoing' " +
-            "END AS status, " +
-            "COUNT(o) " +
-            "FROM OpportunitiesEntity o " +
-            "JOIN o.employeeId e " +  // Employee와 JOIN
-            "WHERE e.departmentId = :departmentId " + // employeeId 조건 추가
-            "GROUP BY " +
-            "CASE " +
-            "   WHEN o.targetCloseDate < CURRENT_DATE AND o.opportunityStatus NOT LIKE 'Closed%' THEN 'Overdue' " +
-            "   WHEN o.opportunityStatus = 'Pending' THEN 'Pending' " +
-            "   WHEN o.opportunityStatus LIKE 'Closed%' THEN 'Closed' " +
-            "   WHEN o.opportunityStatus NOT LIKE 'Closed%' THEN 'Ongoing' " +
-            "END")
-    List<Object[]> countAllStatusesDept(@Param("departmentId") Dept departmentId);
-
     // 이번달 기회 상태 수
     @Query("SELECT " +
             "CASE " +
@@ -115,8 +94,8 @@ public interface OpportunitiesRepository extends JpaRepository<OpportunitiesEnti
             "FROM OpportunitiesEntity o " +
             "JOIN o.employeeId e " +  // Employee와 JOIN
             "WHERE e.employeeId = :employeeId " + // employeeId 조건 추가
-            "AND MONTH(o.createdDate) = MONTH(CURRENT_DATE) " + // 같은 달 조건
-            "AND YEAR(o.createdDate) = YEAR(CURRENT_DATE) " +   // 같은 연도 조건
+//            "AND MONTH(o.createdDate) = MONTH(CURRENT_DATE) " + // 같은 달 조건
+//            "AND YEAR(o.createdDate) = YEAR(CURRENT_DATE) " +   // 같은 연도 조건
             "GROUP BY " +
             "CASE " +
             "   WHEN o.targetCloseDate < CURRENT_DATE AND o.opportunityStatus NOT LIKE 'Closed%' THEN 'Overdue' " +
@@ -130,33 +109,13 @@ public interface OpportunitiesRepository extends JpaRepository<OpportunitiesEnti
     @Query("SELECT o FROM OpportunitiesEntity o " +
             "JOIN o.employeeId e " +
             "WHERE e.employeeId = :employeeId " +
-            "AND MONTH(o.createdDate) = MONTH(CURRENT_DATE) " + // 같은 달 조건
-            "AND YEAR(o.createdDate) = YEAR(CURRENT_DATE) " +   // 같은 연도 조건
+//            "AND MONTH(o.createdDate) = MONTH(CURRENT_DATE) " + // 같은 달 조건
+//            "AND YEAR(o.createdDate) = YEAR(CURRENT_DATE) " +   // 같은 연도 조건
             "AND o.opportunityStatus NOT LIKE 'Closed%' " +  // Closed 제외
             "AND NOT (o.targetCloseDate < CURRENT_DATE AND o.opportunityStatus NOT LIKE 'Closed%') " + // Overdue 제외
             "AND o.opportunityStatus <> 'Pending' " + // Pending 제외
             "ORDER BY o.createdDate DESC")
     Page<OpportunitiesEntity> findOngoingOpportunitiesByUser(@Param("employeeId") String employeeId, Pageable pageable);
-
-    // 진행 중인 기회 조회 쿼리 추가
-    @Query("SELECT o FROM OpportunitiesEntity o " +
-            "JOIN o.employeeId e " +
-            "WHERE e.teamId = :teamId " +
-            "AND o.opportunityStatus NOT LIKE 'Closed%' " +  // Closed 제외
-            "AND NOT (o.targetCloseDate < CURRENT_DATE AND o.opportunityStatus NOT LIKE 'Closed%') " + // Overdue 제외
-            "AND o.opportunityStatus <> 'Pending' " + // Pending 제외
-            "ORDER BY o.createdDate DESC")
-    Page<OpportunitiesEntity> findOngoingOpportunitiesByTeam(@Param("teamId") Team teamId, Pageable pageable);
-
-    // 진행 중인 기회 조회 쿼리 추가
-    @Query("SELECT o FROM OpportunitiesEntity o " +
-            "JOIN o.employeeId e " +
-            "WHERE e.departmentId = :departmentId " +
-            "AND o.opportunityStatus NOT LIKE 'Closed%' " +  // Closed 제외
-            "AND NOT (o.targetCloseDate < CURRENT_DATE AND o.opportunityStatus NOT LIKE 'Closed%') " + // Overdue 제외
-            "AND o.opportunityStatus <> 'Pending' " + // Pending 제외
-            "ORDER BY o.createdDate DESC")
-    Page<OpportunitiesEntity> findOngoingOpportunitiesByDept(@Param("departmentId") Dept departmentId, Pageable pageable);
 
 
 
