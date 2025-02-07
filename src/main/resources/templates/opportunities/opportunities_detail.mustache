@@ -555,7 +555,7 @@
                         </table>
 
                         <form class="comment-form" action="/opportunities/detail/createcomment" method="post">
-                            <input type="text" name="content" id="commentInput" placeholder="댓글을 입력하세요">
+                            <input type="text" name="content" id="commentInput" placeholder="댓글을 입력하세요(최대 200글자).">
                             <input type="hidden" name="opportunityId" value="{{opportunities.opportunityId}}">
                             <button type="submit" class="btn btn-custom-create btn-sm">입력</button>
                         </form>
@@ -977,6 +977,38 @@ document.addEventListener("DOMContentLoaded", function () {
         return isValid;
     }
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+    console.log("📌 JavaScript 실행됨 - 댓글 유효성 검사 적용");
+
+    const form = document.querySelector(".comment-form");
+    const commentInput = document.getElementById("commentInput");
+    const maxLength = 200; // 최대 글자 수
+
+    if (!form || !commentInput) {
+        console.error("⚠️ 필수 요소가 누락되었습니다.");
+        return;
+    }
+
+    // 🔹 입력 시 실시간 글자 수 제한 (비어 있는 입력 가능)
+    commentInput.addEventListener("input", function () {
+        let currentLength = commentInput.value.length;
+
+        if (currentLength > maxLength) {
+            alert(`댓글은 최대 ${maxLength}자까지 입력 가능합니다.`);
+            commentInput.value = commentInput.value.substring(0, maxLength); // 초과된 부분 제거
+        }
+    });
+
+    // 🔹 폼 제출 시 유효성 검사
+    form.addEventListener("submit", function (event) {
+        if (commentInput.value.length > maxLength) {
+            alert(`댓글은 최대 ${maxLength}자까지 입력 가능합니다.`);
+            event.preventDefault(); // 제출 방지
+        }
+    });
+});
+
 
 
 // AI 제안서
