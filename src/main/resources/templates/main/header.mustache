@@ -543,6 +543,58 @@
                         }
                     }
 
+                    if (data.crudOperations === "proposal"){
+                        var employeeName = systemData.employeeName?.trim() || "미지정";
+                        var productName = systemData.productName?.trim() || "미지정";
+
+                        const dataToSend = {
+                            회사명 : systemData.accountName || '',
+                            기회명 : systemData.opportunityName || '',
+                            기회담당자 : systemData.employeeName || '',
+                            고객담당자 : systemData.customerEmployee || '',
+                            고객요구사항 : systemData.opportunityInquiries || '',
+                            기회제품 : systemData.productName || '',
+                            수량 : systemData.quantity || '',
+                            기회매출 : systemData.expectedRevenue || ''
+                        };
+
+                        console.log('전송할 데이터:', dataToSend);
+                        // 다운로드 진행중 팝업창 생성
+                        alert(' 다운로드 중 입니다. . . .  🚀 잠시만 기다려주세요. ');
+                        // Excel 생성 요청
+                        fetch('https://saiescrm.api.jyds.synology.me/generate-excel', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(dataToSend)
+                        })
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error('Network response was not ok');
+                                    }
+                                    return response.blob();
+                                })
+                                .then(blob => {
+                                    // excel 파일을 사용자 PC에 다운로드
+                                    const url = window.URL.createObjectURL(new Blob([blob]));
+                                    const link = document.createElement('a');
+                                    link.href = url;
+                                    link.setAttribute('download', `${employeeName}_${productName}_proposal.xlsx`);
+                                    document.body.appendChild(link);
+                                    link.click();
+                                    window.URL.revokeObjectURL(url);
+                                    link.remove();
+
+                                    // 다운로드 완료 팝업창 생성
+                                    alert('제안서 다운로드가  완료되었습니다. ✨');
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                    alert('제안서 생성 중 오류가 발생했습니다. 다시 시도해 주세요.⚠️');
+                                });
+                    }
+
 
                     if (data.crudOperations === "create") {
                         if (data.table === "leads"){
@@ -649,7 +701,13 @@
                             // queryParams 값 로그 출력
                             console.log("🔍 생성된 queryParams:", queryParams);
 
-                            formattedResponse += "<strong>📌 AI CRM 어시스턴트 추천 기회 정보:</strong><br>";
+
+                            if (data.crudOperations === "create") {
+                                formattedResponse += "<strong>📌 AI CRM 어시스턴트 추천 기회 정보:</strong><br>";
+                            } else {
+                                formattedResponse += "<strong>📌 AI CRM 어시스턴트 추천 제안서 정보:</strong><br>";
+                            }
+
                             formattedResponse += `<strong>생성일자</strong>: ${systemData.createdDate || '정보 없음'}<br>`;
                             formattedResponse += `<strong>마감기한</strong>: ${systemData.targetCloseDate || '정보 없음'}<br>`;
                             formattedResponse += `<strong>기회상태</strong>: ${systemData.opportunityStatus || '정보 없음'}<br>`;
@@ -667,9 +725,13 @@
                             formattedResponse += `<strong>기회 수량</strong>: ${systemData.quantity || '정보 없음'}<br>`;
                             formattedResponse += `<strong>기회 매출</strong>: ${systemData.expectedRevenue || '정보 없음'}<br>`;
 
-
-                            // 특정 링크를 추가 (예: 새로 생성된 리소스 링크 제공)
-                            formattedResponse += `<br><a href="/chatbot/create/opportunities?${queryParams}" target="_blank">AI추천 데이터로 이동</a>`;
+                            if (data.crudOperations === "create") {
+                                // 특정 링크를 추가 (예: 새로 생성된 리소스 링크 제공)
+                                formattedResponse += `<br><a href="/chatbot/create/opportunities?${queryParams}" target="_blank">AI추천 데이터로 이동</a>`;
+                            } else {
+                                // 특정 링크를 추가 (예: 새로 생성된 리소스 링크 제공)
+                                formattedResponse += `<br><a href="/chatbot/create/opportunities?${queryParams}" target="_blank">AI추천 제안서 생성으로 이동</a>`;
+                            }
                         }
 
                         if (data.table === "contracts") {
