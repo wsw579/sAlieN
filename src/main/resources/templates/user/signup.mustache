@@ -254,6 +254,22 @@
                 });
     });
 
+
+    // document.getElementById("signupForm").addEventListener("submit", function (e) {
+    //     const privacyConsent = document.getElementById("privacyConsent");
+    //     if (!privacyConsent.checked) {
+    //         e.preventDefault();
+    //         alert("개인정보 동의 체크를 선택하시오.");
+    //
+    // document.addEventListener("DOMContentLoaded", function () {
+    //     // 이벤트 리스너 추가
+    //     document.getElementById("password").addEventListener("input", validatePassword);
+    //     document.getElementById("confirmPassword").addEventListener("input", validatePassword);
+    //     document.getElementById("signupForm").addEventListener("submit", handleFormSubmit);
+    // });
+
+
+
     function validatePassword() {
         var password = document.getElementById("password").value;
         var lengthCheck = document.getElementById("lengthCheck");
@@ -292,14 +308,37 @@
         if (password !== confirmPassword || confirmPassword === "") {
             confirmMsg.style.color = wrongColor;
             confirmMsg.innerHTML = "❌ 비밀번호가 일치하지 않습니다.";
+            return false;
         } else {
             confirmMsg.style.color = correctColor;
             confirmMsg.innerHTML = "✅ 비밀번호가 일치합니다.";
+            return true;
         }
     }
 
     document.getElementById("password").addEventListener("input", validatePassword);
     document.getElementById("confirmPassword").addEventListener("input", checkPassword);
+
+
+    // // 이름 유효성 검사 (한글 또는 영문만 허용)
+    // function validateName() {
+    //     const name = document.getElementById("name").value;
+    //     const namePattern = /^[가-힣a-zA-Z\s]+$/;
+    //
+    //     if (!namePattern.test(name) || name.length < 2 || name.length > 50) {
+    //         alert("이름은 한글 또는 영문으로 최소 2자 이상, 최대 50자 이내여야 합니다.");
+    //         return false;
+    //     }
+    //     return true;
+    // }
+
+
+    // // 부서, 직급, 팀 선택 검사 (필수 선택)
+    // function validateSelectFields() {
+    //     const dept = document.getElementById("position").value;
+    //     const position = document.getElementById("salary").value;
+    //     const team = document.getElementById("team").value;
+
 
 
     document.getElementById("signupForm").addEventListener("submit", async function (event) {
@@ -313,6 +352,75 @@
         } else {
             const formData = new FormData(this);  // 폼 데이터 수집
             const jsonObject = Object.fromEntries(formData.entries());  // JSON 변환
+
+// =======
+//         if (dept === "") {
+//             alert("부서를 선택하세요.");
+//             return false;
+//         }
+//         if (position === "") {
+//             alert("직급을 선택하세요.");
+//             return false;
+//         }
+//         if (team === "") {
+//             alert("팀을 선택하세요.");
+//             return false;
+//         }
+//         return true;
+//     }
+//
+//     // 입사일 검사 (미래 날짜 입력 방지)
+//     function validateHireDate() {
+//         const hireDate = document.getElementById("joinDate").value;
+//         const today = new Date().toISOString().split("T")[0];
+//
+//         if (!hireDate) {
+//             alert("입사일을 입력하세요.");
+//             return false;
+//         }
+//         if (hireDate > today) {
+//             alert("입사일은 미래 날짜로 설정할 수 없습니다.");
+//             return false;
+//         }
+//         return true;
+//     }
+//
+//     // 비밀번호 찾기 질문 답변 유효성 검사 (최소 2자 이상)
+//     function validateSecurityAnswer() {
+//         const answer = document.getElementById("securityAnswer").value;
+//
+//         if (answer.trim().length < 2) {
+//             alert("비밀번호 찾기 답변은 최소 2자 이상 입력해야 합니다.");
+//             return false;
+//         }
+//         return true;
+//     }
+//
+//     // 폼 제출 이벤트 핸들러 (최종 유효성 검사)
+//     async function handleFormSubmit(event) {
+//         event.preventDefault(); // 기본 제출 방지
+//
+//         // 개별 유효성 검사 실행
+//         if (!validateName()) return;
+//         if (!validateSelectFields()) return;
+//         if (!validateHireDate()) return;
+//         if (!validateSecurityAnswer()) return;
+//         if (!validatePassword()) {
+//             alert("비밀번호가 유효한지 확인하세요.");
+//             return;
+//         }
+//
+//         // 폼 데이터 수집 및 JSON 변환
+//         const formData = new FormData(document.getElementById("signupForm"));
+//         const jsonObject = Object.fromEntries(formData.entries());
+//
+//         try {
+//             const response = await fetch("/api/signup/register", {
+//                 method: "POST",
+//                 headers: { "Content-Type": "application/json" },
+//                 body: JSON.stringify(jsonObject)
+//             });
+// >>>>>>> eb6f01554fbdbdc849e4d7c8ae76ec0e4d089d75
 
             // 회원가입 API 호출
             try {
@@ -333,7 +441,6 @@
                 alert("서버 오류 발생! 다시 시도해주세요.");
             }
         }
-
 
     });
 

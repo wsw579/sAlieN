@@ -92,10 +92,10 @@ public class OrdersController {
         return ResponseEntity.ok(ordersService.getChartData());
     }
 
-    @GetMapping("/orders/revenue-chart-data")
-    public ResponseEntity<Map<String, List<Integer>>> getRevenueChartData() {
-        return ResponseEntity.ok(ordersService.getChartRevenueData());
-    }
+//    @GetMapping("/orders/revenue-chart-data")
+//    public ResponseEntity<Map<String, List<Integer>>> getRevenueChartData() {
+//        return ResponseEntity.ok(ordersService.getChartRevenueData());
+//    }
 
 
     // Detail page
@@ -236,68 +236,77 @@ public class OrdersController {
         }
     }
 
-    @GetMapping("/api/sales-performance")
-    public ResponseEntity<List<Map<String, Object>>> getSalesPerformanceWithNames() {
-        List<Map<String, Object>> salesPerformance = ordersService.getEmployeeSalesPerformanceWithNames();
-        return ResponseEntity.ok(salesPerformance);
-    }
-
-    @GetMapping("/api/draft-percentage")
-    public ResponseEntity<Map<String, Double>> getDraftPercentage() {
-        double percentage = 100.0 - ordersService.calculateDraftPercentage();
-        Map<String, Double> response = new HashMap<>();
-        response.put("draftPercentage", percentage);
-        return ResponseEntity.ok(response);
-    }
-
-    @GetMapping("/api/available-years")
-    public ResponseEntity<Map<String, Integer>> getAvailableYears() {
-        return ResponseEntity.ok(ordersService.getAvailableYears());
-    }
-
-    @GetMapping("/api/monthly-revenue-purchase")
-    public ResponseEntity<Map<String, Object>> getMonthlyRevenueAndPurchase(
-            @RequestParam(required = false) String team,
-            @RequestParam(required = false) String department,
-            @RequestParam int year) {
-        Map<String, Object> data = ordersService.getMonthlyRevenueAndPurchase(team, department, year);
-        return ResponseEntity.ok(data);
-    }
-
-    @GetMapping("/api/ordersData")
-    public ResponseEntity<List<Map<String, Object>>> getOrdersGroupedByEmployee(
-            @RequestParam(required = false) String team,
-            @RequestParam(required = false) String department,
-            @RequestParam(required = false) String startDate,
-            @RequestParam(required = false) String endDate) {
-
-        if (team == null && department == null) {
-            return ResponseEntity.badRequest().body(Collections.emptyList());
-        }
-
-        try {
-            LocalDate now = LocalDate.now();
-            LocalDate start = Optional.ofNullable(startDate)
-                    .map(LocalDate::parse)
-                    .orElse(now.withDayOfMonth(1));
-            LocalDate end = Optional.ofNullable(endDate)
-                    .map(LocalDate::parse)
-                    .orElse(now.withDayOfMonth(now.lengthOfMonth()));
-
-
-            List<Map<String, Object>> result = getOrders(team, department, start, end);
-
-            return ResponseEntity.ok(result);
-        } catch (Exception e) {
-            logger.error("Error fetching orders", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
-        }
-    }
-
-    private List<Map<String, Object>> getOrders(String team, String department, LocalDate start, LocalDate end) {
-        return (team != null)
-                ? ordersService.getTeamOrdersGroupedByEmployee(team, start, end)
-                : ordersService.getDepartmentOrdersGroupedByEmployee(department, start, end);
-    }
+//    @GetMapping("/api/sales-performance")
+//    public ResponseEntity<List<Map<String, Object>>> getSalesPerformanceWithNames(
+//            @RequestParam int year,
+//            @RequestParam int month) {
+//
+//        List<Map<String, Object>> salesPerformance = ordersService.getEmployeeSalesPerformanceWithNames(year, month);
+//
+//        if (salesPerformance == null || salesPerformance.isEmpty()) {
+//            return ResponseEntity.noContent().build();
+//        }
+//
+//        return ResponseEntity.ok(salesPerformance);
+//    }
+//
+//    @GetMapping("/api/draft-percentage")
+//    public ResponseEntity<Map<String, Double>> getDraftPercentage(@RequestParam int year,
+//                                                                  @RequestParam int month) {
+//        double percentage = 100.0 - ordersService.calculateDraftPercentage(year, month);
+//        Map<String, Double> response = new HashMap<>();
+//        response.put("draftPercentage", percentage);
+//        return ResponseEntity.ok(response);
+//    }
+//
+//    @GetMapping("/api/available-years")
+//    public ResponseEntity<Map<String, Integer>> getAvailableYears() {
+//        return ResponseEntity.ok(ordersService.getAvailableYears());
+//    }
+//
+//    @GetMapping("/api/monthly-revenue-purchase")
+//    public ResponseEntity<Map<String, Object>> getMonthlyRevenueAndPurchase(
+//            @RequestParam(required = false) String team,
+//            @RequestParam(required = false) String department,
+//            @RequestParam int year) {
+//        Map<String, Object> data = ordersService.getMonthlyRevenueAndPurchase(team, department, year);
+//        return ResponseEntity.ok(data);
+//    }
+//
+//    @GetMapping("/api/ordersData")
+//    public ResponseEntity<List<Map<String, Object>>> getOrdersGroupedByEmployee(
+//            @RequestParam(required = false) String team,
+//            @RequestParam(required = false) String department,
+//            @RequestParam(required = false) String startDate,
+//            @RequestParam(required = false) String endDate) {
+//
+//        if (team == null && department == null) {
+//            return ResponseEntity.badRequest().body(Collections.emptyList());
+//        }
+//
+//        try {
+//            LocalDate now = LocalDate.now();
+//            LocalDate start = Optional.ofNullable(startDate)
+//                    .map(LocalDate::parse)
+//                    .orElse(now.withDayOfMonth(1));
+//            LocalDate end = Optional.ofNullable(endDate)
+//                    .map(LocalDate::parse)
+//                    .orElse(now.withDayOfMonth(now.lengthOfMonth()));
+//
+//
+//            List<Map<String, Object>> result = getOrders(team, department, start, end);
+//
+//            return ResponseEntity.ok(result);
+//        } catch (Exception e) {
+//            logger.error("Error fetching orders", e);
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
+//        }
+//    }
+//
+//    private List<Map<String, Object>> getOrders(String team, String department, LocalDate start, LocalDate end) {
+//        return (team != null)
+//                ? ordersService.getTeamOrdersGroupedByEmployee(team, start, end)
+//                : ordersService.getDepartmentOrdersGroupedByEmployee(department, start, end);
+//    }
 
 }

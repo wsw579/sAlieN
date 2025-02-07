@@ -1,5 +1,13 @@
 <!DOCTYPE html>
 <html lang="ko">
+
+<style>
+    .sb-topnav,
+    .sb-sidenav-dark,
+    .sb-sidenav-footer {
+        background-color: #141b2f !important;
+    }
+</style>
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -23,7 +31,7 @@
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
 </head>
 <body class="sb-nav-fixed">
-<nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+<nav class="sb-topnav navbar navbar-expand navbar-dark">
     <!-- Navbar Brand-->
     <a class="navbar-brand ps-3" href="/">sAIien - KT</a>
     <!-- Sidebar Toggle-->
@@ -50,6 +58,16 @@
 <!--            <button class="btn btn-primary" id="btnNavbarSearch" type="button"><i class="fas fa-search"></i></button>-->
         </div>
     </form>
+
+    <!-- 요금제 -->
+    <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Basic Plan 사용중</a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                <li><a class="dropdown-item" href="/rate_plan">요금제 변경</a></li>
+            </ul>
+        </li>
+    </ul>
 
     <!-- profile-->
     <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
@@ -370,13 +388,39 @@
             background-color: #5a6268;
         }
 
+        /* 기본 버튼 스타일 */
+        #chatbotButton {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            cursor: grab; /* 기본적으로 grab 커서 */
+            overflow: hidden;
+            transition: box-shadow 0.2s;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            background-color: white;
+        }
 
+        #chatbotButton img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            pointer-events: none; /* ✅ 버튼 클릭 시 이미지 드래그 방지 */
+        }
 
+        /* 드래그 중일 때 스타일 */
+        #chatbotButton.dragging {
+            cursor: grabbing !important; /* 드래그 중 grabbing 유지 */
+            opacity: 0.8; /* 시각적으로 드래그 중임을 강조 */
+        }
     </style>
 
-    <!-- Chatbot Button -->
-    <div id="chatbotButton" style="position: fixed; bottom: 20px; right: 20px; z-index: 1000; width: 60px; height: 60px; background-color: #007bff; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px;">
-        💬
+    <!-- 챗봇 버튼 -->
+    <div id="chatbotButton">
+        <img src="/assets/img/chatbot.png" alt="AI 챗봇">
     </div>
 
     <!-- 효과음 -->
@@ -403,18 +447,142 @@
 
 <!-- JavaScript -->
     <script>
+
+        // 챗봇 버튼
+        document.addEventListener("DOMContentLoaded", function () {
+    const chatbotButton = document.getElementById("chatbotButton");
+    const chatbotModal = document.getElementById("chatbotModal");
+    const closeModal = document.getElementsByClassName("close")[0];
+
+});
+
         document.addEventListener("DOMContentLoaded", function() {
 
             var chatbotButton = document.getElementById('chatbotButton');
             var chatbotModal = document.getElementById('chatbotModal');
             var closeModal = document.getElementsByClassName('close')[0];
 
+            let isDragging = false;
+            let isClick = false; // ✅ 클릭 여부 확인 변수
+            let offsetX, offsetY;
+
+            // ✅ 초기 위치 비율 저장
+            let xRatio = chatbotButton.offsetLeft / document.documentElement.clientWidth;
+            let yRatio = chatbotButton.offsetTop / document.documentElement.clientHeight;
+
+            function adjustButtonPosition() {
+                // ✅ 현재 비율을 유지하면서 새로운 위치 계산 (스크롤 바 제외)
+                let newX = xRatio * document.documentElement.clientWidth;
+                let newY = yRatio * document.documentElement.clientHeight;
+
+                // ✅ 버튼이 화면을 벗어나지 않도록 보정
+                const maxX = document.documentElement.clientWidth - chatbotButton.offsetWidth;
+                const maxY = document.documentElement.clientHeight - chatbotButton.offsetHeight;
+
+                chatbotButton.style.left = `${Math.max(0, Math.min(maxX, newX))}px`;
+                chatbotButton.style.top = `${Math.max(0, Math.min(maxY, newY))}px`;
+            }
+
+            function startDrag(e) {
+                e.preventDefault();
+                isDragging = true;
+                isClick = true; // ✅ 클릭으로 시작
+                chatbotButton.classList.add("dragging");
+                chatbotButton.style.cursor = "grabbing";
+
+                let clientX = e.clientX || e.touches[0].clientX;
+                let clientY = e.clientY || e.touches[0].clientY;
+
+                offsetX = clientX - chatbotButton.getBoundingClientRect().left;
+                offsetY = clientY - chatbotButton.getBoundingClientRect().top;
+
+                chatbotButton.style.transition = "none";
+
+                document.addEventListener("mousemove", moveDrag);
+                document.addEventListener("touchmove", moveDrag);
+            }
+
+            function moveDrag(e) {
+                if (!isDragging) return;
+                isClick = false; // ✅ 드래그가 발생하면 클릭이 아님
+
+                let clientX = e.clientX || e.touches[0].clientX;
+                let clientY = e.clientY || e.touches[0].clientY;
+
+                let x = clientX - offsetX;
+                let y = clientY - offsetY;
+
+                const maxX = document.documentElement.clientWidth - chatbotButton.offsetWidth;
+                const maxY = document.documentElement.clientHeight - chatbotButton.offsetHeight;
+
+                x = Math.max(0, Math.min(maxX, x));
+                y = Math.max(0, Math.min(maxY, y));
+
+                chatbotButton.style.left = `${x}px`;
+                chatbotButton.style.top = `${y}px`;
+                chatbotButton.style.right = "auto";
+                chatbotButton.style.bottom = "auto";
+                chatbotButton.style.position = "fixed";
+            }
+
+            function stopDrag() {
+                if (!isDragging) return;
+
+                isDragging = false;
+                chatbotButton.classList.remove("dragging");
+                chatbotButton.style.cursor = "grab";
+                chatbotButton.style.transition = "box-shadow 0.2s";
+
+                document.removeEventListener("mousemove", moveDrag);
+                document.removeEventListener("touchmove", moveDrag);
+
+                // ✅ 현재 위치를 비율로 변환하여 저장
+                xRatio = chatbotButton.offsetLeft / document.documentElement.clientWidth;
+                yRatio = chatbotButton.offsetTop / document.documentElement.clientHeight;
+
+                setTimeout(() => {
+                    isClick = false; // ✅ 드래그 후 놓으면 클릭 이벤트 실행 방지
+                }, 0);
+            }
+
+            function openChatbot(e) {
+                if (!isClick) {
+                    return;
+                }
+                chatbotModal.style.display = "block"; // ✅ 챗봇 모달 열기
+                initializeChat(); // ✅ 챗봇 초기화 함수 실행
+            }
+
+            function closeChatbot() {
+                chatbotModal.style.display = "none";
+            }
+
+            chatbotButton.addEventListener("mousedown", (e) => {
+                startDrag(e);
+            });
+
+            chatbotButton.addEventListener("touchstart", (e) => {
+                startDrag(e);
+            });
+
+            document.addEventListener("mouseup", stopDrag);
+            document.addEventListener("touchend", stopDrag);
+
+            // ✅ 기존 `handleClick` → `openChatbot`으로 변경하여 클릭 이벤트 추가
+            chatbotButton.addEventListener("click", openChatbot);
+
+            // ✅ 챗봇 닫기 버튼 이벤트 추가
+            closeModal.addEventListener("click", closeChatbot);
+
+            // ✅ 창 크기가 변경될 때 버튼 위치를 비율에 맞게 자동 조정
+            window.addEventListener("resize", adjustButtonPosition);
+
+            // ✅ 페이지 로드 시 초기 버튼 위치 조정
+            adjustButtonPosition();
+
             chatbotModal.style.display = "none";
 
-            chatbotButton.onclick = function() {
-                chatbotModal.style.display = "block";
-                initializeChat(); // 모달이 열릴 때 초기 메시지 추가
-            }
+
 
             closeModal.onclick = function() {
                 chatbotModal.style.display = "none";
@@ -505,6 +673,8 @@
                 }, 100); // 딜레이 조정 가능
 
                 // API 호출 부분
+
+                // fetch('http://127.0.0.1:8000/chatbot', { // 로컬
                 fetch('https://saiescrm.api.jyds.synology.me/chatbot', { // 서버
                     method: 'POST',
                     headers: {
@@ -558,9 +728,20 @@
                             기회매출 : systemData.expectedRevenue || ''
                         };
 
+                        formattedResponse += "<strong>📌 AI CRM 어시스턴트 제안서 생성 정보:</strong><br>";
+                        formattedResponse += `아래의 정보를 바탕으로 생성한 제안서를 다운로드 합니다.<br>`;
+                        formattedResponse += `<strong>회사명</strong>: ${systemData.accountName || '정보 없음'}<br>`;
+                        formattedResponse += `<strong>기회명</strong>: ${systemData.opportunityName || '정보 없음'}<br>`;
+                        formattedResponse += `<strong>기회담당자</strong>: ${systemData.employeeName || '정보 없음'}<br>`;
+                        formattedResponse += `<strong>고객 담당자</strong>: ${systemData.customerEmployee || '정보 없음'}<br>`;
+                        formattedResponse += `<strong>고객요구사항</strong>: ${systemData.opportunityInquiries || '정보 없음'}<br>`;
+                        formattedResponse += `<strong>기회제품</strong>: ${systemData.productName || '정보 없음'}<br>`;
+                        formattedResponse += `<strong>수량</strong>: ${systemData.quantity || '정보 없음'}<br>`;
+                        formattedResponse += `<strong>기회매출</strong>: ${systemData.expectedRevenue || '정보 없음'}<br>`;
+
                         console.log('전송할 데이터:', dataToSend);
                         // 다운로드 진행중 팝업창 생성
-                        alert(' 다운로드 중 입니다. . . .  🚀 잠시만 기다려주세요. ');
+                        // alert(' 다운로드 중 입니다. . . .  🚀 잠시만 기다려주세요. ');
                         // Excel 생성 요청
                         fetch('https://saiescrm.api.jyds.synology.me/generate-excel', {
                             method: 'POST',
@@ -977,9 +1158,7 @@
 
 
 
-
-
-
-
         });
+
+
     </script>

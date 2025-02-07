@@ -83,20 +83,74 @@ public interface OrdersRepository extends JpaRepository<OrdersEntity, Long> {
             "JOIN o.productId p " +
             "JOIN o.employeeId e " +
             "WHERE e.teamId = :teamId " +
-            "AND MONTH(o.salesDate) = MONTH(CURRENT_DATE) " + // 같은 달 조건
-            "AND YEAR(o.salesDate) = YEAR(CURRENT_DATE) " +   // 같은 연도 조건
+            "AND MONTH(o.salesDate) = :month " + // 같은 달 조건
+            "AND YEAR(o.salesDate) = :year " +   // 같은 연도 조건
             "GROUP BY e.employeeId, e.employeeName " +
             "ORDER BY totalSales DESC")
-    List<Object[]> getSalesByEmployeeWithNames(@Param("teamId") Team teamId);
+    List<Object[]> getSalesByEmployeeWithNames(
+            @Param("year") int year,
+            @Param("month") int month,
+            @Param("teamId") Team teamId);
+
+    @Query("SELECT e.departmentId AS departmentId, " +
+            "CASE e.departmentId " +
+            "   WHEN 'STRATEGY_DEPT' THEN '전략고객본부' " +
+            "   WHEN 'PUBLIC_DEPT' THEN '공공고객본부' " +
+            "   WHEN 'FINANCE_DEPT' THEN '금융고객본부' " +
+            "   WHEN 'CORPORATE_DEPT' THEN '법인영업본부' " +
+            "   ELSE '기타' END AS departmentName, " +
+            "SUM(o.orderAmount * p.fixedPrice) AS totalSales " +
+            "FROM OrdersEntity o " +
+            "JOIN o.productId p " +
+            "JOIN o.employeeId e " +
+            "WHERE MONTH(o.salesDate) = :month " +
+            "AND YEAR(o.salesDate) = :year " +
+            "GROUP BY e.departmentId " +
+            "ORDER BY totalSales DESC")
+    List<Object[]> getAllDepartmentSales(@Param("year") int year,
+                                         @Param("month") int month);
+
+    @Query("SELECT e.teamId AS teamId, " +
+            "CASE e.teamId " +
+            "   WHEN 'STRATEGY_CUST_SECTOR' THEN '전략고객섹터담당' " +
+            "   WHEN 'STRATEGY_CUST_1' THEN '전략고객1담당' " +
+            "   WHEN 'STRATEGY_CUST_2' THEN '전략고객2담당' " +
+            "   WHEN 'PUBLIC_CUST_SECTOR' THEN '공공고객섹터담당' " +
+            "   WHEN 'PUBLIC_CUST_1' THEN '공공고객1담당' " +
+            "   WHEN 'PUBLIC_CUST_2' THEN '공공고객2담당' " +
+            "   WHEN 'FINANCE_CUST_SECTOR' THEN '금융고객섹터담당' " +
+            "   WHEN 'FINANCE_CUST_1' THEN '금융고객1담당' " +
+            "   WHEN 'FINANCE_CUST_2' THEN '금융고객2담당' " +
+            "   WHEN 'CORPORATE_SALES_PLANNING' THEN '법인영업기획담당' " +
+            "   WHEN 'CORPORATE_CUST' THEN '법인고객담당' " +
+            "   WHEN 'CORPORATE_RETAIL' THEN '법인유통담당' " +
+            "   WHEN 'CORPORATE_SALES_SECTOR' THEN '법인섹터담당' " +
+            "   ELSE '기타' END AS teamName, " +
+            "SUM(o.orderAmount * p.fixedPrice) AS totalSales " +
+            "FROM OrdersEntity o " +
+            "JOIN o.productId p " +
+            "JOIN o.employeeId e " +
+            "WHERE e.departmentId = :departmentId " +  // 부서 ID 필터링 추가
+            "AND MONTH(o.salesDate) = :month " +
+            "AND YEAR(o.salesDate) = :year " +
+            "GROUP BY e.teamId " +
+            "ORDER BY totalSales DESC")
+    List<Object[]> getTeamSalesByDepartment(@Param("year") int year,
+                                            @Param("month") int month,
+                                            @Param("departmentId") Dept departmentId);
+
 
     // 이번달 주문 현황 퍼센트 표시
     @Query("SELECT COUNT(o) FROM OrdersEntity o " +
             "JOIN o.employeeId e " +
             "WHERE e.employeeId = :employeeId " +
-            "AND EXTRACT(MONTH FROM o.salesDate) = EXTRACT(MONTH FROM CURRENT_DATE) " +
-            "AND EXTRACT(YEAR FROM o.salesDate) = EXTRACT(YEAR FROM CURRENT_DATE) " +
+            "AND EXTRACT(MONTH FROM o.salesDate) = :month " +
+            "AND EXTRACT(YEAR FROM o.salesDate) = :year " +
             "AND o.orderStatus IN ('draft', 'completed', 'activated')")
-    long countTotalSalesThisMonth(@Param("employeeId") String employeeId);
+    long countTotalSalesThisMonth(
+            @Param("year") int year,
+            @Param("month") int month,
+            @Param("employeeId") String employeeId);
 
     @Query("SELECT COUNT(o) FROM OrdersEntity o " +
             "JOIN o.employeeId e " +
