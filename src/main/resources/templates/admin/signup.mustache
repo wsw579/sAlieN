@@ -1,6 +1,33 @@
 {{>main/header}}
 
 <style>
+    .password-container {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .password-requirements {
+        font-size: 12px;  /* 글자 크기 조절 */
+        color: #E40087;  /* 초기 색상 빨간색 */
+        margin-top: 5px;
+        padding-left: 0; /* 기본 리스트 들여쓰기 제거 */
+        list-style: none;
+    }
+
+    .password-requirements li {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .valid {
+        color: #18AD72 !important; /* 충족되면 초록색 */
+    }
+
+    .password-input {
+        width: 100%; /* 입력 필드의 너비를 맞추기 */
+    }
 
 </style>
 
@@ -98,7 +125,7 @@
                                 <li id="upperCaseCheck">❌ 최소 1개의 대문자 포함</li>
                                 <li id="lowerCaseCheck">❌ 최소 1개의 소문자 포함</li>
                                 <li id="numberCheck">❌ 최소 1개의 숫자 포함</li>
-                                <li id="specialCharCheck">❌ 최소 1개의 특수문자 (!@#$%^&*) 포함</li>
+                                <li id="specialCharCheck">❌ 최소 1개의 특수문자 포함</li>
                             </ul>
                         </div>
                         <label for="confirmPassword" class="col-sm-2 col-form-label">비밀번호 확인</label>
@@ -159,156 +186,164 @@
                         alert("아이디 생성에 실패했습니다. 다시 시도해 주세요.");
                     });
         });
-        document.addEventListener("DOMContentLoaded", function () {
-            // 이벤트 리스너 추가
-            document.getElementById("password").addEventListener("input", validatePassword);
-            document.getElementById("confirmPassword").addEventListener("input", validatePassword);
-            document.getElementById("signupForm").addEventListener("submit", handleFormSubmit);
-        });
 
-        // 비밀번호 유효성 검사
-        function validatePassword() {
-            var password = document.getElementById("password").value;
-            var confirmPassword = document.getElementById("confirmPassword").value;
-            var confirmMsg = document.getElementById("confirmMsg");
 
-            // 각 조건 요소 선택
-            var lengthCheck = document.getElementById("lengthCheck");
-            var upperCaseCheck = document.getElementById("upperCaseCheck");
-            var lowerCaseCheck = document.getElementById("lowerCaseCheck");
-            var numberCheck = document.getElementById("numberCheck");
-            var specialCharCheck = document.getElementById("specialCharCheck");
+    document.addEventListener("DOMContentLoaded", function () {
+        // 이벤트 리스너 추가
+        document.getElementById("password").addEventListener("input", validatePassword);
+        document.getElementById("confirmPassword").addEventListener("input", passConfirm);
+        document.getElementById("signupForm").addEventListener("submit", handleFormSubmit);
+    });
 
-            var wrongColor = "#E40087";  // 빨간색
-            var correctColor = "#18AD72";  // 초록색
+    async function handleFormSubmit(event) {
+        event.preventDefault(); // 기본 제출 방지
 
-            // 비밀번호 조건 검사
-            var conditions = [
-                { check: password.length >= 8, element: lengthCheck },
-                { check: /[A-Z]/.test(password), element: upperCaseCheck },
-                { check: /[a-z]/.test(password), element: lowerCaseCheck },
-                { check: /\d/.test(password), element: numberCheck },
-                { check: /[!@#$%^&*]/.test(password), element: specialCharCheck }
-            ];
+        // 개별 유효성 검사 실행
+        if (!validateName()) return;
+        if (!validateSelectFields()) return;
+        if (!validateHireDate()) return;
+        if (!validateSecurityAnswer()) return;
+        if (!validatePasswordFields()) {
+            alert("비밀번호가 유효한지 확인하세요.");
+            return;
+        }
 
-            // 각 조건의 상태 업데이트 (아이콘 변경)
-            conditions.forEach(condition => {
-                if (condition.check) {
-                    condition.element.innerHTML = "✅ " + condition.element.innerHTML.slice(2);
-                    condition.element.classList.add("valid");
-                } else {
-                    condition.element.innerHTML = "❌ " + condition.element.innerHTML.slice(2);
-                    condition.element.classList.remove("valid");
-                }
+        // 폼 데이터 수집 및 JSON 변환
+        const formData = new FormData(document.getElementById("signupForm"));
+        const jsonObject = Object.fromEntries(formData.entries());
+
+        try {
+            const response = await fetch("/api/signup/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(jsonObject)
             });
 
-            // 비밀번호 확인 검사
-            if (password !== confirmPassword || confirmPassword === "") {
-                confirmMsg.style.color = wrongColor;
-                confirmMsg.innerHTML = "❌ 비밀번호가 일치하지 않습니다.";
-                return false;
+            const result = await response.text();
+            if (response.ok) {
+                alert("직원 추가 성공! 직원 목록 화면으로 이동합니다.");
+                window.location.href = "/employee-list";
             } else {
-                confirmMsg.style.color = correctColor;
-                confirmMsg.innerHTML = "✅ 비밀번호가 일치합니다.";
-                return true;
+                alert("직원 추가 실패: " + result);
             }
+        } catch (error) {
+            alert("서버 오류 발생! 다시 시도해주세요.");
+        }
+    }
+
+
+    // 비밀번호 유효성 검사 (실시간 업데이트)
+    function validatePassword() {
+        const password = document.getElementById("password").value;
+        const lengthCheck = password.length >= 8;
+        const upperCaseCheck = /[A-Z]/.test(password);
+        const lowerCaseCheck = /[a-z]/.test(password);
+        const numberCheck = /[0-9]/.test(password);
+        const specialCharCheck = /[!@#$%^&*]/.test(password);
+
+        const correctColor = "green";
+        const wrongColor = "red";
+
+        function updateCheck(elementId, condition) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = condition ? "✅ " + element.innerHTML.slice(2) : "❌ " + element.innerHTML.slice(2);
+            element.style.color = condition ? correctColor : wrongColor;
         }
 
-        // 이름 유효성 검사 (한글 또는 영문만 허용)
-        function validateName() {
-            const name = document.getElementById("name").value;
-            const namePattern = /^[가-힣a-zA-Z\s]+$/;
+        updateCheck("lengthCheck", lengthCheck, "최소 8자 이상");
+        updateCheck("upperCaseCheck", upperCaseCheck, "최소 1개의 대문자 포함");
+        updateCheck("lowerCaseCheck", lowerCaseCheck, "최소 1개의 소문자 포함");
+        updateCheck("numberCheck", numberCheck, "최소 1개의 숫자 포함");
+        updateCheck("specialCharCheck", specialCharCheck, "최소 1개의 특수문자 (!@#$%^&*) 포함");
 
-            if (!namePattern.test(name) || name.length < 2 || name.length > 50) {
-                alert("이름은 한글 또는 영문으로 최소 2자 이상, 최대 50자 이내여야 합니다.");
-                return false;
-            }
-            return true;
+        // 모든 조건 충족 시 메시지 숨김
+        document.getElementById("passMsg").style.display = (lengthCheck && upperCaseCheck && lowerCaseCheck && numberCheck && specialCharCheck) ? "none" : "block";
+    }
+
+    // 비밀번호 확인 검사 (비밀번호와 일치 여부 즉시 반영)
+    function passConfirm() {
+        const password = document.getElementById("password").value;
+        const confirmPassword = document.getElementById("confirmPassword").value;
+        const confirmMsg = document.getElementById("confirmMsg");
+
+        confirmMsg.innerHTML = password === confirmPassword ? "✅ 비밀번호 일치" : "❌ 비밀번호 불일치";
+        confirmMsg.style.color = (password === confirmPassword) ? "green" : "red";
+    }
+
+    // 비밀번호 입력 필드 검증
+    function validatePasswordFields() {
+        const password = document.getElementById("password").value;
+        const confirmPassword = document.getElementById("confirmPassword").value;
+        const passwordPattern = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,16}$/;
+
+        if (!passwordPattern.test(password)) {
+            return false;
         }
-
-        // 부서, 직급, 팀 선택 검사 (필수 선택)
-        function validateSelectFields() {
-            const dept = document.getElementById("position").value;
-            const position = document.getElementById("salary").value;
-            const team = document.getElementById("team").value;
-
-            if (dept === "") {
-                alert("부서를 선택하세요.");
-                return false;
-            }
-            if (position === "") {
-                alert("직급을 선택하세요.");
-                return false;
-            }
-            if (team === "") {
-                alert("팀을 선택하세요.");
-                return false;
-            }
-            return true;
+        if (password !== confirmPassword) {
+            return false;
         }
+        return true;
+    }
 
-        // 입사일 검사 (미래 날짜 입력 방지)
-        function validateHireDate() {
-            const hireDate = document.getElementById("joinDate").value;
-            const today = new Date().toISOString().split("T")[0];
+    // 이름 유효성 검사 (한글 또는 영문만 허용)
+    function validateName() {
+        const name = document.getElementById("name").value;
+        const namePattern = /^[가-힣a-zA-Z\s]+$/;
 
-            if (!hireDate) {
-                alert("입사일을 입력하세요.");
-                return false;
-            }
-            if (hireDate > today) {
-                alert("입사일은 미래 날짜로 설정할 수 없습니다.");
-                return false;
-            }
-            return true;
+        if (!namePattern.test(name) || name.length < 2 || name.length > 50) {
+            alert("이름은 한글 또는 영문으로 최소 2자 이상, 최대 50자 이내여야 합니다.");
+            return false;
         }
+        return true;
+    }
 
-        // 비밀번호 찾기 질문 답변 유효성 검사 (최소 2자 이상)
-        function validateSecurityAnswer() {
-            const answer = document.getElementById("securityAnswer").value;
+    // 부서, 직급, 팀 선택 검사 (필수 선택)
+    function validateSelectFields() {
+        const dept = document.getElementById("position").value;
+        const position = document.getElementById("salary").value;
+        const team = document.getElementById("team").value;
 
-            if (answer.trim().length < 2) {
-                alert("비밀번호 찾기 답변은 최소 2자 이상 입력해야 합니다.");
-                return false;
-            }
-            return true;
+        if (dept === "") {
+            alert("부서를 선택하세요.");
+            return false;
         }
+        if (position === "") {
+            alert("직급을 선택하세요.");
+            return false;
+        }
+        if (team === "") {
+            alert("팀을 선택하세요.");
+            return false;
+        }
+        return true;
+    }
 
-        // 폼 제출 이벤트 핸들러 (최종 유효성 검사)
-        async function handleFormSubmit(event) {
-            event.preventDefault(); // 기본 제출 방지
+    // 입사일 검사 (미래 날짜 입력 방지)
+    function validateHireDate() {
+        const hireDate = document.getElementById("joinDate").value;
+        const today = new Date().toISOString().split("T")[0];
 
-            // 개별 유효성 검사 실행
-            if (!validateName()) return;
-            if (!validateSelectFields()) return;
-            if (!validateHireDate()) return;
-            if (!validateSecurityAnswer()) return;
-            if (!validatePassword()) {
-                alert("비밀번호가 유효한지 확인하세요.");
-                return;
-            }
+        if (!hireDate) {
+            alert("입사일을 입력하세요.");
+            return false;
+        }
+        if (hireDate > today) {
+            alert("입사일은 미래 날짜로 설정할 수 없습니다.");
+            return false;
+        }
+        return true;
+    }
 
-            // 폼 데이터 수집 및 JSON 변환
-            const formData = new FormData(document.getElementById("signupForm"));
-            const jsonObject = Object.fromEntries(formData.entries());
+    // 비밀번호 찾기 질문 답변 유효성 검사 (최소 2자 이상)
+    function validateSecurityAnswer() {
+        const answer = document.getElementById("securityAnswer").value;
 
-            try {
-                const response = await fetch("/api/signup/register", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(jsonObject)
-                });
-
-                const result = await response.text();
-                if (response.ok) {
-                    alert("회원가입 성공! 로그인 페이지로 이동합니다.");
-                    window.location.href = "/login";
-                } else {
-                    alert("회원가입 실패: " + result);
-                }
-            } catch (error) {
-                alert("서버 오류 발생! 다시 시도해주세요.");
-            }
+        if (answer.trim().length < 2) {
+            alert("비밀번호 찾기 답변은 최소 2자 이상 입력해야 합니다.");
+            return false;
+        }
+        return true;
+    }
     </script>
 
 {{>main/footer}}
