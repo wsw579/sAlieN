@@ -56,19 +56,20 @@
                                     </div>
                                 </div>
 
-                                <!-- 진행중 클릭 시 모달 창 -->
-                                <div class="modal fade" id="progressModal" tabindex="-1" aria-labelledby="progressModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog modal-lg">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="progressModalLabel">진행중 상세 정보</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body" id="progressContent">
-                                                {{> opportunities/ongoing-opportunities }}
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                                    <!-- 진행중 클릭 시 모달 창 -->
+                                    <div class="modal fade" id="progressModal" tabindex="-1" aria-labelledby="progressModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-lg">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="progressModalLabel">진행중 상세 정보</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body" id="progressContent">
+                                                    {{> opportunities/ongoing-opportunities }}
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -76,53 +77,52 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- 1행 2열 -->
+                    <div class="col-xl-4 col-md-6 d-flex">
+                        <div class="card h-100 w-100">
+                            <div class="card-header" id = "employeeOrderChartHeader">
+                                <i class="fas fa-chart-bar me-1"></i>
+                                사원별 오더 처리 현황
+                            </div>
+                            <div class="card-body">
+                                <canvas id="employeeOrderChart" style="width: 500px; height: 200px;"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+<!--                    &lt;!&ndash; 1행 3열 &ndash;&gt;-->
+<!--                    <div class="col-xl-4 col-md-6 d-flex">-->
+<!--                        <div class="card h-100 w-100">-->
+<!--                            <div class="card-header" id="yearlySalesHeader">-->
+<!--                                <i class="fas fa-chart-area me-1"></i>-->
+<!--                                연도별 오더 처리 현황-->
+<!--                            </div>-->
+<!--                            <div class="card-body">-->
+<!--                                <canvas id="OrderStatusChart" style="width: 500px; height: 200px;"></canvas>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
                 </div>
 
-                <!-- 1행 2열 -->
-                <div class="col-xl-4 col-md-6 d-flex">
-                    <div class="card h-100 w-100">
-                        <div class="card-header" id = "employeeOrderChartHeader">
-                            <i class="fas fa-chart-bar me-1"></i>
-                            사원별 오더 처리 현황
-                        </div>
-                        <div class="card-body">
-                            <canvas id="employeeOrderChart" style="width: 500px; height: 200px;"></canvas>
+                <!-- 두 번째 행 -->
+                <div class="row mb-4 align-items-stretch">
+                    <!-- 한 행 전체 -->
+                    <div class="col-xl-12 d-flex">
+                        <div class="card h-100 w-100">
+                            <div class="card-header" id="monthlySalesChartHeader">
+                                <i class="fas fa-table me-1"></i>
+                                월별 매출현황
+                            </div>
+                            <div class="card-body">
+                                <canvas id="monthlySalesChart" style="width: 600px; height: 300px;"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!--                    &lt;!&ndash; 1행 3열 &ndash;&gt;-->
-                <!--                    <div class="col-xl-4 col-md-6 d-flex">-->
-                <!--                        <div class="card h-100 w-100">-->
-                <!--                            <div class="card-header" id="yearlySalesHeader">-->
-                <!--                                <i class="fas fa-chart-area me-1"></i>-->
-                <!--                                연도별 오더 처리 현황-->
-                <!--                            </div>-->
-                <!--                            <div class="card-body">-->
-                <!--                                <canvas id="OrderStatusChart" style="width: 500px; height: 200px;"></canvas>-->
-                <!--                            </div>-->
-                <!--                        </div>-->
-                <!--                    </div>-->
-            </div>
-
-            <!-- 두 번째 행 -->
-            <div class="row mb-4 align-items-stretch">
-                <!-- 한 행 전체 -->
-                <div class="col-xl-12 d-flex">
-                    <div class="card h-100 w-100">
-                        <div class="card-header" id="monthlySalesChartHeader">
-                            <i class="fas fa-table me-1"></i>
-                            월별 매출현황
-                        </div>
-                        <div class="card-body">
-                            <canvas id="monthlySalesChart" style="width: 600px; height: 300px;"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!--            세번째 행-->
-            <div class="row mb-4 align-items-stretch">
+                <!--            세번째 행-->
+                <div class="row mb-4 align-items-stretch">
                 <div class="col-xl-8-12 d-flex">
                     <div class="card h-100 w-100">
                         <div class="card-header" id="salesPerformanceHeader">
@@ -150,21 +150,21 @@
                         </div>
                     </div>
                 </div>
+                </div>
+
+
+
             </div>
-
-
-
-        </div>
-    </main>
+        </main>
 
 
 
 
-    <!--        <script src="/assets/demo/team-opportunities-chart.js"></script>-->
-    <script src="/assets/demo/opportunities-status-card-value-manager.js"></script>
-    <script src="/assets/demo/opportunities-modal-loader.js"></script>
-    <script src="/assets/demo/monthly-sales-chart.js"></script>
-    <script src="/assets/demo/employee-order-chart.js"></script>
-    <script src="/assets/demo/order-status-chart.js"></script>
-    <script src="/assets/demo/sales-performance.js"></script>
+<!--        <script src="/assets/demo/team-opportunities-chart.js"></script>-->
+        <script src="/assets/demo/opportunities-status-card-value-manager.js"></script>
+        <script src="/assets/demo/opportunities-modal-loader.js"></script>
+        <script src="/assets/demo/monthly-sales-chart.js"></script>
+        <script src="/assets/demo/employee-order-chart.js"></script>
+        <script src="/assets/demo/order-status-chart.js"></script>
+        <script src="/assets/demo/sales-performance.js"></script>
 {{>main/footer}}
