@@ -282,8 +282,44 @@
         // 이벤트 리스너 추가
         document.getElementById("password").addEventListener("input", validatePassword);
         document.getElementById("confirmPassword").addEventListener("input", passConfirm);
-        document.getElementById("signupForm").addEventListener("submit", validateForm);
+        document.getElementById("signupForm").addEventListener("submit", handleFormSubmit);
     });
+
+    async function handleFormSubmit(event) {
+        event.preventDefault(); // 기본 제출 방지
+
+        // 개별 유효성 검사 실행
+        if (!validateName()) return;
+        if (!validateSelectFields()) return;
+        if (!validateHireDate()) return;
+        if (!validateSecurityAnswer()) return;
+        if (!validatePasswordFields()) {
+            alert("비밀번호가 유효한지 확인하세요.");
+            return;
+        }
+
+        // 폼 데이터 수집 및 JSON 변환
+        const formData = new FormData(document.getElementById("signupForm"));
+        const jsonObject = Object.fromEntries(formData.entries());
+
+        try {
+            const response = await fetch("/api/signup/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(jsonObject)
+            });
+
+            const result = await response.text();
+            if (response.ok) {
+                alert("회원가입 성공! 로그인 페이지로 이동합니다.");
+                window.location.href = "/login";
+            } else {
+                alert("회원가입 실패: " + result);
+            }
+        } catch (error) {
+            alert("서버 오류 발생! 다시 시도해주세요.");
+        }
+    }
 
     // 비밀번호 유효성 검사 (실시간 업데이트)
     function validatePassword() {
@@ -321,32 +357,6 @@
 
         confirmMsg.innerHTML = password === confirmPassword ? "✅ 비밀번호 일치" : "❌ 비밀번호 불일치";
         confirmMsg.style.color = (password === confirmPassword) ? "green" : "red";
-    }
-
-    // 전체 폼 검사 (회원가입 버튼 클릭 시 실행)
-    function validateForm(event) {
-        if (!validateName()) {
-            event.preventDefault();
-            return false;
-        }
-        if (!validateSelectFields()) {
-            event.preventDefault();
-            return false;
-        }
-        if (!validateHireDate()) {
-            event.preventDefault();
-            return false;
-        }
-        if (!validateSecurityAnswer()) {
-            event.preventDefault();
-            return false;
-        }
-        if (!validatePasswordFields()) {
-            alert("비밀번호가 유효한지 확인하세요.");
-            event.preventDefault();
-            return false;
-        }
-        return true;
     }
 
     // 비밀번호 입력 필드 검증 (최종 제출 시 실행)
@@ -425,27 +435,6 @@
     }
 
 
-        // 폼 데이터 수집 및 JSON 변환
-        const formData = new FormData(document.getElementById("signupForm"));
-        const jsonObject = Object.fromEntries(formData.entries());
-
-        try {
-            const response = await fetch("/api/signup/register", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(jsonObject)
-            });
-
-            const result = await response.text();
-            if (response.ok) {
-                alert("회원가입 성공! 로그인 페이지로 이동합니다.");
-                window.location.href = "/login";
-            } else {
-                alert("회원가입 실패: " + result);
-            }
-        } catch (error) {
-            alert("서버 오류 발생! 다시 시도해주세요.");
-        }
 </script>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

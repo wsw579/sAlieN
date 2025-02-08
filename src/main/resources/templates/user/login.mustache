@@ -218,6 +218,15 @@
         $('#password-form').on('submit', function (e) {
             e.preventDefault(); // 기본 폼 동작 방지
 
+            // 비밀번호 유효성 검사
+            if (!isPasswordValid()) {
+                $('#error-message').text('비밀번호가 요구사항을 충족하지 않습니다.').fadeIn();
+                setTimeout(function () {
+                    $('#error-message').fadeOut();
+                }, 3000);
+                return; // 조건 충족되지 않으면 서버 요청 중단
+            }
+
             const formData = {
                 employeeId: $('#employee-id').val(),
                 existPassword: $('#exist-password').val(),
@@ -231,14 +240,11 @@
                 contentType: 'application/json',
                 data: JSON.stringify(formData),
                 success: function (response) {
-                    // 성공 처리: 예를 들어 모달 닫기
                     alert(response); // 서버에서 반환된 성공 메시지 사용
                     $('#passwordModal').modal('hide');
                 },
                 error: function (xhr) {
-                    // 에러 처리
                     if (xhr.status === 400) {
-                        // 서버에서 반환된 오류 메시지 출력
                         const errorMessage = xhr.responseText;
                         $('#error-message').text(errorMessage).fadeIn();
                         setTimeout(function () {
@@ -251,6 +257,17 @@
             });
         });
     });
+
+    // 비밀번호 유효성 검사 함수
+    function isPasswordValid() {
+        const password = $('#new-password').val();
+        return password.length >= 8 &&
+               /[A-Z]/.test(password) &&
+               /[a-z]/.test(password) &&
+               /[0-9]/.test(password) &&
+               /[!@#$%^&*]/.test(password);
+    }
+
 </script>
 </body>
 </html>
