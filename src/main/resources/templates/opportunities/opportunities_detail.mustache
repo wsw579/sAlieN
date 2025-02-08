@@ -555,7 +555,7 @@
                         </table>
 
                         <form class="comment-form" action="/opportunities/detail/createcomment" method="post">
-                            <input type="text" name="content" id="commentInput" placeholder="댓글을 입력하세요">
+                            <input type="text" name="content" id="commentInput" placeholder="댓글을 입력하세요(최대 200글자).">
                             <input type="hidden" name="opportunityId" value="{{opportunities.opportunityId}}">
                             <button type="submit" class="btn btn-custom-create btn-sm">입력</button>
                         </form>
@@ -849,6 +849,165 @@ function formatCurrency(value) {
             var commentSection = document.getElementById("commentSection");
             commentSection.scrollTop = commentSection.scrollHeight;
         };
+
+// 유효성 검사
+
+document.addEventListener("DOMContentLoaded", function () {
+    console.log("📌 JavaScript 실행됨 - 기회 유효성 검사 적용");
+
+    const form = document.getElementById("opportunityForm");
+
+    if (!form) {
+        console.error("⚠️ 기회 폼이 존재하지 않습니다.");
+        return;
+    }
+
+    form.addEventListener("submit", function (event) {
+        event.preventDefault(); // 기본 제출 방지
+
+        if (validateForm()) {
+            console.log("✅ 유효성 검사 통과! 폼 제출 실행");
+            form.submit();
+        } else {
+            console.log("❌ 유효성 검사 실패! 폼 제출 안 됨");
+        }
+    });
+
+    function validateForm() {
+        let isValid = true;
+
+        // 기회 명 검증 (필수 입력)
+        const opportunityName = document.getElementById("opportunityName");
+        if (!opportunityName || !opportunityName.value.trim()) {
+            alert("기회 명은 필수입니다.");
+            isValid = false;
+        }
+
+        // 배송지역 검증 (필수 입력)
+        const region = document.getElementById("region");
+        if (!region || !region.value.trim()) {
+            alert("배송지역은 필수입니다.");
+            isValid = false;
+        }
+
+        // 고객 문의사항 검증 (필수 입력)
+        const opportunityInquiries = document.getElementById("opportunityInquiries");
+        if (!opportunityInquiries || !opportunityInquiries.value.trim()) {
+            alert("고객 문의사항은 필수입니다.");
+            isValid = false;
+        }
+
+        // 고객 담당자 검증 (필수 입력)
+        const customerEmployee = document.getElementById("customerEmployee");
+        if (!customerEmployee || !customerEmployee.value.trim()) {
+            alert("고객 담당자는 필수입니다.");
+            isValid = false;
+        }
+
+        // 기회 수량 검증 (필수, 숫자 확인)
+        const quantity = document.getElementById("quantity");
+        if (!quantity || !quantity.value.trim() || isNaN(quantity.value) || parseFloat(quantity.value) < 0) {
+            alert("기회 수량은 필수이며 0이상의 숫자여야 합니다.");
+            isValid = false;
+        }
+
+        // 기회 매출 검증 (필수, 숫자 확인)
+        const expectedRevenue = document.getElementById("expectedRevenue");
+        if (!expectedRevenue || !expectedRevenue.value.trim() || isNaN(expectedRevenue.value) || parseFloat(expectedRevenue.value) < 0) {
+            alert("기회 매출은 필수이며 0이상의 숫자여야 합니다.");
+            isValid = false;
+        }
+
+        // 회사 매출 검증 (필수, 숫자 확인)
+        const companyRevenue = document.getElementById("companyRevenue");
+        if (!companyRevenue || !companyRevenue.value.trim() || isNaN(companyRevenue.value) || parseFloat(companyRevenue.value) < 0) {
+            alert("회사 매출은 필수이며 0이상의 숫자여야 합니다.");
+            isValid = false;
+        }
+
+        // 기회 세부내용 검증 (필수 입력)
+        const opportunityNotes = document.getElementById("opportunityNotes");
+        if (!opportunityNotes || !opportunityNotes.value.trim()) {
+            alert("기회 세부내용은 필수입니다.");
+            isValid = false;
+        }
+
+        // 🔹 생성 일자 검증 (과거 또는 현재만 가능)
+        const createdDate = document.getElementById("createdDate");
+        const targetCloseDate = document.getElementById("targetCloseDate");
+
+        if (!createdDate || !createdDate.value) {
+            alert("생성 일자는 필수입니다.");
+            isValid = false;
+        } else {
+            const today = new Date().toISOString().split("T")[0]; // 오늘 날짜를 "YYYY-MM-DD" 형식으로 변환
+            const createdDateValue = createdDate.value; // "YYYY-MM-DD" 형식 그대로 사용
+
+            if (createdDateValue > today) {
+                alert("생성 일자는 오늘 날짜 또는 과거여야 합니다.");
+                isValid = false;
+            }
+        }
+
+        // 🔹 마감 기한 검증 (생성일자와 같거나 이후 날짜여야 함)
+        if (!targetCloseDate || !targetCloseDate.value) {
+            alert("마감 기한은 필수입니다.");
+            isValid = false;
+        } else {
+            const createdDateValue = createdDate.value;
+            const targetCloseDateValue = targetCloseDate.value;
+
+            if (targetCloseDateValue < createdDateValue) {
+                alert("마감 기한은 생성일자와 같거나 이후여야 합니다.");
+                isValid = false;
+            }
+        }
+
+        // 기회 상태 검증 (`Qualification`, `Need Analysis` 등)
+        const opportunityStatus = document.getElementById("opportunityStatus");
+        const validStatuses = [
+            "Qualification", "Needs Analysis", "Proposal",
+            "Negotiation", "Closed(won)", "Closed(loss)", "Pending"
+        ];
+        if (!opportunityStatus || !validStatuses.includes(opportunityStatus.value.trim())) {
+            alert("기회 상태는 'Qualification', 'Needs Analysis', 'Proposal', 'Negotiation', 'Closed(won)', 'Closed(loss)', 'Pending' 중 하나여야 합니다.");
+            isValid = false;
+        }
+
+        return isValid;
+    }
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    console.log("📌 JavaScript 실행됨 - 댓글 유효성 검사 적용");
+
+    const form = document.querySelector(".comment-form");
+    const commentInput = document.getElementById("commentInput");
+    const maxLength = 200; // 최대 글자 수
+
+    if (!form || !commentInput) {
+        console.error("⚠️ 필수 요소가 누락되었습니다.");
+        return;
+    }
+
+    // 🔹 입력 시 실시간 글자 수 제한 (비어 있는 입력 가능)
+    commentInput.addEventListener("input", function () {
+        let currentLength = commentInput.value.length;
+
+        if (currentLength > maxLength) {
+            alert(`댓글은 최대 ${maxLength}자까지 입력 가능합니다.`);
+            commentInput.value = commentInput.value.substring(0, maxLength); // 초과된 부분 제거
+        }
+    });
+
+    // 🔹 폼 제출 시 유효성 검사
+    form.addEventListener("submit", function (event) {
+        if (commentInput.value.length > maxLength) {
+            alert(`댓글은 최대 ${maxLength}자까지 입력 가능합니다.`);
+            event.preventDefault(); // 제출 방지
+        }
+    });
+});
 
 
 

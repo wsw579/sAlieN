@@ -239,6 +239,7 @@
 <script>
     // 입사일 변경 시 서버로 아이디 요청
     document.getElementById("joinDate").addEventListener("input", function () {
+        console.log("입사일 입력 감지됨"); //
         const hireDate = document.getElementById("joinDate").value;
         if (!hireDate) {
             return; // 입사일이 비어 있으면 요청하지 않음
@@ -424,6 +425,27 @@
     }
 
 
+        // 폼 데이터 수집 및 JSON 변환
+        const formData = new FormData(document.getElementById("signupForm"));
+        const jsonObject = Object.fromEntries(formData.entries());
+
+        try {
+            const response = await fetch("/api/signup/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(jsonObject)
+            });
+
+            const result = await response.text();
+            if (response.ok) {
+                alert("회원가입 성공! 로그인 페이지로 이동합니다.");
+                window.location.href = "/login";
+            } else {
+                alert("회원가입 실패: " + result);
+            }
+        } catch (error) {
+            alert("서버 오류 발생! 다시 시도해주세요.");
+        }
 </script>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

@@ -4,57 +4,57 @@
         height: 400px; /* 원하는 높이로 설정 */
     }
 </style>
-    <div id="layoutSidenav_content">
-        <main>
-            <div class="container-fluid px-4 mt-4">
-                <!-- 첫 번째 행 -->
-                <div class="row mb-4 align-items-stretch">
-                    <!-- 1행 1열 -->
-                    <div class="col-xl-8 col-md-6">
-                        <div class="card h-100">
-                            <div class="card-header">
-                                <i class="fas fa-chart-bar me-1"></i>
-                                기회
-                            </div>
-                            <div class="card-body">
-                                <div class="row g-3 mb-3">
-                                    <div class="col-8 col-md-4">
-                                        <div class="card bg-primary text-white h-100" style="min-height: 180px;" data-bs-toggle="modal" data-bs-target="#progressModal">
-                                            <div class="card-body" style="font-size: 1.5rem; font-weight: bold;">진행중</div>
-                                            <div class="card-footer d-flex align-items-center justify-content-between">
-                                                <h3 id="ongoingCountTeam">0 건</h3>
-                                                <div class="small text-white">
-                                                    <a href="" class="text-white">
-                                                        <i class="fas fa-angle-right"></i>
-                                                    </a>
-                                                </div>
+<div id="layoutSidenav_content">
+    <main>
+        <div class="container-fluid px-4 mt-4">
+            <!-- 첫 번째 행 -->
+            <div class="row mb-4 align-items-stretch">
+                <!-- 1행 1열 -->
+                <div class="col-xl-8 col-md-6">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <i class="fas fa-chart-bar me-1"></i>
+                            기회
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3 mb-3">
+                                <div class="col-8 col-md-4">
+                                    <div class="card bg-card text-black h-100" style="min-height: 180px;" data-bs-toggle="modal" data-bs-target="#progressModal">
+                                        <div class="card-body" style="font-size: 1.5rem; font-weight: bold;">진행중</div>
+                                        <div class="card-footer d-flex align-items-center justify-content-between">
+                                            <h3 id="ongoingCountTeam">0 건</h3>
+                                            <div class="small text-white">
+                                                <a href="" class="text-white">
+                                                    <i class="fas fa-angle-right"></i>
+                                                </a>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-8 col-md-4">
-                                        <div class="card bg-success text-white h-100" style="min-height: 180px;">
-                                            <div class="card-body" style="font-size: 1.5rem; font-weight: bold;">마감일자 초과</div>
-                                            <div class="card-footer d-flex align-items-center justify-content-between">
-                                                <h3 id="overdueCountTeam">0 건</h3>
-                                                <div class="small text-white">
-                                                    <a href="/opportunities" class="text-white">
-                                                    </a>
-                                                </div>
+                                </div>
+                                <div class="col-8 col-md-4">
+                                    <div class="card bg-card text-black h-100" style="min-height: 180px;">
+                                        <div class="card-body" style="font-size: 1.5rem; font-weight: bold;">마감일자 초과</div>
+                                        <div class="card-footer d-flex align-items-center justify-content-between">
+                                            <h3 id="overdueCountTeam">0 건</h3>
+                                            <div class="small text-white">
+                                                <a href="/opportunities" class="text-white">
+                                                </a>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-8 col-md-4">
-                                        <div class="card bg-success text-white h-100" style="min-height: 180px;">
-                                            <div class="card-body" style="font-size: 1.5rem; font-weight: bold;">계약전환 성공</div>
-                                            <div class="card-footer d-flex align-items-center justify-content-between">
-                                                <h3 id="closedCountTeam">0 건</h3>
-                                                <div class="small text-white">
-                                                    <a href="/opportunities" class="text-white">
-                                                    </a>
-                                                </div>
+                                </div>
+                                <div class="col-8 col-md-4">
+                                    <div class="card bg-card text-black h-100" style="min-height: 180px;">
+                                        <div class="card-body" style="font-size: 1.5rem; font-weight: bold;">계약전환 성공</div>
+                                        <div class="card-footer d-flex align-items-center justify-content-between">
+                                            <h3 id="closedCountTeam">0 건</h3>
+                                            <div class="small text-white">
+                                                <a href="/opportunities" class="text-white">
+                                                </a>
                                             </div>
                                         </div>
                                     </div>
+                                </div>
 
                                     <!-- 진행중 클릭 시 모달 창 -->
                                     <div class="modal fade" id="progressModal" tabindex="-1" aria-labelledby="progressModalLabel" aria-hidden="true">
