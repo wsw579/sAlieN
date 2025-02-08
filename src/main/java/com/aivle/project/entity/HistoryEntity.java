@@ -34,19 +34,19 @@ public class HistoryEntity implements Serializable {
     @JsonFormat(pattern = "HH:mm:ss")
     private LocalTime historyTime;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false)
     private String customerRepresentative;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false)
     private String meetingPlace;
 
-    @Column(length = 255)
+    @Column(nullable = false)
     private String companySize;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false, length = 1000)
     private String customerRequirements;
 
-    @Column(length = 255)
+    @Column(nullable = false)
     private String actionTaken;
 
     // 외래키 부분

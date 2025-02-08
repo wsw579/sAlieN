@@ -19,23 +19,23 @@ document.addEventListener("DOMContentLoaded", function () {
                     labels: labels,
                     datasets: [
                         {
-                               label: "Last Year",
-                               lineTension: 0.3,
-                               backgroundColor: "rgba(255, 165, 0,0.5)",
-                               borderColor: "rgba(255, 165, 0,1)",
-                               pointRadius: 5,
-                               pointBackgroundColor: "rgba(255, 165, 0,1)",
-                               data: lastYearData,
-                           },
-                           {
-                               label: "This Year",
-                               lineTension: 0.3,
-                               backgroundColor: "rgba(0, 0, 255, 0.5)",
-                               borderColor: "rgba(0, 0, 255,1)",
-                               pointRadius: 5,
-                               pointBackgroundColor: "rgba(0, 0, 255,1)",
-                               data: currentYearData,
-                           }
+                            label: "Last Year (Blue)",
+                            lineTension: 0.3,
+                            backgroundColor: "rgba(2,117,216,0.2)",
+                            borderColor: "rgba(2,117,216,1)",
+                            pointRadius: 5,
+                            pointBackgroundColor: "rgba(2,117,216,1)",
+                            data: lastYearData,
+                        },
+                        {
+                            label: "This Year (Red)",
+                            lineTension: 0.3,
+                            backgroundColor: "rgba(255,0,0,0.2)",
+                            borderColor: "rgba(255,0,0,1)",
+                            pointRadius: 5,
+                            pointBackgroundColor: "rgba(255,0,0,1)",
+                            data: currentYearData,
+                        }
                     ]
                 },
                 options: {
