@@ -3,6 +3,9 @@ package com.aivle.project.service;
 import com.aivle.project.dto.HistoryDto;
 import com.aivle.project.dto.OpportunitiesDto;
 import com.aivle.project.entity.*;
+import com.aivle.project.enums.Dept;
+import com.aivle.project.enums.Position;
+import com.aivle.project.enums.Role;
 import com.aivle.project.enums.Team;
 import com.aivle.project.repository.EmployeeRepository;
 import com.aivle.project.repository.HistoryRepository;
@@ -20,10 +23,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -173,6 +173,34 @@ public class OpportunitiesService {
                         result -> (Long) result[1]     // Value: Count
                 ));
     }
+
+    // 팀 또는 부서의 상태 수 세기
+    public Map<String, Long> getOpportunitiesStatusCountsManager() {
+        String userid = UserContext.getCurrentUserId();
+        Position userPosition = Position.valueOf(employeeRepository.findPositionById(userid));
+
+        List<Object[]> results = new ArrayList<>();
+
+        if (Position.GENERAL_MANAGER.equals(userPosition) || Position.DEPARTMENT_HEAD.equals(userPosition)) {
+            String userdept = employeeRepository.findDepartmentById(userid);
+            results = opportunitiesRepository.countAllStatusesDept(Dept.valueOf(userdept));
+        } else if (Position.TEAM_LEADER.equals(userPosition)) {
+            String userteam = employeeRepository.findTeamById(userid);
+            results = opportunitiesRepository.countAllStatusesTeam(Team.valueOf(userteam));
+        }
+
+        if (results.isEmpty()) {
+            System.err.println("⚠️ No results found for userId: " + userid);
+            return Collections.emptyMap();
+        }
+
+        return results.stream()
+                .collect(Collectors.toMap(
+                        result -> (String) result[0],  // Key: Status
+                        result -> (Long) result[1]     // Value: Count
+                ));
+    }
+
     // 내 상태 수 세기
     public Map<String, Long> getOpportunitiesStatusCountsUser() {
         String userid = UserContext.getCurrentUserId();
@@ -186,6 +214,23 @@ public class OpportunitiesService {
         String userId = UserContext.getCurrentUserId();
         Pageable pageable = PageRequest.of(page, 10, Sort.by("createdDate").descending());
         return opportunitiesRepository.findOngoingOpportunitiesByUser(userId, pageable);
+    }
+
+    // 진행 중인 기회 페이징 처리하여 조회
+    public Page<OpportunitiesEntity> getOngoingOpportunitiesManager(int page) {
+        String userid = UserContext.getCurrentUserId();
+        Position userPosition = Position.valueOf(employeeRepository.findPositionById(userid));
+        Pageable pageable = PageRequest.of(page, 10, Sort.by("createdDate").descending());
+
+
+        if (Position.GENERAL_MANAGER.equals(userPosition) || Position.DEPARTMENT_HEAD.equals(userPosition)) {
+            String userdept = employeeRepository.findDepartmentById(userid);
+            return opportunitiesRepository.findOngoingOpportunitiesByDept(Dept.valueOf(userdept), pageable);
+        } else {
+            String userteam = employeeRepository.findTeamById(userid);
+            return opportunitiesRepository.findOngoingOpportunitiesByTeam(Team.valueOf(userteam), pageable);
+        }
+
     }
 
     public Map<String, List<Integer>> getBarData() {

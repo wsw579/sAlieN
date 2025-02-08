@@ -7,6 +7,7 @@ import com.aivle.project.dto.PaginationDto;
 import com.aivle.project.entity.*;
 import com.aivle.project.service.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
@@ -149,8 +151,12 @@ public class LeadsController {
     }
 
     @PostMapping("/leads/detail/create")
-    public String leadsCreateNew(@ModelAttribute LeadsDto leadsDto, RedirectAttributes redirectAttributes){
+    public String leadsCreateNew(@ModelAttribute @Valid LeadsDto leadsDto, BindingResult bindingResult, RedirectAttributes redirectAttributes){
         try {
+            if (bindingResult.hasErrors()) {
+                // 유효성 검사 실패 시 에러 메시지 출력
+                return "leads/leads_detail"; // 에러가 있으면 폼으로 다시 이동
+            }
             // 리드 생성
             leadsService.createLeads(leadsDto);
 
@@ -174,8 +180,12 @@ public class LeadsController {
 
     // Update detail page
     @PostMapping("/leads/detail/{leadId}/update")
-    public String leadsUpdate(@PathVariable("leadId") Long leadId, @ModelAttribute LeadsDto leadsDto, RedirectAttributes redirectAttributes) {
+    public String leadsUpdate(@PathVariable("leadId") Long leadId, @ModelAttribute @Valid LeadsDto leadsDto, BindingResult bindingResult, RedirectAttributes redirectAttributes){
         try {
+            if (bindingResult.hasErrors()) {
+                // 유효성 검사 실패 시 에러 메시지 출력
+                return "leads/leads_detail"; // 에러가 있으면 폼으로 다시 이동
+            }
             // 리드 수정
             leadsService.updateLeads(leadId, leadsDto);
 
@@ -241,34 +251,34 @@ public class LeadsController {
         }
     }
 
-    // 오늘 추가된 Leads 수 반환
-    @GetMapping("/api/leads/today")
-    public ResponseEntity<Map<String, Object>> getTodayLeads() {
-        long count = leadsService.getTodayLeadsForTeam();
-        Map<String, Object> response = new HashMap<>();
-        response.put("todayLeads", count);
-        return ResponseEntity.ok(response);
-    }
-
-    // 특정 상태의 Leads 수 반환
-    @GetMapping("/api/leads/status")
-    public ResponseEntity<Map<String, Object>> countLeadsByStatus(@RequestParam String leadStatus) {
-        long count = leadsService.countLeadsByStatusAndTeam(leadStatus);
-        Map<String, Object> response = new HashMap<>();
-        response.put("leadStatus", leadStatus);
-        response.put("leadCount", count);
-        return ResponseEntity.ok(response);
-    }
-
-    // 오늘 마감인 Leads 수 반환
-    @GetMapping("/api/leads/target-close-today")
-    public ResponseEntity<Map<String, Object>> countLeadsWithTargetCloseDateToday() {
-        long count = leadsService.countLeadsWithTargetCloseDateTodayForTeam();
-        Map<String, Object> response = new HashMap<>();
-        response.put("targetCloseDate", "Today");
-        response.put("leadCount", count);
-        return ResponseEntity.ok(response);
-    }
+//    // 오늘 추가된 Leads 수 반환
+//    @GetMapping("/api/leads/today")
+//    public ResponseEntity<Map<String, Object>> getTodayLeads() {
+//        long count = leadsService.getTodayLeadsForTeam();
+//        Map<String, Object> response = new HashMap<>();
+//        response.put("todayLeads", count);
+//        return ResponseEntity.ok(response);
+//    }
+//
+//    // 특정 상태의 Leads 수 반환
+//    @GetMapping("/api/leads/status")
+//    public ResponseEntity<Map<String, Object>> countLeadsByStatus(@RequestParam String leadStatus) {
+//        long count = leadsService.countLeadsByStatusAndTeam(leadStatus);
+//        Map<String, Object> response = new HashMap<>();
+//        response.put("leadStatus", leadStatus);
+//        response.put("leadCount", count);
+//        return ResponseEntity.ok(response);
+//    }
+//
+//    // 오늘 마감인 Leads 수 반환
+//    @GetMapping("/api/leads/target-close-today")
+//    public ResponseEntity<Map<String, Object>> countLeadsWithTargetCloseDateToday() {
+//        long count = leadsService.countLeadsWithTargetCloseDateTodayForTeam();
+//        Map<String, Object> response = new HashMap<>();
+//        response.put("targetCloseDate", "Today");
+//        response.put("leadCount", count);
+//        return ResponseEntity.ok(response);
+//    }
 
     // AI 음성인식
     @PostMapping("/leads/auto")
