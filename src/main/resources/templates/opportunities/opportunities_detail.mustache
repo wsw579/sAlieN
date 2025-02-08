@@ -223,6 +223,16 @@
                             {{#opportunityId}}
                             <form id="opportunityForm" action="/opportunities/detail/{{opportunityId}}/update"
                                   method="POST">
+                                <!-- AI 제안서 버튼을 별도 컨테이너에 배치하여 가운데 정렬 -->
+                                <div class="button-container d-flex justify-content-center mb-3">
+                                    <button type="button" id="proposalExcelButton" class="btn btn-custom-proposal btn-lg">
+                                        <i class= aria-hidden="true"></i> 💡AI 제안서 excel 파일 생성 💡
+                                    </button>
+
+                                    <button type="button" id="proposalButton" class="btn btn-custom-proposal btn-lg">
+                                        <i class= aria-hidden="true"></i> 💡AI 제안서 ppt 파일 생성 💡
+                                    </button>
+                                </div>
                             {{/opportunityId}}
                             {{^opportunityId}}
                             <form id="opportunityForm" action="/opportunities/detail/create" method="POST">
