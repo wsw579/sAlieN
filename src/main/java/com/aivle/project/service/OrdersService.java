@@ -127,36 +127,36 @@ public class OrdersService {
 
     // Bar 및 Chart Data
     public Map<String, List<Integer>> getBarData() {
-        return getYearlyData(true, false);
+        return getYearlyData(true);
     }
 
     public Map<String, List<Integer>> getChartData() {
-        return getYearlyData(false, false);
+        return getYearlyData(false);
     }
 
 //    public Map<String, List<Integer>> getChartRevenueData() {
 //        return getYearlyData(false, true);
 //    }
 
-    private Map<String, List<Integer>> getYearlyData(boolean accumulate, boolean revenue) {
+    private Map<String, List<Integer>> getYearlyData(boolean accumulate) {
         int currentYear = LocalDate.now().getYear();
-        Map<String, List<Integer>> yearlyData = new HashMap<>();
+        int lastYear = currentYear - 1;
 
-        for (int year = currentYear; year > currentYear - 10; year--) {
-            List<Integer> yearData = initializeMonthlyData();
+        List<Integer> lastYearData = initializeMonthlyData();
+        List<Integer> currentYearData = initializeMonthlyData();
 
-            if (revenue) {
-                revenueMonthlyData(year, yearData);
-            } else {
-                populateMonthlyData(year, yearData);
-            }
+        populateMonthlyData(lastYear, lastYearData);
+        populateMonthlyData(currentYear, currentYearData);
 
-            if (accumulate) {
-                accumulateMonthlyDataUntilCurrentMonth(yearData);
-            }
-
-            yearlyData.put(String.valueOf(year), yearData);
+        if (accumulate) {
+            accumulateMonthlyData(lastYearData);
+            accumulateMonthlyDataUntilCurrentMonth(currentYearData);
         }
+
+        Map<String, List<Integer>> yearlyData = new HashMap<>();
+        yearlyData.put("lastYearData", lastYearData);
+        yearlyData.put("currentYearData", currentYearData);
+
         return yearlyData;
     }
 
