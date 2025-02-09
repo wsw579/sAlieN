@@ -8,7 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            background-color: #141b2f;
+            background-color: #021545;
         }
         .login-container {
             max-width: 400px;
@@ -44,6 +44,10 @@
         .password-input {
             width: 100%; /* 입력 필드의 너비를 맞추기 */
         }
+        .btn-primary-custom{
+             background-color: rgba(184, 185, 186, 0.3) !important;
+              border: 1px solid #a0a1a2;
+        }
 
     </style>
 </head>
@@ -51,7 +55,7 @@
 
     <div class="container-fluid">
         <div class="logo">
-            <img src="/assets/img/sAIes_crm_logo.png" alt="SAIEAIS CRM" class="img-fluid" style="width: 350px; height: auto;">
+            <img src="/assets/img/sAlieN_logo.png" alt="SAIEAIS CRM" class="img-fluid" style="width: 350px; height: auto;">
         </div>
         <div class="login-container">
             <h3 class="text-center">로그인</h3>
@@ -65,7 +69,7 @@
                     <label for="password">암호</label>
                     <input type="password" class="form-control" id="password" name="password" placeholder="암호" required>
                 </div>
-                <button type="submit" class="btn btn-primary btn-block">로그인</button>
+                <button type="submit" class="btn btn-primary-custom btn-block">로그인</button>
                 <!-- 로그인 실패 시 메시지 표시 -->
                 {{#error}}
                     <div id="error-message" style="color: red; text-align: center;">
