@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -36,7 +37,12 @@ public class SignupController {
 
     @PostMapping("/api/signup/register")
     @ResponseBody
-    public ResponseEntity<?> register(@RequestBody @Valid EmployeeDto.Post employeeDto) {
+    public ResponseEntity<?> register(@RequestBody @Valid EmployeeDto.Singup employeeDto, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            // 유효성 검사 실패 시 첫 번째 에러 메시지 반환
+            String errorMessage = bindingResult.getFieldErrors().get(0).getDefaultMessage();
+            return ResponseEntity.badRequest().body(errorMessage);
+        }
         try {
             signupService.registerUser(employeeDto);
             return ResponseEntity.ok("회원가입이 완료되었습니다.");

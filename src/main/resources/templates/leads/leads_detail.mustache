@@ -101,32 +101,21 @@
 
                 <div class="card-body">
                     <table id="leads_detail">
-                        <!-- 파일 업로드 및 처리 -->
-                    <div class="button-container mb-3 d-flex align-items-center">
-                        <!-- 자동 생성 버튼을 왼쪽에 정렬 -->
-                        {{^leadId}}
-                            <input type="file" id="fileInput" accept=".webm, .mp3, .wav" style="display: none;">
-                            <button type="button" class="btn btn-custom-auto btn-sm" id="autoButton">
-                                <i class="bi bi-mic"></i> 🎙️ AI 자동 생성
-                            </button>
-                        {{/leadId}}
-
-                        <!-- 나머지 버튼들은 오른쪽으로 정렬 -->
-                        <div class="ms-auto d-flex">
-                            {{#leads}}
+                        {{#leads}}
+                            <div class="button-container mb-3 d-flex gap-2">
                                 <a href="/leads/detail/create" class="btn btn-custom-create btn-sm me-2" id="createButton">
                                     <i class="fas fa-plus-circle"></i> 신규
                                 </a>
-
+                            {{#leadId}}
                                 <button class="btn btn-custom-delete btn-sm me-2" id="deleteButton">
                                     <i class="fas fa-trash"></i> 삭제
                                 </button>
-
+                            {{/leadId}}
                                 <a href="/leads" class="btn btn-custom-select btn-sm" id="selectButton">
                                     <i class="fas fa-list"></i> 목록
                                 </a>
-                        </div>
-                    </div>
+                            </div>
+
 
 
 
@@ -136,6 +125,12 @@
                             {{/leadId}}
                             {{^leadId}}
                             <form id="leadForm" action="/leads/detail/create" method="POST">
+                                <div class="button-container d-flex justify-content-center mb-3">
+                                    <input type="file" id="fileInput" accept=".webm, .mp3, .wav" style="display: none;">
+                                    <button type="button" class="btn btn-custom-auto btn-lg" id="autoButton">
+                                        <i class="bi bi-mic"></i> 🎙️ AI 자동 생성
+                                    </button>
+                                </div>
                             {{/leadId}}
 
 
