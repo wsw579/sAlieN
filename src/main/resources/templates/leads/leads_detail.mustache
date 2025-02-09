@@ -556,7 +556,7 @@
 
 
 // AI 리드 자동생성
-    document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function () {
     const autoButton = document.getElementById('autoButton');
     const fileInput = document.getElementById('fileInput');
 
@@ -600,7 +600,7 @@
             .then((response) => {
                 clearTimeout(timeoutId); // 타임아웃 해제
                 if (!response.ok) {
-                    throw new Error(`HTTP 오류! 상태 코드: ${response.status}`);
+                    throw new Error(`서버 오류! 상태 코드: ${response.status} - ${response.statusText}`);
                 }
                 console.log('응답받은 데이터 타입:', typeof response);
                 return response.json(); // JSON 형식으로 응답 받기
@@ -657,8 +657,8 @@
 
             alert('리드 자동생성이 완료되었습니다.✨');
         } catch (error) {
-            console.error('JSON 파싱 오류:', error);
-            alert('데이터를 처리하는 중 오류가 발생했습니다. 다시 시도해 주세요.');
+            console.error('폼 데이터 처리 중 오류:', error);
+            alert(`데이터 처리 중 문제가 발생했습니다: ${error.message}`);
         }
     }
 });
