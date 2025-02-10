@@ -22,11 +22,11 @@ public class AccountDto {
     private String accountName;
 
     @NotBlank(message = "계정 유형 입력은  필수입니다.")
-    @Size(max = 50, message = "계정 유형은 50자 이하로 입력해야 합니다.")
+    @Pattern(regexp = "^(고객사|협력사|파트너사|계열사)$", message = "계정 유형는 '고객사', '협력사', '파트너사', '계열사' 중 하나여야 합니다.")
     private String accountType;
 
     @NotBlank(message = "웹사이트 입력은 필수입니다.")
-    @URL(message = "올바른 웹사이트 URL을 입력해주세요.")
+    @Pattern(regexp = "^(https?://)?(www\\.)?[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$", message = "올바른 URL 형식이 아닙니다.")
     @Size(max = 50, message = "웹사이트는 50자 이하로 입력해야 합니다.")
     private String website;
 
@@ -37,7 +37,7 @@ public class AccountDto {
     private String contact;
 
     @NotBlank(message = "사업 유형 입력은 필수입니다.")
-    @Pattern(regexp = "^(제조업|IT서비스|소프트웨어|반도체|전자부품|통신|보안)$", message = "계정 상태는 '제조업', 'IT서비스', '소프트웨어', '반도체', '전자부품', '통신', '보안' 중 하나여야 합니다.")
+    @Pattern(regexp = "^(제조업|IT서비스|소프트웨어|반도체|전자부품|통신|보안)$", message = "사업 유형는 '제조업', 'IT서비스', '소프트웨어', '반도체', '전자부품', '통신', '보안' 중 하나여야 합니다.")
     private String businessType;
 
     @NotBlank(message = "직원 입력은 필수입니다.")
@@ -59,7 +59,7 @@ public class AccountDto {
     private String accountManagerContact;
 
     @NotBlank(message = "계정 상태 입력은 필수입니다.")
-    @Pattern(regexp = "^(고객사|협력사|파트너사|계열사)$", message = "계정 상태는 '고객사', '협력사', '파트너사', '계열사' 중 하나여야 합니다.")
+    @Pattern(regexp = "^(Active|Closed)$", message = "계정 상태는 'Active', 'Closed' 중 하나여야 합니다.")
     private String accountStatus;
 
     @NotNull(message = "계정 생성일은 필수입니다.")
