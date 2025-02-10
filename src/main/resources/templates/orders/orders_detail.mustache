@@ -361,10 +361,16 @@
             if (!orderDate.value.trim()) {
                 alert("주문 일자는 필수입니다.");
                 isValid = false;
-            } else if (new Date(orderDate.value) > new Date()) {
-                alert("주문 일자는 과거 또는 현재여야 합니다.");
-                isValid = false;
+            } else {
+                const inputDate = new Date(orderDate.value).setHours(0, 0, 0, 0);
+                const today = new Date().setHours(0, 0, 0, 0);
+
+                if (inputDate > today) {
+                    alert("주문 일자는 과거 또는 오늘이어야 합니다.");
+                    isValid = false;
+                }
             }
+
 
             // 매출 일자 검증 (필수 입력)
             const salesDate = document.getElementById("salesDate");

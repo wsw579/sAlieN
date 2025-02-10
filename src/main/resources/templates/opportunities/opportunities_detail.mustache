@@ -894,17 +894,12 @@ document.addEventListener("DOMContentLoaded", function () {
         const createdDate = document.getElementById("createdDate");
         const targetCloseDate = document.getElementById("targetCloseDate");
 
-        if (!createdDate || !createdDate.value) {
+        if (!createdDate?.value.trim()) {
             alert("생성 일자는 필수입니다.");
             isValid = false;
-        } else {
-            const today = new Date().toISOString().split("T")[0]; // 오늘 날짜를 "YYYY-MM-DD" 형식으로 변환
-            const createdDateValue = createdDate.value; // "YYYY-MM-DD" 형식 그대로 사용
-
-            if (createdDateValue > today) {
-                alert("생성 일자는 오늘 날짜 또는 과거여야 합니다.");
-                isValid = false;
-            }
+        } else if (new Date(createdDate.value).setHours(0, 0, 0, 0) > new Date().setHours(0, 0, 0, 0)) {
+            alert("생성 일자는 오늘 날짜 또는 과거여야 합니다.");
+            isValid = false;
         }
 
         // 🔹 마감 기한 검증 (생성일자와 같거나 이후 날짜여야 함)
