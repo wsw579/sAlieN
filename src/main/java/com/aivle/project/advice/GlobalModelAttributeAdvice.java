@@ -14,15 +14,7 @@ import java.util.Iterator;
 
 @ControllerAdvice
 public class GlobalModelAttributeAdvice {
-//    @ModelAttribute
-//    public void addUserIdToModel(Model model) {
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        if (authentication != null && authentication.isAuthenticated() && !authentication.getName().equals("anonymousUser")) {
-//            model.addAttribute("id", authentication.getName()); // 인증된 사용자 ID 전달
-//        } else {
-//            model.addAttribute("id", null); // 비로그인 상태
-//        }
-//    }
+
     @ModelAttribute
     public void addUserIdAndAuthoritiesToModel(HttpSession session, Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
