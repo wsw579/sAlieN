@@ -6,7 +6,6 @@ import com.aivle.project.dto.LeadsDto;
 import com.aivle.project.dto.PaginationDto;
 import com.aivle.project.entity.*;
 import com.aivle.project.service.*;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
@@ -23,21 +22,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.IntStream;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.*;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.HashMap;
-import java.util.Map;
-
 
 @Controller
 //automatically generates a constructor for all final fields in the class
@@ -108,8 +96,6 @@ public class LeadsController {
 
         List<AccountDto> accounts = accountService.getAllAccountIdsAndNames();
         List<EmployeeDto.GetId> employee = employeeService.getAllEmployeeIdsAndNamesAndDepartmentIds();
-
-
 
         model.addAttribute("leads", leads);
         model.addAttribute("accounts", accounts);
@@ -340,8 +326,6 @@ public class LeadsController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
-
-
 
 }
 

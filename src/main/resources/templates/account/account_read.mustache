@@ -2,7 +2,6 @@
 
 <style>
 
-
 </style>
 
 
@@ -58,7 +57,7 @@
             </div>
             <div class="row">
 
-            <!-- 차트 -->
+                    <!-- 차트 -->
                     <div class="col-xl-6">
                         <div class="card mb-4">
                             <div class="card-header">
@@ -112,7 +111,6 @@
 
                         <thead>
                         <tr>
-
                             <th></th>
                             <th>ID</th>
                             <th>생성 일자</th>
@@ -120,7 +118,6 @@
                             <th>계정 상태</th>
                             <th>대표 전화</th>
                             <th>배송지</th>
-
                         </tr>
                         </thead>
                         <tbody>
@@ -136,12 +133,8 @@
                                 <td>{{address}}</td>
                             </tr>
                         {{/paging}}
-
                         </tbody>
-
                     </table>
-
-
 
                     <!-- 페이징처리 시작 -->
                     <nav aria-label="Page navigation">
@@ -173,9 +166,6 @@
                             </li>
                         </ul>
                     </nav>
-
-                    <!-- 페이징처리 끝 -->
-
                 </div>
             </div>
         </div>
@@ -216,8 +206,6 @@
            }, 550);
        });
    });
-
-
 
                document.addEventListener("DOMContentLoaded", function() {
                    var deleteButton = document.getElementById("deleteButton");
@@ -262,16 +250,12 @@
                        });
                    }
                });
-
-
     </script>
-
 
     <script src="/assets/demo/account-read-chart.js"></script>
     <script src="/assets/demo/account-read-bar.js"></script>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.in.js"></script>
-
 
 {{>main/footer}}

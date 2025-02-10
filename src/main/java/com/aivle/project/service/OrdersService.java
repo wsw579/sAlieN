@@ -134,10 +134,6 @@ public class OrdersService {
         return getYearlyData(false);
     }
 
-//    public Map<String, List<Integer>> getChartRevenueData() {
-//        return getYearlyData(false, true);
-//    }
-
     private Map<String, List<Integer>> getYearlyData(boolean accumulate) {
         int currentYear = LocalDate.now().getYear();
         int lastYear = currentYear - 1;
@@ -182,17 +178,6 @@ public class OrdersService {
             int count = ((Number) row[1]).intValue();
             monthlyData.set(month, count);
         });
-    }
-
-    private void revenueMonthlyData(int year, List<Integer> monthlyData) {
-        String userid = UserContext.getCurrentUserId();
-        String userteam = employeeRepository.findTeamById(userid);
-        ordersRepository.getMonthlyRevenue(year, Team.valueOf(userteam))
-                .forEach(row -> {
-                    int month = ((Number) row[0]).intValue() - 1;
-                    int revenue = ((Number) row[1]).intValue();
-                    monthlyData.set(month, revenue);
-                });
     }
 
     private void accumulateMonthlyData(List<Integer> monthlyData) {
@@ -260,8 +245,6 @@ public class OrdersService {
 
     // 영업 실적 그래프
     public List<Map<String, Object>> getDepartmentSalesPerformance(int year, int month) {
-        String userId = UserContext.getCurrentUserId();
-        String userDepartment = employeeRepository.findDepartmentById(userId);
         List<Object[]> data = ordersRepository.getAllDepartmentSales(year, month);
 
         return mapToSalesPerformanceList(data, "departmentId", "departmentName");

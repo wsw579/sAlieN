@@ -22,7 +22,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -85,13 +84,6 @@ public class OpportunitiesController {
         List<HistoryEntity> history = opportunitiesService.getHistoryByOpportunityId(opportunityId);
         List<OpportunitiesCommentEntity> opportunitiesComments = opportunitiesService.getCommentsByOpportunityId(opportunityId);
 
-        // 로딩속도를 올리기 위해 findAll -> id와 name만 가져오게 변경
-        // 목록 조회 후 모델에 추가 (드롭다운 메뉴용)
-        List<ProductsDto> products = productsService.getAllProductIdsAndNames();
-        List<AccountDto> accounts = accountService.getAllAccountIdsAndNames();
-        List<EmployeeDto.GetId> employee = employeeService.getAllEmployeeIdsAndNamesAndDepartmentIds();
-        List<LeadsDto> leads = leadsService.getAllLeadIdsAndCompanyNames();
-
         // 직원 목록 추가
         List<EmployeeDto.GetId> employees = employeeService.getAllEmployeeIdsAndNamesAndDepartmentIds();
         model.addAttribute("employees", employees);
@@ -101,7 +93,9 @@ public class OpportunitiesController {
         opportunitiesComments.forEach(comment -> System.out.println("Comment: " + comment.getContent() + ", Date: " + comment.getCommentCreatedDate()));
 
         model.addAttribute("opportunities", opportunities);
+
         // 히스토리 수정
+        // 로딩속도를 올리기 위해 findAll -> id와 name만 가져오게 변경
         model.addAttribute("history", history);
         model.addAttribute("opportunitiesComments", opportunitiesComments);
         model.addAttribute("products", productsService.getAllProductIdsAndNames());
@@ -202,7 +196,6 @@ public class OpportunitiesController {
     @GetMapping("/opportunities/detail/{opportunityId}/history/create")
     public String historyCreate(@PathVariable Long opportunityId, Model model) {
         HistoryEntity history = new HistoryEntity();
-        OpportunitiesEntity opportunity = opportunitiesService.searchOpportunities(opportunityId);
 
         history.setHistoryTitle("");
         history.setCustomerRepresentative("");
@@ -367,48 +360,6 @@ public class OpportunitiesController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // HTTP 500 응답 (삭제 실패)
         }
     }
-
-//    // 기회카드
-//    @GetMapping("/api/opportunities/card-value")
-//    public ResponseEntity<Map<String, Object>> countStatusCardValue() {
-//        Map<String, Long> statusCounts = opportunitiesService.getOpportunitiesStatusCountsUser();
-//        Map<String, Object> response = new HashMap<>();
-//        response.put("statusCounts", statusCounts);
-//        return ResponseEntity.ok(response);
-//    }
-//
-//    // 진행중 기회 목록 API 추가
-//    @GetMapping("/api/opportunities/ongoing")
-//    public String getOngoingOpportunities(@RequestParam(defaultValue = "0") int page, Model model) {
-//        Page<OpportunitiesEntity> ongoingOpportunities = opportunitiesService.getOngoingOpportunities(page);
-//        PaginationDto<OpportunitiesEntity> paginationDto = paginationService.createPaginationData(ongoingOpportunities, page, 5);
-//
-//        model.addAttribute("pagination", paginationDto);
-//        return "opportunities/ongoing-opportunities";  // 기존 Mustache 템플릿을 그대로 반환
-//    }
-//
-//
-//    @GetMapping("/api/salesData")
-//    public ResponseEntity<?> getSalesData(
-//            @RequestParam(required = false) String teamId,
-//            @RequestParam(required = false) String departmentId
-//    ) {
-//        if (teamId == null && departmentId == null) {
-//            return ResponseEntity.badRequest().body("팀 ID 또는 부서 ID가 필요합니다.");
-//        }
-//
-//        Map<String, Object> salesData;
-//        try {
-//            salesData = opportunitiesService.getSalesData(teamId, departmentId);
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-//        }
-//
-//        return ResponseEntity.ok(salesData);
-//    }
-
-
-
 
     private String getCurrentUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
