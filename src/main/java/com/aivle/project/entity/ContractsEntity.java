@@ -61,10 +61,6 @@ public class ContractsEntity implements Serializable {
     @Column(name = "mime_type", nullable = true)
     private String mimeType;
 
-//    @Column(nullable = true)
-//    private String uploadedFilePath;
-
-
     // 외래키 부분
 
     @ManyToOne
