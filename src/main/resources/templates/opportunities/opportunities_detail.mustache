@@ -223,7 +223,6 @@
                             {{#opportunityId}}
                             <form id="opportunityForm" action="/opportunities/detail/{{opportunityId}}/update"
                                   method="POST">
-                                <!-- AI 제안서 버튼을 별도 컨테이너에 배치하여 가운데 정렬 -->
                                 <div class="button-container d-flex justify-content-center mb-3">
                                     <button type="button" id="proposalExcelButton" class="btn btn-custom-proposal btn-lg">
                                         <i class= aria-hidden="true"></i> 💡AI 제안서 excel 파일 생성 💡
@@ -282,7 +281,6 @@
                                                 {{leadId}} (ID: {{leadId}})
                                             </option>
                                         {{/leads}}
-
                                     </select>
                                 </div>
                             </div>
@@ -294,6 +292,7 @@
                                            value="{{opportunityName}}" placeholder="예: 기존 네트워크 시스템 업데이트 건" required>
                                 </div>
                             </div>
+
                             <div class="mb-3 row">
                                 <label for="accountId" class="col-sm-2 col-form-label">계정 명:</label>
                                 <div class="col-sm-10">
@@ -305,13 +304,9 @@
                                                 {{accountName}} (ID: {{accountId}})
                                             </option>
                                         {{/accounts}}
-
                                     </select>
                                 </div>
                             </div>
-
-
-
 
                             <div class="mb-3 row">
                                 <label for="employeeId" class="col-sm-2 col-form-label">기회 담당자:</label>
@@ -328,8 +323,6 @@
                                     </select>
                                 </div>
                             </div>
-
-
 
                             <div class="mb-3 row">
                                 <label for="successRate" class="col-sm-2 col-form-label">성공률:</label>
@@ -356,6 +349,7 @@
                                            placeholder="예: 서울특별시 강남구 테헤란로 123" required>
                                 </div>
                             </div>
+
                             <div class="mb-3 row">
                                 <label for="customerEmployee" class="col-sm-2 col-form-label">고객사 담당자:</label>
                                 <div class="col-sm-10">
@@ -410,40 +404,16 @@
                                            value="{{ expectedRevenue }}" placeholder="₩0" required>
                                 </div>
                             </div>
-
-
                             <div class="button-container d-flex justify-content-end gap-2 mb-3">
-
-<!--                                &lt;!&ndash; 제안서 생성 버튼 &ndash;&gt;-->
-<!--                                <button type="button" id="proposalExcelButton" class="btn btn-custom-proposal btn-sm">-->
-
-<!--                                    <i class= aria-hidden="true"></i>  💡AI 제안서 excel 파일 생성 💡-->
-<!--                                </button>-->
-
-<!--                                &lt;!&ndash; 제안서 생성 버튼 &ndash;&gt;-->
-<!--                                <button type="button" id="proposalButton" class="btn btn-custom-proposal btn-sm">-->
-
-<!--                                    <i class= aria-hidden="true"></i>💡AI 제안서 ppt 파일 생성 💡-->
-<!--                                </button>-->
-
-
                                 <!-- 저장 버튼 -->
                                 <div class="d-flex justify-content-end">
                                     <button type="submit" id="updateButton" class="btn btn-custom-update btn-sm">
                                         <i class="fas fa-save"></i> 저장
                                     </button>
                                 </div>
-
-
                             </div>
-
                         </form>
-
                         {{/opportunities}}
-
-
-
-
                     </form>
                     </table>
                 </div>
@@ -470,7 +440,6 @@
                                     <div class="step" data-step="Closed">Closed</div>
                                 </div>
                             </div>
-
                             </tbody>
                         {{/opportunities}}
 
@@ -554,7 +523,6 @@
                                     <div class="comment">
                                         <div class="author">{{author}}</div>
                                         {{content}}
-
                                         <div class="timestamp">{{commentCreatedDate}}</div>
                                     </div>
                                 {{/opportunitiesComments}}
@@ -590,36 +558,34 @@
 
         // 기회 매출 원화 표시
         document.addEventListener("DOMContentLoaded", function () {
-    let input = document.getElementById("expectedRevenue");
-    if (input.value) {
-        input.value = formatCurrency(input.value); // 초기값을 원화 형식으로 변환
-    }
+            let input = document.getElementById("expectedRevenue");
+            if (input.value) {
+                input.value = formatCurrency(input.value); // 초기값을 원화 형식으로 변환
+                }
 
-    input.addEventListener("input", function () {
-        let numericValue = input.value.replace(/[^0-9]/g, ''); // 숫자만 남기기
-        if (numericValue) {
-            input.value = formatCurrency(numericValue);
-        }
-    });
+            input.addEventListener("input", function () {
+            let numericValue = input.value.replace(/[^0-9]/g, ''); // 숫자만 남기기
+             if (numericValue) {
+                input.value = formatCurrency(numericValue);
+                }
+                });
 
-    input.form.addEventListener("submit", function () {
-        let numericValue = input.value.replace(/[^0-9]/g, ''); // 숫자만 서버로 전송
-        input.value = numericValue;
-    });
-});
+            input.form.addEventListener("submit", function () {
+            let numericValue = input.value.replace(/[^0-9]/g, ''); // 숫자만 서버로 전송
+            input.value = numericValue;
+            });
+            });
 
-function formatCurrency(value) {
-    let number = parseFloat(value);
-    if (!isNaN(number)) {
-        return new Intl.NumberFormat('ko-KR', { style: 'currency', currency: 'KRW' }).format(number);
-    }
-    return value;
-}
+            function formatCurrency(value) {
+            let number = parseFloat(value);
+            if (!isNaN(number)) {
+            return new Intl.NumberFormat('ko-KR', { style: 'currency', currency: 'KRW' }).format(number);
+            }
+            return value;
+            }
 
-        // Form 부분 기회상태 초기값 연동 JS (select Form은 html로 초기 value 지정이 안되어서 JS로 처리)
-
+     // Form 부분 기회상태 초기값 연동 JS (select Form은 html로 초기 value 지정이 안되어서 JS로 처리)
         {{#opportunities}}
-
             {{#opportunityId}}
                 document.addEventListener("DOMContentLoaded", function() {
                     // Mustache 템플릿에서 서버 데이터를 가져옴
@@ -630,7 +596,6 @@ function formatCurrency(value) {
                 {{#departmentId}}
                     var departmentId = "{{departmentId}}";
                 {{/departmentId}}
-
                 {{#leadId.leadId}}
                     var leadId = "{{leadId.leadId}}";
                 {{/leadId.leadId}}
@@ -643,19 +608,13 @@ function formatCurrency(value) {
                 {{#departmentId}}
                     document.getElementById("departmentId").value = departmentId;
                 {{/departmentId}}
-
                 {{#leadId.leadId}}
                     document.getElementById("leadId").value = leadId;
                 {{/leadId.leadId}}
-
-
                 });
             {{/opportunityId}}
 
-
             // select 폼데이터 조회 기능 (main/header와 footer에 CSS 추가, 상단에 Selectize CSS, JS로 명시)
-
-
 
             document.addEventListener("DOMContentLoaded", function() {
                 // 계정 검색
@@ -683,9 +642,9 @@ function formatCurrency(value) {
                 });
             });
 
-            document.addEventListener("DOMContentLoaded", function () {
-    const displayInput = document.getElementById("displaySuccessRate"); // 사용자 UI용 input
-    const hiddenInput = document.getElementById("successRate"); // DB 저장용 input
+  document.addEventListener("DOMContentLoaded", function () {
+      const displayInput = document.getElementById("displaySuccessRate"); // 사용자 UI용 input
+      const hiddenInput = document.getElementById("successRate"); // DB 저장용 input
 
     // ✅ DB에서 불러온 값이 있으면 UI에 100을 곱해서 %로 변환
     function updateDisplayFromDB() {
@@ -726,11 +685,7 @@ function formatCurrency(value) {
 
     // ✅ 페이지 로드 시 기존 DB 값 반영 (UI에 % 추가)
     updateDisplayFromDB();
-});
-
-
-
-
+    });
 
             document.addEventListener("DOMContentLoaded", function() {
             {{#opportunityId}}
@@ -772,11 +727,7 @@ function formatCurrency(value) {
             });
 
 
-
-
             // Form 삭제버튼 클릭 시 현 주소가 create인경우 create로 action주소 변경.
-
-
             document.addEventListener("DOMContentLoaded", function() {
                 var form = document.getElementById("opportunityForm");
                 var currentUrl = window.location.pathname;
@@ -796,7 +747,6 @@ function formatCurrency(value) {
                     }
                 });
             });
-
 
             {{#opportunityId}}
             // 현재 진행상황 bar JS
@@ -850,9 +800,7 @@ function formatCurrency(value) {
             }
         }
     });
-            {{/opportunityId}}
-
-
+    {{/opportunityId}}
 
         // 페이지 로드 시 댓글 섹션 스크롤 최하단으로 이동
         window.onload = function() {
@@ -860,8 +808,8 @@ function formatCurrency(value) {
             commentSection.scrollTop = commentSection.scrollHeight;
         };
 
-// 유효성 검사
 
+// 유효성 검사
 document.addEventListener("DOMContentLoaded", function () {
     console.log("📌 JavaScript 실행됨 - 기회 유효성 검사 적용");
 
@@ -1021,7 +969,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 
-// AI 제안서
+// AI 제안서 : EXCEL
 document.getElementById('proposalExcelButton').addEventListener('click', function(event) {
 event.preventDefault();
     try {
@@ -1039,7 +987,6 @@ event.preventDefault();
 
             // 기회명
             const opportunityName = document.getElementById('opportunityName').value.trim();
-
 
               if (!employeeSelect.value) {
                      throw new Error('담당자를 선택해주세요.');
@@ -1122,7 +1069,7 @@ event.preventDefault();
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('제안서 생성 중 오류가 발생했습니다. 다시 시도해 주세요.⚠️');
+            alert('제안서 생성 중 오류가 발생했습니다. 다시 시도해 주세요.');
         });
     } catch (error) {
         console.error('Error:', error);
@@ -1131,7 +1078,7 @@ event.preventDefault();
     });
 
 
- // AI 제안서
+ // AI 제안서 : PPT
 document.getElementById('proposalButton').addEventListener('click', function(event) {
 event.preventDefault();
     try {
@@ -1233,17 +1180,14 @@ event.preventDefault();
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('제안서 생성 중 오류가 발생했습니다. 다시 시도해 주세요.⚠️');
+            alert('제안서 생성 중 오류가 발생했습니다. 다시 시도해 주세요.');
         });
     } catch (error) {
         console.error('Error:', error);
         alert(error.message || '입력 정보를 확인할 수 없습니다. ❗모든 필드가 올바르게 입력되었는지 확인해 주세요.❗');
     }
     });
-
         {{/opportunities}}
-
-
     </script>
 
 

@@ -2,7 +2,6 @@ package com.aivle.project.controller;
 
 import com.aivle.project.dto.EmployeeDto;
 import com.aivle.project.dto.PaginationDto;
-import com.aivle.project.entity.CrudLogsEntity;
 import com.aivle.project.entity.OpportunitiesEntity;
 import com.aivle.project.enums.Position;
 import com.aivle.project.enums.Role;
@@ -10,19 +9,15 @@ import com.aivle.project.service.*;
 import com.aivle.project.utils.UserContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.User;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
 import java.time.LocalDate;
 import java.util.*;
 

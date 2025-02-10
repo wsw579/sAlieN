@@ -2,128 +2,7 @@
 
 <style>
 
-
-
-
-
-
-<!--.progress-container {-->
-<!--    position: relative;-->
-<!--    width: 100%;-->
-<!--    height: 70px; /* 높이를 조금 늘립니다 */-->
-<!--    margin: 20px 0;-->
-<!--}-->
-
-<!--.progress-bar {-->
-<!--    position: absolute;-->
-<!--    top: 38%; /* 중앙 정렬 */-->
-<!--    left: 10%; /* Qualification 원의 중앙에서 시작하도록 조정합니다 */-->
-<!--    transform: translateY(-50%);-->
-<!--    width: 0;-->
-<!--    height: 10px;-->
-<!--    background-color: green;-->
-<!--    transition: width 0.4s ease;-->
-<!--}-->
-
-<!--.progress-steps {-->
-<!--    display: flex;-->
-<!--    justify-content: space-between;-->
-<!--    position: absolute;-->
-<!--    top: 50%; /* 중앙 정렬 */-->
-<!--    width: 100%;-->
-<!--    transform: translateY(-50%);-->
-<!--}-->
-
-<!--.step {-->
-<!--    width: 20%;-->
-<!--    text-align: center;-->
-<!--    position: relative;-->
-<!--    padding-top: 30px; /* 텍스트를 아래로 내리기 위해 패딩 추가 */-->
-<!--}-->
-
-
-<!--.step::before {-->
-<!--    content: '';-->
-<!--    position: absolute;-->
-<!--    top: 16%; /* 원의 위치를 조정합니다 */-->
-<!--    left: 50%;-->
-<!--    transform: translateX(-50%);-->
-<!--    width: 20px;-->
-<!--    height: 20px;-->
-<!--    border-radius: 50%;-->
-<!--    background-color: white;-->
-<!--    border: 2px solid green;-->
-<!--    transition: background-color 0.4s ease, border-color 0.4s ease;-->
-<!--}-->
-
-<!--.step.active::before {-->
-<!--    background-color: green;-->
-<!--    border-color: green;-->
-<!--}-->
-
-
-
-<!--        .comment-section {-->
-<!--            max-height: 300px;-->
-<!--            overflow-y: auto;-->
-<!--            border: 1px solid #ccc;-->
-<!--            padding: 10px;-->
-<!--            width: 100%;-->
-<!--        }-->
-<!--        .comment {-->
-<!--            margin-bottom: 10px;-->
-<!--            padding: 10px;-->
-<!--            border-radius: 10px;-->
-<!--            background-color: #f1f1f1;-->
-<!--            position: relative;-->
-<!--            width: calc(100% - 20px);-->
-<!--        }-->
-<!--        .comment .author {-->
-<!--            font-weight: bold;-->
-<!--            margin-bottom: 5px;-->
-<!--        }-->
-<!--        .comment .timestamp {-->
-<!--            font-size: 0.8em;-->
-<!--            color: #888;-->
-<!--            position: absolute;-->
-<!--            bottom: 5px;-->
-<!--            right: 10px;-->
-<!--        }-->
-<!--        .comment-form {-->
-<!--            display: flex;-->
-<!--            width: 100%;-->
-<!--            align-items: center;-->
-<!--            margin-top: 10px;-->
-<!--            background-color: #f9f9f9;-->
-<!--            padding: 10px;-->
-<!--            border: 1px solid #ccc;-->
-<!--            border-radius: 10px;-->
-<!--            box-shadow: 0 4px 8px rgba(0,0,0,0.1);-->
-<!--        }-->
-<!--        .comment-form input[type="text"] {-->
-<!--            flex: 1;-->
-<!--            padding: 10px;-->
-<!--            border: 1px solid #ddd;-->
-<!--            border-radius: 5px;-->
-<!--            margin-right: 10px;-->
-<!--            font-size: 16px;-->
-<!--        }-->
-<!--        .comment-form button {-->
-<!--            padding: 10px 10px;-->
-<!--            background-color: #007bff;-->
-<!--            color: white;-->
-<!--            border: none;-->
-<!--            border-radius: 5px;-->
-<!--            cursor: pointer;-->
-<!--            transition: background-color 0.3s ease;-->
-<!--        }-->
-<!--        .comment-form button:hover {-->
-<!--            background-color: #0056b3;-->
-<!--        }-->
-
-
 </style>
-
 
 <div id="layoutSidenav_content">
     <main>
@@ -136,10 +15,7 @@
                 <li class="breadcrumb-item active">Accounts</li>
             </ol>
 
-
-
             <!-- 계정 상세내용 부분 -->
-
             <div class="card mb-4">
                 <div class="card-header">
                     <i class="fas fa-table me-1"></i>
@@ -158,11 +34,9 @@
                                         <i class="fas fa-trash-alt"></i> 삭제
                                     </button>
                                 {{/accountId}}
-
                                 <a href="/account" class="btn btn-custom-select btn-sm" id="selectButton">
                                     <i class="fas fa-list"></i> 목록
                                 </a>
-
                             </div>
 
                             {{#accountId}}
@@ -171,7 +45,6 @@
                             {{^accountId}}
                             <form id="accountForm" action="/account/detail/create" method="POST">
                             {{/accountId}}
-
 
                             <div class="mb-3 row">
                                 <label for="accountCreatedDate" class="col-sm-2 col-form-label">생성 일자:</label>
@@ -216,7 +89,6 @@
                                 </div>
                             </div>
 
-
                             <div class="mb-3 row">
                                 <label for="accountType" class="col-sm-2 col-form-label">유형:</label>
                                 <div class="col-sm-10">
@@ -229,8 +101,6 @@
                                     </select>
                                 </div>
                             </div>
-
-
 
                             <div class="mb-3 row">
                                 <label for="parentAccountId" class="col-sm-2 col-form-label">상위 계정:</label>
@@ -245,8 +115,6 @@
                                 </select>
                     </div>
                     </div>
-
-
 
                             <div class="mb-3 row">
                                 <label for="website" class="col-sm-2 col-form-label">웹사이트:</label>
@@ -320,19 +188,14 @@
                                 </button>
                             </div>
 
-                
                             </form>
-
                         {{/account}}
                     </form>
                     </table>
                 </div>
             </div>
         </div>
-
-
     </main>
-
 
     <script>
         // CRUD 메시지
@@ -416,7 +279,6 @@
             {{/accountId}}
             });
 
-
                            //Form 삭제버튼 클릭 시 현 주소가 create 인경우 create 로 action 주소 변경.
 
                            document.addEventListener("DOMContentLoaded", function() {
@@ -439,12 +301,7 @@
                                });
                            });
 
-
-
 {{/account}}
-
     </script>
-
-
 
 {{>main/footer}}

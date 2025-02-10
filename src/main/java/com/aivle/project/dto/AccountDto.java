@@ -68,12 +68,7 @@ public class AccountDto {
 
     // Self-join
     private AccountEntity parentAccountId; // 상위 계정 이름
-    //private AccountDto parentAccountDto; // 새로운 상위 계정 생성을 위한 정보
-
-    // 필요한 경우 하위 계정을 포함
-    // private List<AccountDto> childAccounts;
 
     // 외래키 부분
     private EmployeeEntity employeeId;
-
 }

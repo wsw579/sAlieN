@@ -391,11 +391,6 @@
         background-color: rgba(20, 31, 47,0.2);   !important;
         }
 
-<!--        .bg-custom {-->
-<!--        background-color: #141F2F !important;-->
-<!--        }-->
-
-
         .sb-sidenav .nav-link,
         .sb-sidenav .sb-sidenav-menu-heading {
         color: #FFFFFF !important;
@@ -483,7 +478,7 @@
             <div id="chatbotMessages" class="chat-container"></div>
             <div class="input-container">
                 <input type="text" id="chatbotInput" placeholder="메시지를 입력하세요..." onkeydown="if (event.key === 'Enter') sendChatbotMessage();">
-                <button id="voiceInputButton", class= "btn btn-custom-select btn-sm"><i class="fas fa-microphone"></i></button>
+                <button id="voiceInputButton" class= "btn btn-custom-select btn-sm"><i class="fas fa-microphone"></i></button>
                 <button id="sendChatbotMessage">Send</button>
             </div>
         </div>
@@ -817,7 +812,7 @@
                                 })
                                 .catch(error => {
                                     console.error('Error:', error);
-                                    alert('제안서 생성 중 오류가 발생했습니다. 다시 시도해 주세요.⚠️');
+                                    alert('제안서 생성 중 오류가 발생했습니다. 다시 시도해 주세요.');
                                 });
                     }
 
