@@ -189,6 +189,7 @@ public class AccountController {
         try {
             if (bindingResult.hasErrors()) {
                 // 유효성 검사 실패 시 에러 메시지 출력
+                bindingResult.getAllErrors().forEach(error -> System.out.println(error.getDefaultMessage()));
                 return "account/account_detail"; // 에러가 있으면 폼으로 다시 이동
             }
             // 계정 생성
