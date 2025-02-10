@@ -59,7 +59,7 @@ public class AccountDto {
     private String accountManagerContact;
 
     @NotBlank(message = "계정 상태 입력은 필수입니다.")
-    @Pattern(regexp = "^(고객사|협력사|파트너사|계열사)$", message = "계정 상태는 '고객사', '협력사', '파트너사', '계열사' 중 하나여야 합니다.")
+    @Pattern(regexp = "^(Active|Closed)$", message = "계정 상태는 'Active', 'Closed' 중 하나여야 합니다.")
     private String accountStatus;
 
     @NotNull(message = "계정 생성일은 필수입니다.")
