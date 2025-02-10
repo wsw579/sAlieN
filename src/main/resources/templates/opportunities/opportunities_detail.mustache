@@ -1218,11 +1218,11 @@ event.preventDefault();
             return response.blob();
         })
         .then(blob => {
-            // excel 파일을 사용자 PC에 다운로드
+            // ppt 파일을 사용자 PC에 다운로드
             const url = window.URL.createObjectURL(new Blob([blob]));
             const link = document.createElement('a');
             link.href = url;
-            link.setAttribute('download', `${departmentName}_${employeeName}_${productName}_proposal.xlsx`);
+            link.setAttribute('download', `${departmentName}_${employeeName}_${productName}_proposal.pptx`);
             document.body.appendChild(link);
             link.click();
             window.URL.revokeObjectURL(url);
