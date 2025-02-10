@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
-
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
@@ -25,10 +24,9 @@ public class AccountEntity implements Serializable {
     @Column(name = "account_id" , nullable = false)
     private Long accountId;
 
-
     // 상위계정 셀프조인
     @ManyToOne
-    @JoinColumn(name = "parent_account_id",  nullable = true , foreignKey = @ForeignKey(name = "fk_accounts_parent_account_id"))
+    @JoinColumn(name = "parent_account_id" , foreignKey = @ForeignKey(name = "fk_accounts_parent_account_id"))
     private AccountEntity parentAccount;
 
     // 하위계정 리스트
@@ -72,9 +70,8 @@ public class AccountEntity implements Serializable {
 
     //외래키  -  인사테이블
     @ManyToOne
-    @JoinColumn(name = "employee_id", nullable = true, foreignKey = @ForeignKey(name="fk_accounts_employee_id"))
+    @JoinColumn(name = "employee_id",  foreignKey = @ForeignKey(name="fk_accounts_employee_id"))
     private EmployeeEntity employeeId;
-
 
     // 외부 외래키
     @OneToMany(mappedBy = "accountId", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})

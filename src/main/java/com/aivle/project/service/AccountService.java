@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
@@ -55,7 +54,6 @@ public class AccountService {
 
         logger.info("계정 생성 완료: " + accountEntity.getAccountType() + accountEntity.getBusinessType() + accountEntity.getAccountId());
     }
-
 
 
     // Update
@@ -185,7 +183,6 @@ public class AccountService {
         }
     }
 
-
     private void accumulateMonthlyData(List<Integer> monthlyData) {
         for (int i = 1; i < monthlyData.size(); i++) {
             monthlyData.set(i, monthlyData.get(i) + monthlyData.get(i - 1));
@@ -219,20 +216,6 @@ public class AccountService {
     public Optional<AccountEntity> findAccountByName(String companyName) {
         return accountRepository.findByAccountName(companyName);
     }
-
-//       // 페이지네이션 조회
-//    public Page<AccountEntity> readAccount(Pageable pageable) {
-//        List<Sort.Order> sorts = new ArrayList<>();  // Sort.Order 페이지네이션 + 정렬 동시에 해주는 객체
-//        sorts.add(Sort.Order.desc("accountCreatedDate")); // 생성날짜 내림차순 정렬 , 최근생성한 계정이 1페이지 최상단에 보여진다.
-//        pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(sorts));    // 조회할 페이지번호 , 단일페이지 크기 , 소프트객체
-//        return this.accountRepository.findAll(pageable);
-//    }
-
-//    // 목록  Search
-//    public Page<AccountEntity> searchAccounts(String keyword, Pageable pageable) {
-//        // 키워드가 포함된 계정을 검색하는 메서드
-//        return accountRepository.findByAccountNameContainingIgnoreCase(keyword, pageable);
-//    }
 
 }
 
