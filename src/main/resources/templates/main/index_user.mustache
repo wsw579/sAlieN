@@ -72,7 +72,7 @@
                         <div class="card-body">
                             <div class="row g-3 mb-3">
                                 <div class="col-12 col-md-6">
-                                    <div class="card bg-primary text-white h-100" data-bs-toggle="modal" data-bs-target="#progressModal">
+                                    <div class="card card bg-card text-black h-100" data-bs-toggle="modal" data-bs-target="#progressModal">
                                         <div class="card-body">진행중</div>
                                         <div class="card-footer d-flex align-items-center justify-content-between">
                                             <h3 id="ongoingCountTeam">0 건</h3>
@@ -85,7 +85,7 @@
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-6">
-                                    <div class="card bg-success text-white h-100">
+                                    <div class="card bg-card text-black h-100">
                                         <div class="card-body">계약전환 성공</div>
                                         <div class="card-footer d-flex align-items-center justify-content-between">
                                             <h3 id="closedCountTeam">0 건</h3>
@@ -122,16 +122,15 @@
             </div>
 
             <!-- 두 번째 행 -->
-            <div class="row mb-4 align-items-stretch">
+            <div class="row mb-4 d-flex flex-wrap align-items-stretch">
                 <!-- 2행 1열 (이달의 Order Close 현황) -->
-                <div class="col-xl-4 col-md-6 d-flex">
+                <div class="col-md-6 col-xl-4 d-flex">
                     <div class="card h-100 w-100">
                         <div class="card-header text-center" id="draftChartHeader">
                             <i class="fas fa-chart-bar me-1"></i>
                             Order Close<br>현황
                         </div>
-                        <!-- 그래프를 세로 및 가로로 중앙 정렬 -->
-                        <div class="d-flex align-items-center justify-content-center" style="height: 100%;" id = draftChartBody>
+                        <div class="d-flex align-items-center justify-content-center" style="height: 100%;" id="draftChartBody">
                             <div style="width: 300px; height: 300px; display: flex; justify-content: center; align-items: center;">
                                 <canvas id="draftChart" width="300" height="300"></canvas>
                             </div>
@@ -140,7 +139,7 @@
                 </div>
 
                 <!-- 2행 2열 (상위 5명 영업 실적) -->
-                <div class="col-xl-8 col-md-12">
+                <div class="col-md-6 col-xl-8 d-flex">
                     <div class="card h-100 w-100">
                         <div class="card-header" id="salesPerformanceHeader">
                             <i class="fas fa-chart-bar me-1"></i>
@@ -155,10 +154,10 @@
                                 </div>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
+
 
             <!-- 세 번째 행 -->
             <div class="row mb-4 align-items-stretch">

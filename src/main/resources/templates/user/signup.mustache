@@ -6,6 +6,7 @@
     <title>Sign Up</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <link href="/css/main_style.css" rel="stylesheet" />
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
     <style>
@@ -60,51 +61,107 @@
             <li class="breadcrumb-item active">sign up</li>
         </ol>
         <form id="signupForm" action="/signup" method="POST">
-            <!-- 개인정보 동의 섹션 -->
+            <!-- 개인정보 동의 -->
             <div class="card mb-4">
                 <div class="card-header mb-3">
-                <i class="fas fa-lock me-1"></i>
-                개인정보 동의
-            </div>
+                    <i class="fas fa-lock me-1"></i> 개인정보 처리방침
+                </div>
                 <div class="mb-3 row px-3 ms-4">
                     <label for="privacyConsent" class="col-sm-8 col-form-label">개인정보 수집 및 이용에 대한 동의(필수)</label>
                     <div class="col-sm-2">
                         <input type="checkbox" class="form-check-input" id="privacyConsent" name="privacyConsent" required>
                     </div>
                 </div>
-                <div class="scrollable-box mb-3 mx-4">
-                    <p><strong>1. 개인정보 수집 목적</strong></p>
+                <div class="card mb-3 mx-4 p-3">
+                    <p><strong>개인정보 수집 목적</strong></p>
                     <ul>
-                        <li>본 서비스는 AI 기능 제공을 위해 사용자 음성 데이터를 수집 및 분석하며, 이를 바탕으로 맞춤형 AI 서비스를 제공합니다.</li>
+                        <li>본 서비스는 AI 및 CRM 기능 제공을 위해 사용자 데이터를 수집 및 분석하며, 맞춤형 서비스를 제공합니다.</li>
                     </ul>
-
-                    <p><strong>2. 수집하는 개인정보 항목</strong></p>
+                    <p><strong>개인정보 보유 및 이용기간</strong></p>
                     <ul>
-                        <li><strong>기존 항목:</strong> 이름, 부서, 직급, 아이디, 비밀번호</li>
-                        <li><strong>추가 항목:</strong> 음성 데이터, 음성 명령 기록</li>
+                        <li>회원 탈퇴 시까지 또는 이용 목적 달성 후 즉시 파기됩니다.</li>
                     </ul>
-
-                    <p><strong>3. 개인정보 보유 및 이용기간</strong></p>
-                    <ul>
-                        <li>회원 탈퇴 시까지 또는 이용 목적 달성 후 지체 없이 파기됩니다.</li>
-                    </ul>
-
-                    <p><strong>4. 개인정보 이용 범위</strong></p>
-                    <ul>
-                        <li>AI 서비스 운영 및 개선을 위한 데이터 분석</li>
-                        <li>음성 인식 및 맞춤형 서비스 제공</li>
-                    </ul>
-
-                    <p><strong>5. AI가 생성한 데이터에 대한 소유권</strong></p>
-                    <ul>
-                        <li>AI를 통해 생성된 모든 데이터(제안서, 분석 보고서 등)의 소유권은 회사에 있으며, 사용자는 해당 데이터를 회사의 정책에 따라 이용할 수 있습니다.</li>
-                    </ul>
-
-                    <p><strong>6. 개인정보의 활용 동의</strong></p>
-                    <ul>
-                        <li>사용자는 AI 서비스 이용을 위해 음성 데이터를 수집, 저장 및 분석하는 것에 동의하며, AI가 생성한 데이터의 소유권이 회사에 귀속됨을 확인합니다.</li>
-                    </ul>
+                    <div class="text-center">
+                        <button type="button" class="btn btn-primary btn-sm rounded-pill shadow-sm px-3 w-auto text-nowrap" data-bs-toggle="modal" data-bs-target="#privacyPolicyModal">
+                            자세히 보기
+                        </button>
+                    </div>
                 </div>
+            </div>
+
+            <!-- 이용 약관 -->
+            <div class="card mb-4">
+                <div class="card-header mb-3">
+                    <i class="fas fa-file-contract me-1"></i> 이용약관
+                </div>
+                <div class="mb-3 row px-3 ms-4">
+                    <label for="termsConsent" class="col-sm-8 col-form-label">이용약관에 대한 동의(필수)</label>
+                    <div class="col-sm-2">
+                        <input type="checkbox" class="form-check-input" id="termsConsent" name="termsConsent" required>
+                    </div>
+                </div>
+                <div class="card mb-3 mx-4 p-3">
+                    <p><strong>서비스 제공 및 변경</strong></p>
+                    <ul>
+                        <li>sAlieN은 CRM 서비스를 제공하며, 필요 시 변경할 수 있습니다.</li>
+                    </ul>
+                    <p><strong>회원가입 및 계정 관리</strong></p>
+                    <ul>
+                        <li>회원은 자신의 계정을 보호해야 하며, 타인과 공유할 수 없습니다.</li>
+                    </ul>
+                    <div class="text-center">
+                        <button type="button" class="btn btn-primary btn-sm rounded-pill shadow-sm px-3 w-auto text-nowrap" data-bs-toggle="modal" data-bs-target="#termsModal">
+                            자세히 보기
+                        </button>
+                    </div>
+                </div>
+            </div>
+<!--            &lt;!&ndash; 개인정보 동의 섹션 &ndash;&gt;-->
+<!--            <div class="card mb-4">-->
+<!--                <div class="card-header mb-3">-->
+<!--                <i class="fas fa-lock me-1"></i>-->
+<!--                개인정보 동의-->
+<!--            </div>-->
+<!--                <div class="mb-3 row px-3 ms-4">-->
+<!--                    <label for="privacyConsent" class="col-sm-8 col-form-label">개인정보 수집 및 이용에 대한 동의(필수)</label>-->
+<!--                    <div class="col-sm-2">-->
+<!--                        <input type="checkbox" class="form-check-input" id="privacyConsent" name="privacyConsent" required>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                <div class="scrollable-box mb-3 mx-4">-->
+<!--                    <p><strong>1. 개인정보 수집 목적</strong></p>-->
+<!--                    <ul>-->
+<!--                        <li>본 서비스는 AI 기능 제공을 위해 사용자 음성 데이터를 수집 및 분석하며, 이를 바탕으로 맞춤형 AI 서비스를 제공합니다.</li>-->
+<!--                    </ul>-->
+
+<!--                    <p><strong>2. 수집하는 개인정보 항목</strong></p>-->
+<!--                    <ul>-->
+<!--                        <li><strong>기존 항목:</strong> 이름, 부서, 직급, 아이디, 비밀번호</li>-->
+<!--                        <li><strong>추가 항목:</strong> 음성 데이터, 음성 명령 기록</li>-->
+<!--                        <li><strong>추가 항목:</strong> 음성 데이터, 음성 명령 기록</li>-->
+<!--                    </ul>-->
+
+<!--                    <p><strong>3. 개인정보 보유 및 이용기간</strong></p>-->
+<!--                    <ul>-->
+<!--                        <li>회원 탈퇴 시까지 또는 이용 목적 달성 후 지체 없이 파기됩니다.</li>-->
+<!--                    </ul>-->
+
+<!--                    <p><strong>4. 개인정보 이용 범위</strong></p>-->
+<!--                    <ul>-->
+<!--                        <li>AI 서비스 운영 및 개선을 위한 데이터 분석</li>-->
+<!--                        <li>음성 인식 및 맞춤형 서비스 제공</li>-->
+<!--                    </ul>-->
+
+<!--                    <p><strong>5. AI가 생성한 데이터에 대한 소유권</strong></p>-->
+<!--                    <ul>-->
+<!--                        <li>AI를 통해 생성된 모든 데이터(제안서, 분석 보고서 등)의 소유권은 회사에 있으며, 사용자는 해당 데이터를 회사의 정책에 따라 이용할 수 있습니다.</li>-->
+<!--                    </ul>-->
+
+<!--                    <p><strong>6. 개인정보의 활용 동의</strong></p>-->
+<!--                    <ul>-->
+<!--                        <li>사용자는 AI 서비스 이용을 위해 음성 데이터를 수집, 저장 및 분석하는 것에 동의하며, AI가 생성한 데이터의 소유권이 회사에 귀속됨을 확인합니다.</li>-->
+<!--                    </ul>-->
+<!--                </div>-->
 
 
 <!--                <hr/>-->
@@ -121,7 +178,7 @@
 <!--                    <p>4. 개인정보는 서비스 운영 이외의 목적으로 사용되지 않습니다.</p>-->
 <!--                    <p>...</p>-->
 <!--                </div>-->
-            </div>
+
 
             <!-- 기본정보 섹션 -->
             <div class="card mb-4">
@@ -236,9 +293,130 @@
     </div>
 </div>
 
+<!-- 개인정보 처리방침 모달 -->
+<div class="modal fade" id="privacyPolicyModal" tabindex="-1" aria-labelledby="privacyPolicyModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="privacyPolicyModalLabel">개인정보 처리방침</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>1. 개인정보 수집 목적</strong></p>
+                <ul>
+                    <li>본 서비스는 AI 기능 제공 및 CRM 기능 운영을 위해 사용자 데이터를 수집 및 분석하며, 이를 바탕으로 맞춤형 AI 및 CRM 서비스를 제공합니다.</li>
+                </ul>
+
+                <p><strong>2. 수집하는 개인정보 항목</strong></p>
+                <ul>
+                    <li><strong>기존 항목:</strong> 이름, 부서, 직급, 아이디, 비밀번호</li>
+                    <li><strong>추가 항목:</strong> 음성 데이터, 음성 명령 기록</li>
+                    <li><strong>CRM 서비스 운영 데이터:</strong> 영업 리드, 기회, 계약, 주문, 기회 관련 활동(예: 미팅 기록), 담당자로 배정된 업무 데이터</li>
+                    <li><strong>챗봇 요청 로그:</strong> 사용자가 챗봇에게 요청한 내용의 요약 정보 (단, 계정 정보와 함께 저장될 경우 개인정보로 간주될 수 있음)</li>
+                </ul>
+
+                <p><strong>3. 개인정보 보유 및 이용기간</strong></p>
+                <ul>
+                    <li>회원 탈퇴 시까지 또는 이용 목적 달성 후 지체 없이 파기됩니다.</li>
+                </ul>
+
+                <p><strong>4. 개인정보의 제3자 제공</strong></p>
+                <ul>
+                    <li>원칙적으로 사용자의 개인정보를 제3자에게 제공하지 않습니다. 단, 법령에 따른 요구가 있을 경우 제공될 수 있습니다.</li>
+                </ul>
+
+                <p><strong>5. 정보주체의 권리 및 행사 방법</strong></p>
+                <ul>
+                    <li>사용자는 자신의 개인정보에 대한 열람, 정정, 삭제 요청을 할 수 있습니다.</li>
+                    <li>서비스 내 제공되는 설정을 통해 개인정보 처리에 대한 동의 철회가 가능합니다.</li>
+                </ul>
+
+                <p><strong>6. 보안 조치</strong></p>
+                <ul>
+                    <li>회사는 개인정보 보호를 위해 기술적·관리적 보호 조치를 시행하고 있습니다.</li>
+                </ul>
+
+                <p><strong>7. AI가 생성한 데이터에 대한 소유권</strong></p>
+                <ul>
+                    <li>AI를 통해 생성된 모든 데이터(제안서, 분석 보고서 등)의 소유권은 sAlieN에 있으며, 사용자는 해당 데이터를 회사의 정책에 따라 이용할 수 있습니다.</li>
+                </ul>
+
+                <p><strong>8. 개인정보의 활용 동의</strong></p>
+                <ul>
+                    <li>사용자는 AI 및 CRM 서비스 이용을 위해 음성 데이터를 포함한 개인정보를 수집, 저장 및 분석하는 것에 동의하며, AI가 생성한 데이터의 소유권이 sAlieN에 귀속됨을 확인합니다.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 이용약관 모달 -->
+<div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="termsModalLabel">이용약관</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>1. 목적</strong></p>
+                <ul>
+                    <li>본 약관은 sAlieN이 제공하는 Sales CRM 서비스(이하 "서비스")의 이용과 관련하여 sAlieN과 회원 간의 권리, 의무 및 책임 사항을 규정함을 목적으로 합니다.</li>
+                </ul>
+
+                <p><strong>2. 용어 정의</strong></p>
+                <ul>
+                    <li><strong>"회원"</strong>이라 함은 본 약관에 동의하고 서비스에 가입하여 이용하는 자를 의미합니다.</li>
+                    <li><strong>"서비스"</strong>라 함은 sAlieN이 제공하는 고객 관계 관리(Sales CRM) 시스템을 의미합니다.</li>
+                </ul>
+
+                <p><strong>3. 회원가입 및 계정 관리</strong></p>
+                <ul>
+                    <li>회원은 sAlieN이 정한 절차에 따라 계정을 생성할 수 있으며, 계정 정보는 정확하게 기재해야 합니다.</li>
+                    <li>회원은 자신의 계정 정보를 보호해야 하며, 제3자에게 계정을 양도하거나 공유할 수 없습니다.</li>
+                </ul>
+
+                <p><strong>4. 서비스 제공 및 변경</strong></p>
+                <ul>
+                    <li>sAlieN은 회원에게 CRM 기능을 제공하며, 회원은 sAlieN의 정책과 약관에 따라 서비스를 이용해야 합니다.</li>
+                    <li>서비스의 일부 또는 전체가 변경될 수 있으며, 주요 변경 사항은 사전 공지를 통해 안내됩니다.</li>
+                </ul>
+
+                <p><strong>5. 이용 제한</strong></p>
+                <ul>
+                    <li>sAlieN은 특정 상황에서 회원의 서비스 이용을 제한할 수 있습니다.</li>
+                    <li>불법적이거나 타인의 권리를 침해하는 행위를 한 경우 서비스 이용이 제한될 수 있습니다.</li>
+                </ul>
+
+                <p><strong>6. 서비스 이용료</strong></p>
+                <ul>
+                    <li>서비스의 일부는 유료로 제공될 수 있으며, 이에 대한 비용 정보는 별도로 안내됩니다.</li>
+                </ul>
+
+                <p><strong>7. 책임의 한계</strong></p>
+                <ul>
+                    <li>sAlieN은 회원이 서비스 이용 중 발생한 손해에 대해 sAlieN의 고의 또는 중대한 과실이 없는 한 책임을 지지 않습니다.</li>
+                    <li>회원이 서비스 이용 시 발생하는 데이터 손실, 계정 도용 등의 문제에 대해 sAlieN은 책임을 지지 않습니다.</li>
+                </ul>
+
+                <p><strong>8. 약관의 개정</strong></p>
+                <ul>
+                    <li>sAlieN은 필요 시 본 약관을 개정할 수 있으며, 변경 사항은 사전 공지를 통해 회원에게 고지됩니다.</li>
+                </ul>
+
+                <p><strong>9. 준거법 및 관할</strong></p>
+                <ul>
+                    <li>본 약관과 관련된 사항은 대한민국 법률을 준거법으로 하며, 관련 분쟁은 sAlieN의 본사 소재지 관할 법원에서 해결합니다.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     // 입사일 변경 시 서버로 아이디 요청
     document.getElementById("joinDate").addEventListener("input", function () {
+        console.log("입사일 입력 감지됨"); //
         const hireDate = document.getElementById("joinDate").value;
         if (!hireDate) {
             return; // 입사일이 비어 있으면 요청하지 않음
@@ -272,61 +450,115 @@
         const privacyConsent = document.getElementById("privacyConsent");
         if (!privacyConsent.checked) {
             e.preventDefault();
-            alert("개인정보 동의 체크를 선택하시오.");
+            alert("개인정보 처리방침 동의 체크를 선택하시오.");
+            privacyConsent.focus(); // 체크박스로 포커스 이동
+        }
+    });
+
+    document.getElementById("signupForm").addEventListener("submit", function (e) {
+        const termsConsent = document.getElementById("termsConsent");
+        if (!termsConsent.checked) {
+            e.preventDefault();
+            alert("이용 약관 동의 체크를 선택하시오.");
+            termsConsent.focus(); // 체크박스로 포커스 이동
+        }
+    });
+
 
     document.addEventListener("DOMContentLoaded", function () {
         // 이벤트 리스너 추가
         document.getElementById("password").addEventListener("input", validatePassword);
-        document.getElementById("confirmPassword").addEventListener("input", validatePassword);
+        document.getElementById("confirmPassword").addEventListener("input", passConfirm);
         document.getElementById("signupForm").addEventListener("submit", handleFormSubmit);
     });
 
-    // 비밀번호 유효성 검사
-    function validatePassword() {
-        var password = document.getElementById("password").value;
-        var confirmPassword = document.getElementById("confirmPassword").value;
-        var confirmMsg = document.getElementById("confirmMsg");
+    async function handleFormSubmit(event) {
+        event.preventDefault(); // 기본 제출 방지
 
-        // 각 조건 요소 선택
-        var lengthCheck = document.getElementById("lengthCheck");
-        var upperCaseCheck = document.getElementById("upperCaseCheck");
-        var lowerCaseCheck = document.getElementById("lowerCaseCheck");
-        var numberCheck = document.getElementById("numberCheck");
-        var specialCharCheck = document.getElementById("specialCharCheck");
-
-        var wrongColor = "#E40087";  // 빨간색
-        var correctColor = "#18AD72";  // 초록색
-
-        // 비밀번호 조건 검사
-        var conditions = [
-            { check: password.length >= 8, element: lengthCheck },
-            { check: /[A-Z]/.test(password), element: upperCaseCheck },
-            { check: /[a-z]/.test(password), element: lowerCaseCheck },
-            { check: /\d/.test(password), element: numberCheck },
-            { check: /[!@#$%^&*]/.test(password), element: specialCharCheck }
-        ];
-
-        // 각 조건의 상태 업데이트 (아이콘 변경)
-        conditions.forEach(condition => {
-            if (condition.check) {
-                condition.element.innerHTML = "✅ " + condition.element.innerHTML.slice(2);
-                condition.element.classList.add("valid");
-            } else {
-                condition.element.innerHTML = "❌ " + condition.element.innerHTML.slice(2);
-                condition.element.classList.remove("valid");
-            }
-        });
-
-        // 비밀번호 확인 검사
-        if (password !== confirmPassword || confirmPassword === "") {
-            confirmMsg.style.color = wrongColor;
-            confirmMsg.innerHTML = "❌ 비밀번호가 일치하지 않습니다.";
-            return false;
-        } else {
-            confirmMsg.style.color = correctColor;
-            confirmMsg.innerHTML = "✅ 비밀번호가 일치합니다.";
-            return true;
+        // 개별 유효성 검사 실행
+        if (!validateName()) return;
+        if (!validateSelectFields()) return;
+        if (!validateHireDate()) return;
+        if (!validateSecurityAnswer()) return;
+        if (!validatePasswordFields()) {
+            alert("비밀번호가 유효한지 확인하세요.");
+            return;
         }
+
+        // 폼 데이터 수집 및 JSON 변환
+        const formData = new FormData(document.getElementById("signupForm"));
+        const jsonObject = Object.fromEntries(formData.entries());
+
+        try {
+            const response = await fetch("/api/signup/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(jsonObject)
+            });
+
+            const result = await response.text();
+            if (response.ok) {
+                alert("회원가입 성공! 로그인 페이지로 이동합니다.");
+                window.location.href = "/login";
+            } else {
+                alert("회원가입 실패: " + result);
+            }
+        } catch (error) {
+            alert("서버 오류 발생! 다시 시도해주세요.");
+        }
+    }
+
+    // 비밀번호 유효성 검사 (실시간 업데이트)
+    function validatePassword() {
+        const password = document.getElementById("password").value;
+        const lengthCheck = password.length >= 8;
+        const upperCaseCheck = /[A-Z]/.test(password);
+        const lowerCaseCheck = /[a-z]/.test(password);
+        const numberCheck = /[0-9]/.test(password);
+        const specialCharCheck = /[!@#$%^&*]/.test(password);
+
+        const correctColor = "green";
+        const wrongColor = "red";
+
+        function updateCheck(elementId, condition) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = condition ? "✅ " + element.innerHTML.slice(2) : "❌ " + element.innerHTML.slice(2);
+            element.style.color = condition ? correctColor : wrongColor;
+        }
+
+        updateCheck("lengthCheck", lengthCheck, "최소 8자 이상");
+        updateCheck("upperCaseCheck", upperCaseCheck, "최소 1개의 대문자 포함");
+        updateCheck("lowerCaseCheck", lowerCaseCheck, "최소 1개의 소문자 포함");
+        updateCheck("numberCheck", numberCheck, "최소 1개의 숫자 포함");
+        updateCheck("specialCharCheck", specialCharCheck, "최소 1개의 특수문자 (!@#$%^&*) 포함");
+
+        // 모든 조건 충족 시 메시지 숨김
+        document.getElementById("passMsg").style.display = (lengthCheck && upperCaseCheck && lowerCaseCheck && numberCheck && specialCharCheck) ? "none" : "block";
+    }
+
+    // 비밀번호 확인 검사 (비밀번호와 일치 여부 즉시 반영)
+    function passConfirm() {
+        const password = document.getElementById("password").value;
+        const confirmPassword = document.getElementById("confirmPassword").value;
+        const confirmMsg = document.getElementById("confirmMsg");
+
+        confirmMsg.innerHTML = password === confirmPassword ? "✅ 비밀번호 일치" : "❌ 비밀번호 불일치";
+        confirmMsg.style.color = (password === confirmPassword) ? "green" : "red";
+    }
+
+    // 비밀번호 입력 필드 검증 (최종 제출 시 실행)
+    function validatePasswordFields() {
+        const password = document.getElementById("password").value;
+        const confirmPassword = document.getElementById("confirmPassword").value;
+        const passwordPattern = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,16}$/;
+
+        if (!passwordPattern.test(password)) {
+            return false;
+        }
+        if (password !== confirmPassword) {
+            return false;
+        }
+        return true;
     }
 
     // 이름 유효성 검사 (한글 또는 영문만 허용)
@@ -389,41 +621,7 @@
         return true;
     }
 
-    // 폼 제출 이벤트 핸들러 (최종 유효성 검사)
-    async function handleFormSubmit(event) {
-        event.preventDefault(); // 기본 제출 방지
 
-        // 개별 유효성 검사 실행
-        if (!validateName()) return;
-        if (!validateSelectFields()) return;
-        if (!validateHireDate()) return;
-        if (!validateSecurityAnswer()) return;
-        if (!validatePassword()) {
-            alert("비밀번호가 유효한지 확인하세요.");
-            return;
-        }
-
-        // 폼 데이터 수집 및 JSON 변환
-        const formData = new FormData(document.getElementById("signupForm"));
-        const jsonObject = Object.fromEntries(formData.entries());
-
-        try {
-            const response = await fetch("/api/signup/register", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(jsonObject)
-            });
-
-            const result = await response.text();
-            if (response.ok) {
-                alert("회원가입 성공! 로그인 페이지로 이동합니다.");
-                window.location.href = "/login";
-            } else {
-                alert("회원가입 실패: " + result);
-            }
-        } catch (error) {
-            alert("서버 오류 발생! 다시 시도해주세요.");
-        }
 </script>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

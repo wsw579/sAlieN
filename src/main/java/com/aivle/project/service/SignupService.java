@@ -26,7 +26,7 @@ public class SignupService {
     private final EmployeeRepository employeeRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public void registerUser(EmployeeDto.Post employeeDto) {
+    public void registerUser(EmployeeDto.Singup employeeDto) {
         // EmployeeEntity 생성 및 저장
         EmployeeEntity employee = new EmployeeEntity();
         employee.setEmployeeId(employeeDto.getEmployeeId());

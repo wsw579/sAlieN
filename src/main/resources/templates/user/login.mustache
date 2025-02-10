@@ -8,7 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            background-color: #141b2f;
+            background-color: #021545;
         }
         .login-container {
             max-width: 400px;
@@ -21,13 +21,41 @@
         .logo {
             text-align: center;
         }
+
+
+        .password-requirements {
+            font-size: 12px;  /* 글자 크기 조절 */
+            color: #E40087;  /* 초기 색상 빨간색 */
+            margin-top: 5px;
+            padding-left: 0; /* 기본 리스트 들여쓰기 제거 */
+            list-style: none;
+        }
+
+        .password-requirements li {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .valid {
+            color: #18AD72 !important; /* 충족되면 초록색 */
+        }
+
+        .password-input {
+            width: 100%; /* 입력 필드의 너비를 맞추기 */
+        }
+        .btn-primary-custom{
+             background-color: rgba(184, 185, 186, 0.3) !important;
+              border: 1px solid #a0a1a2;
+        }
+
     </style>
 </head>
 <body>
 
     <div class="container-fluid">
         <div class="logo">
-            <img src="/assets/img/sAIes_crm_logo.png" alt="SAIEAIS CRM" class="img-fluid" style="width: 350px; height: auto;">
+            <img src="/assets/img/sAlieN_logo.png" alt="SAIEAIS CRM" class="img-fluid" style="width: 350px; height: auto;">
         </div>
         <div class="login-container">
             <h3 class="text-center">로그인</h3>
@@ -41,7 +69,7 @@
                     <label for="password">암호</label>
                     <input type="password" class="form-control" id="password" name="password" placeholder="암호" required>
                 </div>
-                <button type="submit" class="btn btn-primary btn-block">로그인</button>
+                <button type="submit" class="btn btn-primary-custom btn-block">로그인</button>
                 <!-- 로그인 실패 시 메시지 표시 -->
                 {{#error}}
                     <div id="error-message" style="color: red; text-align: center;">
@@ -104,11 +132,19 @@
                         </div>
                         <div class="mb-3">
                             <label for="new-password" class="form-label">새 비밀번호</label>
-                            <input type="password" class="form-control" name="newPassword" id="new-password" required>
+                            <input type="password" class="form-control" name="newPassword" id="new-password" onkeyup="validatePassword()" required>
+                            <ul id="passMsg" class="password-requirements">
+                                <li id="lengthCheck">❌ 최소 8자 이상</li>
+                                <li id="upperCaseCheck">❌ 최소 1개의 대문자 포함</li>
+                                <li id="lowerCaseCheck">❌ 최소 1개의 소문자 포함</li>
+                                <li id="numberCheck">❌ 최소 1개의 숫자 포함</li>
+                                <li id="specialCharCheck">❌ 최소 1개의 특수문자 (!@#$%^&*) 포함</li>
+                            </ul>
                         </div>
                         <div class="mb-3">
                             <label for="confirm-password" class="form-label">새 비밀번호 확인</label>
-                            <input type="password" class="form-control" id="confirm-password" required>
+                            <input type="password" class="form-control" id="confirm-password" onkeyup="passConfirm()" required>
+                            <span id="confirmMsg"></span>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
@@ -135,6 +171,41 @@
         }
     });
 
+    function validatePassword() {
+        const password = document.getElementById("new-password").value;
+        const lengthCheck = password.length >= 8;
+        const upperCaseCheck = /[A-Z]/.test(password);
+        const lowerCaseCheck = /[a-z]/.test(password);
+        const numberCheck = /[0-9]/.test(password);
+        const specialCharCheck = /[!@#$%^&*]/.test(password);
+
+        const correctColor = "green";
+        const wrongColor = "red";
+
+        function updateCheck(elementId, condition) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = condition ? "✅ " + element.innerHTML.slice(2) : "❌ " + element.innerHTML.slice(2);
+            element.style.color = condition ? correctColor : wrongColor;
+        }
+
+        updateCheck("lengthCheck", lengthCheck, "최소 8자 이상");
+        updateCheck("upperCaseCheck", upperCaseCheck, "최소 1개의 대문자 포함");
+        updateCheck("lowerCaseCheck", lowerCaseCheck, "최소 1개의 소문자 포함");
+        updateCheck("numberCheck", numberCheck, "최소 1개의 숫자 포함");
+        updateCheck("specialCharCheck", specialCharCheck, "최소 1개의 특수문자 (!@#$%^&*) 포함");
+
+        document.getElementById("passMsg").style.display = (lengthCheck && upperCaseCheck && lowerCaseCheck && numberCheck && specialCharCheck) ? "none" : "block";
+    }
+
+    function passConfirm() {
+        const password = document.getElementById("new-password").value;
+        const confirmPassword = document.getElementById("confirm-password").value;
+        const confirmMsg = document.getElementById("confirmMsg");
+
+        confirmMsg.innerHTML = password === confirmPassword ? "✅ 비밀번호 일치" : "❌ 비밀번호 불일치";
+        confirmMsg.style.color = (password === confirmPassword) ? "green" : "red";
+    }
+
     // 모달이 열릴 때 이벤트 처리
     const passwordModal = document.getElementById('passwordModal');
     passwordModal.addEventListener('show.bs.modal', function (event) {
@@ -151,6 +222,15 @@
         $('#password-form').on('submit', function (e) {
             e.preventDefault(); // 기본 폼 동작 방지
 
+            // 비밀번호 유효성 검사
+            if (!isPasswordValid()) {
+                $('#error-message').text('비밀번호가 요구사항을 충족하지 않습니다.').fadeIn();
+                setTimeout(function () {
+                    $('#error-message').fadeOut();
+                }, 3000);
+                return; // 조건 충족되지 않으면 서버 요청 중단
+            }
+
             const formData = {
                 employeeId: $('#employee-id').val(),
                 existPassword: $('#exist-password').val(),
@@ -164,14 +244,11 @@
                 contentType: 'application/json',
                 data: JSON.stringify(formData),
                 success: function (response) {
-                    // 성공 처리: 예를 들어 모달 닫기
                     alert(response); // 서버에서 반환된 성공 메시지 사용
                     $('#passwordModal').modal('hide');
                 },
                 error: function (xhr) {
-                    // 에러 처리
                     if (xhr.status === 400) {
-                        // 서버에서 반환된 오류 메시지 출력
                         const errorMessage = xhr.responseText;
                         $('#error-message').text(errorMessage).fadeIn();
                         setTimeout(function () {
@@ -184,6 +261,17 @@
             });
         });
     });
+
+    // 비밀번호 유효성 검사 함수
+    function isPasswordValid() {
+        const password = $('#new-password').val();
+        return password.length >= 8 &&
+               /[A-Z]/.test(password) &&
+               /[a-z]/.test(password) &&
+               /[0-9]/.test(password) &&
+               /[!@#$%^&*]/.test(password);
+    }
+
 </script>
 </body>
 </html>

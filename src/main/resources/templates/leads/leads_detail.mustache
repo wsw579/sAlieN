@@ -101,32 +101,21 @@
 
                 <div class="card-body">
                     <table id="leads_detail">
-                        <!-- 파일 업로드 및 처리 -->
-                    <div class="button-container mb-3 d-flex align-items-center">
-                        <!-- 자동 생성 버튼을 왼쪽에 정렬 -->
-                        {{^leadId}}
-                            <input type="file" id="fileInput" accept=".webm, .mp3, .wav" style="display: none;">
-                            <button type="button" class="btn btn-custom-auto btn-sm" id="autoButton">
-                                <i class="bi bi-mic"></i> 🎙️ AI 자동 생성
-                            </button>
-                        {{/leadId}}
-
-                        <!-- 나머지 버튼들은 오른쪽으로 정렬 -->
-                        <div class="ms-auto d-flex">
-                            {{#leads}}
+                        {{#leads}}
+                            <div class="button-container mb-3 d-flex gap-2">
                                 <a href="/leads/detail/create" class="btn btn-custom-create btn-sm me-2" id="createButton">
                                     <i class="fas fa-plus-circle"></i> 신규
                                 </a>
-
+                            {{#leadId}}
                                 <button class="btn btn-custom-delete btn-sm me-2" id="deleteButton">
                                     <i class="fas fa-trash"></i> 삭제
                                 </button>
-
+                            {{/leadId}}
                                 <a href="/leads" class="btn btn-custom-select btn-sm" id="selectButton">
                                     <i class="fas fa-list"></i> 목록
                                 </a>
-                        </div>
-                    </div>
+                            </div>
+
 
 
 
@@ -136,6 +125,12 @@
                             {{/leadId}}
                             {{^leadId}}
                             <form id="leadForm" action="/leads/detail/create" method="POST">
+                                <div class="button-container d-flex justify-content-center mb-3">
+                                    <input type="file" id="fileInput" accept=".webm, .mp3, .wav" style="display: none;">
+                                    <button type="button" class="btn btn-custom-auto btn-lg" id="autoButton">
+                                        <i class="bi bi-mic"></i> 🎙️ AI 자동 생성
+                                    </button>
+                                </div>
                             {{/leadId}}
 
 
@@ -561,7 +556,7 @@
 
 
 // AI 리드 자동생성
-    document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function () {
     const autoButton = document.getElementById('autoButton');
     const fileInput = document.getElementById('fileInput');
 
@@ -582,38 +577,48 @@
         console.log('선택된 파일:', selectedFile.name);
 
         // 서버로 파일 업로드
-        uploadFile(selectedFile);
+        uploadFileWithTimeout(selectedFile);
     });
 
-    // 파일 업로드 함수
-    function uploadFile(file) {
+    // 파일 업로드 함수 (타임아웃 추가)
+    function uploadFileWithTimeout(file) {
         const formData = new FormData();
         formData.append('audio_file', file);
 
-         // "제안서 생성 중입니다" 알림창 표시
-        alert('생성 중입니다 . . . . 🚀  잠시만 기다려 주세요. ');
-        fetch('https://saiescrm.api.jyds.synology.me/leads/auto' , {
-        //fetch('http://127.0.0.1:8000/leads/auto' , {
+        // "제안서 생성 중입니다" 알림창 표시
+        alert('생성 중입니다 . . . . 🚀 잠시만 기다려 주세요.');
+
+        // 타임아웃 설정 (3분 = 180,000ms)
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 180000); // 3분 후 요청 취소
+
+        fetch('https://saiescrm.api.jyds.synology.me/leads/auto', {
             method: 'POST',
             body: formData,
+            signal: controller.signal,      // AbortController의 signal 추가
         })
-        .then((response) => {
-            if (!response.ok) {
-                throw new Error('파일 업로드 실패');
-            }
-            console.log('응답받은 데이터 타입:', typeof response);
-            return response.json(); // JSON 형식으로 응답 받기
-        })
-        .then((data) => {
-            console.log('서버 응답 데이터:', data);
+            .then((response) => {
+                clearTimeout(timeoutId); // 타임아웃 해제
+                if (!response.ok) {
+                    throw new Error(`서버 오류! 상태 코드: ${response.status} - ${response.statusText}`);
+                }
+                console.log('응답받은 데이터 타입:', typeof response);
+                return response.json(); // JSON 형식으로 응답 받기
+            })
+            .then((data) => {
+                console.log('서버 응답 데이터:', data);
 
-            // 폼에 데이터 채우기
-            populateForm(data); // 서버에서 받은 데이터를 populateForm 함수로 전달
-        })
-        .catch((error) => {
-            console.error('파일 업로드 중 오류 발생:', error);
-            alert('파일 업로드 중 오류가 발생했습니다.🚨');
-        });
+                // 폼에 데이터 채우기
+                populateForm(data); // 서버에서 받은 데이터를 populateForm 함수로 전달
+            })
+            .catch((error) => {
+                if (error.name === 'AbortError') {
+                    alert('요청 시간이 초과되었습니다.');
+                } else {
+                    console.error('파일 업로드 중 오류 발생:', error);
+                    alert('파일 업로드 중 오류가 발생했습니다.');
+                }
+            });
     }
 
     // 폼에 데이터를 입력하는 함수
@@ -652,8 +657,8 @@
 
             alert('리드 자동생성이 완료되었습니다.✨');
         } catch (error) {
-            console.error('JSON 파싱 오류:', error);
-            alert('데이터를 처리하는 중 오류가 발생했습니다. 다시 시도해 주세요.⚠️');
+            console.error('폼 데이터 처리 중 오류:', error);
+            alert(`데이터 처리 중 문제가 발생했습니다: ${error.message}`);
         }
     }
 });
