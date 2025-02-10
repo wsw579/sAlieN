@@ -39,5 +39,4 @@ public class CrudLogsEntity {
     @Column(nullable = true)
     private String logMessage;
 
-
 }

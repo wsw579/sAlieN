@@ -54,7 +54,6 @@ public class IndexController {
         }
     }
 
-
     @GetMapping("/rate_plan")
     public String ratePlan(@ModelAttribute("id") String employeeId, Model model) {
         // 세션에서 employeeId 가져오기
@@ -247,7 +246,4 @@ public class IndexController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
     }
-
-
-
 }

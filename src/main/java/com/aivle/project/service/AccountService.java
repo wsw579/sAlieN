@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 import java.time.Year;
 import java.util.stream.IntStream;
 
-
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -49,7 +48,6 @@ public class AccountService {
         } else {
             accountEntity.setParentAccount(null);
         }
-
         accountRepository.save(accountEntity);
 
         logger.info("계정 생성 완료: " + accountEntity.getAccountType() + accountEntity.getBusinessType() + accountEntity.getAccountId());
@@ -216,7 +214,6 @@ public class AccountService {
     public Optional<AccountEntity> findAccountByName(String companyName) {
         return accountRepository.findByAccountName(companyName);
     }
-
 }
 
 

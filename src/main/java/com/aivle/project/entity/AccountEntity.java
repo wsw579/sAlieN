@@ -83,8 +83,6 @@ public class AccountEntity implements Serializable {
     @OneToMany(mappedBy = "accountId", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     private List<LeadsEntity> leads;
 
-
-
 }
 
 

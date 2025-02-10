@@ -4,7 +4,6 @@ import com.aivle.project.enums.Dept;
 import com.aivle.project.enums.Position;
 import com.aivle.project.enums.Team;
 import lombok.Getter;
-
 import java.util.HashMap;
 import java.util.Map;
 

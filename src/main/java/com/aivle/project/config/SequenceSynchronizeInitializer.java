@@ -11,8 +11,6 @@ public class SequenceSynchronizeInitializer {
     @PersistenceContext
     private EntityManager entityManager;
 
-
-
     // accounts
     @PostConstruct
     @Transactional
@@ -29,8 +27,6 @@ public class SequenceSynchronizeInitializer {
                 .setParameter("nextVal", nextVal)
                 .getSingleResult();
     }
-
-
 
     // contracts
     @PostConstruct
@@ -84,13 +80,6 @@ public class SequenceSynchronizeInitializer {
     }
 
 
-
-
-
-
-
-
-
     // opportunities_comments
     @PostConstruct
     @Transactional
@@ -107,8 +96,6 @@ public class SequenceSynchronizeInitializer {
                 .setParameter("nextVal", nextVal)
                 .getSingleResult();
     }
-
-
 
 
     // orders

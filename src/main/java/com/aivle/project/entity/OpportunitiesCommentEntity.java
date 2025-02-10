@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
@@ -33,11 +32,9 @@ public class OpportunitiesCommentEntity implements Serializable {
     private String author; // 작성자 임시 필드.(추후 인사ID 외부키로 대체하여 조회)
 
     // 외래키 부분
-
     @ManyToOne
     @JoinColumn(name = "opportunity_id", nullable = false)
     private OpportunitiesEntity opportunity;
-
 
     public OpportunitiesCommentEntity(String content, LocalDateTime now, String author, OpportunitiesEntity opportunity) {
         this.content = content;

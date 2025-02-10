@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
-
 import java.time.LocalDate;
 
 @Component
@@ -39,13 +38,10 @@ public class AccountInitializer implements CommandLineRunner {
             admin.setTeamId(Team.CORPORATE_CUST);
             employeeRepository.save(admin);
         }
-
         if(!employeeRepository.existsByAccessPermission(Role.ROLE_USER)) {
             // CSV 파일 경로 지정
             employeeService.loadEmployeeDataFromCSV("src/main/resources/static/data/sample/employee_data.csv");
 
-
         }
-
     }
 }
