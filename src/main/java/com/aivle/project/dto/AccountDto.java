@@ -15,7 +15,6 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class AccountDto {
 
-    @NotNull(message = "Account ID는 필수입니다.")
     private Long accountId;
 
     @NotBlank(message = "계정 이름 입력은 필수입니다.")
@@ -65,7 +64,6 @@ public class AccountDto {
 
     @NotNull(message = "계정 생성일은 필수입니다.")
     @PastOrPresent(message = "계정 생성일은 과거 또는 현재여야 합니다.")
-    @Size(max = 50, message = "계정 생성일은 50자 이하로 입력해야 합니다.")
     private LocalDate accountCreatedDate;
 
     // Self-join
