@@ -2,9 +2,7 @@ package com.aivle.project.controller;
 
 import com.aivle.project.dto.PaginationDto;
 import com.aivle.project.entity.ChatbotLogsEntity;
-import com.aivle.project.entity.ContractsEntity;
 import com.aivle.project.entity.CrudLogsEntity;
-import com.aivle.project.entity.HistoryEntity;
 import com.aivle.project.service.ChatbotLogsService;
 import com.aivle.project.service.CrudLogsService;
 import com.aivle.project.service.PaginationService;
@@ -15,8 +13,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -83,6 +79,5 @@ public class LogsController {
 
         return "logs/crud_logs";
     }
-
 
 }

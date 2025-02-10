@@ -2,11 +2,6 @@ package com.aivle.project.controller;
 
 import com.aivle.project.dto.EmployeeDto;
 import com.aivle.project.dto.PaginationDto;
-import com.aivle.project.entity.EmployeeEntity;
-import com.aivle.project.entity.OpportunitiesEntity;
-import com.aivle.project.entity.OrdersEntity;
-import com.aivle.project.enums.Dept;
-import com.aivle.project.enums.Team;
 import com.aivle.project.service.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -20,14 +15,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor

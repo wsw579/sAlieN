@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
@@ -49,13 +48,10 @@ public class LeadsEntity implements Serializable {
     @Column(nullable = false)  // 연락처
     private String c_tel;
 
-
-
     // 외래키 부분
     // 외부 외래키
     @OneToMany(mappedBy = "leadId", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     private List<OpportunitiesEntity> opportunities;
-
 
     // 내부 외래키
     // Employee 외래키 설정

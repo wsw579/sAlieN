@@ -1,8 +1,6 @@
 {{>main/header}}
 
-
 <style>
-
     .button-container {
         display: flex;
         justify-content: flex-end; /* 오른쪽 정렬 */
@@ -18,7 +16,6 @@
         border-color: #f5c6cb;
         color: #721c24;
     }
-
 
     .btn-custom-proposal {
     background-color: #cce5ff; /* 연한 파란색 */
@@ -56,7 +53,6 @@
     .btn-primary:hover {
         background-color: #5a6268;
     }
-
 
 
 .progress-container {
@@ -112,7 +108,6 @@
     background-color: green;
     border-color: green;
 }
-
 
 
         .comment-section {
@@ -537,8 +532,6 @@
                             <input type="hidden" name="opportunityId" value="{{opportunities.opportunityId}}">
                             <button type="submit" class="btn btn-custom-create btn-sm">입력</button>
                         </form>
-
-
                     </div>
                 </div>
             {{/opportunities.opportunityId}}
@@ -968,10 +961,8 @@ document.addEventListener("DOMContentLoaded", function () {
 document.getElementById('proposalExcelButton').addEventListener('click', function(event) {
 event.preventDefault();
     try {
-
             const employeeSelect = document.querySelector('#employeeId');
             const productSelect = document.querySelector('#productId');
-
            const accountSelect = document.querySelector('#accountId');
            if (!accountSelect.value) {
                   throw new Error('회사를 선택해주세요.');
@@ -1032,9 +1023,8 @@ event.preventDefault();
         console.log('전송할 데이터:', dataToSend);
          // 다운로드 진행중 팝업창 생성
          alert(' 다운로드 중 입니다. . . .  🚀 잠시만 기다려주세요. ');
-        // Excel 생성 요청
 
-        //fetch('http://127.0.0.1:8000/generate-excel', {
+        // Excel 생성 요청
         fetch('https://saiescrm.api.jyds.synology.me/generate-excel', {
             method: 'POST',
             headers: {
@@ -1077,7 +1067,6 @@ event.preventDefault();
 document.getElementById('proposalButton').addEventListener('click', function(event) {
 event.preventDefault();
     try {
-
             const employeeSelect = document.querySelector('#employeeId');
             const productSelect = document.querySelector('#productId');
 
@@ -1091,7 +1080,6 @@ event.preventDefault();
 
             // 기회명
             const opportunityName = document.getElementById('opportunityName').value.trim();
-
 
               if (!employeeSelect.value) {
                      throw new Error('담당자를 선택해주세요.');
@@ -1128,8 +1116,6 @@ event.preventDefault();
             const expectedRevenue = document.getElementById('expectedRevenue').value.trim();
             const expectedRevenueFloat = parseFloat(expectedRevenue.replace(/[^\d.-]/g, ''));
 
-
-
         const dataToSend = {
               회사명 : accountName,
               기회명 : opportunityName,
@@ -1144,8 +1130,7 @@ event.preventDefault();
         console.log('전송할 데이터:', dataToSend);
          // 다운로드 진행중 팝업창 생성
          alert(' 다운로드 중 입니다 . . . .  🚀 잠시만 기다려주세요. ');
-        // Excel 생성 요청
-        //fetch('http://127.0.0.1:8000/generate-ppt', {
+        // pptx 생성 요청
         fetch('https://saiescrm.api.jyds.synology.me/generate-ppt', {
             method: 'POST',
             headers: {

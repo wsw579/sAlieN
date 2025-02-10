@@ -14,7 +14,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
@@ -22,8 +21,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-
-// A service layer component that contains business logic
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -42,7 +39,6 @@ public class LeadsService {
         leadsRepository.save(leadsEntity);
     }
 
-
     //Read
     @Transactional(readOnly = true)
     public Page<LeadsEntity> readLeads(int page, int size, String search, String sortColumn, String sortDirection) {
@@ -60,7 +56,6 @@ public class LeadsService {
             throw new AccessDeniedException("권한이 없습니다.");
         }
     }
-
 
     // Update
     // executes within a database transaction

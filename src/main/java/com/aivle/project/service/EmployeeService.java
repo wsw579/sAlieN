@@ -2,13 +2,11 @@ package com.aivle.project.service;
 
 import com.aivle.project.dto.EmployeeDto;
 import com.aivle.project.entity.EmployeeEntity;
-import com.aivle.project.entity.OpportunitiesEntity;
 import com.aivle.project.enums.Dept;
 import com.aivle.project.enums.Position;
 import com.aivle.project.enums.Role;
 import com.aivle.project.enums.Team;
 import com.aivle.project.repository.EmployeeRepository;
-import com.aivle.project.repository.OpportunitiesRepository;
 import com.aivle.project.utils.EmployeeDataMapping;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
@@ -19,7 +17,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.io.FileReader;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -33,9 +30,7 @@ import java.util.stream.Collectors;
 public class EmployeeService {
 
     private final EmployeeRepository employeeRepository;
-
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-
 
     public String editPassword(EmployeeDto.Patch employee) {
         EmployeeEntity findEmployee = employeeRepository.findByEmployeeId(employee.getEmployeeId());
@@ -69,7 +64,6 @@ public class EmployeeService {
         employeeRepository.save(findEmployee);
         return findEmployee.getEmployeeId();
     }
-
 
     public EmployeeDto.Get findEmployeeById(String employeeId) {
         EmployeeEntity findEmployee = employeeRepository.findByEmployeeId(employeeId);

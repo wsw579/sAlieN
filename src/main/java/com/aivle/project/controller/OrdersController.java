@@ -18,7 +18,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import java.time.LocalDate;
 import java.util.*;
 
@@ -219,7 +218,6 @@ public class OrdersController {
             for (Long id : ids) {
                 crudLogsService.logCrudOperation("delete", "orders", id.toString(), "False", "Error: " + e.getMessage());
             }
-
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // HTTP 500 응답 (삭제 실패)
         }
     }

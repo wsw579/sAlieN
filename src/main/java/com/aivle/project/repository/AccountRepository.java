@@ -1,4 +1,3 @@
-
 package com.aivle.project.repository;
 
 import com.aivle.project.entity.AccountEntity;

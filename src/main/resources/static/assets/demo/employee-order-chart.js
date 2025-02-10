@@ -149,14 +149,10 @@
 
     employeeOrderChartHeader.classList.add("d-flex", "align-items-center", "justify-content-between");
     employeeOrderChartHeader.appendChild(monthControlDiv);
-//    monthControlDiv.style.position = "absolute";
-//    monthControlDiv.style.left = "50%";
-//    monthControlDiv.style.transform = "translateX(-50%)";
 
     const prevMonthBtn = document.getElementById("prevMonthBtn");
     const nextMonthBtn = document.getElementById("nextMonthBtn");
     const selectedMonthYear = document.getElementById("selectedMonthYear");
-
     const minYear = 2020;
 
     function updateNavigation() {
