@@ -161,7 +161,7 @@ public class ContractsController {
         try {
             if (bindingResult.hasErrors()) {
                 // 유효성 검사 실패 시 에러 메시지 출력
-                return "contracts/contracts_detail"; // 에러가 있으면 폼으로 다시 이동
+                return "redirect:/contracts/detail/create"; // 에러가 있으면 폼으로 다시 이동
             }
             // 계약 생성
             contractsService.createContracts(contractsDto);
@@ -189,7 +189,7 @@ public class ContractsController {
         try {
             if (bindingResult.hasErrors()) {
                 // 유효성 검사 실패 시 에러 메시지 출력
-                return "contracts/contracts_detail"; // 에러가 있으면 폼으로 다시 이동
+                return "redirect:/contracts/detail/" + contractId; // 에러가 있으면 폼으로 다시 이동
             }
             // 계약 수정
             contractsService.updateContracts(contractId, contractsDto);
