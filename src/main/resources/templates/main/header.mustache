@@ -469,7 +469,7 @@
 
 
     <!-- Chatbot Modal -->
-    <div id="chatbotModal" class="chatbot-modal">
+    <div id="chatbotModal" hidden class="chatbot-modal">
         <div class="chatbot-modal-content">
             <div class="chatbot-title-bar">
                 sAIien chat bot
@@ -589,6 +589,7 @@
                 if (!isClick) {
                     return;
                 }
+                chatbotModal.hidden = false;
                 chatbotModal.style.display = "block"; // ✅ 챗봇 모달 열기
                 initializeChat(); // ✅ 챗봇 초기화 함수 실행
             }

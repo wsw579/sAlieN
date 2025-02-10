@@ -1,22 +1,18 @@
 package com.aivle.project.service;
 
 
-import com.aivle.project.entity.ChatbotLogsEntity;
 import com.aivle.project.entity.CrudLogsEntity;
-import com.aivle.project.repository.ChatbotLogsRepository;
 import com.aivle.project.repository.CrudLogsRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 @Transactional

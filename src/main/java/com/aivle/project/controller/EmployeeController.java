@@ -36,7 +36,6 @@ public class EmployeeController {
     private final EmployeeService employeeService;
     private final CrudLogsService crudLogsService;
     private final PaginationService paginationService;
-    private final SignupService signupService;
 
     @GetMapping("/login")
     public String login(@RequestParam(value = "error", required = false) String error, Model model) {
@@ -45,32 +44,6 @@ public class EmployeeController {
         }
         return "user/login";
     }
-
-//    @PostMapping("/signup")
-//    public String user(EmployeeDto.Post memberDto, RedirectAttributes redirectAttributes){
-//        try {
-//            // 계정 생성
-//            employeeService.join(memberDto);
-//
-//            // CRUD 작업 로깅
-//            crudLogsService.logCrudOperation("create", "employee", "", "True", "Success");
-//
-//            return "redirect:/"; // 성공 시 메인 페이지로 이동
-//        } catch (Exception e) {
-//            // 실패 로그 기록
-//            crudLogsService.logCrudOperation("create", "employee", "", "False", "Error: " + e.getMessage());
-//
-//            // 에러 메시지를 사용자에게 전달
-//            redirectAttributes.addFlashAttribute("errorMessage", "ID 생성 중 오류가 발생했습니다. 다시 시도해주세요.");
-//
-//            return "redirect:/errorPage"; // 에러 발생 시 오류 페이지로 리다이렉트
-//        }
-//    }
-//
-//    @GetMapping("/signup")
-//    public String signup(){
-//        return "user/signup";
-//    }
 
     @GetMapping("/logout")
     public String logout(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -131,16 +104,6 @@ public class EmployeeController {
         return "user/mypage";
     }
 
-
-//    @GetMapping("/api/generateEmployeeId")
-//    @ResponseBody // 반환값을 JSON으로 처리
-//    public ResponseEntity<Map<String, String>> generateUserId(@RequestParam("year") int year) {
-//        Map<String, String> response = new HashMap<>();
-//        String employeeId = employeeService.makeNewEmployeeId(year+"");
-//        response.put("employeeId", employeeId); // 예시 응답
-//        return ResponseEntity.ok(response);
-//    }
-
     // 멤버 페이지
     @GetMapping("/employee-list")
     public String employeeList(@RequestParam Map<String, String> params, Model model){
@@ -167,35 +130,6 @@ public class EmployeeController {
     public String adminEmployeeSignup(Model model){
         return "admin/signup";
     }
-
-//    @PostMapping("/admin/signup")
-//    public String adminEmployeeSignup(@Valid EmployeeDto.Post memberDto, BindingResult bindingResult, RedirectAttributes redirectAttributes){
-//        try {
-//            if (bindingResult.hasErrors()) {
-//                // 유효성 검사 실패 시, 다시 폼 페이지로 이동
-//                return "admin/signup"; // 페이지 반환
-//            }
-//            // 계정 생성
-//            signupService.registerUser(memberDto);
-//
-//            // CRUD 작업 로깅
-//            crudLogsService.logCrudOperation("create", "employee", "", "True", "Success");
-//
-//            // 성공 메시지를 RedirectAttributes에 저장 (리다이렉트 후에도 유지됨)
-//            redirectAttributes.addFlashAttribute("message", "계정이 성공적으로 생성되었습니다.");
-//
-//            return "redirect:/admin/employee-signup"; // 성공 시 admin 계정 가입 페이지로 이동
-//        } catch (Exception e) {
-//            // 실패 로그 기록
-//            crudLogsService.logCrudOperation("create", "employee", "", "False", "Error: " + e.getMessage());
-//
-//            // 에러 메시지를 사용자에게 전달
-//            redirectAttributes.addFlashAttribute("errorMessage", "ID 생성 중 오류가 발생했습니다. 다시 시도해주세요.");
-//
-//            return "redirect:/errorPage"; // 에러 발생 시 오류 페이지로 리다이렉트
-//        }
-//    }
-
 
     @GetMapping("/admin/employee-detail/{employeeId}")
     public String employeeDetail(@PathVariable("employeeId") String employeeId, Model model){
@@ -245,18 +179,6 @@ public class EmployeeController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // HTTP 500 응답
         }
     }
-
-
-//    @GetMapping("/api/getLoggedInUser")
-//    @ResponseBody
-//    public ResponseEntity<EmployeeDto.Get> getLoggedInUser() {
-//        try {
-//            EmployeeDto.Get loggedInUser = employeeService.getLoggedInUser();
-//            return ResponseEntity.ok(loggedInUser);
-//        } catch (IllegalStateException e) {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-//        }
-//    }
 
     // 부서 정보 추가
     @GetMapping("/employees")
