@@ -188,8 +188,11 @@ public class AccountController {
     public String accountCreateNew(@ModelAttribute @Valid AccountDto accountDto, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
         try {
             if (bindingResult.hasErrors()) {
+                System.out.println("유효성 검사 실패");
+                // 모든 에러 메시지 출력
+                bindingResult.getAllErrors().forEach(error -> System.out.println(error.getDefaultMessage()));
                 // 유효성 검사 실패 시 에러 메시지 출력
-                return "account/account_detail"; // 에러가 있으면 폼으로 다시 이동
+                return "redirect:/account/detail/create"; // 에러가 있으면 폼으로 다시 이동
             }
             // 계정 생성
             accountService.createAccount(accountDto);

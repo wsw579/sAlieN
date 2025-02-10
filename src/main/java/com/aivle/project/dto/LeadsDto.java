@@ -2,15 +2,10 @@ package com.aivle.project.dto;
 
 import com.aivle.project.entity.AccountEntity;
 import com.aivle.project.entity.EmployeeEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -18,7 +13,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LeadsDto {
-    @NotNull(message = "Lead ID는 필수입니다.")
     private Long leadId;
 
     @NotBlank(message = "리드 상태는 필수입니다.")

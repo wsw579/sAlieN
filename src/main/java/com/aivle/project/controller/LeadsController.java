@@ -6,7 +6,6 @@ import com.aivle.project.dto.LeadsDto;
 import com.aivle.project.dto.PaginationDto;
 import com.aivle.project.entity.*;
 import com.aivle.project.service.*;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
@@ -23,21 +22,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.IntStream;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.*;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.HashMap;
-import java.util.Map;
-
 
 @Controller
 //automatically generates a constructor for all final fields in the class
@@ -109,8 +97,6 @@ public class LeadsController {
         List<AccountDto> accounts = accountService.getAllAccountIdsAndNames();
         List<EmployeeDto.GetId> employee = employeeService.getAllEmployeeIdsAndNamesAndDepartmentIds();
 
-
-
         model.addAttribute("leads", leads);
         model.addAttribute("accounts", accounts);
         model.addAttribute("employee", employee);
@@ -154,6 +140,9 @@ public class LeadsController {
     public String leadsCreateNew(@ModelAttribute @Valid LeadsDto leadsDto, BindingResult bindingResult, RedirectAttributes redirectAttributes){
         try {
             if (bindingResult.hasErrors()) {
+                System.out.println("유효성 검사 실패");
+                // 모든 에러 메시지 출력
+                bindingResult.getAllErrors().forEach(error -> System.out.println(error.getDefaultMessage()));
                 // 유효성 검사 실패 시 에러 메시지 출력
                 return "leads/leads_detail"; // 에러가 있으면 폼으로 다시 이동
             }
@@ -337,8 +326,6 @@ public class LeadsController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
-
-
 
 }
 
