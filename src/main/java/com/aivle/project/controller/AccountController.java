@@ -9,8 +9,6 @@ import com.aivle.project.service.AccountService;
 import com.aivle.project.service.CrudLogsService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -38,7 +36,6 @@ public class AccountController {
     private final AccountRepository accountRepository;
     private final EmployeeRepository employeeRepository;
     private final CrudLogsService crudLogsService;
-    private static final Logger logger = LoggerFactory.getLogger(AccountService.class);
 
     @GetMapping("/account")
     public String account(Model model,
@@ -270,8 +267,6 @@ public class AccountController {
         try {
             // 계정 삭제 실행
             accountService.deleteByIds(ids);
-        logger.info("deleteAccounts Received IDs: {} " , ids);
-        accountService.deleteByIds(ids);
 
             // 개별 ID에 대해 성공 로그 기록
             for (Long id : ids) {

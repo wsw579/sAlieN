@@ -8,8 +8,6 @@ import com.aivle.project.service.CrudLogsService;
 import com.aivle.project.service.PaginationService;
 import com.aivle.project.service.ProductsService;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,8 +21,6 @@ import java.util.Map;
 @Controller
 @RequiredArgsConstructor
 public class ProductsController {
-
-    private static final Logger logger = LoggerFactory.getLogger(ContractsController.class);
     private static final int DISPLAY_RANGE = 5;
 
     private final ProductsService productsService;
@@ -173,7 +169,6 @@ public class ProductsController {
     @PostMapping("/products/detail/delete")
     public ResponseEntity<Void> deleteProducts(@RequestBody Map<String, List<Long>> request) {
         List<Long> ids = request.get("ids");
-        logger.info("Deleting products with IDs: {}", ids); // 로그 추가
 
         try {
             // 주문 삭제 실행

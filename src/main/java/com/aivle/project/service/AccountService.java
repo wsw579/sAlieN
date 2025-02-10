@@ -214,6 +214,7 @@ public class AccountService {
     public Optional<AccountEntity> findAccountByName(String companyName) {
         return accountRepository.findByAccountName(companyName);
     }
+
 }
 
 

@@ -9,8 +9,6 @@ import com.aivle.project.repository.EmployeeRepository;
 import com.aivle.project.repository.OrdersRepository;
 import com.aivle.project.utils.UserContext;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -35,7 +33,6 @@ public class ContractsService {
     private final ContractsRepository contractsRepository;
     private final OrdersRepository ordersRepository;
     private final EmployeeRepository employeeRepository;
-    private static final Logger logger = LoggerFactory.getLogger(ContractsService.class);
 
     // Create
     public void createContracts(ContractsDto dto) {
@@ -115,7 +112,6 @@ public class ContractsService {
 
     @Transactional(readOnly = true)
     public ContractsEntity searchContracts(Long contractId) {
-        logger.info("Searching for contract with ID: {}", contractId);
         return contractsRepository.findById(contractId)
                 .orElseThrow(() -> new IllegalArgumentException("Contract not found with ID: " + contractId));
     }
@@ -144,8 +140,6 @@ public class ContractsService {
             throw new IllegalArgumentException("파일이 존재하지 않습니다.");
         }
 
-        logger.info("파일 데이터 크기: {}", contract.getFileData().length);
-
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + contract.getFileName() + "\"")
                 .header(HttpHeaders.CONTENT_TYPE, contract.getMimeType())
@@ -156,7 +150,6 @@ public class ContractsService {
     // Orders by Contract ID
     @Transactional(readOnly = true)
     public List<OrdersEntity> getOrdersByContractId(Long contractId) {
-        logger.info("Fetching orders for contract ID: {}", contractId);
         ContractsEntity contract = searchContracts(contractId);
         return ordersRepository.findByContractId(contract);
     }

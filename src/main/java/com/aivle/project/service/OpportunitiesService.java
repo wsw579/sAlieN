@@ -177,7 +177,9 @@ public class OpportunitiesService {
 
         List<Object[]> results = new ArrayList<>();
 
-        if (Position.GENERAL_MANAGER.equals(userPosition) || Position.DEPARTMENT_HEAD.equals(userPosition)) {
+        if (Position.GENERAL_MANAGER.equals(userPosition)) {
+            results = opportunitiesRepository.countAllStatusesManager();
+        } else if (Position.DEPARTMENT_HEAD.equals(userPosition)) {
             String userdept = employeeRepository.findDepartmentById(userid);
             results = opportunitiesRepository.countAllStatusesDept(Dept.valueOf(userdept));
         } else if (Position.TEAM_LEADER.equals(userPosition)) {
@@ -219,7 +221,9 @@ public class OpportunitiesService {
         Pageable pageable = PageRequest.of(page, 10, Sort.by("createdDate").descending());
 
 
-        if (Position.GENERAL_MANAGER.equals(userPosition) || Position.DEPARTMENT_HEAD.equals(userPosition)) {
+        if (Position.GENERAL_MANAGER.equals(userPosition)) {
+            return opportunitiesRepository.findOngoingOpportunities(pageable);
+        } else if(Position.DEPARTMENT_HEAD.equals(userPosition)) {
             String userdept = employeeRepository.findDepartmentById(userid);
             return opportunitiesRepository.findOngoingOpportunitiesByDept(Dept.valueOf(userdept), pageable);
         } else {

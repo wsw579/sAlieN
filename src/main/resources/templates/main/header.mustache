@@ -1117,8 +1117,8 @@
 
                     // TTS API 호출 부분
                     // 줄바꿈 문자를 제거하고 JSON 형식의 텍스트를 지워서 포맷팅
-                    var normalizedResponse = formattedResponse.replace(/\\n/g, ' ').replace(/\n/g, ' ').replace(/{[^{}]*}/g, '').replace(/<br>/g, '');
 
+                    var normalizedResponse = data.response.replace(/\\n/g, ' ').replace(/\n/g, ' ').replace(/{[^{}]*}/g, '').replace(/<br>/g, '');
                     //fetch('http://127.0.0.1:8000/tts', {
                     fetch('https://saiescrm.tts.jyds.synology.me/tts', {
                         method: 'POST',

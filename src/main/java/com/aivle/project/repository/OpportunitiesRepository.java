@@ -154,6 +154,14 @@ public interface OpportunitiesRepository extends JpaRepository<OpportunitiesEnti
             "ORDER BY o.createdDate DESC")
     Page<OpportunitiesEntity> findOngoingOpportunitiesByDept(@Param("departmentId") Dept departmentId, Pageable pageable);
 
+    // 진행 중인 기회 조회 쿼리 추가
+    @Query("SELECT o FROM OpportunitiesEntity o " +
+            "WHERE o.opportunityStatus NOT LIKE 'Closed%' " +  // Closed 제외
+            "AND NOT (o.targetCloseDate < CURRENT_DATE AND o.opportunityStatus NOT LIKE 'Closed%') " + // Overdue 제외
+            "AND o.opportunityStatus <> 'Pending' " + // Pending 제외
+            "ORDER BY o.createdDate DESC")
+    Page<OpportunitiesEntity> findOngoingOpportunities(Pageable pageable);
+
     // 차트 그래프
     @Query("SELECT MONTH(o.createdDate), COUNT(o) " +
             "FROM OpportunitiesEntity o " +

@@ -32,9 +32,6 @@
             params.push(`team=${team}`);
         } else if (dept) {
             params.push(`department=${dept}`);
-        } else {
-            console.error("No team or department available.");
-            return null;
         }
 
         params.push(`startDate=${startDate}`, `endDate=${endDate}`);

@@ -22,6 +22,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 const closedElement = document.getElementById("closedCountTeam");
                 closedElement.textContent = `${statusCounts["Closed"]} 건`;
             }
+
         })
         .catch(error => console.error('Error fetching status counts:', error));
 });
