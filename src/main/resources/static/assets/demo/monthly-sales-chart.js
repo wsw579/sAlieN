@@ -79,6 +79,7 @@ async function fetchAndRenderData(year) {
         apiUrl += `&department=${encodeURIComponent(dept)}`;
     }
 
+
     try {
         const response = await fetch(apiUrl);
         if (!response.ok) {
