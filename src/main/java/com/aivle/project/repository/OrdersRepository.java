@@ -94,10 +94,10 @@ public interface OrdersRepository extends JpaRepository<OrdersEntity, Long> {
 
     @Query("SELECT e.departmentId AS departmentId, " +
             "CASE e.departmentId " +
-            "   WHEN 'STRATEGY_DEPT' THEN '전략고객본부' " +
-            "   WHEN 'PUBLIC_DEPT' THEN '공공고객본부' " +
-            "   WHEN 'FINANCE_DEPT' THEN '금융고객본부' " +
-            "   WHEN 'CORPORATE_DEPT' THEN '법인영업본부' " +
+            "   WHEN 'STRATEGY_DEPT' THEN '전략고객부서' " +
+            "   WHEN 'PUBLIC_DEPT' THEN '공공고객부서' " +
+            "   WHEN 'FINANCE_DEPT' THEN '금융고객부서' " +
+            "   WHEN 'CORPORATE_DEPT' THEN '법인영업부서' " +
             "   ELSE '기타' END AS departmentName, " +
             "SUM(o.orderAmount * p.fixedPrice) AS totalSales " +
             "FROM OrdersEntity o " +
