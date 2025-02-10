@@ -5,7 +5,6 @@ import com.aivle.project.dto.OpportunitiesDto;
 import com.aivle.project.entity.*;
 import com.aivle.project.enums.Dept;
 import com.aivle.project.enums.Position;
-import com.aivle.project.enums.Role;
 import com.aivle.project.enums.Team;
 import com.aivle.project.repository.EmployeeRepository;
 import com.aivle.project.repository.HistoryRepository;
