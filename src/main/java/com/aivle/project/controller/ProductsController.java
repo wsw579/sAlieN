@@ -2,7 +2,6 @@ package com.aivle.project.controller;
 
 import com.aivle.project.dto.PaginationDto;
 import com.aivle.project.dto.ProductsDto;
-import com.aivle.project.entity.ContractsEntity;
 import com.aivle.project.entity.ProductsEntity;
 import com.aivle.project.enums.ProductCondition;
 import com.aivle.project.service.CrudLogsService;
@@ -19,10 +18,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.IntStream;
 
 @Controller
 @RequiredArgsConstructor
@@ -44,7 +41,7 @@ public class ProductsController {
         String search = params.getOrDefault("search", "");
         String sortColumn = params.getOrDefault("sortColumn", "productName");
         String sortDirection = params.getOrDefault("sortDirection", "asc");
-        long AICount = productsService.countAIProducts();
+        long aiCount = productsService.countAIProducts();
 
         Page<ProductsEntity> productsPage = productsService.readProducts(page, size, search, sortColumn, sortDirection);
 
@@ -53,7 +50,6 @@ public class ProductsController {
 
         // 상태별 주문 개수 가져오기
         Map<String, Long> conditionCounts = productsService.getProductConditionCounts();
-        long allCount = conditionCounts.values().stream().mapToLong(Long::longValue).sum();
 
         // Model에 데이터 추가
         model.addAttribute("pagination", paginationDto);
@@ -74,7 +70,7 @@ public class ProductsController {
         model.addAttribute("discontinuedCount", conditionCounts.getOrDefault("discontinued", 0L));
 
         // AI 모델의 수
-        model.addAttribute("AICount",AICount);
+        model.addAttribute("AICount",aiCount);
 
         return "products/products_read";
     }
