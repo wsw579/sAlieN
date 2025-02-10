@@ -15,9 +15,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const leadCount = data.leadCount; // 서버에서 반환한 leadCount
 
             // HTML 요소에 값 삽입
-//            const statusElement = document.querySelector("#leadStatus");
             const countElement = document.querySelector("#underReviewLeads");
-
             countElement.textContent = leadCount; // 개수를 삽입
         })
         .catch(error => console.error("Error fetching leads by status:", error));

@@ -1,13 +1,10 @@
 package com.aivle.project.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.time.LocalDate;
 
 @Entity
 @NoArgsConstructor
@@ -40,7 +37,5 @@ public class ChatbotLogsEntity {
 
     @Column(nullable = true, length = 2000)
     private String systemResponse;
-
-
 
 }

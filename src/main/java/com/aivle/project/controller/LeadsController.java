@@ -28,10 +28,8 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-//automatically generates a constructor for all final fields in the class
 @RequiredArgsConstructor
 public class LeadsController {
-    // declares a dependency on the LeadsService class
     private final LeadsService leadsService;
     private final AccountService accountService;
     private final EmployeeService employeeService;
@@ -47,12 +45,10 @@ public class LeadsController {
         String sortColumn = params.getOrDefault("sortColumn", "createdDate");
         String sortDirection = params.getOrDefault("sortDirection", "desc");
 
-
         Page<LeadsEntity> leadsPage = leadsService.readLeads(page, size, search, sortColumn, sortDirection);
 
         // 페이지네이션 데이터 생성
         PaginationDto<LeadsEntity> paginationDto = paginationService.createPaginationData(leadsPage, page, 5);
-
 
         // 상태별 주문 개수 가져오기
         Map<String, Long> statusCounts = leadsService.getLeadStatusCounts();
@@ -107,7 +103,6 @@ public class LeadsController {
     // new lead를 만드는 페이지
     @GetMapping("/leads/detail/create")
     public String leadsCreate(Model model) {
-        // new instance of the LeadsEntity class
         LeadsEntity leads = new LeadsEntity();
 
         // 로딩속도를 올리기 위해 findAll -> id와 name만 가져오게 변경
@@ -240,35 +235,6 @@ public class LeadsController {
         }
     }
 
-//    // 오늘 추가된 Leads 수 반환
-//    @GetMapping("/api/leads/today")
-//    public ResponseEntity<Map<String, Object>> getTodayLeads() {
-//        long count = leadsService.getTodayLeadsForTeam();
-//        Map<String, Object> response = new HashMap<>();
-//        response.put("todayLeads", count);
-//        return ResponseEntity.ok(response);
-//    }
-//
-//    // 특정 상태의 Leads 수 반환
-//    @GetMapping("/api/leads/status")
-//    public ResponseEntity<Map<String, Object>> countLeadsByStatus(@RequestParam String leadStatus) {
-//        long count = leadsService.countLeadsByStatusAndTeam(leadStatus);
-//        Map<String, Object> response = new HashMap<>();
-//        response.put("leadStatus", leadStatus);
-//        response.put("leadCount", count);
-//        return ResponseEntity.ok(response);
-//    }
-//
-//    // 오늘 마감인 Leads 수 반환
-//    @GetMapping("/api/leads/target-close-today")
-//    public ResponseEntity<Map<String, Object>> countLeadsWithTargetCloseDateToday() {
-//        long count = leadsService.countLeadsWithTargetCloseDateTodayForTeam();
-//        Map<String, Object> response = new HashMap<>();
-//        response.put("targetCloseDate", "Today");
-//        response.put("leadCount", count);
-//        return ResponseEntity.ok(response);
-//    }
-
     // AI 음성인식
     @PostMapping("/leads/auto")
     public ResponseEntity<Map<String, Object>> handleFileUpload(@RequestPart("audio_file") MultipartFile audio_file) {
@@ -278,7 +244,6 @@ public class LeadsController {
             if (!"audio/mpeg".equals(contentType) && !"audio/wav".equals(contentType) && !"audio/x-wav".equals(contentType)) {
                 throw new IllegalArgumentException("MP3 또는 WAV 파일만 업로드 가능합니다.");
             }
-
 
             // fastApiUrl
             String fastApiUrl = "http://127.0.0.1:8000/leads/auto";

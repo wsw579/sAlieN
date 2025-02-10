@@ -2,7 +2,6 @@ package com.aivle.project.repository;
 
 import com.aivle.project.entity.EmployeeEntity;
 import com.aivle.project.entity.OpportunitiesEntity;
-import com.aivle.project.entity.OrdersEntity;
 import com.aivle.project.enums.Dept;
 import com.aivle.project.enums.Team;
 import org.springframework.data.domain.Page;
@@ -11,10 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
 import java.util.List;
-import java.util.Map;
-
 
 @Repository
 public interface OpportunitiesRepository extends JpaRepository<OpportunitiesEntity, Long> {
@@ -158,8 +154,6 @@ public interface OpportunitiesRepository extends JpaRepository<OpportunitiesEnti
             "ORDER BY o.createdDate DESC")
     Page<OpportunitiesEntity> findOngoingOpportunitiesByDept(@Param("departmentId") Dept departmentId, Pageable pageable);
 
-
-
     // 차트 그래프
     @Query("SELECT MONTH(o.createdDate), COUNT(o) " +
             "FROM OpportunitiesEntity o " +
@@ -177,7 +171,6 @@ public interface OpportunitiesRepository extends JpaRepository<OpportunitiesEnti
     List<Object[]> getMonthlyOpportunitiesTeam(
             @Param("year") int year,
             @Param("teamId") Team teamId);
-
 
     // calendar
     List<OpportunitiesEntity> findByEmployeeId(EmployeeEntity employeeId);
@@ -203,9 +196,6 @@ public interface OpportunitiesRepository extends JpaRepository<OpportunitiesEnti
             "ORDER BY opportunity_count DESC " +
             "LIMIT 5", nativeQuery = true)
     List<Object[]> findTop5ByDepartmentWithCount(@Param("dept") String dept);
-
-
-
 
 }
 
