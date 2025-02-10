@@ -23,11 +23,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 closedElement.textContent = `${statusCounts["Closed"]} 건`;
             }
 
-//            // 보류 값 삽입
-//            if (statusCounts["Pending"]) {
-//                const pendingElement = document.getElementById("pendingCountTeam");
-//                pendingElement.textContent = `${statusCounts["Pending"]} 건`;
-//            }
         })
         .catch(error => console.error('Error fetching status counts:', error));
 });
