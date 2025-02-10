@@ -294,16 +294,6 @@ function formatCurrency(value) {
                 form.action = "/products/detail/create";
             }
 
-            var updateButton = document.getElementById("updateButton");
-            if (updateButton) {
-                updateButton.addEventListener("click", function(event) {
-                    var confirmSave = confirm("변경사항을 저장하겠습니까?");
-                    if (!confirmSave) {
-                        event.preventDefault();
-                    }
-                });
-            }
-
         {{#productId}}
         var deleteButton = document.getElementById("deleteButton");
         if (deleteButton) {
@@ -342,6 +332,28 @@ function formatCurrency(value) {
     {{/productId}}
         });
     {{/products}}
+        document.addEventListener("DOMContentLoaded", function () {
+    var updateButton = document.getElementById("updateButton");
+
+    if (!updateButton) {
+        console.error("❌ updateButton을 찾을 수 없음! 버튼이 HTML에 존재하는지 확인하세요.");
+    } else {
+        console.log("✅ updateButton 찾음! 이벤트 리스너 등록 중...");
+
+        updateButton.addEventListener("click", function (event) {
+            console.log("🛠 updateButton 클릭됨! confirm() 실행 예정...");
+
+            var confirmSave = confirm("변경사항을 저장하겠습니까?");
+            if (!confirmSave) {
+                console.log("❌ 사용자가 취소를 눌렀습니다.");
+                event.preventDefault();
+            } else {
+                console.log("✅ 사용자가 확인을 눌렀습니다. 저장 진행!");
+            }
+        });
+    }
+});
+
 
         document.addEventListener("DOMContentLoaded", function () {
         const form = document.getElementById("productForm");

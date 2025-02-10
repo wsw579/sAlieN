@@ -38,8 +38,6 @@ public class ProductsService {
         // 현재 사용자 정보 가져오기
         String currentUserId = UserContext.getCurrentUserId();
         System.out.println("현재 로그인된 사용자 ID: " + currentUserId);
-        // 데이터베이스에서 EmployeeEntity 로드
-        EmployeeEntity employee = employeeRepository.findByEmployeeId(currentUserId);
 
         ProductsEntity productEntity = convertDtoToEntity(dto);
 
@@ -149,12 +147,6 @@ public class ProductsService {
         entity.setProductFamily(dto.getProductFamily());
         entity.setEmployeeId(employee);
         productsRepository.save(entity);
-    }
-
-    private ProductsDto convertIdToDto(Long id) {
-        ProductsDto dto = new ProductsDto();
-        dto.setProductId(id);
-        return dto;
     }
 
     public long countAIProducts() {
