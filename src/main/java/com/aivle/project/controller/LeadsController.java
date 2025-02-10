@@ -154,6 +154,9 @@ public class LeadsController {
     public String leadsCreateNew(@ModelAttribute @Valid LeadsDto leadsDto, BindingResult bindingResult, RedirectAttributes redirectAttributes){
         try {
             if (bindingResult.hasErrors()) {
+                System.out.println("유효성 검사 실패");
+                // 모든 에러 메시지 출력
+                bindingResult.getAllErrors().forEach(error -> System.out.println(error.getDefaultMessage()));
                 // 유효성 검사 실패 시 에러 메시지 출력
                 return "leads/leads_detail"; // 에러가 있으면 폼으로 다시 이동
             }
