@@ -17,7 +17,6 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class ContractsDto {
 
-    @NotNull(message = "Contract ID는 필수입니다.")
     private Long contractId;
 
     @NotBlank(message = "계약 상태는 필수입니다.")

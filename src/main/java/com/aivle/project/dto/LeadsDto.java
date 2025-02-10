@@ -18,7 +18,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LeadsDto {
-    @NotNull(message = "Lead ID는 필수입니다.")
     private Long leadId;
 
     @NotBlank(message = "리드 상태는 필수입니다.")
