@@ -196,6 +196,53 @@
 
                 <div class="card-body">
                     <table id="opportunities_detail">
+
+                        <input type="file" id="fileInput" style="display: none;">
+                        <div id="loader"></div>
+                        <div id="loadingText">잠시만 기다려 주세요. 예상 시간: <span id="estimatedTime">15초</span></div>
+                        <script src="app.js"></script>
+
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                var estimatedTimeElement = document.getElementById('estimatedTime');
+                                var totalTimeInSeconds = 15; // 1분 30초를 초로 변환
+                                var interval;
+
+                                function updateCountdown() {
+                                    var minutes = Math.floor(totalTimeInSeconds / 60);
+                                    var seconds = totalTimeInSeconds % 60;
+                                    estimatedTimeElement.textContent = minutes + '분 ' + seconds + '초';
+
+                                    if (totalTimeInSeconds > 0) {
+                                        totalTimeInSeconds--;
+                                    } else {
+                                        clearInterval(interval);
+                                        estimatedTimeElement.textContent = '생성이 곧 완료됩니다.';
+                                    }
+                                }
+
+                                    function startCountdown() {
+                                    totalTimeInSeconds = 15; // 초기 시간 설정
+                                    clearInterval(interval);
+                                    updateCountdown();
+                                    interval = setInterval(updateCountdown, 1000);
+                                }
+
+                                document.getElementById('proposalExcelButton').addEventListener('click', function() {
+                                    startCountdown();
+                                });
+
+                                document.getElementById('proposalButton').addEventListener('click', function() {
+                                    startCountdown();
+                                });
+
+
+                            });
+                        </script>
+
+
+
+
                         {{#opportunities}}
                             <div class="button-container mb-3">
 
@@ -963,8 +1010,12 @@ event.preventDefault();
     try {
             const employeeSelect = document.querySelector('#employeeId');
             const productSelect = document.querySelector('#productId');
-           const accountSelect = document.querySelector('#accountId');
-           if (!accountSelect.value) {
+            const loader = document.getElementById('loader');
+            const loadingText = document.getElementById('loadingText');
+            const estimatedTime = document.getElementById('estimatedTime');
+
+            const accountSelect = document.querySelector('#accountId');
+            if (!accountSelect.value) {
                   throw new Error('회사를 선택해주세요.');
                  }
             const selectedAccountOption = accountSelect.options[accountSelect.selectedIndex];
@@ -1019,6 +1070,10 @@ event.preventDefault();
              수량 : quantityFloat,
              기회매출 : expectedRevenueFloat
         };
+
+        // api 요청 전 전 로딩 스피너 및 예상 시간 표시
+        loader.style.display = 'block';
+        loadingText.style.display = 'block';
 
         console.log('전송할 데이터:', dataToSend);
          // 다운로드 진행중 팝업창 생성
@@ -1035,6 +1090,8 @@ event.preventDefault();
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
+                loader.style.display = 'none'; // 로딩 스피너 숨기기
+                loadingText.style.display = 'none'; // 예상 시간 숨기기
             }
             return response.blob();
         })
@@ -1051,14 +1108,20 @@ event.preventDefault();
 
             // 다운로드 완료 팝업창 생성
             alert('제안서 다운로드가  완료되었습니다. ✨');
+            loader.style.display = 'none'; // 로딩 스피너 숨기기
+            loadingText.style.display = 'none'; // 예상 시간 숨기기
         })
         .catch(error => {
             console.error('Error:', error);
             alert('제안서 생성 중 오류가 발생했습니다. 다시 시도해 주세요.');
+            loader.style.display = 'none'; // 로딩 스피너 숨기기
+            loadingText.style.display = 'none'; // 예상 시간 숨기기
         });
     } catch (error) {
         console.error('Error:', error);
         alert(error.message || '입력 정보를 확인할 수 없습니다. ❗모든 필드가 올바르게 입력되었는지 확인해 주세요.❗');
+        loader.style.display = 'none'; // 로딩 스피너 숨기기
+        loadingText.style.display = 'none'; // 예상 시간 숨기기
     }
     });
 
@@ -1069,6 +1132,9 @@ event.preventDefault();
     try {
             const employeeSelect = document.querySelector('#employeeId');
             const productSelect = document.querySelector('#productId');
+            const loader = document.getElementById('loader');
+           const loadingText = document.getElementById('loadingText');
+           const estimatedTime = document.getElementById('estimatedTime');
 
            const accountSelect = document.querySelector('#accountId');
            if (!accountSelect.value) {
@@ -1127,6 +1193,10 @@ event.preventDefault();
              기회매출 : expectedRevenueFloat
         };
 
+        // api 요청 전 로딩 스피너 및 예상 시간 표시
+        loader.style.display = 'block';
+        loadingText.style.display = 'block';
+
         console.log('전송할 데이터:', dataToSend);
          // 다운로드 진행중 팝업창 생성
          alert(' 다운로드 중 입니다 . . . .  🚀 잠시만 기다려주세요. ');
@@ -1141,6 +1211,8 @@ event.preventDefault();
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
+                loader.style.display = 'none'; // 로딩 스피너 숨기기
+                loadingText.style.display = 'none'; // 예상 시간 숨기기
             }
             return response.blob();
         })
@@ -1157,14 +1229,20 @@ event.preventDefault();
 
             // 다운로드 완료 팝업창 생성
             alert('제안서 다운로드가  완료되었습니다.✨');
+            loader.style.display = 'none'; // 로딩 스피너 숨기기
+            loadingText.style.display = 'none'; // 예상 시간 숨기기
         })
         .catch(error => {
             console.error('Error:', error);
             alert('제안서 생성 중 오류가 발생했습니다. 다시 시도해 주세요.');
+            loader.style.display = 'none'; // 로딩 스피너 숨기기
+            loadingText.style.display = 'none'; // 예상 시간 숨기기
         });
     } catch (error) {
         console.error('Error:', error);
         alert(error.message || '입력 정보를 확인할 수 없습니다. ❗모든 필드가 올바르게 입력되었는지 확인해 주세요.❗');
+        loader.style.display = 'none'; // 로딩 스피너 숨기기
+        loadingText.style.display = 'none'; // 예상 시간 숨기기
     }
     });
         {{/opportunities}}
