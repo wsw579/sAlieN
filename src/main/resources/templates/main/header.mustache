@@ -227,10 +227,29 @@
             background-color: #007bff;
             color: white;
             padding: 10px;
-            text-align: center;
             font-size: 18px;
             font-weight: bold;
+            position: relative;  /* 내부 요소들의 절대 위치 설정을 위한 기준 */
+            display: flex;
+            align-items: center; /* 세로 중앙 정렬 */
+            height: 50px; /* 제목 바의 높이 설정 */
         }
+
+        .chatbot-title {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%); /* X축 기준 정확히 중앙 정렬 */
+            white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+        }
+
+        .close {
+            position: absolute;
+            right: 10px; /* 닫기 버튼을 오른쪽 끝으로 배치 */
+            top: 50%;
+            transform: translateY(-50%); /* 세로 중앙 정렬 */
+            cursor: pointer;
+        }
+
 
         .close {
             color: #aaa;
@@ -455,7 +474,9 @@
     <div id="chatbotModal" hidden class="chatbot-modal">
         <div class="chatbot-modal-content">
             <div class="chatbot-title-bar">
-                sAIien chat bot
+<!--                sAIien chat bot-->
+<!--                <span class="close">&times;</span>-->
+                <span class="chatbot-title">sAIien chat bot</span>
                 <span class="close">&times;</span>
             </div>
             <div id="chatbotMessages" class="chat-container"></div>
