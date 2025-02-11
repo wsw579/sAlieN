@@ -98,6 +98,50 @@
 
                 <div class="card-body">
                     <table id="leads_detail">
+
+                        <input type="file" id="fileInput" style="display: none;">
+                        <div id="loader"></div>
+                        <div id="loadingText">잠시만 기다려 주세요. 예상 시간: <span id="estimatedTime">1분 30초</span></div>
+                        <script src="app.js"></script>
+
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                var estimatedTimeElement = document.getElementById('estimatedTime');
+                                var totalTimeInSeconds = 1 * 60 + 30; // 1분 30초를 초로 변환
+                                var interval;
+
+                                function updateCountdown() {
+                                    var minutes = Math.floor(totalTimeInSeconds / 60);
+                                    var seconds = totalTimeInSeconds % 60;
+                                    estimatedTimeElement.textContent = minutes + '분 ' + seconds + '초';
+
+                                    if (totalTimeInSeconds > 0) {
+                                        totalTimeInSeconds--;
+                                    } else {
+                                        clearInterval(interval);
+                                        estimatedTimeElement.textContent = '생성이 곧 완료됩니다.';
+                                    }
+                                }
+
+                                    function startCountdown() {
+                                    totalTimeInSeconds = 1 * 60 + 30; // 초기 시간 설정
+                                    clearInterval(interval);
+                                    updateCountdown();
+                                    interval = setInterval(updateCountdown, 1000);
+                                }
+
+                                document.getElementById('autoButton').addEventListener('click', function() {
+                                    startCountdown();
+                                });
+
+
+                            });
+                        </script>
+
+
+
+
+
                         {{#leads}}
                             <div class="button-container mb-3 d-flex gap-2">
                                 <a href="/leads/detail/create" class="btn btn-custom-create btn-sm me-2" id="createButton">
@@ -125,6 +169,11 @@
                                         <i class="bi bi-mic"></i> 🎙️ AI 자동 생성
                                     </button>
                                 </div>
+
+
+
+
+
                             {{/leadId}}
 
 
@@ -551,6 +600,9 @@
 document.addEventListener('DOMContentLoaded', function () {
     const autoButton = document.getElementById('autoButton');
     const fileInput = document.getElementById('fileInput');
+    const loader = document.getElementById('loader');
+    const loadingText = document.getElementById('loadingText');
+    const estimatedTime = document.getElementById('estimatedTime');
 
     // "자동 생성" 버튼 클릭 시 숨겨진 파일 입력 필드 클릭
     autoButton.addEventListener('click', function () {
@@ -567,6 +619,10 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         console.log('선택된 파일:', selectedFile.name);
+
+        // 파일 업로드 전 로딩 스피너 및 예상 시간 표시
+        loader.style.display = 'block';
+        loadingText.style.display = 'block';
 
         // 서버로 파일 업로드
         uploadFileWithTimeout(selectedFile);
@@ -591,6 +647,9 @@ document.addEventListener('DOMContentLoaded', function () {
         })
             .then((response) => {
                 clearTimeout(timeoutId); // 타임아웃 해제
+                loader.style.display = 'none'; // 로딩 스피너 숨기기
+                loadingText.style.display = 'none'; // 예상 시간 숨기기
+
                 if (!response.ok) {
                     throw new Error(`서버 오류! 상태 코드: ${response.status} - ${response.statusText}`);
                 }
@@ -604,6 +663,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 populateForm(data); // 서버에서 받은 데이터를 populateForm 함수로 전달
             })
             .catch((error) => {
+
+                loader.style.display = 'none'; // 로딩 스피너 숨기기
+                loadingText.style.display = 'none'; // 예상 시간 숨기기
+
                 if (error.name === 'AbortError') {
                     alert('요청 시간이 초과되었습니다.');
                 } else {
