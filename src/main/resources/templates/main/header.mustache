@@ -480,6 +480,76 @@
             cursor: grabbing !important; /* 드래그 중 grabbing 유지 */
             opacity: 0.8; /* 시각적으로 드래그 중임을 강조 */
         }
+
+
+
+        .btn.active {
+            background-color: red; /* 음성 인식 중일 때 배경색 변경 */
+            color: white;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .loading-spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top-color: red;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-left: 5px;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .input-container {
+            display: flex;  /* 가로 정렬 */
+            align-items: center;
+            width: 100%; /* 부모 요소 너비 100% */
+        }
+
+        #chatbotInput {
+            flex: 8;  /* 80% 차지 */
+            height: 40px;
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        #voiceInputButton {
+            flex: 2; /* 20% 차지 */
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #voiceInputButton i {
+            font-size: 2rem; /* 아이콘 크기 */
+        }
+
+
+
     </style>
 
     <!-- 챗봇 버튼 -->
@@ -505,6 +575,7 @@
             <div class="input-container">
                 <input type="text" id="chatbotInput" placeholder="메시지를 입력하세요..." onkeydown="if (event.key === 'Enter') sendChatbotMessage();">
                 <button id="voiceInputButton" class= "btn btn-custom-select btn-sm"><i class="fas fa-microphone"></i></button>
+                <span id="loadingIndicator" class="loading-spinner" hidden></span> <!-- 음성 인식 로딩 표시 추가-->
                 <button id="sendChatbotMessage">Send</button>
             </div>
         </div>
@@ -670,6 +741,8 @@
                     recognizing = true;
                     document.getElementById('dingup').play();
                     console.log('Speech recognition started');
+                    document.getElementById('voiceInputButton').classList.add('active'); // 추가
+                    document.getElementById('loadingIndicator').hidden = false; // 로딩 애니메이션 표시 추가
                 };
 
                 recognition.onresult = function(event) {
@@ -704,6 +777,8 @@
                     //음성 인식 메시지 자동 전송
                     sendChatbotMessage();
 
+                    document.getElementById('voiceInputButton').classList.remove('active'); // 추가
+                    document.getElementById('loadingIndicator').hidden = true; // 로딩 애니메이션 숨김 추가
 
                 };
 
@@ -712,9 +787,11 @@
 
                     if (recognizing) {
                         recognition.stop();
+                        this.classList.remove('active'); // 음성 인식 종료 시 원래 스타일로 복구 추가
                     } else {
                         finalTranscript = document.getElementById('chatbotInput').value; // Reset the final transcript to current input
                         recognition.start();
+                        this.classList.add('active'); // 음성 인식 중 스타일 변경 추가
                     }
                 };
             } else {
