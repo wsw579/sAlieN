@@ -27,7 +27,6 @@ public class LeadsDto {
     private LocalDate createdDate;
 
     @NotNull(message = "리드 종료일은 필수입니다.")
-    @FutureOrPresent(message = "리드 종료일은 미래 또는 현재여야 합니다.")
     private LocalDate targetCloseDate;
 
     @NotBlank(message = "고객 문의사항는 필수입니다.")

@@ -426,10 +426,7 @@
                     alert("리드 시작일은 오늘 또는 과거여야 합니다.");
                     isValid = false;
                 }
-                if (targetClose < today) {
-                    alert("리드 종료일은 오늘 또는 미래여야 합니다.");
-                    isValid = false;
-                }
+
                 if (targetClose < created) {
                     alert("마감기한은 생성일자보다 이후여야 합니다.");
                     isValid = false;
