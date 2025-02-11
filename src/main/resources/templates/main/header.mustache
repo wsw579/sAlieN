@@ -1242,7 +1242,8 @@
 
                     var normalizedResponse = data.response.replace(/\\n/g, ' ').replace(/\n/g, ' ').replace(/{[^{}]*}/g, '').replace(/<br>/g, '');
                     //fetch('http://127.0.0.1:8000/tts', {
-                    fetch('https://saiescrm.tts.jyds.synology.me/tts', {
+                    //fetch('https://saiescrm.tts.jyds.synology.me/tts', {
+                    fetch('https://saiescrm.api.jyds.synology.me/tts', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
