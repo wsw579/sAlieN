@@ -21,7 +21,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/login","/signup","/api/signup/register","/api/generateEmployeeId","/password-find").permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/admin/**","/employee-list/**", "/chatbot_logs", "/crud_logs").hasRole("ADMIN")
                         .requestMatchers("/css/**","/assets/**","/data/**","/js/**").permitAll()
                         .anyRequest().authenticated()
                 );

@@ -2,7 +2,6 @@
 
 <style>
 
-
     /* 진행 상태바 컨테이너 */
 .progress-container {
     position: relative;
@@ -182,7 +181,7 @@
                                     <i class="fas fa-save"></i> 저장
                                 </button>
                             </div>
-                        </form> <!-- 폼 닫기 -->
+                        </form>
                         {{/products}}
                     </form>
                     </table>
@@ -197,7 +196,6 @@
             </div>
             <div class="card-body">
                 <table id="products_status">
-
 
                     {{#products}}
                         <tbody>
@@ -225,14 +223,7 @@
 
 
 
-
-
         // 초기값 설정
-
-
-
-
-
         // 원화 표시
         document.addEventListener("DOMContentLoaded", function () {
     let inputs = document.querySelectorAll(".currency-input");

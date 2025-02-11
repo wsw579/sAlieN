@@ -1,7 +1,6 @@
 {{>main/header}}
 
 <style>
-
     .progress-container {
         position: relative;
         width: 100%;
@@ -73,7 +72,6 @@
 </style>
 
 
-
 <div id="layoutSidenav_content">
     <main>
         <div class="container-fluid px-4">
@@ -88,7 +86,6 @@
             </div>
             <div class="row">
             </div>
-
 
 
             <!-- 리드 상세내용 부분 -->
@@ -161,9 +158,6 @@
                             </div>
 
 
-
-
-
                             {{#leadId}}
                             <form id="leadForm" action="/leads/detail/{{leadId}}/update" method="POST">
                             {{/leadId}}
@@ -181,7 +175,6 @@
 
 
                             {{/leadId}}
-
 
 
                             <div class="mb-3 row">
@@ -310,8 +303,6 @@
                                     </div>
                                 </div>
                             </div>
-
-
                         </table>
                     </div>
                 </div>
@@ -328,7 +319,7 @@
             alert("{{message}}");
         {{/message}}
 
-                // Form 부분 리드상태 초기값 연동 JS (select Form은 html로 초기 value 지정이 안되어서 JS로 처리)
+ // Form 부분 리드상태 초기값 연동 JS (select Form은 html로 초기 value 지정이 안되어서 JS로 처리)
     {{#leads}}
         {{#leadId}}
         document.addEventListener("DOMContentLoaded", function() {
@@ -403,10 +394,6 @@
                 companyNameField.value = inputValue; // 입력값을 companyName에 저장
             }
         }
-
-
-
-
 
     // 폼 제출 시 회사명이 비어 있는지 확인
     document.addEventListener("DOMContentLoaded", function () {
@@ -539,8 +526,6 @@
     });
 
 
-
-
     // Form 삭제버튼 클릭 시 현 주소가 create인경우 create로 action주소 변경.
 
     document.addEventListener("DOMContentLoaded", function() {
@@ -562,8 +547,6 @@
             }
         });
     });
-
-
 
 
     // 현재 진행상황 bar JS

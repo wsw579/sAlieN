@@ -13,15 +13,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // 📌 연도 선택 & 월 변경 버튼 추가
     const monthControlDiv = document.createElement("div");
-    monthControlDiv.classList.add("d-flex", "align-items-center", "justify-content-center", "flex-grow-1");
+    monthControlDiv.classList.add("d-flex", "align-items-center", "mx-auto");
     monthControlDiv.innerHTML = `
         <button id="prevMonthBtn" class="btn btn-outline-secondary btn-sm mx-1">&lt;</button>
         <span id="selectedMonthYear" class="mx-2">${selectedYear}년 ${selectedMonth}월</span>
         <button id="nextMonthBtn" class="btn btn-outline-secondary btn-sm mx-1">&gt;</button>
     `;
 
-    draftChartHeader.classList.add("d-flex", "justify-content-between", "align-items-center");
+    draftChartHeader.classList.add("d-flex", "align-items-center", "position-relative");
     draftChartHeader.appendChild(monthControlDiv);
+    monthControlDiv.style.position = "absolute";
+    monthControlDiv.style.left = "50%";
 
     const prevMonthBtn = document.getElementById("prevMonthBtn");
     const nextMonthBtn = document.getElementById("nextMonthBtn");

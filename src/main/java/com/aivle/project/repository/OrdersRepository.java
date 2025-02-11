@@ -1,17 +1,14 @@
 package com.aivle.project.repository;
 
-import com.aivle.project.dto.OrdersDto;
 import com.aivle.project.entity.ContractsEntity;
 import com.aivle.project.entity.OrdersEntity;
 import com.aivle.project.enums.Dept;
-import com.aivle.project.enums.Role;
 import com.aivle.project.enums.Team;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
 import java.time.LocalDate;
 import java.util.List;
 
@@ -72,9 +69,6 @@ public interface OrdersRepository extends JpaRepository<OrdersEntity, Long> {
             "GROUP BY MONTH(o.orderDate)")
     List<Object[]> getMonthlyOrdersManager(@Param("year") int year);
 
-
-
-
     // 메인화면
     // 영업 실적 그래프
     @Query("SELECT e.employeeId AS employeeId, e.employeeName AS employeeName, " +
@@ -94,10 +88,10 @@ public interface OrdersRepository extends JpaRepository<OrdersEntity, Long> {
 
     @Query("SELECT e.departmentId AS departmentId, " +
             "CASE e.departmentId " +
-            "   WHEN 'STRATEGY_DEPT' THEN '전략고객본부' " +
-            "   WHEN 'PUBLIC_DEPT' THEN '공공고객본부' " +
-            "   WHEN 'FINANCE_DEPT' THEN '금융고객본부' " +
-            "   WHEN 'CORPORATE_DEPT' THEN '법인영업본부' " +
+            "   WHEN 'STRATEGY_DEPT' THEN '전략고객부서' " +
+            "   WHEN 'PUBLIC_DEPT' THEN '공공고객부서' " +
+            "   WHEN 'FINANCE_DEPT' THEN '금융고객부서' " +
+            "   WHEN 'CORPORATE_DEPT' THEN '법인영업부서' " +
             "   ELSE '기타' END AS departmentName, " +
             "SUM(o.orderAmount * p.fixedPrice) AS totalSales " +
             "FROM OrdersEntity o " +

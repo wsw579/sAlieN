@@ -362,10 +362,6 @@
             }
         }
 
-
-
-
-
     // 폼 제출 시 회사명이 비어 있는지 확인
     document.querySelector("form").addEventListener("submit", function (e) {
         const companyNameField = document.getElementById("companyName");
@@ -415,11 +411,7 @@
         {{/leadId}}
     });
 
-
-
-
-    // Form 삭제버튼 클릭 시 현 주소가 create인경우 create로 action주소 변경.
-
+    // Form 삭제 버튼 클릭 시 현 주소가 create인경우 create로 action주소 변경.
     document.addEventListener("DOMContentLoaded", function() {
         var form = document.getElementById("leadForm");
         var currentUrl = window.location.pathname;
@@ -439,9 +431,6 @@
             }
         });
     });
-
-
-
 
     // 현재 진행상황 bar JS
         document.addEventListener("DOMContentLoaded", function () {
@@ -544,7 +533,6 @@ function setInputValue(id, value) {
 
     {{/leads}}
     </script>
-
 
 
 {{>main/footer}}

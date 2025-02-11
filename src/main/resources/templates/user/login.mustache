@@ -22,7 +22,6 @@
             text-align: center;
         }
 
-
         .password-requirements {
             font-size: 12px;  /* 글자 크기 조절 */
             color: #E40087;  /* 초기 색상 빨간색 */
@@ -78,10 +77,10 @@
                 {{/error}}
             </form>
             <div class="text-center mt-3">
-                <a href="#" data-bs-toggle = "modal" data-bs-target="#passwordModal">Forgot Password?</a>
+                <a href="#" data-bs-toggle = "modal" data-bs-target="#passwordModal">비밀번호 찾기</a>
             </div>
             <div class="text-center">
-                <a href="/signup">Sign Up</a>
+                <a href="/signup">회원가입</a>
             </div>
         </div>
     </div>
@@ -96,7 +95,7 @@
                 <div class="modal-body">
                     <form id="password-form" action="/password-edit" method="POST">
                         <div class="mb-3">
-                            <label for="employee-id" class="form-label">사원번호</label>
+                            <label for="employee-id" class="form-label">아이디</label>
                             <input type="text" class="form-control" name="employeeId" id="employee-id" required>
                         </div>
                         <div class="mb-3">

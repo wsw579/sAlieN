@@ -41,11 +41,14 @@ public class IndexController {
 
             // Role이 ROLE_ADMIN이거나, 특정 Position인 경우 admin 페이지 반환
             if (Role.ROLE_ADMIN.equals(userRole) ||
-                    Position.GENERAL_MANAGER.equals(userPosition) ||
                     Position.DEPARTMENT_HEAD.equals(userPosition) ||
                     Position.TEAM_LEADER.equals(userPosition)) {
                 return "main/index_manager";
-            } else {
+            } else if(Position.GENERAL_MANAGER.equals(userPosition)){
+                return "main/index_general_manager";
+
+            }
+            else {
                 return "main/index_user";
             }
         } catch (IllegalArgumentException | NullPointerException e) {
@@ -53,7 +56,6 @@ public class IndexController {
             return "error/unauthorized"; // 에러페이지
         }
     }
-
 
     @GetMapping("/rate_plan")
     public String ratePlan(@ModelAttribute("id") String employeeId, Model model) {
@@ -247,7 +249,4 @@ public class IndexController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
     }
-
-
-
 }

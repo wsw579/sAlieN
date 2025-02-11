@@ -1,6 +1,5 @@
 package com.aivle.project.service;
 
-
 import com.aivle.project.dto.ProductsDto;
 import com.aivle.project.entity.EmployeeEntity;
 import com.aivle.project.entity.ProductsEntity;
@@ -17,7 +16,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -101,7 +99,6 @@ public class ProductsService {
     public Map<String, Object> getProductPageData(int page, int size, String search, String sortColumn, String sortDirection) {
         Page<ProductsEntity> productsPage = readProducts(page, size, search, sortColumn, sortDirection);
         Map<String, Long> conditionCounts = getProductConditionCounts();
-
         Map<String, Object> data = new HashMap<>();
         data.put("productsPage", productsPage);
         data.put("conditionCounts", conditionCounts);

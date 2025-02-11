@@ -19,16 +19,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 @Service
 @Transactional
@@ -180,7 +177,9 @@ public class OpportunitiesService {
 
         List<Object[]> results = new ArrayList<>();
 
-        if (Position.GENERAL_MANAGER.equals(userPosition) || Position.DEPARTMENT_HEAD.equals(userPosition)) {
+        if (Position.GENERAL_MANAGER.equals(userPosition)) {
+            results = opportunitiesRepository.countAllStatusesManager();
+        } else if (Position.DEPARTMENT_HEAD.equals(userPosition)) {
             String userdept = employeeRepository.findDepartmentById(userid);
             results = opportunitiesRepository.countAllStatusesDept(Dept.valueOf(userdept));
         } else if (Position.TEAM_LEADER.equals(userPosition)) {
@@ -222,7 +221,9 @@ public class OpportunitiesService {
         Pageable pageable = PageRequest.of(page, 10, Sort.by("createdDate").descending());
 
 
-        if (Position.GENERAL_MANAGER.equals(userPosition) || Position.DEPARTMENT_HEAD.equals(userPosition)) {
+        if (Position.GENERAL_MANAGER.equals(userPosition)) {
+            return opportunitiesRepository.findOngoingOpportunities(pageable);
+        } else if(Position.DEPARTMENT_HEAD.equals(userPosition)) {
             String userdept = employeeRepository.findDepartmentById(userid);
             return opportunitiesRepository.findOngoingOpportunitiesByDept(Dept.valueOf(userdept), pageable);
         } else {

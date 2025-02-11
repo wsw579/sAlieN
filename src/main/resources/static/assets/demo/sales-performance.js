@@ -62,9 +62,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
             // 데이터 키 확인 (부서/팀/직원 구분)
-                        const keyName = data[0].departmentName ? "departmentName"
-                                      : data[0].teamName ? "teamName"
-                                      : "employeeName"; // 기본값은 직원
+            const keyName = data[0].departmentName ? "departmentName"
+                 : data[0].teamName ? "teamName"
+                 : "employeeName"; // 기본값은 직원
 
             const sortedData = data.sort((a, b) => b.totalSales - a.totalSales);
             const top5Data = sortedData.slice(0, 5);

@@ -32,9 +32,6 @@
             params.push(`team=${team}`);
         } else if (dept) {
             params.push(`department=${dept}`);
-        } else {
-            console.error("No team or department available.");
-            return null;
         }
 
         params.push(`startDate=${startDate}`, `endDate=${endDate}`);
@@ -143,23 +140,21 @@
     }
 
     const monthControlDiv = document.createElement("div");
-    monthControlDiv.classList.add("d-flex", "align-items-center", "mx-auto", "justify-content-end");
+    monthControlDiv.classList.add("d-flex", "align-items-center", "mx-auto");
     monthControlDiv.innerHTML = `
-        <button id="prevMonthBtn" class="btn btn-outline-secondary btn-sm">&lt;</button>
+        <button id="prevMonthBtn" class="btn btn-outline-secondary btn-sm mx-1">&lt;</button>
         <span id="selectedMonthYear" class="mx-2">${selectedYear}년 ${selectedMonth}월</span>
-        <button id="nextMonthBtn" class="btn btn-outline-secondary btn-sm">&gt;</button>
+        <button id="nextMonthBtn" class="btn btn-outline-secondary btn-sm mx-1">&gt;</button>
     `;
 
-    employeeOrderChartHeader.classList.add("d-flex", "align-items-center", "justify-content-between");
+    employeeOrderChartHeader.classList.add("d-flex", "align-items-center", "position-relative");
     employeeOrderChartHeader.appendChild(monthControlDiv);
-//    monthControlDiv.style.position = "absolute";
-//    monthControlDiv.style.left = "50%";
-//    monthControlDiv.style.transform = "translateX(-50%)";
+    monthControlDiv.style.position = "absolute";
+    monthControlDiv.style.left = "50%";
 
     const prevMonthBtn = document.getElementById("prevMonthBtn");
     const nextMonthBtn = document.getElementById("nextMonthBtn");
     const selectedMonthYear = document.getElementById("selectedMonthYear");
-
     const minYear = 2020;
 
     function updateNavigation() {

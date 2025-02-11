@@ -2,8 +2,6 @@
 
 <style>
 
-
-
 .progress-container {
     position: relative;
     width: 100%;
@@ -73,14 +71,7 @@
     margin-top: 30px; /* 적당히 조정 */
 }
 
-
-
-
-
 </style>
-
-
-
 
 
 <div id="layoutSidenav_content">
@@ -153,7 +144,6 @@
                                 <a href="/contracts" class="btn btn-custom-select btn-sm" id="selectButton">
                                     <i class="fas fa-list"></i> 목록
                                 </a>
-
                         </div>
 
                             {{#contractId}}
@@ -162,7 +152,6 @@
                             {{^contractId}}
                             <form id="contractForm" action="/contracts/detail/create" method="POST">
                             {{/contractId}}
-
 
                             <div class="mb-3 row">
                                 <label for="startDate" class="col-sm-2 col-form-label">시작일자:</label>
@@ -278,7 +267,6 @@
                                 </div>
                             </div>
 
-
                             <div class="d-flex justify-content-end">
                                 <button type="submit" id="updateButton" class="btn btn-custom-update btn-sm">
                                     <i class="fas fa-save"></i> 저장
@@ -321,7 +309,6 @@
                     </div>
                 {{/contractId}}
             </div>
-
 
 
             <!-- 주문 부분 -->
@@ -519,9 +506,6 @@
 
             addFileUploadListener(); // 초기 업로드 폼에 리스너 추가
         });
-
-
-
 
 
                                                         document.addEventListener("DOMContentLoaded", function () {

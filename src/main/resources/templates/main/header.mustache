@@ -77,8 +77,6 @@
     <!-- Navbar Search-->
     <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
         <div class="input-group">
-<!--            <input class="form-control" type="text" placeholder="Search for..." aria-label="Search for..." aria-describedby="btnNavbarSearch" />-->
-<!--            <button class="btn btn-primary" id="btnNavbarSearch" type="button"><i class="fas fa-search"></i></button>-->
         </div>
     </form>
 
@@ -103,12 +101,7 @@
             </ul>
         </li>
     </ul>
-
-
-
-
 </nav>
-
 
 
 <div id="layoutSidenav">
@@ -117,14 +110,11 @@
             <div class="sb-sidenav-menu">
                 <div class="nav">
 
-
                     <div class="sb-sidenav-menu-heading">Main</div>
                     <a class="nav-link" href="/">
                         <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                         Main
                     </a>
-
-
 
                     <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseCS" aria-expanded="false" aria-controls="collapseCS">
                         <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
@@ -139,8 +129,6 @@
 
                         </nav>
                     </div>
-
-
 
 
                     <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseSales" aria-expanded="false" aria-controls="collapseSales">
@@ -162,7 +150,6 @@
                     </div>
 
 
-
                     <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseMarketing" aria-expanded="false" aria-controls="collapseMarketing">
                         <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
                         Marketing
@@ -175,7 +162,6 @@
                             <a class="nav-link" href="/products">Products</a>
                         </nav>
                     </div>
-
 
 
                     <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseSCM" aria-expanded="false" aria-controls="collapseSCM">
@@ -191,31 +177,33 @@
                         </nav>
                     </div>
 
+                    {{#id}}
+                        {{#isAdmin}}
+                            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseINFO" aria-expanded="false" aria-controls="collapseINFO">
+                                <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                                Member
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="collapseINFO" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="/employee-list">Employee Directory</a>
+                                </nav>
+                            </div>
+                            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLogs" aria-expanded="false" aria-controls="collapseLogs">
+                                <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                                Logs
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="collapseLogs" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="/chatbot_logs">Chatbot Logs</a>
+                                    <a class="nav-link" href="/crud_logs">CRUD Logs</a>
 
+                                </nav>
+                            </div>
+                        {{/isAdmin}}
+                    {{/id}}
 
-                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseINFO" aria-expanded="false" aria-controls="collapseINFO">
-                        <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
-                        Member
-                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                    </a>
-                    <div class="collapse" id="collapseINFO" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
-                        <nav class="sb-sidenav-menu-nested nav">
-                            <a class="nav-link" href="/employee-list">Employee Directory</a>
-                        </nav>
-                    </div>
-
-                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLogs" aria-expanded="false" aria-controls="collapseLogs">
-                        <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
-                        Logs
-                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                    </a>
-                    <div class="collapse" id="collapseLogs" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
-                        <nav class="sb-sidenav-menu-nested nav">
-                            <a class="nav-link" href="/chatbot_logs">Chatbot Logs</a>
-                            <a class="nav-link" href="/crud_logs">CRUD Logs</a>
-
-                        </nav>
-                    </div>
                 </div>
             </div>
             <div class="sb-sidenav-footer">
@@ -224,11 +212,6 @@
             </div>
         </nav>
     </div>
-
-
-
-
-
 
 
     <!-- Add this after the existing HTML code -->
@@ -266,10 +249,29 @@
             background-color: #007bff;
             color: white;
             padding: 10px;
-            text-align: center;
             font-size: 18px;
             font-weight: bold;
+            position: relative;  /* 내부 요소들의 절대 위치 설정을 위한 기준 */
+            display: flex;
+            align-items: center; /* 세로 중앙 정렬 */
+            height: 50px; /* 제목 바의 높이 설정 */
         }
+
+        .chatbot-title {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%); /* X축 기준 정확히 중앙 정렬 */
+            white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+        }
+
+        .close {
+            position: absolute;
+            right: 10px; /* 닫기 버튼을 오른쪽 끝으로 배치 */
+            top: 50%;
+            transform: translateY(-50%); /* 세로 중앙 정렬 */
+            cursor: pointer;
+        }
+
 
         .close {
             color: #aaa;
@@ -494,7 +496,9 @@
     <div id="chatbotModal" hidden class="chatbot-modal">
         <div class="chatbot-modal-content">
             <div class="chatbot-title-bar">
-                sAIien chat bot
+<!--                sAIien chat bot-->
+<!--                <span class="close">&times;</span>-->
+                <span class="chatbot-title">sAIien chat bot</span>
                 <span class="close">&times;</span>
             </div>
             <div id="chatbotMessages" class="chat-container"></div>
@@ -1214,12 +1218,6 @@
                 var initialMessage = "<div class='chat-container'><div class='bot-info message-info'>sAIes CRM</div><div class='bot-message'>안녕하세요. CRM 어시스던트 입니다. 무엇을 도와드릴까요?<br><span class='message-info'>" + new Date().toLocaleTimeString() + "</span></div></div>";
                 document.getElementById('chatbotMessages').innerHTML = initialMessage;
             };
-
-
-
-
-
-
 
         });
 

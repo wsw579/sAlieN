@@ -11,23 +11,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 ongoingElement.textContent = `${statusCounts["Ongoing"]} 건`;
             }
 
-//            // 마감일자 초과 값 삽입
-//            if (statusCounts["Overdue"]) {
-//                const overdueElement = document.getElementById("overdueCountTeam");
-//                overdueElement.textContent = `${statusCounts["Overdue"]} 건`;
-//            }
-
             // 계약전환 성공 값 삽입
             if (statusCounts["Closed"]) {
                 const closedElement = document.getElementById("closedCountTeam");
                 closedElement.textContent = `${statusCounts["Closed"]} 건`;
             }
 
-//            // 보류 값 삽입
-//            if (statusCounts["Pending"]) {
-//                const pendingElement = document.getElementById("pendingCountTeam");
-//                pendingElement.textContent = `${statusCounts["Pending"]} 건`;
-//            }
         })
         .catch(error => console.error('Error fetching status counts:', error));
 });

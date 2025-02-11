@@ -6,8 +6,6 @@ import com.aivle.project.repository.*;
 import com.aivle.project.service.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -18,7 +16,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -27,8 +24,6 @@ import java.util.Map;
 @Controller
 @RequiredArgsConstructor
 public class ContractsController {
-
-    private static final Logger logger = LoggerFactory.getLogger(ContractsController.class);
     private static final int DISPLAY_RANGE = 5;
 
     private final ContractsService contractsService;
@@ -95,9 +90,6 @@ public class ContractsController {
         List<AccountDto> accounts = accountService.getAllAccountIdsAndNames();
         List<EmployeeDto.GetId> employee = employeeService.getAllEmployeeIdsAndNamesAndDepartmentIds();
         List<OpportunitiesDto> opportunities = opportunitiesService.getAllOpportunityIdsAndNames();
-
-        logger.info("Contracts: {}", contracts);
-        orders.forEach(order -> logger.debug("Order: {}, Date: {}", order.getOrderId(), order.getOrderDate()));
 
         model.addAttribute("contracts", contracts);
         model.addAttribute("products", products);
@@ -233,7 +225,6 @@ public class ContractsController {
     @PostMapping("/contracts/detail/delete")
     public ResponseEntity<Void> deleteContracts(@RequestBody Map<String, List<Long>> request) {
         List<Long> ids = request.get("ids");
-        logger.info("Deleting contracts with IDs: {}", ids);
         try {
             // 계약 삭제 실행
             contractsService.deleteContractsByIds(ids);
@@ -261,7 +252,6 @@ public class ContractsController {
             @RequestParam("file") MultipartFile file
     ) {
         try {
-            logger.info("Uploading file: {}, size: {} bytes", file.getOriginalFilename(), file.getSize());
             if (file.getSize() > 5 * 1024 * 1024) { // 5MB 제한
                 return ResponseEntity.badRequest().body("파일 크기는 최대 5MB를 초과할 수 없습니다.");
             }
@@ -269,7 +259,6 @@ public class ContractsController {
             contractsService.saveFileToContract(contractId, file);
             return ResponseEntity.ok("파일 업로드 성공");
         } catch (Exception e) {
-            logger.error("파일 업로드 실패", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("파일 업로드 실패: " + e.getMessage());
         }
@@ -277,17 +266,13 @@ public class ContractsController {
 
     @GetMapping("/contracts/detail/{contractId}/file")
     public ResponseEntity<byte[]> downloadFile(@PathVariable Long contractId) {
-        logger.info("Downloading file for contract ID: {}", contractId);
 
         ContractsEntity contract = contractsRepository.findById(contractId)
                 .orElseThrow(() -> new IllegalArgumentException("계약을 찾을 수 없습니다."));
 
         if (contract.getFileData() == null) {
-            logger.warn("File not found for contract ID: {}", contractId);
             throw new IllegalArgumentException("파일이 존재하지 않습니다.");
         }
-
-        logger.info("File found: {}, size: {}", contract.getFileName(), contract.getFileData().length);
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + contract.getFileName() + "\"")
@@ -297,13 +282,13 @@ public class ContractsController {
 
     @DeleteMapping("/contracts/detail/{contractId}/file")
     public ResponseEntity<String> deleteFile(@PathVariable Long contractId) {
-        logger.info("파일 삭제 요청 - Contract ID: {}", contractId);
+
 
         ContractsEntity contract = contractsRepository.findById(contractId)
                 .orElseThrow(() -> new IllegalArgumentException("계약을 찾을 수 없습니다."));
 
         if (contract.getFileData() == null) {
-            logger.warn("Contract ID {}에 파일이 없습니다.", contractId);
+
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("파일이 존재하지 않습니다.");
         }
 
@@ -313,7 +298,6 @@ public class ContractsController {
 
         contractsRepository.save(contract);
 
-        logger.info("파일이 성공적으로 삭제되었습니다 - Contract ID: {}", contractId);
         return ResponseEntity.ok("파일이 성공적으로 삭제되었습니다.");
     }
 }

@@ -1,13 +1,11 @@
 package com.aivle.project.dto;
 
-
 import com.aivle.project.entity.AccountEntity;
 import com.aivle.project.entity.EmployeeEntity;
 import com.aivle.project.entity.LeadsEntity;
 import com.aivle.project.entity.ProductsEntity;
 import jakarta.validation.constraints.*;
 import lombok.*;
-
 import java.time.LocalDate;
 
 @Getter

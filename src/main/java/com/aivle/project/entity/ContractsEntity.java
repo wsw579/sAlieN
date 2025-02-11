@@ -1,6 +1,5 @@
 package com.aivle.project.entity;
 
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -8,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
-
 import java.io.Serializable;
 import java.sql.Types;
 import java.time.LocalDate;
@@ -61,12 +59,7 @@ public class ContractsEntity implements Serializable {
     @Column(name = "mime_type", nullable = true)
     private String mimeType;
 
-//    @Column(nullable = true)
-//    private String uploadedFilePath;
-
-
     // 외래키 부분
-
     @ManyToOne
     @JoinColumn(name = "account_id", nullable = false)
     private AccountEntity accountId;
@@ -85,7 +78,4 @@ public class ContractsEntity implements Serializable {
 
     @OneToMany(mappedBy = "contractId", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     private List<OrdersEntity> orders;
-
-
-
 }

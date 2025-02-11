@@ -31,6 +31,11 @@
         font-size: 14px;
         line-height: 1.4;
     }
+    .btn-custom-auto {
+        background-color: #cce5ff; /* 연한 파란색 */
+        color: #004085;
+        border: 1px solid #b8daff;
+    }
 </style>
 
 <div id="layoutSidenav_content">
@@ -78,7 +83,7 @@
                                         </div>
                                         <div class="card-footer d-flex align-items-center justify-content-between">
                                             <h3 id="ongoingCountTeam">0 건</h3>
-                                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#progressModal">
+                                            <button class="btn btn-custom-auto btn-lg" data-bs-toggle="modal" data-bs-target="#progressModal">
                                                 AI 제안서 생성 <i class="fas fa-angle-right"></i>
                                             </button>
                                         </div>
@@ -126,9 +131,9 @@
                 <!-- 2행 1열 (이달의 Order Close 현황) -->
                 <div class="col-md-6 col-xl-4 d-flex">
                     <div class="card h-100 w-100">
-                        <div class="card-header text-center" id="draftChartHeader">
+                        <div class="card-header" id="draftChartHeader">
                             <i class="fas fa-chart-bar me-1"></i>
-                            Order Close<br>현황
+                            Order Close 현황
                         </div>
                         <div class="d-flex align-items-center justify-content-center" style="height: 100%;" id="draftChartBody">
                             <div style="width: 300px; height: 300px; display: flex; justify-content: center; align-items: center;">

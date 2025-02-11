@@ -10,7 +10,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -65,7 +64,6 @@ public class chatbotController {
         }
 
         leads.setLeadSource(params.get("leadSource"));
-//        leads.setCustomerRepresentitive(params.get("accountManager"));
         leads.setCustomerRequirements(params.get("customerRequirements"));
         leads.setC_tel(params.get("contact"));
         leads.setLeadStatus(params.get("leadStatus"));
@@ -121,7 +119,6 @@ public class chatbotController {
         account.setAccountType(params.get("accountType"));
         account.setBusinessType(params.get("businessType"));
 
-
         model.addAttribute("account", account);
         model.addAttribute("accounts", activeAccounts);
         model.addAttribute("employee", employees);
@@ -149,7 +146,6 @@ public class chatbotController {
         opportunities.setEmployeeId(employee);
         opportunities.setAccountId(account);
         opportunities.setProductId(product);
-
 
         String createdDate = params.get("createdDate");
         if (!createdDate.isEmpty()) {
@@ -185,8 +181,6 @@ public class chatbotController {
         } else {
             opportunities.setExpectedRevenue(0.0f);
         }
-
-
 
         opportunities.setOpportunityName(params.get("opportunityName"));
         opportunities.setSuccessRate(params.get("successRate"));
@@ -227,7 +221,6 @@ public class chatbotController {
         contract.setProductId(product);
         contract.setOpportunityId(opportunity);
 
-
         String startDate = params.get("startDate");
         if (!startDate.isEmpty()) {
             contract.setStartDate(LocalDate.parse(startDate));
@@ -266,7 +259,6 @@ public class chatbotController {
         model.addAttribute("products", products);
         model.addAttribute("opportunities", opportunities);
 
-
         // 로깅
         params.forEach((key, value) -> System.out.println(key + ": " + value));
 
@@ -282,7 +274,6 @@ public class chatbotController {
 
         ContractsEntity contract = contractsRepository.findById(Long.parseLong(params.get("contractId"))).get();
         ProductsEntity product = productsRepository.findById(Long.parseLong(params.get("productId"))).get();
-
 
         order.setContractId(contract);
         order.setProductId(product);
@@ -314,7 +305,6 @@ public class chatbotController {
         } else {
             order.setOrderStatus(OrderStatus.valueOf("activated"));
         }
-
 
 
         model.addAttribute("orders", order);

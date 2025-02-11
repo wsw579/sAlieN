@@ -3,11 +3,6 @@
     #monthlySalesChart {
         height: 400px; /* 원하는 높이로 설정 */
     }
-    .btn-custom-auto {
-        background-color: #cce5ff; /* 연한 파란색 */
-        color: #004085;
-        border: 1px solid #b8daff;
-    }
 </style>
 <div id="layoutSidenav_content">
     <main>
@@ -30,7 +25,7 @@
                                         </div>
                                         <div class="card-footer d-flex align-items-center justify-content-between">
                                             <h3 id="ongoingCountTeam">0 건</h3>
-                                            <button class="btn btn-custom-auto btn-lg" data-bs-toggle="modal" data-bs-target="#progressModal">
+                                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#progressModal">
                                                 AI 제안서 생성 <i class="fas fa-angle-right"></i>
                                             </button>
                                         </div>
@@ -83,18 +78,7 @@
                         </div>
                     </div>
 
-                    <!-- 1행 2열 -->
-                    <div class="col-xl-4 col-md-6 d-flex">
-                        <div class="card h-100 w-100">
-                            <div class="card-header" id = "employeeOrderChartHeader">
-                                <i class="fas fa-chart-bar me-1"></i>
-                                사원별 오더 처리 현황
-                            </div>
-                            <div class="card-body">
-                                <canvas id="employeeOrderChart" style="width: 500px; height: 200px;"></canvas>
-                            </div>
-                        </div>
-                    </div>
+
                 </div>
 
                 <!-- 두 번째 행 -->
@@ -130,6 +114,7 @@
                                         <canvas id="topSalesChart" style="width: 100%; height: 300px;"></canvas>
                                     </div>
                                 </div>
+
                                 <!-- 하위 5명 차트 -->
                                 <div class="col-6 d-flex flex-column align-items-center">
                                     <h5 class="text-center">영업 실적 Bottom 5</h5>
@@ -142,12 +127,17 @@
                     </div>
                 </div>
                 </div>
+
+
+
             </div>
         </main>
+
+
+
 
         <script src="/assets/demo/opportunities-status-card-value-manager.js"></script>
         <script src="/assets/demo/opportunities-modal-loader.js"></script>
         <script src="/assets/demo/monthly-sales-chart.js"></script>
-        <script src="/assets/demo/employee-order-chart.js"></script>
         <script src="/assets/demo/sales-performance.js"></script>
 {{>main/footer}}
