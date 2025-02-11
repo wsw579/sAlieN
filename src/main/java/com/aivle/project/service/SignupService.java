@@ -1,6 +1,5 @@
 package com.aivle.project.service;
 
-import com.aivle.project.Validator.PasswordValidator;
 import com.aivle.project.utils.EmployeeDataMapping;
 import com.aivle.project.dto.EmployeeDto;
 import com.aivle.project.entity.EmployeeEntity;
@@ -10,13 +9,10 @@ import com.aivle.project.enums.Role;
 import com.aivle.project.enums.Team;
 import com.aivle.project.repository.EmployeeRepository;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
-
 
 @Service
 @RequiredArgsConstructor

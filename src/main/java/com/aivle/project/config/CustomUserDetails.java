@@ -3,7 +3,6 @@ package com.aivle.project.config;
 import com.aivle.project.entity.EmployeeEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
 import java.util.ArrayList;
 import java.util.Collection;
 

@@ -8,7 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
 import java.util.List;
 
 @Repository
@@ -66,8 +65,6 @@ public interface EmployeeRepository extends JpaRepository<EmployeeEntity, String
             countQuery = "SELECT COUNT(e) FROM EmployeeEntity e WHERE e.accessPermission = :role " + // ✅ 검색 조건 추가
                     "AND e.employeeName LIKE CONCAT('%', :search, '%')")
     Page<EmployeeEntity> findAllByAccessPermissionAndNameLike(@Param("role") Role role, @Param("search") String search, Pageable pageable);
-
-
 
     @Query("SELECT e FROM EmployeeEntity e WHERE e.teamId = :teamId")
     List<EmployeeEntity> findByTeamId(@Param("teamId") String teamId);

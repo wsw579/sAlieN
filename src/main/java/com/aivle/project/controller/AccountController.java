@@ -49,7 +49,6 @@ public class AccountController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentEmployeeId = authentication.getName();
 
-
         // 페이징 관련 변수 설정
         int totalPages = paging.getTotalPages(); // 총 페이지
         int currentPage = page; // 현재 페이지 url 에서 page 변수 가져오기
@@ -63,7 +62,6 @@ public class AccountController {
 
         // 페이지 번호 리스트 생성
         List<Map<String, Object>> pageNumbers = getPageNumbers(startPage, endPage, currentPage);
-
 
         // 모델에 데이터 추가
         addDataToModel(model, paging, pageNumbers, currentPage, nextPage, totalPages, keyword, totalAccounts,
@@ -195,7 +193,7 @@ public class AccountController {
             accountService.createAccount(accountDto);
 
             // CRUD 작업 로깅
-            crudLogsService.logCrudOperation("create", "parent", "", "True", "Success");
+            crudLogsService.logCrudOperation("create", "accounts", "", "True", "Success");
 
             // 성공 메시지를 RedirectAttributes에 저장 (리다이렉트 후에도 유지됨)
             redirectAttributes.addFlashAttribute("message", "계정이 성공적으로 생성되었습니다.");
@@ -203,7 +201,7 @@ public class AccountController {
             return "redirect:/account"; // 성공 시 계정 목록 페이지로 이동
         } catch (Exception e) {
             // 실패 로그 기록 (ID를 알 수 없는 경우 "")
-            crudLogsService.logCrudOperation("create", "parent", "", "False", "Error: " + e.getMessage());
+            crudLogsService.logCrudOperation("create", "accounts", "", "False", "Error: " + e.getMessage());
 
             // 에러 메시지를 사용자에게 전달
             redirectAttributes.addFlashAttribute("errorMessage", "계정 생성 중 오류가 발생했습니다. 다시 시도해주세요.");
@@ -226,7 +224,7 @@ public class AccountController {
             accountService.updateAccount(accountId, accountDto);
 
             // CRUD 작업 로깅
-            crudLogsService.logCrudOperation("update", "parent", accountId.toString(), "True", "Success");
+            crudLogsService.logCrudOperation("update", "accounts", accountId.toString(), "True", "Success");
 
             // 성공 메시지를 RedirectAttributes에 저장 (리다이렉트 후에도 유지됨)
             redirectAttributes.addFlashAttribute("message", "계정이 성공적으로 수정되었습니다.");
@@ -234,7 +232,7 @@ public class AccountController {
             return "redirect:/account/detail/" + accountId; // 성공 시 계정 detail 페이지로 이동
         } catch (Exception e) {
             // 실패 로그 기록
-            crudLogsService.logCrudOperation("update", "parent", accountId.toString(), "False", "Error: " + e.getMessage());
+            crudLogsService.logCrudOperation("update", "accounts", accountId.toString(), "False", "Error: " + e.getMessage());
 
             // 에러 메시지를 사용자에게 전달
             redirectAttributes.addFlashAttribute("errorMessage", "계정 수정 중 오류가 발생했습니다. 다시 시도해주세요.");
@@ -251,12 +249,12 @@ public class AccountController {
             accountService.delete(accountId);
 
         // CRUD 작업 로깅
-        crudLogsService.logCrudOperation("delete", "parent", accountId.toString(), "True", "Success");
+        crudLogsService.logCrudOperation("delete", "accounts", accountId.toString(), "True", "Success");
 
             return ResponseEntity.ok().build(); // HTTP 200 응답 (삭제 성공)
         } catch (Exception e) {
             // 삭제 실패 로그 기록
-            crudLogsService.logCrudOperation("delete", "parent", accountId.toString(), "False", "Error: " + e.getMessage());
+            crudLogsService.logCrudOperation("delete", "accounts", accountId.toString(), "False", "Error: " + e.getMessage());
 
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // HTTP 500 응답 (삭제 실패)
         }
@@ -272,14 +270,14 @@ public class AccountController {
 
             // 개별 ID에 대해 성공 로그 기록
             for (Long id : ids) {
-                crudLogsService.logCrudOperation("delete", "parent", id.toString(), "True", "Success");
+                crudLogsService.logCrudOperation("delete", "accounts", id.toString(), "True", "Success");
             }
 
             return ResponseEntity.ok().build(); // HTTP 200 응답 (삭제 성공)
         } catch (Exception e) {
             // 개별 ID에 대해 실패 로그 기록
             for (Long id : ids) {
-                crudLogsService.logCrudOperation("delete", "parent", id.toString(), "False", "Error: " + e.getMessage());
+                crudLogsService.logCrudOperation("delete", "accounts", id.toString(), "False", "Error: " + e.getMessage());
             }
 
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // HTTP 500 응답 (삭제 실패)

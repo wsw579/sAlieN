@@ -1,6 +1,5 @@
 package com.aivle.project.entity;
 
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
@@ -8,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
@@ -67,16 +65,13 @@ public class OpportunitiesEntity implements Serializable {
 
 
     // 외부 외래키 부분
-
     @OneToMany(mappedBy = "opportunity", cascade = CascadeType.ALL)
     private List<OpportunitiesCommentEntity> comments;
 
     @OneToMany(mappedBy = "opportunity", cascade = CascadeType.ALL)
     private List<HistoryEntity> history;
 
-
     // 내부 외래키 부분
-
     @ManyToOne
     @JoinColumn(name = "lead_id", nullable = true, foreignKey = @ForeignKey(name = "fk_opportunities_lead_id"))
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})

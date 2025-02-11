@@ -2,7 +2,6 @@ package com.aivle.project.Validator;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-
 import java.util.Arrays;
 
 public class EnumValidatorConstraint implements ConstraintValidator<EnumValidator, String> {

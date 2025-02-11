@@ -1,14 +1,5 @@
 {{>main/header}}
 
-<style>
-
-
-
-</style>
-
-
-
-
 <div id="layoutSidenav_content">
     <main>
         <div class="container-fluid px-4">
@@ -30,10 +21,8 @@
                                 <!-- 검색어 -->
                                 <input type="text" class="form-control" name="search" id="customSearch" placeholder="User ID를 입력하세요"
                                        style="padding: 5px; width: 200px;" value="{{search}}">
-
                                 <button type="submit" class = "btn btn-custom-select btn-sm">검색</button>
                             </form>
-
                         </div>
 
                     </div>
@@ -65,10 +54,8 @@
                             </tr>
                         {{/pagination.contents}}
                         {{^pagination.contents}}
-
                         {{/pagination.contents}}
                         </tbody>
-
                     </table>
                     <div class="pagination justify-content-center">
                         <!-- 이전 버튼 -->
@@ -77,7 +64,6 @@
                             이전
                             </button>
                         {{/pagination.hasPreviousPage}}
-
                         <!-- 페이지 번호 버튼 -->
                         {{#pagination.pageNumbers}}
                             <button
@@ -94,18 +80,9 @@
                             </button>
                         {{/pagination.hasNextPage}}
                     </div>
-
                 </div>
             </div>
         </div>
     </main>
-
-
-    <script>
-
-
-
-
-    </script>
 
 {{>main/footer}}

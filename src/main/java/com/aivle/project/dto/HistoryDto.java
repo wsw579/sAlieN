@@ -1,8 +1,8 @@
 package com.aivle.project.dto;
+
 import com.aivle.project.entity.OpportunitiesEntity;
 import jakarta.validation.constraints.*;
 import lombok.*;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 
