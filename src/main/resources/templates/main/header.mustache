@@ -1,43 +1,107 @@
 <!DOCTYPE html>
 <html lang="ko">
+
+<style>
+    .sb-topnav,
+    .sb-sidenav-dark,
+    .sb-sidenav-footer {
+        background-color: #021545 !important;
+    }
+
+    #loader {
+        display: none;
+        border: 16px solid #f3f3f3;
+        border-radius: 50%;
+        border-top: 16px solid #3498db;
+        width: 120px;
+        height: 120px;
+        animation: spin 2s linear infinite;
+        margin: 50px auto;
+    }
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    #loadingText {
+        display: none;
+        text-align: center;
+        margin: 10px;
+    }
+
+
+</style>
 <head>
+
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="description" content="" />
     <meta name="author" content="" />
-    <title>sAIes CRM</title>
+    <title>sAIien</title>
     <link href="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/style.min.css" rel="stylesheet" />
     <link href="/css/main_style.css" rel="stylesheet" />
+    <!-- jQuery 라이브러리 추가 -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Selectize CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/css/selectize.default.min.css" rel="stylesheet">
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
 </head>
 <body class="sb-nav-fixed">
-<nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+<nav class="sb-topnav navbar navbar-expand navbar-dark">
     <!-- Navbar Brand-->
-    <a class="navbar-brand ps-3" href="index.html">sAIes CRM - 도입회사명</a>
+    <a class="navbar-brand ps-3" href="/">sAlieN - KT</a>
     <!-- Sidebar Toggle-->
     <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
+
+    {{#id}}
+        {{#isAdmin}}
+            <div class="navbar-text text-light me-3">
+                {{id}}님 오늘 하루도 힘내세요.
+            </div>  <!-- ✅ 관리자: ID만 표시 -->
+        {{/isAdmin}}
+        {{^isAdmin}}
+            <div class="navbar-text text-light me-3">
+                {{name}}({{id}})님 오늘 하루도 힘내세요.
+            </div> <!-- ✅ 일반 사용자: 이름 + ID 표시 -->
+        {{/isAdmin}}
+    {{/id}}
+
+
     <!-- Navbar Search-->
     <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
         <div class="input-group">
-            <input class="form-control" type="text" placeholder="Search for..." aria-label="Search for..." aria-describedby="btnNavbarSearch" />
-            <button class="btn btn-primary" id="btnNavbarSearch" type="button"><i class="fas fa-search"></i></button>
         </div>
     </form>
-    <!-- Navbar-->
+
+    <!-- 요금제 -->
+    <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Basic Plan 사용중</a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                <li><a class="dropdown-item" href="/rate_plan">요금제 변경</a></li>
+            </ul>
+        </li>
+    </ul>
+
+    <!-- profile-->
     <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                <li><a class="dropdown-item" href="#!">Settings</a></li>
-                <li><a class="dropdown-item" href="#!">Activity Log</a></li>
+                <li><a class="dropdown-item" href="/mypage/{{id}}">MyPage</a></li>
                 <li><hr class="dropdown-divider" /></li>
-                <li><a class="dropdown-item" href="#!">Logout</a></li>
+                <li><a class="dropdown-item" href="/logout">Logout</a></li>
             </ul>
         </li>
     </ul>
 </nav>
-
 
 
 <div id="layoutSidenav">
@@ -46,15 +110,26 @@
             <div class="sb-sidenav-menu">
                 <div class="nav">
 
-
                     <div class="sb-sidenav-menu-heading">Main</div>
                     <a class="nav-link" href="/">
                         <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                         Main
                     </a>
 
+                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseCS" aria-expanded="false" aria-controls="collapseCS">
+                        <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                        CS
+                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                    </a>
+                    <div class="collapse" id="collapseCS" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                        <nav class="sb-sidenav-menu-nested nav">
 
-                    <div class="sb-sidenav-menu-heading">Sales</div>
+                            <a class="nav-link" href="/leads">Leads</a>
+                            <a class="nav-link" href="/account">Accounts</a>
+
+                        </nav>
+                    </div>
+
 
                     <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseSales" aria-expanded="false" aria-controls="collapseSales">
                         <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
@@ -63,82 +138,1166 @@
                     </a>
                     <div class="collapse" id="collapseSales" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                         <nav class="sb-sidenav-menu-nested nav">
-                            <a class="nav-link" href="layout-static.html">Leads</a>
-                            <a class="nav-link" href="layout-static.html">Accounts</a>
+
+                            <a class="nav-link" href="/leads">Leads</a>
+                            <a class="nav-link" href="/account">Accounts</a>
                             <a class="nav-link" href="/opportunities">Opportunities</a>
-                            <a class="nav-link" href="layout-static.html">Contracts</a>
-                            <a class="nav-link" href="layout-static.html">Orders</a>
-                            <a class="nav-link" href="layout-static.html">Partner</a>
-                            <a class="nav-link" href="layout-static.html">Products</a>
+                            <a class="nav-link" href="/contracts">Contracts</a>
+                            <a class="nav-link" href="/orders">Orders</a>
+                            <a class="nav-link" href="/calendar">Calendar</a>
+
                         </nav>
                     </div>
 
 
-
-                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseMyKPI" aria-expanded="false" aria-controls="collapseMyKPI">
+                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseMarketing" aria-expanded="false" aria-controls="collapseMarketing">
                         <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
-                        My KPI
+                        Marketing
                         <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                     </a>
-                    <div class="collapse" id="collapseMyKPI" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                    <div class="collapse" id="collapseMarketing" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                         <nav class="sb-sidenav-menu-nested nav">
-                            <a class="nav-link" href="layout-static.html">My OP</a>
-                            <a class="nav-link" href="layout-static.html">My OL</a>
-                            <a class="nav-link" href="layout-static.html">My KPI</a>
-                            <a class="nav-link" href="layout-static.html">My Incentive</a>
+
+                            <a class="nav-link" href="/account">Accounts</a>
+                            <a class="nav-link" href="/products">Products</a>
                         </nav>
                     </div>
 
 
-                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseAccountKPI" aria-expanded="false" aria-controls="collapseAccountKPI">
+                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseSCM" aria-expanded="false" aria-controls="collapseSCM">
                         <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
-                        Account KPI
+                        SCM
                         <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                     </a>
-                    <div class="collapse" id="collapseAccountKPI" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                    <div class="collapse" id="collapseSCM" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                         <nav class="sb-sidenav-menu-nested nav">
-                            <a class="nav-link" href="layout-static.html">Account OP</a>
-                            <a class="nav-link" href="layout-static.html">Account OL</a>
-                            <a class="nav-link" href="layout-static.html">Account Incentive</a>
+
+                            <a class="nav-link" href="/orders">Orders</a>
+                            <a class="nav-link" href="/products">Products</a>
                         </nav>
                     </div>
 
-                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePartnerKPI" aria-expanded="false" aria-controls="collapsePartnerKPI">
-                        <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
-                        Partner KPI
-                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                    </a>
-                    <div class="collapse" id="collapsePartnerKPI" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
-                        <nav class="sb-sidenav-menu-nested nav">
-                            <a class="nav-link" href="layout-static.html">Partner OP</a>
-                            <a class="nav-link" href="layout-static.html">Partner OL</a>
-                            <a class="nav-link" href="layout-static.html">Partner Incentive</a>
-                        </nav>
-                    </div>
+                    {{#id}}
+                        {{#isAdmin}}
+                            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseINFO" aria-expanded="false" aria-controls="collapseINFO">
+                                <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                                Member
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="collapseINFO" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="/employee-list">Employee Directory</a>
+                                </nav>
+                            </div>
+                            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLogs" aria-expanded="false" aria-controls="collapseLogs">
+                                <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                                Logs
+                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a>
+                            <div class="collapse" id="collapseLogs" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="/chatbot_logs">Chatbot Logs</a>
+                                    <a class="nav-link" href="/crud_logs">CRUD Logs</a>
 
-
-
-                    <div class="sb-sidenav-menu-heading">Member</div>
-
-                    <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseINFO" aria-expanded="false" aria-controls="collapseINFO">
-                        <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
-                        Member
-                        <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                    </a>
-                    <div class="collapse" id="collapseINFO" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
-                        <nav class="sb-sidenav-menu-nested nav">
-                            <a class="nav-link" href="layout-static.html">Employee Directory</a>
-                            <a class="nav-link" href="layout-static.html">Departments List</a>
-                            <a class="nav-link" href="layout-static.html">Team List</a>
-                        </nav>
-                    </div>
-
+                                </nav>
+                            </div>
+                        {{/isAdmin}}
+                    {{/id}}
 
                 </div>
             </div>
             <div class="sb-sidenav-footer">
                 <div class="small">Logged in as:</div>
-                Start Bootstrap
+                sAIien
             </div>
         </nav>
     </div>
+
+
+    <!-- Add this after the existing HTML code -->
+    <style>
+        /* Add this CSS to your main CSS file */
+        .chatbot-modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1000; /* Sit on top */
+            left: 50%; /* Center horizontally */
+            top: 50%; /* Center vertically */
+            transform: translate(-50%, -50%); /* Center the modal */
+            width: 50%; /* Width of modal */
+            max-width: 600px;
+            height: auto;
+            background-color: rgb(0, 0, 0); /* Fallback color */
+            background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chatbot-modal-content {
+            background-color: #fefefe;
+            padding: 0; /* Remove padding to adjust for title bar */
+            border: 1px solid #888;
+            width: 100%;
+            max-height: 80vh; /* Max height of modal */
+            overflow-y: auto; /* Enable scroll if needed */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chatbot-title-bar {
+            background-color: #021545;
+            color: white;
+            padding: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            position: relative;  /* 내부 요소들의 절대 위치 설정을 위한 기준 */
+            display: flex;
+            align-items: center; /* 세로 중앙 정렬 */
+            height: 50px; /* 제목 바의 높이 설정 */
+        }
+
+        .chatbot-title {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%); /* X축 기준 정확히 중앙 정렬 */
+            white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+        }
+
+        .close {
+            position: absolute;
+            right: 10px; /* 닫기 버튼을 오른쪽 끝으로 배치 */
+            top: 50%;
+            transform: translateY(-50%); /* 세로 중앙 정렬 */
+            cursor: pointer;
+        }
+
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .user-message, .bot-message {
+            border-radius: 10px;
+            padding: 10px;
+            margin: 10px 0;
+            display: inline-block;
+            max-width: 70%;
+        }
+
+        .user-message {
+            text-align: right;
+            background-color: #dcf8c6;
+            align-self: flex-end; /* Align user message to the right */
+        }
+
+        .bot-message {
+            text-align: left;
+            background-color: #f1f1f1;
+            align-self: flex-start; /* Align bot message to the left */
+        }
+
+        .message-info {
+            font-size: 12px;
+            color: #555;
+        }
+
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+        }
+
+        .input-container {
+            display: flex;
+            padding: 10px;
+        }
+
+        .user-info {
+            text-align: right;
+        }
+
+        .bot-info {
+            text-align: left;
+        }
+
+        #chatbotInput {
+            flex: 1;
+            padding: 10px;
+            margin-right: 10px;
+        }
+
+        #sendChatbotMessage {
+            display: none;
+        }
+
+
+
+        .button-container {
+        display: flex;
+        justify-content: flex-end; /* 오른쪽 정렬 */
+        gap: 10px; /* 버튼 간격 */
+        }
+        .btn-custom-create {
+            background-color: #007bff; /* 블루 */
+            border-color: #c3e6cb;
+            color: #ffffffe3;
+        }
+        .btn-custom-delete {
+            background-color: #ef1325e6; /* 레드 */
+            border-color: #f5c6cb;
+            color: #ffffffe3;
+        }
+        .btn-custom-select {
+            background-color: #0ea134; /* 그린 */
+            border-color: #f5c6cb;
+            color: #ffffffe3;
+        }
+        .btn-custom-update {
+            background-color: #0ab3d9; /* 청록 */
+            border-color: #f5c6cb;
+            color: #ffffffe3;
+        }
+
+        .btn-custom-create:hover {
+            background-color: #0d4e95; /* 어두운 블루 */
+            border-color: #b1dfbb;
+            color: #ffffffe3;
+        }
+        .btn-custom-delete:hover {
+            background-color: #9b0c18e6; /* 어두운 레드 */
+            border-color: #8b0b16e6;
+            color: #ffffffe3;
+        }
+        .btn-custom-select:hover {
+            background-color: #097d27; /* 어두운 그린 */
+            border-color: #8b0b16e6;
+            color: #ffffffe3;
+        }
+        .btn-custom-update:hover {
+            background-color: #0885a1; /* 어두운 청록 */
+            border-color: #8b0b16e6;
+            color: #ffffffe3;
+        }
+        .btn-sm {
+            font-size: 0.875rem; /* 버튼 폰트 크기 감소 */
+            padding: 0.25rem 0.5rem; /* 패딩 감소 */
+        }
+
+
+        .container {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .col-form-label {
+            font-weight: bold;
+        }
+        .btn-primary {
+            background-color: #6c757d;
+            border: none;
+        }
+        .btn-primary:hover {
+            background-color: #5a6268;
+        }
+         .bg-card {
+        background-color: rgba(20, 31, 47,0.2);   !important;
+        }
+
+        .sb-sidenav .nav-link,
+        .sb-sidenav .sb-sidenav-menu-heading {
+        color: #FFFFFF !important;
+        }
+
+
+        .sb-sidenav .nav-link:hover,
+        .sb-sidenav .nav-link.active {
+        color: #15D6C6 !important;
+        }
+
+        .card {
+        background-color: #f8f9fa;
+        border: none;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        }
+
+         .card-footer {
+        background-color: inherit;
+        border-top: none;
+        }
+
+        .card-body{
+        color: black;
+        }
+
+        .card h3 {
+         box-shadow: none;
+         }
+
+        .card-footer h3 {
+        color: black; /* h3 텍스트를 검정색으로 설정 */
+        }
+
+
+
+        /* 기본 버튼 스타일 */
+        #chatbotButton {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            cursor: grab; /* 기본적으로 grab 커서 */
+            overflow: hidden;
+            transition: box-shadow 0.2s;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            background-color: white;
+        }
+
+        #chatbotButton img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            pointer-events: none; /* ✅ 버튼 클릭 시 이미지 드래그 방지 */
+        }
+
+        /* 드래그 중일 때 스타일 */
+        #chatbotButton.dragging {
+            cursor: grabbing !important; /* 드래그 중 grabbing 유지 */
+            opacity: 0.8; /* 시각적으로 드래그 중임을 강조 */
+        }
+
+
+
+        .btn.active {
+            background-color: red; /* 음성 인식 중일 때 배경색 변경 */
+            color: white;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .loading-spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top-color: red;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-left: 5px;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .input-container {
+            display: flex;  /* 가로 정렬 */
+            align-items: center;
+            width: 100%; /* 부모 요소 너비 100% */
+        }
+
+        #chatbotInput {
+            flex: 8;  /* 80% 차지 */
+            height: 40px;
+            padding: 10px;
+            font-size: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        #voiceInputButton {
+            flex: 2; /* 20% 차지 */
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #voiceInputButton i {
+            font-size: 2rem; /* 아이콘 크기 */
+        }
+
+
+
+    </style>
+
+    <!-- 챗봇 버튼 -->
+    <div id="chatbotButton">
+        <img src="/assets/img/chatbot.png" alt="AI 챗봇">
+    </div>
+
+    <!-- 효과음 -->
+    <audio id="dingup" src="/assets/mp3/dingup.mp3"></audio>
+    <audio id="dingdown" src="/assets/mp3/dingdown.mp3"></audio>
+
+
+    <!-- Chatbot Modal -->
+    <div id="chatbotModal" hidden class="chatbot-modal">
+        <div class="chatbot-modal-content">
+            <div class="chatbot-title-bar">
+<!--                sAIien chat bot-->
+<!--                <span class="close">&times;</span>-->
+                <span class="chatbot-title">sAIien chat bot</span>
+                <span class="close">&times;</span>
+            </div>
+            <div id="chatbotMessages" class="chat-container"></div>
+            <div class="input-container">
+                <input type="text" id="chatbotInput" placeholder="메시지를 입력하세요..." onkeydown="if (event.key === 'Enter') sendChatbotMessage();">
+                <button id="voiceInputButton" class= "btn btn-custom-select btn-sm"><i class="fas fa-microphone"></i></button>
+                <span id="loadingIndicator" class="loading-spinner" hidden></span> <!-- 음성 인식 로딩 표시 추가-->
+                <button id="sendChatbotMessage">Send</button>
+            </div>
+        </div>
+    </div>️
+
+
+<!-- JavaScript -->
+    <script>
+
+        // 챗봇 버튼
+        document.addEventListener("DOMContentLoaded", function () {
+    const chatbotButton = document.getElementById("chatbotButton");
+    const chatbotModal = document.getElementById("chatbotModal");
+    const closeModal = document.getElementsByClassName("close")[0];
+
+});
+
+        document.addEventListener("DOMContentLoaded", function() {
+
+            var chatbotButton = document.getElementById('chatbotButton');
+            var chatbotModal = document.getElementById('chatbotModal');
+            var closeModal = document.getElementsByClassName('close')[0];
+
+            let isDragging = false;
+            let isClick = false; // ✅ 클릭 여부 확인 변수
+            let offsetX, offsetY;
+
+            // ✅ 초기 위치 비율 저장
+            let xRatio = chatbotButton.offsetLeft / document.documentElement.clientWidth;
+            let yRatio = chatbotButton.offsetTop / document.documentElement.clientHeight;
+
+            function adjustButtonPosition() {
+                // ✅ 현재 비율을 유지하면서 새로운 위치 계산 (스크롤 바 제외)
+                let newX = xRatio * document.documentElement.clientWidth;
+                let newY = yRatio * document.documentElement.clientHeight;
+
+                // ✅ 버튼이 화면을 벗어나지 않도록 보정
+                const maxX = document.documentElement.clientWidth - chatbotButton.offsetWidth;
+                const maxY = document.documentElement.clientHeight - chatbotButton.offsetHeight;
+
+                chatbotButton.style.left = `${Math.max(0, Math.min(maxX, newX))}px`;
+                chatbotButton.style.top = `${Math.max(0, Math.min(maxY, newY))}px`;
+            }
+
+            function startDrag(e) {
+                e.preventDefault();
+                isDragging = true;
+                isClick = true; // ✅ 클릭으로 시작
+                chatbotButton.classList.add("dragging");
+                chatbotButton.style.cursor = "grabbing";
+
+                let clientX = e.clientX || e.touches[0].clientX;
+                let clientY = e.clientY || e.touches[0].clientY;
+
+                offsetX = clientX - chatbotButton.getBoundingClientRect().left;
+                offsetY = clientY - chatbotButton.getBoundingClientRect().top;
+
+                chatbotButton.style.transition = "none";
+
+                document.addEventListener("mousemove", moveDrag);
+                document.addEventListener("touchmove", moveDrag);
+            }
+
+            function moveDrag(e) {
+                if (!isDragging) return;
+                isClick = false; // ✅ 드래그가 발생하면 클릭이 아님
+
+                let clientX = e.clientX || e.touches[0].clientX;
+                let clientY = e.clientY || e.touches[0].clientY;
+
+                let x = clientX - offsetX;
+                let y = clientY - offsetY;
+
+                const maxX = document.documentElement.clientWidth - chatbotButton.offsetWidth;
+                const maxY = document.documentElement.clientHeight - chatbotButton.offsetHeight;
+
+                x = Math.max(0, Math.min(maxX, x));
+                y = Math.max(0, Math.min(maxY, y));
+
+                chatbotButton.style.left = `${x}px`;
+                chatbotButton.style.top = `${y}px`;
+                chatbotButton.style.right = "auto";
+                chatbotButton.style.bottom = "auto";
+                chatbotButton.style.position = "fixed";
+            }
+
+            function stopDrag() {
+                if (!isDragging) return;
+
+                isDragging = false;
+                chatbotButton.classList.remove("dragging");
+                chatbotButton.style.cursor = "grab";
+                chatbotButton.style.transition = "box-shadow 0.2s";
+
+                document.removeEventListener("mousemove", moveDrag);
+                document.removeEventListener("touchmove", moveDrag);
+
+                // ✅ 현재 위치를 비율로 변환하여 저장
+                xRatio = chatbotButton.offsetLeft / document.documentElement.clientWidth;
+                yRatio = chatbotButton.offsetTop / document.documentElement.clientHeight;
+
+                setTimeout(() => {
+                    isClick = false; // ✅ 드래그 후 놓으면 클릭 이벤트 실행 방지
+                }, 0);
+            }
+
+            function openChatbot(e) {
+                if (!isClick) {
+                    return;
+                }
+                chatbotModal.hidden = false;
+                chatbotModal.style.display = "block"; // ✅ 챗봇 모달 열기
+                initializeChat(); // ✅ 챗봇 초기화 함수 실행
+            }
+
+            function closeChatbot() {
+                chatbotModal.style.display = "none";
+            }
+
+            chatbotButton.addEventListener("mousedown", (e) => {
+                startDrag(e);
+            });
+
+            chatbotButton.addEventListener("touchstart", (e) => {
+                startDrag(e);
+            });
+
+            document.addEventListener("mouseup", stopDrag);
+            document.addEventListener("touchend", stopDrag);
+
+            // ✅ 기존 `handleClick` → `openChatbot`으로 변경하여 클릭 이벤트 추가
+            chatbotButton.addEventListener("click", openChatbot);
+
+            // ✅ 챗봇 닫기 버튼 이벤트 추가
+            closeModal.addEventListener("click", closeChatbot);
+
+            // ✅ 창 크기가 변경될 때 버튼 위치를 비율에 맞게 자동 조정
+            window.addEventListener("resize", adjustButtonPosition);
+
+            // ✅ 페이지 로드 시 초기 버튼 위치 조정
+            adjustButtonPosition();
+
+            chatbotModal.style.display = "none";
+
+
+
+            closeModal.onclick = function() {
+                chatbotModal.style.display = "none";
+            }
+
+            var recognition;
+            var recognizing = false;
+            var timeoutId;
+            var finalTranscript = '';
+
+            if ('webkitSpeechRecognition' in window) {
+                recognition = new webkitSpeechRecognition();
+                recognition.continuous = true;
+                recognition.interimResults = true;
+                recognition.lang = 'ko-KR';
+
+                recognition.onstart = function() {
+                    recognizing = true;
+                    document.getElementById('dingup').play();
+                    console.log('Speech recognition started');
+                    document.getElementById('voiceInputButton').classList.add('active'); // 추가
+                    document.getElementById('loadingIndicator').hidden = false; // 로딩 애니메이션 표시 추가
+                };
+
+                recognition.onresult = function(event) {
+                    clearTimeout(timeoutId); // Clear the timeout if there's any speech input
+                    var interimTranscript = '';
+                    for (var i = event.resultIndex; i < event.results.length; ++i) {
+                        if (event.results[i].isFinal) {
+                            finalTranscript += event.results[i][0].transcript;
+                        } else {
+                            interimTranscript += event.results[i][0].transcript;
+                        }
+                    }
+                    document.getElementById('chatbotInput').value = finalTranscript + interimTranscript;
+                    timeoutId = setTimeout(function() {
+                        if (recognizing) {
+                            recognition.stop();
+                        }
+                    }, 1000); // Stop recognition after 1 seconds of silence
+                };
+
+                recognition.onerror = function(event) {
+                    console.log('Speech recognition error', event);
+                    recognizing = false;
+                };
+
+                recognition.onend = function() {
+                    recognizing = false;
+                    document.getElementById('chatbotInput').value = finalTranscript; // Ensure the final transcript remains
+                    document.getElementById('dingdown').play();
+                    console.log('Speech recognition ended');
+
+                    //음성 인식 메시지 자동 전송
+                    sendChatbotMessage();
+
+                    document.getElementById('voiceInputButton').classList.remove('active'); // 추가
+                    document.getElementById('loadingIndicator').hidden = true; // 로딩 애니메이션 숨김 추가
+
+                };
+
+                //음성인식버튼 클릭
+                document.getElementById('voiceInputButton').onclick = function() {
+
+                    if (recognizing) {
+                        recognition.stop();
+                        this.classList.remove('active'); // 음성 인식 종료 시 원래 스타일로 복구 추가
+                    } else {
+                        finalTranscript = document.getElementById('chatbotInput').value; // Reset the final transcript to current input
+                        recognition.start();
+                        this.classList.add('active'); // 음성 인식 중 스타일 변경 추가
+                    }
+                };
+            } else {
+                console.log('Speech recognition not supported');
+            }
+
+            var sendChatbotMessage = function() {
+                if (recognizing) {
+                    recognition.stop();
+                }
+                var user_id = '{{#id}}{{id}}{{/id}}{{^id}}null{{/id}}';
+                var message = document.getElementById('chatbotInput').value;
+                var currentTime = new Date().toLocaleTimeString();
+
+                var userMessage = "<div class='chat-container'><div class='user-info message-info'>User</div><div class='user-message'>" + message + "<br><span class='message-info'>" + currentTime + "</span></div></div>";
+
+                document.getElementById('chatbotMessages').innerHTML += userMessage;
+                document.getElementById('chatbotInput').value = "";
+                finalTranscript = ''; // Reset the final transcript after sending the message
+
+                setTimeout(function() {
+                    document.getElementById('chatbotMessages').scrollTop = document.getElementById('chatbotMessages').scrollHeight;
+                }, 100); // 딜레이 조정 가능
+
+                // API 호출 부분
+
+                // fetch('http://127.0.0.1:8000/chatbot', { // 로컬
+                fetch('https://saiescrm.api.jyds.synology.me/chatbot', { // 서버
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ request: message, user_id: user_id })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // // \n 문자를 <br> 태그로 대체
+                    // var formattedResponse = data.response.replace(/\\n/g, '<br>');
+
+
+                    var formattedResponse = "";
+
+                    if(data.crudOperations === "normal"){
+                        formattedResponse += data.response.replace(/\\n/g, '<br>');
+                    }
+
+                    // 2. system_response 값을 JSON 객체로 변환
+                    var systemData = {};
+                    if (data.system_response) {
+                        try {
+                            // ✅ \\_ 제거 및 백슬래시 정리
+                            let cleanedJson = data.system_response
+                                    .replace(/\\\\/g, '\\')  // 이중 백슬래시 정리
+                                    .replace(/\\_/g, '_')    // 잘못된 이스케이프 문자 제거
+                                    .replace(/\\n/g, '');    // 개행 문자 정리
+
+                            console.log("📌 정리된 JSON 문자열:", cleanedJson);
+
+                            // ✅ JSON 변환
+                            systemData = JSON.parse(cleanedJson);
+                        } catch (e) {
+                            console.error("❌ system_response JSON 파싱 오류:", e);
+                        }
+                    }
+
+                    if (data.crudOperations === "proposal"){
+                        var employeeName = systemData.employeeName?.trim() || "미지정";
+                        var productName = systemData.productName?.trim() || "미지정";
+
+                        const dataToSend = {
+                            회사명 : systemData.accountName || '',
+                            기회명 : systemData.opportunityName || '',
+                            기회담당자 : systemData.employeeName || '',
+                            고객담당자 : systemData.customerEmployee || '',
+                            고객요구사항 : systemData.opportunityInquiries || '',
+                            기회제품 : systemData.productName || '',
+                            수량 : systemData.quantity || '',
+                            기회매출 : systemData.expectedRevenue || ''
+                        };
+
+                        formattedResponse += "<strong>📌 AI CRM 어시스턴트 제안서 생성 정보:</strong><br>";
+                        formattedResponse += `아래의 정보를 바탕으로 생성한 제안서를 다운로드 합니다.<br>`;
+                        formattedResponse += `<strong>회사명</strong>: ${systemData.accountName || '정보 없음'}<br>`;
+                        formattedResponse += `<strong>기회명</strong>: ${systemData.opportunityName || '정보 없음'}<br>`;
+                        formattedResponse += `<strong>기회담당자</strong>: ${systemData.employeeName || '정보 없음'}<br>`;
+                        formattedResponse += `<strong>고객 담당자</strong>: ${systemData.customerEmployee || '정보 없음'}<br>`;
+                        formattedResponse += `<strong>고객요구사항</strong>: ${systemData.opportunityInquiries || '정보 없음'}<br>`;
+                        formattedResponse += `<strong>기회제품</strong>: ${systemData.productName || '정보 없음'}<br>`;
+                        formattedResponse += `<strong>수량</strong>: ${systemData.quantity || '정보 없음'}<br>`;
+                        formattedResponse += `<strong>기회매출</strong>: ${systemData.expectedRevenue || '정보 없음'}<br>`;
+
+                        console.log('전송할 데이터:', dataToSend);
+                        // 다운로드 진행중 팝업창 생성
+                        // alert(' 다운로드 중 입니다. . . .  🚀 잠시만 기다려주세요. ');
+                        // Excel 생성 요청
+                        fetch('https://saiescrm.api.jyds.synology.me/generate-excel', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(dataToSend)
+                        })
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error('Network response was not ok');
+                                    }
+                                    return response.blob();
+                                })
+                                .then(blob => {
+                                    // excel 파일을 사용자 PC에 다운로드
+                                    const url = window.URL.createObjectURL(new Blob([blob]));
+                                    const link = document.createElement('a');
+                                    link.href = url;
+                                    link.setAttribute('download', `${employeeName}_${productName}_proposal.xlsx`);
+                                    document.body.appendChild(link);
+                                    link.click();
+                                    window.URL.revokeObjectURL(url);
+                                    link.remove();
+
+                                    // 다운로드 완료 팝업창 생성
+                                    alert('제안서 다운로드가  완료되었습니다. ✨');
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                    alert('제안서 생성 중 오류가 발생했습니다. 다시 시도해 주세요.');
+                                });
+                    }
+
+
+                    if (data.crudOperations === "create") {
+                        if (data.table === "leads"){
+                            // 3. system_response 데이터를 URL의 쿼리 파라미터 형태로 변환
+                            var queryParams = new URLSearchParams({
+                                accountId: systemData.accountId || '',
+                                employeeId: systemData.employeeId || '',
+                                createdDate: systemData.createdDate || '',
+                                targetCloseDate: systemData.targetCloseDate || '',
+                                leadSource: systemData.leadSource || '',
+                                leadStatus: systemData.leadStatus || '',
+                                companyName: systemData.companyName || '',
+                                customerRequirements: systemData.customerRequirements || '',
+                                customerRepresentitive: systemData.customerRepresentitive || '',
+                                // accountManager: systemData["계정담당자"] || '',
+                                contact: systemData.c_tel || ''
+                            }).toString(); // 쿼리 문자열 생성
+
+                            // queryParams 값 로그 출력
+                            console.log("🔍 생성된 queryParams:", queryParams);
+
+                            // 4. formattedResponse에 정보 추가
+                            formattedResponse += "<strong>📌 AI CRM 어시스턴트 추천 리드 정보:</strong><br>";
+                            formattedResponse += `<strong>사원번호</strong>: ${systemData.employeeId || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>생성일자</strong>: ${systemData.createdDate || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>마감기한</strong>: ${systemData.targetCloseDate || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>리드 소스</strong>: ${systemData.leadSource || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>리드 상태</strong>: ${systemData.leadStatus || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>회사명</strong>: ${systemData.companyName || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>리드 내용</strong>: ${systemData.customerRequirements || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>계정 담당자</strong>: ${systemData.customerRepresentitive || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>연락처</strong>: ${systemData.c_tel || '정보 없음'}<br>`;
+
+                            // 특정 링크를 추가 (예: 새로 생성된 리소스 링크 제공)
+                            formattedResponse += `<br><a href="/chatbot/create/leads?${queryParams}" target="_blank">AI추천 데이터로 이동</a>`;
+                        }
+
+                        if (data.table === "accounts") {
+                            // system_response 데이터를 URL의 쿼리 파라미터 형태로 변환
+                            var queryParams = new URLSearchParams({
+                                employeeId: systemData.employeeId || '',
+                                accountCreatedDate: systemData.accountCreatedDate || '',
+                                accountStatus: systemData.accountStatus || '',
+                                accountName: systemData.accountName || '',
+                                employeeName: systemData.employeeName || '',
+                                accountType: systemData.accountType || '',
+                                parentAccount: systemData.parentAccount || '',
+                                website: systemData.website || '',
+                                contact: systemData.contact || '',
+                                businessType: systemData.businessType || '',
+                                accountManager: systemData.accountManager || '',
+                                accountDetail: systemData.accountDetail || '',
+                                address: systemData.address || '',
+                                accountManagerContact: systemData.accountManagerContact || ''
+                            }).toString(); // 쿼리 문자열 생성
+
+                            // queryParams 값 로그 출력
+                            console.log("🔍 생성된 queryParams:", queryParams);
+
+                            // 4. formattedResponse에 정보 추가
+                            formattedResponse += "<strong>📌 AI CRM 어시스턴트 추천 계정 정보:</strong><br>";
+                            formattedResponse += `<strong>생성 일자</strong>: ${systemData.accountCreatedDate || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>계정 상태</strong>: ${systemData.accountStatus || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>계정 이름</strong>: ${systemData.accountName || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>계약 소유자</strong>: ${systemData.employeeName || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>유형</strong>: ${systemData.accountType || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>상위 계정</strong>: ${systemData.parentAccount || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>웹사이트</strong>: ${systemData.website || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>대표전화</strong>: ${systemData.contact || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>사업유형</strong>: ${systemData.businessType || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>직원</strong>: ${systemData.accountManager || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>설명</strong>: ${systemData.accountDetail || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>배송지</strong>: ${systemData.address || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>직원 전화번호</strong>: ${systemData.accountManagerContact || '정보 없음'}<br>`;
+
+                            // 특정 링크를 추가 (예: 새로 생성된 리소스 링크 제공)
+                            formattedResponse += `<br><a href="/chatbot/create/accounts?${queryParams}" target="_blank">AI추천 데이터로 이동</a>`;
+                        }
+
+                        if (data.table === "opportunities") {
+                            // system_response 데이터를 URL의 쿼리 파라미터 형태로 변환
+                            var queryParams = new URLSearchParams({
+                                accountId: systemData.accountId || '',
+                                employeeId: systemData.employeeId || '',
+                                productId: systemData.productId || '',
+                                createdDate: systemData.createdDate || '',
+                                targetCloseDate: systemData.targetCloseDate || '',
+                                opportunityStatus: systemData.opportunityStatus || '',
+                                리드명: systemData["리드명"] || '',
+                                opportunityName: systemData.opportunityName || '',
+                                계정명: systemData["계정명"] || '',
+                                담당자명: systemData["담당자명"] || '',
+                                successRate: systemData.successRate || '',
+                                companyRevenue: systemData.companyRevenue || '',
+                                region: systemData.region || '',
+                                customerEmployee: systemData.customerEmployee || '',
+                                opportunityInquiries: systemData.opportunityInquiries || '',
+                                opportunityNotes: systemData.opportunityNotes || '',
+                                제품명: systemData["제품명"] || '',
+                                quantity: systemData.quantity || '',
+                                expectedRevenue: systemData.expectedRevenue || ''
+                            }).toString(); // 쿼리 문자열 생성
+
+                            // queryParams 값 로그 출력
+                            console.log("🔍 생성된 queryParams:", queryParams);
+
+
+                            if (data.crudOperations === "create") {
+                                formattedResponse += "<strong>📌 AI CRM 어시스턴트 추천 기회 정보:</strong><br>";
+                            } else {
+                                formattedResponse += "<strong>📌 AI CRM 어시스턴트 추천 제안서 정보:</strong><br>";
+                            }
+
+                            formattedResponse += `<strong>생성일자</strong>: ${systemData.createdDate || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>마감기한</strong>: ${systemData.targetCloseDate || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>기회상태</strong>: ${systemData.opportunityStatus || '정보 없음'}<br>`;
+                            // formattedResponse += `<strong>리드 명</strong>: ${systemData["리드명"] || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>기회 명</strong>: ${systemData.opportunityName || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>계정 명</strong>: ${systemData.accountName || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>기회 담당자</strong>: ${systemData.employeeName || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>성공률</strong>: ${systemData.successRate || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>회사 매출</strong>: ${systemData.companyRevenue || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>배송지역</strong>: ${systemData.region || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>고객사 담당자</strong>: ${systemData.customerEmployee || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>고객문의사항</strong>: ${systemData.opportunityInquiries || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>기회 세부내용</strong>: ${systemData.opportunityNotes || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>기회 제품</strong>: ${systemData.productName || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>기회 수량</strong>: ${systemData.quantity || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>기회 매출</strong>: ${systemData.expectedRevenue || '정보 없음'}<br>`;
+
+                            if (data.crudOperations === "create") {
+                                // 특정 링크를 추가 (예: 새로 생성된 리소스 링크 제공)
+                                formattedResponse += `<br><a href="/chatbot/create/opportunities?${queryParams}" target="_blank">AI추천 데이터로 이동</a>`;
+                            } else {
+                                // 특정 링크를 추가 (예: 새로 생성된 리소스 링크 제공)
+                                formattedResponse += `<br><a href="/chatbot/create/opportunities?${queryParams}" target="_blank">AI추천 제안서 생성으로 이동</a>`;
+                            }
+                        }
+
+                        if (data.table === "contracts") {
+                            // system_response 데이터를 URL의 쿼리 파라미터 형태로 변환
+                            var queryParams = new URLSearchParams({
+                                accountId: systemData.accountId || '',
+                                productId: systemData.productId || '',
+                                opportunityId: systemData.opportunityId || '',
+                                employeeId: systemData.employeeId || '',
+                                startDate: systemData.startDate || '',
+                                terminationDate: systemData.terminationDate || '',
+                                contractStatus: systemData.contractStatus || '',
+                                계정명: systemData["계정명"] || '',
+                                기회명: systemData["기회명"] || '',
+                                제품명: systemData["제품명"] || '',
+                                contractAmount: systemData.contractAmount || '',
+                                contractSales: systemData.contractSales || '',
+                                contractDetail: systemData.contractDetail || '',
+                                contractClassification: systemData.contractClassification || '',
+                                담당자명: systemData["담당자명"] || ''
+                            }).toString(); // 쿼리 문자열 생성
+
+                            // queryParams 값 로그 출력
+                            console.log("🔍 생성된 queryParams:", queryParams);
+
+                            formattedResponse += "<strong>📌 AI CRM 어시스턴트 추천 계약 정보:</strong><br>";
+                            formattedResponse += `<strong>시작일자</strong>: ${systemData.startDate || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>마감기한</strong>: ${systemData.terminationDate || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>계약 상태</strong>: ${systemData.contractStatus || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>계정명</strong>: ${systemData.accountName || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>기회명</strong>: ${systemData.opportunityName || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>기회 제품</strong>: ${systemData.productName || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>기회 수량</strong>: ${systemData.contractAmount || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>계약 가격</strong>: ${systemData.contractSales || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>계약 세부내용</strong>: ${systemData.contractDetail || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>계약 분류</strong>: ${systemData.contractClassification || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>계약 소유자</strong>: ${systemData.employeeName || '정보 없음'}<br>`;
+
+
+                            // 특정 링크를 추가 (예: 새로 생성된 리소스 링크 제공)
+                            formattedResponse += `<br><a href="/chatbot/create/contracts?${queryParams}" target="_blank">AI추천 데이터로 이동</a>`;
+                        }
+
+                        if (data.table === "orders") {
+                            // system_response 데이터를 URL의 쿼리 파라미터 형태로 변환
+                            var queryParams = new URLSearchParams({
+                                contractId: systemData.contract_id || '',
+                                productId: systemData.productId || '',
+                                orderDate: systemData.orderDate || '',
+                                salesDate: systemData.salesDate || '',
+                                orderStatus: systemData.orderStatus || '',
+                                orderAmount: systemData.orderAmount || '',
+                                제품명: systemData["제품명"] || ''
+                            }).toString(); // 쿼리 문자열 생성
+
+                            // queryParams 값 로그 출력
+                            console.log("🔍 생성된 queryParams:", queryParams);
+
+                            formattedResponse += "<strong>📌 AI CRM 어시스턴트 추천 주문 정보:</strong><br>";
+                            formattedResponse += `<strong>발주일자</strong>: ${systemData.orderDate || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>매출일자</strong>: ${systemData.salesDate || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>주문상태</strong>: ${systemData.orderStatus || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>수량</strong>: ${systemData.orderAmount || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>제품</strong>: ${systemData.productName || '정보 없음'}<br>`;
+
+                            // 특정 링크를 추가 (예: 새로 생성된 리소스 링크 제공)
+                            formattedResponse += `<br><a href="/chatbot/create/orders?${queryParams}" target="_blank">AI추천 데이터로 이동</a>`;
+                        }
+
+                    }
+
+
+                    if (["select", "update", "delete"].includes(data.crudOperations)) {
+
+                        if (data.table === "leads") {
+                            formattedResponse += "<strong>📌 AI CRM 어시스턴트 검색 리드 정보:</strong><br>";
+                            formattedResponse += `<strong>사원번호</strong>: ${systemData.employeeId || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>생성일자</strong>: ${systemData.createdDate || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>마감기한</strong>: ${systemData.targetCloseDate || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>리드 소스</strong>: ${systemData.leadSource || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>리드 상태</strong>: ${systemData.leadStatus || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>회사명</strong>: ${systemData.companyName || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>리드 내용</strong>: ${systemData.customerRequirements || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>계정 담당자</strong>: ${systemData.employeeName || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>연락처</strong>: ${systemData.c_tel || '정보 없음'}<br>`;
+
+                            var dataId = systemData?.leadId;
+                            console.log(`🔍 이동할 데이터 ID: ${dataId}`);
+                            formattedResponse += `<br><a href="/leads/detail/${dataId}" target="_blank">리드로 이동</a>`;
+                        }
+
+                        if (data.table === "accounts") {
+                            formattedResponse += "<strong>📌 AI CRM 어시스턴트 검색 계정 정보:</strong><br>";
+                            formattedResponse += `<strong>생성 일자</strong>: ${systemData.accountCreatedDate || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>계정 상태</strong>: ${systemData.accountStatus || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>계정 이름</strong>: ${systemData.accountName || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>계약 소유자</strong>: ${systemData.employeeName || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>유형</strong>: ${systemData.accountType || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>상위 계정</strong>: ${systemData.parentAccount || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>웹사이트</strong>: ${systemData.website || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>대표전화</strong>: ${systemData.contact || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>사업유형</strong>: ${systemData.businessType || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>직원</strong>: ${systemData.accountManager || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>설명</strong>: ${systemData.accountDetail || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>배송지</strong>: ${systemData.address || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>직원 전화번호</strong>: ${systemData.accountManagerContact || '정보 없음'}<br>`;
+
+                            var dataId = systemData?.accountId;
+                            console.log(`🔍 이동할 데이터 ID: ${dataId}`);
+                            formattedResponse += `<br><a href="/account/detail/${dataId}" target="_blank">계정으로 이동</a>`;
+                        }
+
+                        if (data.table === "opportunities") {
+
+                            formattedResponse += "<strong>📌 AI CRM 어시스턴트 검색 기회 정보:</strong><br>";
+                            formattedResponse += `<strong>생성일자</strong>: ${systemData.createdDate || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>마감기한</strong>: ${systemData.targetCloseDate || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>기회상태</strong>: ${systemData.opportunityStatus || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>기회 명</strong>: ${systemData.opportunityName || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>계정 명</strong>: ${systemData.accountName || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>기회 담당자</strong>: ${systemData.employeeName || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>성공률</strong>: ${systemData.successRate || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>회사 매출</strong>: ${systemData.companyRevenue || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>배송지역</strong>: ${systemData.region || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>고객사 담당자</strong>: ${systemData.customerEmployee || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>고객문의사항</strong>: ${systemData.opportunityInquiries || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>기회 세부내용</strong>: ${systemData.opportunityNotes || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>기회 제품</strong>: ${systemData.productName || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>기회 수량</strong>: ${systemData.quantity || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>기회 매출</strong>: ${systemData.expectedRevenue || '정보 없음'}<br>`;
+                            var dataId = systemData?.opportunityId;
+                            console.log(`🔍 이동할 데이터 ID: ${dataId}`);
+                            formattedResponse += `<br><a href="/opportunities/detail/${dataId}" target="_blank">기회로 이동</a>`;
+                        }
+
+                        if (data.table === "contracts") {
+                            formattedResponse += "<strong>📌 AI CRM 어시스턴트 검색 계약 정보:</strong><br>";
+                            formattedResponse += `<strong>시작일자</strong>: ${systemData.startDate || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>마감기한</strong>: ${systemData.terminationDate || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>계약 상태</strong>: ${systemData.contractStatus || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>계정명</strong>: ${systemData.accountName || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>기회명</strong>: ${systemData.opportunityName || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>기회 제품</strong>: ${systemData.productName || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>기회 수량</strong>: ${systemData.contractAmount || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>계약 가격</strong>: ${systemData.contractSales || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>계약 세부내용</strong>: ${systemData.contractDetail || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>계약 분류</strong>: ${systemData.contractClassification || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>계약 소유자</strong>: ${systemData.employeeName || '정보 없음'}<br>`;
+                            var dataId = systemData?.contractId;
+                            console.log(`🔍 이동할 데이터 ID: ${dataId}`);
+                            formattedResponse += `<br><a href="/contracts/detail/${dataId}" target="_blank">계약으로 이동</a>`;
+                        }
+
+                        if (data.table === "orders") {
+                            formattedResponse += "<strong>📌 AI CRM 어시스턴트 검색 주문 정보:</strong><br>";
+                            formattedResponse += `<strong>발주일자</strong>: ${systemData.orderDate || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>매출일자</strong>: ${systemData.salesDate || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>주문상태</strong>: ${systemData.orderStatus || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>수량</strong>: ${systemData.orderAmount || '정보 없음'}<br>`;
+                            formattedResponse += `<strong>제품</strong>: ${systemData.productName || '정보 없음'}<br>`;
+                            var dataId = systemData?.orderId;
+                            console.log(`🔍 이동할 데이터 ID: ${dataId}`);
+                            formattedResponse += `<br><a href="/orders/detail/${dataId}" target="_blank">주문으로 이동</a>`;
+                        }
+                    }
+
+
+
+
+                    var botMessage = "<div class='chat-container'><div class='bot-info message-info'>sAIes CRM</div><div class='bot-message'>" + formattedResponse + "<br><span class='message-info'>" + currentTime + "</span></div></div>";
+                    document.getElementById('chatbotMessages').innerHTML += botMessage;
+
+
+
+
+                    // 모달 창 내의 스크롤 최하단으로 내리기
+                    setTimeout(function() {
+                        document.getElementById('chatbotMessages').scrollTop = document.getElementById('chatbotMessages').scrollHeight;
+                    }, 100); // 딜레이 조정 가능
+
+                    // TTS API 호출 부분
+                    // 줄바꿈 문자를 제거하고 JSON 형식의 텍스트를 지워서 포맷팅
+
+                    var normalizedResponse = data.response.replace(/\\n/g, ' ').replace(/\n/g, ' ').replace(/{[^{}]*}/g, '').replace(/<br>/g, '');
+                    //fetch('http://127.0.0.1:8000/tts', {
+                    //fetch('https://saiescrm.tts.jyds.synology.me/tts', {
+                    fetch('https://saiescrm.api.jyds.synology.me/tts', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ request: normalizedResponse, user_id: user_id })
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            return response.blob();
+                        } else {
+                            throw new Error('TTS API 호출 실패');
+                        }
+                    })
+                    .then(blob => {
+                        var audioUrl = URL.createObjectURL(blob);
+                        var audio = new Audio(audioUrl);
+                        audio.play();
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        var botMessage = "<div class='chat-container'><div class='bot-info message-info'>sAIes CRM</div><div class='bot-message'>TTS API 호출 오류: " + error.message + "<br><span class='message-info'>" + currentTime + "</span></div></div>";
+                        document.getElementById('chatbotMessages').innerHTML += botMessage;
+                        setTimeout(function() {
+                            document.getElementById('chatbotMessages').scrollTop = document.getElementById('chatbotMessages').scrollHeight;
+                        }, 100); // 딜레이 조정 가능
+                    });
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    var botMessage = "<div class='chat-container'><div class='bot-info message-info'>sAIes CRM</div><div class='bot-message'>API 호출 오류: " + error.message + "<br><span class='message-info'>" + currentTime + "</span></div></div>";
+                    document.getElementById('chatbotMessages').innerHTML += botMessage;
+                    setTimeout(function() {
+                        document.getElementById('chatbotMessages').scrollTop = document.getElementById('chatbotMessages').scrollHeight;
+                    }, 100); // 딜레이 조정 가능
+                });
+            }
+
+
+            document.getElementById('chatbotInput').onkeydown = function(event) {
+                if (event.key === 'Enter') {
+                    sendChatbotMessage();
+                    setTimeout(function() {
+                        document.getElementById('chatbotMessages').scrollTop = document.getElementById('chatbotMessages').scrollHeight;
+                    }, 100); // Adjust the delay as needed
+                }
+            };
+
+            // 초기 메시지를 설정하는 함수
+            var initializeChat = function() {
+                var initialMessage = "<div class='chat-container'><div class='bot-info message-info'>sAIes CRM</div><div class='bot-message'>안녕하세요. CRM 어시스던트 입니다. 무엇을 도와드릴까요?<br><span class='message-info'>" + new Date().toLocaleTimeString() + "</span></div></div>";
+                document.getElementById('chatbotMessages').innerHTML = initialMessage;
+            };
+
+        });
+
+
+    </script>

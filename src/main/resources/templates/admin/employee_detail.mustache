@@ -1,0 +1,159 @@
+{{>main/header}}
+
+<style>
+    label {
+        margin-right: 40px; /* label과 텍스트 사이의 간격을 설정 */
+    }
+
+    .form-group {
+        border-bottom: 1px solid #ccc; /* 연한 회색 밑줄 */
+        padding-bottom: 10px; /* 밑줄과 텍스트 간격을 설정 */
+        margin-bottom: 13px;
+        height: 35px;
+    }
+
+    .form-group label {
+        width: 100px;  /* label의 고정 너비 */
+        margin-right: 10px;  /* label과 span 사이의 간격 */
+    }
+
+    .form-group span {
+        display: inline-block;
+    }
+
+</style>
+
+
+<div id="layoutSidenav_content">
+    <main>
+        <div class="container-fluid px-4">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h1 class="mt-4">Employee Detail</h1>
+                <button onclick="location.href='/employee-list'" class="back-btn">🔙</button>
+            </div>
+            <ol class="breadcrumb mb-4">
+                <li class="breadcrumb-item active">Employee detail</li>
+            </ol>
+            <div class="row">
+            </div>
+            <div class="row">
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-table me-1"></i>
+                    기본정보
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="name">이름</label>
+                                <span id="name">{{employee.employeeName}}</span> <!-- 텍스트를 여기에 넣기 -->
+                            </div>
+                            <div class="form-group">
+                                <label for="department">부서</label>
+                                <span id="department">{{employee.dept}}</span> <!-- 텍스트를 여기에 넣기 -->
+                            </div>
+                            <div class="form-group">
+                                <label for="join-date">입사일</label>
+                                <span id="join-date">{{employee.hireDate}}</span> <!-- 텍스트를 여기에 넣기 -->
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="position">직급</label>
+                                <span id="position">{{employee.position}}</span> <!-- 텍스트를 여기에 넣기 -->
+                            </div>
+                            <div class="form-group">
+                                <label for="team">팀</label>
+                                <span id="team">{{employee.team}}</span> <!-- 텍스트를 여기에 넣기 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--            계정정보 부분-->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-table me-1"></i>
+                    계정정보
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="name">아이디</label>
+                                <span id="name">{{employee.employeeId}}</span> <!-- 텍스트를 여기에 넣기 -->
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="department">비밀번호</label>
+                                <span id="department" style="margin-right: 100px;">*****</span> <!-- 텍스트를 여기에 넣기 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex justify-content-end">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#passwordModal"
+                        data-id="{{employee.employeeId}}">
+                    비밀번호 초기화
+                </button>
+            </div>
+        </div>
+    </main>
+    <!-- Modal for success message -->
+    <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="successModalLabel">비밀번호 초기화 완료</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    비밀번호가 성공적으로 초기화되었습니다.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">확인</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // CRUD 메시지
+        {{#message}}
+            alert("{{message}}");
+        {{/message}}
+        // 비밀번호 초기화 버튼 클릭 시 GET 요청 보내기
+        document.querySelector('[data-bs-target="#passwordModal"]').addEventListener('click', function() {
+            var employeeId = this.getAttribute('data-id');
+
+            fetch(`/admin/employee-password-reset/${employeeId}`, {
+                method: 'GET',
+            })
+                    .then(response => {
+                        if (response.ok) {
+                            return response.json();
+                        }
+                        throw new Error('비밀번호 초기화 실패');
+                    })
+                    .then(data => {
+                        // 비밀번호 초기화 성공 시 모달 창 띄우기
+                        if (data.success) {
+                            var successModal = new bootstrap.Modal(document.getElementById('successModal'));
+                            successModal.show();
+                        } else {
+                            alert('비밀번호 초기화 실패');
+                        }
+                    })
+                    .catch(error => {
+                        alert(error.message);
+                    });
+        });
+    </script>
+
+    {{>main/footer}}

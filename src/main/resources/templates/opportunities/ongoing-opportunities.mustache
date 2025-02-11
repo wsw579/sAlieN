@@ -1,0 +1,107 @@
+
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="fas fa-table me-1"></i>
+        진행중 기회 목록
+    </div>
+    <div class="card-body">
+        <table id="datatablesSimple" class="table table-bordered">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>기회명</th>
+                <th>상태</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{#pagination.contents}}
+                <tr>
+                    <td>{{opportunityId}}</td>
+                    <td>
+                        <a href="/opportunities/detail/{{opportunityId}}">
+                            {{opportunityName}}
+                        </a>
+                    </td>
+                    <td>{{opportunityStatus}}</td>
+                </tr>
+            {{/pagination.contents}}
+            </tbody>
+        </table>
+        <div class="pagination justify-content-center mt-3">
+            {{#pagination.hasPreviousPage}}
+                <button class="btn btn-outline-primary pagination-button" data-page="{{pagination.previousPage}}">
+                    이전
+                </button>
+            {{/pagination.hasPreviousPage}}
+            {{#pagination.pageNumbers}}
+                <button class="btn btn-outline-secondary pagination-button {{#isActive}}active{{/isActive}}" data-page="{{page}}">
+                    {{displayPage}}
+                </button>
+            {{/pagination.pageNumbers}}
+            {{#pagination.hasNextPage}}
+                <button class="btn btn-outline-primary pagination-button" data-page="{{pagination.nextPage}}">
+                    다음
+                </button>
+            {{/pagination.hasNextPage}}
+        </div>
+    </div>
+</div>
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+        // ✅ 이벤트 위임 방식으로 변경하여 클릭 감지
+        document.addEventListener("click", function (event) {
+            const target = event.target.closest(".pagination-button");
+            if (!target) return; // pagination 버튼이 아닌 경우 무시
+
+            event.preventDefault(); // 기본 동작 방지
+
+            let page = target.getAttribute("data-page");
+            if (!page) return;
+
+            let url = `/api/opportunities/ongoing?page=${page}&size=10`;
+
+            // URL 상태 변경 (뒤로 가기 가능)
+            window.history.pushState({}, "", url);
+
+            // 데이터를 비동기적으로 불러오기
+            loadOpportunities(url);
+        });
+    });
+
+    function loadOpportunities(url) {
+        fetch(url, {
+            method: "GET",
+            headers: { "X-Requested-With": "XMLHttpRequest" } // AJAX 요청임을 명시
+        })
+        .then(response => response.text())
+        .then(html => {
+            let parser = new DOMParser();
+            let doc = parser.parseFromString(html, "text/html");
+
+            // ✅ 테이블만 업데이트 (모달 삭제 방지)
+            let newTable = doc.querySelector("#datatablesSimple"); // 새 테이블 가져오기
+            let newPagination = doc.querySelector(".pagination"); // 새 페이지네이션 가져오기
+
+            if (newTable) {
+                document.querySelector("#datatablesSimple").innerHTML = newTable.innerHTML;
+            }
+            if (newPagination) {
+                document.querySelector(".pagination").innerHTML = newPagination.innerHTML;
+            }
+        })
+        .catch(error => console.error("Error loading opportunities:", error));
+    }
+
+    // ✅ 뒤로 가기/앞으로 가기 이벤트 처리
+    window.addEventListener("popstate", function () {
+        loadOpportunities(window.location.href);
+    });
+
+
+
+
+
+
+</script>

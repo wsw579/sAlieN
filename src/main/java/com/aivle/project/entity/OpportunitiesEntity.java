@@ -1,22 +1,22 @@
 package com.aivle.project.entity;
 
-
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+@Table(name = "opportunities")
 public class OpportunitiesEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -64,23 +64,32 @@ public class OpportunitiesEntity implements Serializable {
     private String successRate;
 
 
-    // 외래키 부분
+    // 외부 외래키 부분
+    @OneToMany(mappedBy = "opportunity", cascade = CascadeType.ALL)
+    private List<OpportunitiesCommentEntity> comments;
 
-    //@ManyToOne
-    //@JoinColumn
-    //private LeadEntity leadId;
+    @OneToMany(mappedBy = "opportunity", cascade = CascadeType.ALL)
+    private List<HistoryEntity> history;
 
-    //@ManyToOne
-    //@JoinColumn
-    //private AccountEntity accountId;
+    // 내부 외래키 부분
+    @ManyToOne
+    @JoinColumn(name = "lead_id", nullable = true, foreignKey = @ForeignKey(name = "fk_opportunities_lead_id"))
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private LeadsEntity leadId;
 
-    //@ManyToOne
-    //@JoinColumn
-    //private ProductEntity productId;
+    @ManyToOne
+    @JoinColumn(name = "account_id", nullable = false, foreignKey = @ForeignKey(name = "fk_opportunities_account_id"))
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private AccountEntity accountId;
 
-    //@ManyToOne
-    //@JoinColumn
-    //private EmployeeEntity employeeId;
+    @ManyToOne
+    @JoinColumn(name = "product_id", nullable = false, foreignKey = @ForeignKey(name = "fk_opportunities_product_id"))
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private ProductsEntity productId;
 
+    @ManyToOne
+    @JoinColumn(name = "employee_id", nullable = false, foreignKey = @ForeignKey(name = "fk_opportunities_employee_id"))
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private EmployeeEntity employeeId;
 
 }

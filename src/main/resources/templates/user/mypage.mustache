@@ -1,0 +1,262 @@
+{{>main/header}}
+
+<style>
+    label {
+        margin-right: 40px; /* label과 텍스트 사이의 간격을 설정 */
+    }
+
+    .form-group {
+        border-bottom: 1px solid #ccc; /* 연한 회색 밑줄 */
+        padding-bottom: 10px; /* 밑줄과 텍스트 간격을 설정 */
+        margin-bottom: 13px;
+        height: 35px;
+    }
+
+    .form-group label {
+        width: 100px;  /* label의 고정 너비 */
+        margin-right: 10px;  /* label과 span 사이의 간격 */
+    }
+
+    .form-group span {
+        display: inline-block;
+    }
+
+</style>
+
+<div id="layoutSidenav_content">
+    <main>
+        <div class="container-fluid px-4">
+            <h1 class="mt-4">Profile</h1>
+            <ol class="breadcrumb mb-4">
+                <li class="breadcrumb-item active">profile</li>
+            </ol>
+            <div class="row">
+            </div>
+            <div class="row">
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-table me-1"></i>
+                    기본정보
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="name">이름</label>
+                                <span id="name">{{employee.employeeName}}</span> <!-- 텍스트를 여기에 넣기 -->
+                            </div>
+                            <div class="form-group">
+                                <label for="department">부서</label>
+                                <span id="department">{{employee.dept}}</span> <!-- 텍스트를 여기에 넣기 -->
+                            </div>
+                            <div class="form-group">
+                                <label for="join-date">입사일</label>
+                                <span id="join-date">{{employee.hireDate}}</span> <!-- 텍스트를 여기에 넣기 -->
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="position">직급</label>
+                                <span id="position">{{employee.position}}</span> <!-- 텍스트를 여기에 넣기 -->
+                            </div>
+                            <div class="form-group">
+                                <label for="team">팀</label>
+                                <span id="team">{{employee.team}}</span> <!-- 텍스트를 여기에 넣기 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+<!--            계정정보 부분-->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-table me-1"></i>
+                    계정정보
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="name">아이디</label>
+                                <span id="name">{{employee.employeeId}}</span> <!-- 텍스트를 여기에 넣기 -->
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="department">비밀번호</label>
+                                <span id="department" style="margin-right: 100px;">*****</span> <!-- 텍스트를 여기에 넣기 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex justify-content-end">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#passwordModal"
+                        data-id="{{id}}">
+                    비밀번호 수정
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- 비밀번호 수정 모달 -->
+    <div class="modal fade" id="passwordModal" tabindex="-1" aria-labelledby="passwordModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="passwordModalLabel">비밀번호 변경</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- 오류 메시지 출력 영역 -->
+                    <div id="error-message" class="alert alert-danger" style="display:none;"></div>
+
+                    <form id="password-change-form">
+                        <input type="hidden" name="employeeId" id="modal-userId" value="">
+                        <div class="mb-3">
+                            <label for="password-question" class="form-label">비밀번호 찾기 질문</label>
+                            <input type="text" class="form-control" id="password-question" value="가장 좋아하는 음식은?" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password-answer" class="form-label">비밀번호 찾기 답변</label>
+                            <input type="text" class="form-control" name="passwordAnswer" id="password-answer" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="current-password" class="form-label">기존 비밀번호</label>
+                            <input type="password" class="form-control" name="existPassword" id="current-password" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="new-password" class="form-label">새 비밀번호</label>
+                            <input type="password" class="form-control" name="newPassword" id="new-password" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirm-password" class="form-label">새 비밀번호 확인</label>
+                            <input type="password" class="form-control" id="confirm-password" required>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                            <button type="submit" class="btn btn-primary">저장</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+        // 모달이 열릴 때 이벤트 처리 (사용자 ID 설정)
+        const passwordModal = document.getElementById("passwordModal");
+        passwordModal.addEventListener("show.bs.modal", function (event) {
+            const button = event.relatedTarget;
+            document.getElementById("modal-userId").value = button.getAttribute("data-id");
+        });
+
+        // 비밀번호 입력 시 실시간 검사
+        document.getElementById("new-password").addEventListener("input", validateNewPassword);
+        document.getElementById("confirm-password").addEventListener("input", validatePasswordMatch);
+
+        // 폼 제출 시 유효성 검사 실행 후 서버 요청
+        document.getElementById("password-change-form").addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            if (!validatePasswordForm()) return;
+
+            const formData = new FormData(this);
+            const jsonObject = Object.fromEntries(formData.entries());
+
+            try {
+                const response = await fetch("/api/password/change", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(jsonObject)
+                });
+
+                const result = await response.text();
+                if (response.ok) {
+                    alert("비밀번호 변경 성공! 다시 로그인해 주세요.");
+                    window.location.href = "user/login";
+                } else {
+                    showErrorMessage(result);
+                }
+            } catch (error) {
+                showErrorMessage("서버 오류 발생! 다시 시도해주세요.");
+            }
+        });
+    });
+
+    /* 유효성 검사 함수 */
+
+    // 비밀번호 찾기 답변 검사 (최소 2자 이상)
+    function validateSecurityAnswer() {
+        return validateInput("password-answer", "비밀번호 찾기 답변을 입력하세요.", 2);
+    }
+
+    // 기존 비밀번호 입력 검사 (필수 입력)
+    function validateCurrentPassword() {
+        return validateInput("current-password", "기존 비밀번호를 입력하세요.");
+    }
+
+    // 새 비밀번호 유효성 검사 (8~16자, 대/소문자, 숫자, 특수문자 포함)
+    function validateNewPassword() {
+        const newPassword = document.getElementById("new-password").value;
+        const passwordPattern = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,16}$/;
+
+        if (!passwordPattern.test(newPassword)) {
+            showErrorMessage("비밀번호는 8~16자의 영문 대/소문자, 숫자, 특수문자를 포함해야 합니다.");
+            return false;
+        }
+        return true;
+    }
+
+    // 새 비밀번호 확인 검사 (일치 여부 확인)
+    function validatePasswordMatch() {
+        const newPassword = document.getElementById("new-password").value;
+        const confirmPassword = document.getElementById("confirm-password").value;
+
+        if (newPassword !== confirmPassword) {
+            showErrorMessage("새 비밀번호가 일치하지 않습니다.");
+            return false;
+        }
+        return true;
+    }
+
+    // 폼 전체 유효성 검사 실행
+    function validatePasswordForm() {
+        hideErrorMessage();
+        return validateSecurityAnswer() && validateCurrentPassword() && validateNewPassword() && validatePasswordMatch();
+    }
+
+    /* 유틸리티 함수 */
+
+    // 일반적인 입력 필드 검사 (길이 제한 포함)
+    function validateInput(inputId, errorMessage, minLength = 1) {
+        const inputValue = document.getElementById(inputId).value.trim();
+        if (inputValue.length < minLength) {
+            showErrorMessage(errorMessage);
+            return false;
+        }
+        return true;
+    }
+
+    // 오류 메시지 표시
+    function showErrorMessage(message) {
+        const errorMessage = document.getElementById("error-message");
+        errorMessage.innerText = message;
+        errorMessage.style.display = "block";
+    }
+
+    // 오류 메시지 숨기기
+    function hideErrorMessage() {
+        document.getElementById("error-message").style.display = "none";
+    }
+
+</script>
+
+{{>main/footer}}

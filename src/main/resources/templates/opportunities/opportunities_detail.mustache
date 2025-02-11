@@ -16,6 +16,14 @@
         border-color: #f5c6cb;
         color: #721c24;
     }
+
+    .btn-custom-proposal {
+    background-color: #cce5ff; /* 연한 파란색 */
+    color: #004085;
+    border: 1px solid #b8daff;
+}
+
+
     .btn-custom-create:hover {
         background-color: #c3e6cb; /* 약간 어두운 그린 */
         border-color: #b1dfbb;
@@ -47,164 +55,414 @@
     }
 
 
+.progress-container {
+    position: relative;
+    width: 100%;
+    height: 70px; /* 높이를 조금 늘립니다 */
+    margin: 20px 0;
+}
+
+.progress-bar {
+    position: absolute;
+    top: 38%; /* 중앙 정렬 */
+    left: 10%; /* Qualification 원의 중앙에서 시작하도록 조정합니다 */
+    transform: translateY(-50%);
+    width: 0;
+    height: 10px;
+    background-color: green;
+    transition: width 0.4s ease;
+}
+
+.progress-steps {
+    display: flex;
+    justify-content: space-between;
+    position: absolute;
+    top: 50%; /* 중앙 정렬 */
+    width: 100%;
+    transform: translateY(-50%);
+}
+
+.step {
+    width: 20%;
+    text-align: center;
+    position: relative;
+    padding-top: 30px; /* 텍스트를 아래로 내리기 위해 패딩 추가 */
+}
+
+
+.step::before {
+    content: '';
+    position: absolute;
+    top: 16%; /* 원의 위치를 조정합니다 */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: white;
+    border: 2px solid green;
+    transition: background-color 0.4s ease, border-color 0.4s ease;
+}
+
+.step.active::before {
+    background-color: green;
+    border-color: green;
+}
+
+
+        .comment-section {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+            width: 100%;
+        }
+        .comment {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 10px;
+            background-color: #f1f1f1;
+            position: relative;
+            width: calc(100% - 20px);
+        }
+        .comment .author {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .comment .timestamp {
+            font-size: 0.8em;
+            color: #888;
+            position: absolute;
+            bottom: 5px;
+            right: 10px;
+        }
+        .comment-form {
+            display: flex;
+            width: 100%;
+            align-items: center;
+            margin-top: 10px;
+            background-color: #f9f9f9;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .comment-form input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-right: 10px;
+            font-size: 16px;
+        }
+        .comment-form button {
+            padding: 10px 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .comment-form button:hover {
+            background-color: #0056b3;
+        }
+
 </style>
-
-
-
 
 
 <div id="layoutSidenav_content">
     <main>
         <div class="container-fluid px-4">
-            <h1 class="mt-4">Opportunities</h1>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h1 class="mt-4">Opportunities</h1>
+                <button onclick="location.href='/opportunities'" class="back-btn">🔙</button>
+            </div>
             <ol class="breadcrumb mb-4">
                 <li class="breadcrumb-item active">Opportunities</li>
             </ol>
             <div class="row">
             </div>
             <div class="row">
-                <div class="col-xl-6">
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <i class="fas fa-chart-area me-1"></i>
-                            연간 계약 전환 현황
-                        </div>
-                        <div class="card-body"><canvas id="myAreaChart" width="100%" height="40"></canvas></div>
-                    </div>
-                </div>
-                <div class="col-xl-6">
-                    <div class="card mb-4">
-                        <div class="card-header">
-                            <i class="fas fa-chart-bar me-1"></i>
-                            연간 계약 전환 누적 현황
-                        </div>
-                        <div class="card-body"><canvas id="myBarChart" width="100%" height="40"></canvas></div>
-                    </div>
-                </div>
             </div>
 
 
-
+            <!-- 기회 상세내용 부분 -->
             <div class="card mb-4">
                 <div class="card-header">
                     <i class="fas fa-table me-1"></i>
                     Opportunities detail
                 </div>
+
                 <div class="card-body">
                     <table id="opportunities_detail">
 
-                        <div class="button-container mb-3">
-                            <button id="createButton" class="btn btn-custom-create btn-sm">
-                                <i class="fas fa-plus-circle"></i> 신규
-                            </button>
-                            <button id="deleteButton" class="btn btn-custom-delete btn-sm">
-                                <i class="fas fa-trash-alt"></i> 삭제
-                            </button>
-                        </div>
+                        <input type="file" id="fileInput" style="display: none;">
+                        <div id="loader"></div>
+                        <div id="loadingText">잠시만 기다려 주세요. 예상 시간: <span id="estimatedTime">15초</span></div>
+                        <script src="app.js"></script>
+
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                var estimatedTimeElement = document.getElementById('estimatedTime');
+                                var totalTimeInSeconds = 15; // 1분 30초를 초로 변환
+                                var interval;
+
+                                function updateCountdown() {
+                                    var minutes = Math.floor(totalTimeInSeconds / 60);
+                                    var seconds = totalTimeInSeconds % 60;
+                                    estimatedTimeElement.textContent = minutes + '분 ' + seconds + '초';
+
+                                    if (totalTimeInSeconds > 0) {
+                                        totalTimeInSeconds--;
+                                    } else {
+                                        clearInterval(interval);
+                                        estimatedTimeElement.textContent = '생성이 곧 완료됩니다.';
+                                    }
+                                }
+
+                                    function startCountdown() {
+                                    totalTimeInSeconds = 15; // 초기 시간 설정
+                                    clearInterval(interval);
+                                    updateCountdown();
+                                    interval = setInterval(updateCountdown, 1000);
+                                }
+
+                                document.getElementById('proposalExcelButton').addEventListener('click', function() {
+                                    startCountdown();
+                                });
+
+                                document.getElementById('proposalButton').addEventListener('click', function() {
+                                    startCountdown();
+                                });
+
+
+                            });
+                        </script>
+
+
+
 
                         {{#opportunities}}
+                            <div class="button-container mb-3">
 
-                            <form id="opportunityForm">
-                                <div class="mb-3 row">
-                                    <label for="createdDate" class="col-sm-2 col-form-label">생성일자:</label>
-                                    <div class="col-sm-10">
-                                        <input type="date" class="form-control" id="createdDate" value="{{createdDate}}">
-                                    </div>
-                                </div>
-                                <div class="mb-3 row">
-                                    <label for="targetCloseDate" class="col-sm-2 col-form-label">마감기한:</label>
-                                    <div class="col-sm-10">
-                                        <input type="date" class="form-control" id="targetCloseDate" value="{{targetCloseDate}}">
-                                    </div>
-                                </div>
-                                <div class="mb-3 row">
-                                    <label for="opportunityStatus" class="col-sm-2 col-form-label">기회상태:</label>
-                                    <div class="col-sm-10">
-                                        <select class="form-control" id="opportunityStatus">
-                                            <option value="Qualification">Qualification</option>
-                                            <option value="Needs Analysis">Needs Analysis</option>
-                                            <option value="Proposal">Proposal</option>
-                                            <option value="Negotiation">Negotiation</option>
-                                            <option value="Closed(won)">Closed(won)</option>
-                                            <option value="Closed(loss)">Closed(loss)</option>
-                                            <option value="Pending">Pending</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="mb-3 row">
-                                    <label for="opportunityName" class="col-sm-2 col-form-label">기회 명:</label>
-                                    <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="opportunityName" value="{{opportunityName}}">
-                                    </div>
-                                </div>
-                                <div class="mb-3 row">
-                                    <label for="owner" class="col-sm-2 col-form-label">기회 담당자:</label>
-                                    <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="owner" value="">
-                                    </div>
-                                </div>
-                                <div class="mb-3 row">
-                                    <label for="successRate" class="col-sm-2 col-form-label">성공률:</label>
-                                    <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="successRate" value="{{successRate}}">
-                                    </div>
-                                </div>
-                                <div class="mb-3 row">
-                                    <label for="companyRevenue" class="col-sm-2 col-form-label">회사 매출:</label>
-                                    <div class="col-sm-10">
-                                        <input type="number" step="0.01" class="form-control" id="companyRevenue" value="{{companyRevenue}}">
-                                    </div>
-                                </div>
-                                <div class="mb-3 row">
-                                    <label for="region" class="col-sm-2 col-form-label">배송지역:</label>
-                                    <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="region" value="{{region}}">
-                                    </div>
-                                </div>
-                                <div class="mb-3 row">
-                                    <label for="customerEmployee" class="col-sm-2 col-form-label">고객사 담당자:</label>
-                                    <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="customerEmployee" value="{{customerEmployee}}">
-                                    </div>
-                                </div>
-                                <div class="mb-3 row">
-                                    <label for="product" class="col-sm-2 col-form-label">기회 제품:</label>
-                                    <div class="col-sm-10">
-                                        <input type="text" class="form-control" id="product" value="">
-                                    </div>
-                                </div>
-                                <div class="mb-3 row">
-                                    <label for="quantity" class="col-sm-2 col-form-label">기회 수량:</label>
-                                    <div class="col-sm-10">
-                                        <input type="number" step="0.01" class="form-control" id="quantity" value="{{quantity}}">
-                                    </div>
-                                </div>
-                                <div class="mb-3 row">
-                                    <label for="expectedRevenue" class="col-sm-2 col-form-label">기회 매출:</label>
-                                    <div class="col-sm-10">
-                                        <input type="number" step="0.01" class="form-control" id="expectedRevenue" value="{{expectedRevenue}}">
-                                    </div>
-                                </div>
-                                <div class="d-flex justify-content-end">
-                                    <button type="submit" id="createButton" class="btn btn-custom-create btn-sm">
-                                        <i class="fas fa-plus-circle"></i> 저장
+                                <a href="/opportunities/detail/create" class="btn btn-custom-create btn-sm"
+                                   id="createButton">
+                                    <i class="fas fa-plus-circle"></i> 신규
+                                </a>
+
+                                {{#opportunityId}}
+                                    <button class="btn btn-custom-delete btn-sm" id="deleteButton">
+                                        <i class="fas fa-trash"></i> 삭제
+                                    </button>
+                                {{/opportunityId}}
+                                <a href="/opportunities" class="btn btn-custom-select btn-sm" id="selectButton">
+                                    <i class="fas fa-list"></i> 목록
+                                </a>
+
+                            </div>
+
+                            {{#opportunityId}}
+                            <form id="opportunityForm" action="/opportunities/detail/{{opportunityId}}/update"
+                                  method="POST">
+                                <div class="button-container d-flex justify-content-center mb-3">
+                                    <button type="button" id="proposalExcelButton" class="btn btn-custom-proposal btn-lg">
+                                        <i class= aria-hidden="true"></i> 💡AI 제안서 excel 파일 생성 💡
+                                    </button>
+
+                                    <button type="button" id="proposalButton" class="btn btn-custom-proposal btn-lg">
+                                        <i class= aria-hidden="true"></i> 💡AI 제안서 ppt 파일 생성 💡
                                     </button>
                                 </div>
-                            </form>
+                            {{/opportunityId}}
+                            {{^opportunityId}}
+                            <form id="opportunityForm" action="/opportunities/detail/create" method="POST">
+                            {{/opportunityId}}
 
+
+                            <div class="mb-3 row">
+                                <label for="createdDate" class="col-sm-2 col-form-label">생성일자:</label>
+                                <div class="col-sm-10">
+                                    <input type="date" class="form-control" id="createdDate" name="createdDate"
+                                           value="{{createdDate}}" required>
+                                </div>
+                            </div>
+
+                            <div class="mb-3 row">
+                                <label for="targetCloseDate" class="col-sm-2 col-form-label">마감기한:</label>
+                                <div class="col-sm-10">
+                                    <input type="date" class="form-control" id="targetCloseDate" name="targetCloseDate"
+                                           value="{{targetCloseDate}}" required>
+                                </div>
+                            </div>
+
+                            <div class="mb-3 row">
+                                <label for="opportunityStatus" class="col-sm-2 col-form-label">기회상태:</label>
+                                <div class="col-sm-10">
+                                    <select class="form-control" id="opportunityStatus" name="opportunityStatus"
+                                            required>
+                                        <option value="Qualification">Qualification</option>
+                                        <option value="Needs Analysis">Needs Analysis</option>
+                                        <option value="Proposal">Proposal</option>
+                                        <option value="Negotiation">Negotiation</option>
+                                        <option value="Closed(won)">Closed(won)</option>
+                                        <option value="Closed(loss)">Closed(loss)</option>
+                                        <option value="Pending">Pending</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="mb-3 row">
+                                <label for="leadId" class="col-sm-2 col-form-label">리드 명:</label>
+                                <div class="col-sm-10">
+                                    <select id="leadId" name="leadId">
+
+                                        <option value="">-- 리드 선택 --</option>
+                                        {{#leads}}
+                                            <option value="{{leadId}}">
+                                                {{leadId}} (ID: {{leadId}})
+                                            </option>
+                                        {{/leads}}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="mb-3 row">
+                                <label for="opportunityName" class="col-sm-2 col-form-label">기회 명:</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="opportunityName" name="opportunityName"
+                                           value="{{opportunityName}}" placeholder="예: 기존 네트워크 시스템 업데이트 건" required>
+                                </div>
+                            </div>
+
+                            <div class="mb-3 row">
+                                <label for="accountId" class="col-sm-2 col-form-label">계정 명:</label>
+                                <div class="col-sm-10">
+                                    <select id="accountId" name="accountId" required>
+
+                                        <option value="">-- 계정 선택 --</option>
+                                        {{#accounts}}
+                                            <option value="{{accountId}}">
+                                                {{accountName}} (ID: {{accountId}})
+                                            </option>
+                                        {{/accounts}}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="mb-3 row">
+                                <label for="employeeId" class="col-sm-2 col-form-label">기회 담당자:</label>
+                                <div class="col-sm-10">
+                                    <select id="employeeId" name="employeeId" required>
+                                        <option value="">-- 담당자 선택 --</option>
+                                        {{#employee}}
+                                            <option value="{{employeeId}}">
+                                                {{employeeName}} (ID: {{employeeId}}
+                                                Dept: {{#departmentId}}{{name}}{{/departmentId}}{{^departmentId}}
+                                                미지정{{/departmentId}})
+                                            </option>
+                                        {{/employee}}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="mb-3 row">
+                                <label for="successRate" class="col-sm-2 col-form-label">성공률:</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="displaySuccessRate" name="displaySuccessRate"
+                                           value="{{successRate}}" placeholder="예: 20" required>
+                                </div>
+                            </div>
+                            <!-- 실제 DB에 저장될 값 -->
+                            <input type="hidden" id="successRate" name="successRate" value="{{successRate}}" required>
+
+                            <div class="mb-3 row">
+                                <label for="companyRevenue" class="col-sm-2 col-form-label">회사 매출:</label>
+                                <div class="col-sm-10">
+                                    <input type="number" step="0.01" class="form-control" id="companyRevenue"
+                                           name="companyRevenue" value="{{companyRevenue}}" placeholder="예: 1,000,000,000" required>
+                                </div>
+                            </div>
+
+                            <div class="mb-3 row">
+                                <label for="region" class="col-sm-2 col-form-label">배송지역:</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="region" name="region" value="{{region}}"
+                                           placeholder="예: 서울특별시 강남구 테헤란로 123" required>
+                                </div>
+                            </div>
+
+                            <div class="mb-3 row">
+                                <label for="customerEmployee" class="col-sm-2 col-form-label">고객사 담당자:</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="customerEmployee"
+                                           name="customerEmployee" value="{{customerEmployee}}" placeholder="예: 홍길동" required>
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="opportunityInquiries" class="col-sm-2 col-form-label">고객문의사항:</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="opportunityInquiries"
+                                           name="opportunityInquiries" value="{{opportunityInquiries}}" placeholder="고객 문의사항을 입력하세요" required>
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="opportunityNotes" class="col-sm-2 col-form-label">기회 세부내용:</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="opportunityNotes"
+                                           name="opportunityNotes" value="{{opportunityNotes}}" placeholder="기회 세부내용을 입력하세요" required>
+                                </div>
+                            </div>
+
+
+                            <div class="mb-3 row">
+                                <label for="product" class="col-sm-2 col-form-label">기회 제품:</label>
+                                <div class="col-sm-10">
+                                    <select id="productId" name="productId" required>
+
+                                        <option value="">-- 제품 선택 --</option>
+                                        {{#products}}
+                                            <option value="{{productId}}">
+                                                {{productName}} (ID: {{productId}})
+                                            </option>
+                                        {{/products}}
+
+                                    </select>
+                                </div>
+                            </div>
+
+
+                            <div class="mb-3 row">
+                                <label for="quantity" class="col-sm-2 col-form-label">기회 수량:</label>
+                                <div class="col-sm-10">
+                                    <input type="number" step="0.01" class="form-control" id="quantity" name="quantity"
+                                           value="{{quantity}}" placeholder="기회 수량을 입력하세요" required>
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="expectedRevenue" class="col-sm-2 col-form-label">기회 매출:</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="expectedRevenue" name="expectedRevenue"
+                                           value="{{ expectedRevenue }}" placeholder="₩0" required>
+                                </div>
+                            </div>
+                            <div class="button-container d-flex justify-content-end gap-2 mb-3">
+                                <!-- 저장 버튼 -->
+                                <div class="d-flex justify-content-end">
+                                    <button type="submit" id="updateButton" class="btn btn-custom-update btn-sm">
+                                        <i class="fas fa-save"></i> 저장
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
                         {{/opportunities}}
-
-
-
-
-
+                    </form>
                     </table>
                 </div>
             </div>
 
-
-
-
+            {{#opportunityId}}
+            <!-- 기회 단계 부분 -->
             <div class="card mb-4">
                 <div class="card-header">
                     <i class="fas fa-table me-1"></i>
@@ -212,64 +470,118 @@
                 </div>
                 <div class="card-body">
                     <table id="opportunities_status">
-
-
                         {{#opportunities}}
                             <tbody>
-
+                            <div class="progress-container">
+                                <div class="progress-bar" id="progressBar"></div>
+                                <div class="progress-steps">
+                                    <div class="step" data-step="Qualification">Qualification</div>
+                                    <div class="step" data-step="Needs Analysis">Needs Analysis</div>
+                                    <div class="step" data-step="Proposal">Proposal</div>
+                                    <div class="step" data-step="Negotiation">Negotiation</div>
+                                    <div class="step" data-step="Closed">Closed</div>
+                                </div>
+                            </div>
                             </tbody>
                         {{/opportunities}}
+
+
                     </table>
                 </div>
             </div>
+            {{/opportunityId}}
 
-
-
-
-            <div class="card mb-4">
-                <div class="card-header">
-                    <i class="fas fa-table me-1"></i>
-                    Opportunities History
-                </div>
-                <div class="card-body">
-                    <table id="opportunities_history">
-
-
-                        {{#opportunities}}
+            {{#opportunities.opportunityId}}
+                <!-- 기회 히스토리 부분 -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <i class="fas fa-table me-1"></i>
+                        Opportunities History
+                    </div>
+                    <div class="card-body">
+                        <div class="button-container mb-3">
+                            <a href="/opportunities/detail/{{opportunityId}}/history/create"
+                               class="btn btn-custom-create btn-sm" id="createButton">
+                                <i class="fas fa-plus-circle"></i> 생성
+                            </a>
+                        </div>
+                        <table id="opportunities_history" class="table table-striped table-bordered">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>제목</th>
+                                <th>담당자</th>
+                                <th>미팅날짜</th>
+                                <th>미팅일시</th>
+                                <th>미팅장소</th>
+                                <th>회사규모</th>
+                                <th>액션</th>
+                                <th>고객문의</th>
+                            </tr>
+                            </thead>
                             <tbody>
-
+                            {{#history}}
+                                <tr data-index="{{historyId}}">
+                                    <td>{{historyId}}</td>
+                                    <td>
+                                        <a href="/opportunities/detail/{{opportunityId}}/history/{{historyId}}">{{historyTitle}}</a>
+                                    </td>
+                                    <td>{{customerRepresentative}}</td>
+                                    <td>{{historyDate}}</td>
+                                    <td>{{historyTime}}</td>
+                                    <td>{{meetingPlace}}</td>
+                                    <td>{{companySize}}</td>
+                                    <td>{{actionTaken}}</td>
+                                    <td>{{customerRequirements}}</td>
+                                </tr>
+                            {{/history}}
+                            {{^history}}
+                                <tr>
+                                    <td colspan="9" class="text-center">No history available.</td>
+                                </tr>
+                            {{/history}}
                             </tbody>
-                        {{/opportunities}}
-                    </table>
+                        </table>
+                    </div>
                 </div>
-            </div>
+            {{/opportunities.opportunityId}}
 
 
 
 
-            <div class="card mb-4">
-                <div class="card-header">
-                    <i class="fas fa-table me-1"></i>
-                    Opportunities Comment
+            <!-- 댓글 부분 -->
+            {{#opportunities.opportunityId}}
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <i class="fas fa-table me-1"></i>
+                        Opportunities Comment
+                    </div>
+                    <div class="card-body">
+                        <table id="opportunities_comment">
+
+                            <div class="comment-section" id="commentSection">
+
+                                {{#opportunitiesComments}}
+                                    <div class="comment">
+                                        <div class="author">{{author}}</div>
+                                        {{content}}
+                                        <div class="timestamp">{{commentCreatedDate}}</div>
+                                    </div>
+                                {{/opportunitiesComments}}
+                                {{^opportunitiesComments}}
+                                    <p>댓글이 없습니다.</p>
+                                {{/opportunitiesComments}}
+                            </div>
+                        </table>
+
+                        <form class="comment-form" action="/opportunities/detail/createcomment" method="post">
+                            <input type="text" name="content" id="commentInput" placeholder="댓글을 입력하세요(최대 200글자).">
+                            <input type="hidden" name="opportunityId" value="{{opportunities.opportunityId}}">
+                            <button type="submit" class="btn btn-custom-create btn-sm">입력</button>
+                        </form>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <table id="opportunities_comment">
-
-
-                        {{#opportunities}}
-                            <tbody>
-
-                            </tbody>
-                        {{/opportunities}}
-                    </table>
-                </div>
-            </div>
-
-
-
-
-
-
+            {{/opportunities.opportunityId}}
 
 
         </div>
@@ -277,17 +589,664 @@
 
 
     <script>
-        {{#opportunities}}
-        document.addEventListener("DOMContentLoaded", function() {
-            // Mustache 템플릿에서 서버 데이터를 가져옴
-            var opportunityStatus = "{{opportunityStatus}}";
+        // CRUD 메시지
+        {{#message}}
+            alert("{{message}}");
+        {{/message}}
 
-        // 폼에 데이터 채우기
-        document.getElementById("opportunityStatus").value = opportunityStatus;
+
+
+        // 기회 매출 원화 표시
+        document.addEventListener("DOMContentLoaded", function () {
+            let input = document.getElementById("expectedRevenue");
+            if (input.value) {
+                input.value = formatCurrency(input.value); // 초기값을 원화 형식으로 변환
+                }
+
+            input.addEventListener("input", function () {
+            let numericValue = input.value.replace(/[^0-9]/g, ''); // 숫자만 남기기
+             if (numericValue) {
+                input.value = formatCurrency(numericValue);
+                }
+                });
+
+            input.form.addEventListener("submit", function () {
+            let numericValue = input.value.replace(/[^0-9]/g, ''); // 숫자만 서버로 전송
+            input.value = numericValue;
+            });
+            });
+
+            function formatCurrency(value) {
+            let number = parseFloat(value);
+            if (!isNaN(number)) {
+            return new Intl.NumberFormat('ko-KR', { style: 'currency', currency: 'KRW' }).format(number);
+            }
+            return value;
+            }
+
+     // Form 부분 기회상태 초기값 연동 JS (select Form은 html로 초기 value 지정이 안되어서 JS로 처리)
+        {{#opportunities}}
+            {{#opportunityId}}
+                document.addEventListener("DOMContentLoaded", function() {
+                    // Mustache 템플릿에서 서버 데이터를 가져옴
+                    var opportunityStatus = "{{opportunityStatus}}";
+            var productId = "{{productId.productId}}";
+            var accountId = "{{accountId.accountId}}";
+            var employeeId = "{{employeeId.employeeId}}";
+                {{#departmentId}}
+                    var departmentId = "{{departmentId}}";
+                {{/departmentId}}
+                {{#leadId.leadId}}
+                    var leadId = "{{leadId.leadId}}";
+                {{/leadId.leadId}}
+
+                // 폼에 데이터 채우기
+                document.getElementById("opportunityStatus").value = opportunityStatus;
+                document.getElementById("productId").value = productId;
+                document.getElementById("accountId").value = accountId;
+                document.getElementById("employeeId").value = employeeId;
+                {{#departmentId}}
+                    document.getElementById("departmentId").value = departmentId;
+                {{/departmentId}}
+                {{#leadId.leadId}}
+                    document.getElementById("leadId").value = leadId;
+                {{/leadId.leadId}}
+                });
+            {{/opportunityId}}
+
+            // select 폼데이터 조회 기능 (main/header와 footer에 CSS 추가, 상단에 Selectize CSS, JS로 명시)
+
+            document.addEventListener("DOMContentLoaded", function() {
+                // 계정 검색
+                $('#accountId').selectize({
+                    create: false,
+                    sortField: 'text'
+                });
+
+                // 리드 검색
+                $('#leadId').selectize({
+                    create: false,
+                    sortField: 'text'
+                });
+
+                // 직원 검색
+                $('#employeeId').selectize({
+                    create: false,
+                    sortField: 'text'
+                });
+
+                // 제품 검색
+                $('#productId').selectize({
+                    create: false,
+                    sortField: 'text'
+                });
+            });
+
+  document.addEventListener("DOMContentLoaded", function () {
+      const displayInput = document.getElementById("displaySuccessRate"); // 사용자 UI용 input
+      const hiddenInput = document.getElementById("successRate"); // DB 저장용 input
+
+    // ✅ DB에서 불러온 값이 있으면 UI에 100을 곱해서 %로 변환
+    function updateDisplayFromDB() {
+        let dbValue = parseFloat(hiddenInput.value); // DB에서 불러온 값 (예: 0.25)
+        if (!isNaN(dbValue)) {
+            displayInput.value = (dbValue * 100).toFixed(2) + "%"; // UI에는 25.00%로 보이게
+        }
+    }
+
+    // ✅ 사용자가 입력할 때는 % 숨김
+    displayInput.addEventListener("focus", function () {
+        this.value = this.value.replace('%', ''); // % 제거하여 숫자만 입력 가능하게
+    });
+
+    // ✅ 사용자가 입력할 때마다 hidden input 값 업데이트 (실시간 변환)
+    displayInput.addEventListener("input", function () {
+        let value = this.value.trim();
+        if (!isNaN(value) && value !== "") {
+            let numericValue = parseFloat(value);
+
+            // ✅ 입력값이 100을 초과하면 100으로 제한
+            if (numericValue > 100) numericValue = 100;
+
+            // ✅ 입력값이 0보다 작으면 0으로 제한
+            if (numericValue < 0) numericValue = 0;
+
+            hiddenInput.value = (numericValue / 100).toFixed(2); // DB 저장용 값 변환
+        }
+    });
+
+    // ✅ 사용자가 입력을 마치면 % 추가
+    displayInput.addEventListener("blur", function () {
+        let value = this.value.trim();
+        if (!isNaN(value) && value !== "") {
+            this.value = parseFloat(value).toFixed(2) + "%"; // UI에는 25.00%로 표시
+        }
+    });
+
+    // ✅ 페이지 로드 시 기존 DB 값 반영 (UI에 % 추가)
+    updateDisplayFromDB();
+    });
+
+            document.addEventListener("DOMContentLoaded", function() {
+            {{#opportunityId}}
+                var deleteButton = document.getElementById("deleteButton");
+                if (deleteButton) {
+                    deleteButton.addEventListener("click", function () {
+                        // 서버에서 렌더링된 opportunityId 가져오기
+                        var opportunityId = "{{opportunityId}}";
+
+                if (opportunityId) {
+                    var confirmDelete = confirm("현재 항목을 삭제하시겠습니까?");
+                    if (confirmDelete) {
+                        fetch(`/opportunities/detail/${opportunityId}/delete`, {
+                            method: "POST", // 서버 엔드포인트가 POST를 지원해야 함
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({ id: opportunityId }), // 올바른 데이터 전송
+                        })
+                            .then((response) => {
+                                if (response.ok) {
+                                    alert("삭제되었습니다.");
+                                    window.location.href = "/opportunities"; // 삭제 후 이동
+                                } else {
+                                    alert("삭제 중 오류가 발생했습니다.");
+                                }
+                            })
+                            .catch((error) => {
+                                console.error("Error:", error);
+                                alert("삭제 중 오류가 발생했습니다.");
+                            });
+                    }
+                } else {
+                    alert("삭제할 ID가 없습니다.");
+                }
+            });
+            }
+            {{/opportunityId}}
+            });
+
+
+            // Form 삭제버튼 클릭 시 현 주소가 create인경우 create로 action주소 변경.
+            document.addEventListener("DOMContentLoaded", function() {
+                var form = document.getElementById("opportunityForm");
+                var currentUrl = window.location.pathname;
+
+                // 현재 URL이 "/opportunities/detail/create"인 경우 폼 액션을 변경
+                if (currentUrl === "/opportunities/detail/create") {
+                    form.action = "/opportunities/detail/create";
+                }
+
+                // 저장 버튼 클릭 시 변경사항 저장 여부 확인
+                document.getElementById("updateButton").addEventListener("click", function(event) {
+                    var confirmSave = confirm("변경사항을 저장하겠습니까?");
+
+                    if (!confirmSave) {
+                        // 사용자가 취소를 클릭한 경우 폼 제출 중단
+                        event.preventDefault();
+                    }
+                });
+            });
+
+            {{#opportunityId}}
+            // 현재 진행상황 bar JS
+            document.addEventListener("DOMContentLoaded", function() {
+                var progressSteps = document.querySelectorAll(".step");
+                var progressBar = document.getElementById("progressBar");
+                var opportunityStatus = "{{opportunityStatus}}"; // 현재 진행상황
+
+        var steps = ["Qualification", "Needs Analysis", "Proposal", "Negotiation", "Closed"];
+        var currentIndex = -1;
+
+        // 진행상황 업데이트
+        if (opportunityStatus.startsWith("Closed")) {
+            currentIndex = steps.indexOf("Closed");
+        } else {
+            currentIndex = steps.indexOf(opportunityStatus);
+        }
+
+        if (currentIndex !== -1) {
+            var progressWidth = 100;
+
+            // `Closed` 단계일 경우 한스텝 줄이기
+            if (opportunityStatus.startsWith("Closed")) {
+                progressWidth -= (100 / steps.length);
+            }
+
+            // `Negotiation` 단계일 경우 줄이기
+            if (opportunityStatus.startsWith("Negotiation")) {
+                progressWidth -= ((100 / steps.length)*2);
+            }
+
+            // `Proposal` 단계일 경우 줄이기
+            if (opportunityStatus.startsWith("Proposal")) {
+                progressWidth -= ((100 / steps.length)*3);
+            }
+
+            // `Needs Analysis` 단계일 경우 줄이기
+            if (opportunityStatus.startsWith("Needs Analysis")) {
+                progressWidth -= ((100 / steps.length)*4);
+            }
+
+            // `Qualification` 단계일 경우 줄이기
+            if (opportunityStatus.startsWith("Qualification")) {
+                progressWidth -= ((100 / steps.length)*5);
+            }
+
+            progressBar.style.width = progressWidth + "%";
+
+            for (var i = 0; i <= currentIndex; i++) {
+                progressSteps[i].classList.add("active");
+            }
+        }
+    });
+    {{/opportunityId}}
+
+        // 페이지 로드 시 댓글 섹션 스크롤 최하단으로 이동
+        window.onload = function() {
+            var commentSection = document.getElementById("commentSection");
+            commentSection.scrollTop = commentSection.scrollHeight;
+        };
+
+
+// 유효성 검사
+document.addEventListener("DOMContentLoaded", function () {
+    console.log("📌 JavaScript 실행됨 - 기회 유효성 검사 적용");
+
+    const form = document.getElementById("opportunityForm");
+
+    if (!form) {
+        console.error("⚠️ 기회 폼이 존재하지 않습니다.");
+        return;
+    }
+
+    form.addEventListener("submit", function (event) {
+        event.preventDefault(); // 기본 제출 방지
+
+        if (validateForm()) {
+            console.log("✅ 유효성 검사 통과! 폼 제출 실행");
+            form.submit();
+        } else {
+            console.log("❌ 유효성 검사 실패! 폼 제출 안 됨");
+        }
+    });
+
+    function validateForm() {
+        let isValid = true;
+
+        // 기회 명 검증 (필수 입력)
+        const opportunityName = document.getElementById("opportunityName");
+        if (!opportunityName || !opportunityName.value.trim()) {
+            alert("기회 명은 필수입니다.");
+            isValid = false;
+        }
+
+        // 배송지역 검증 (필수 입력)
+        const region = document.getElementById("region");
+        if (!region || !region.value.trim()) {
+            alert("배송지역은 필수입니다.");
+            isValid = false;
+        }
+
+        // 고객 문의사항 검증 (필수 입력)
+        const opportunityInquiries = document.getElementById("opportunityInquiries");
+        if (!opportunityInquiries || !opportunityInquiries.value.trim()) {
+            alert("고객 문의사항은 필수입니다.");
+            isValid = false;
+        }
+
+        // 고객 담당자 검증 (필수 입력)
+        const customerEmployee = document.getElementById("customerEmployee");
+        if (!customerEmployee || !customerEmployee.value.trim()) {
+            alert("고객 담당자는 필수입니다.");
+            isValid = false;
+        }
+
+        // 기회 수량 검증 (필수, 숫자 확인)
+        const quantity = document.getElementById("quantity");
+        if (!quantity || !quantity.value.trim() || isNaN(quantity.value) || parseFloat(quantity.value) < 0) {
+            alert("기회 수량은 필수이며 0이상의 숫자여야 합니다.");
+            isValid = false;
+        }
+
+        // 기회 매출 검증 (필수, 숫자 확인)
+        const expectedRevenue = document.getElementById("expectedRevenue");
+        if (!expectedRevenue || !expectedRevenue.value.trim() || isNaN(expectedRevenue.value) || parseFloat(expectedRevenue.value) < 0) {
+            alert("기회 매출은 필수이며 0이상의 숫자여야 합니다.");
+            isValid = false;
+        }
+
+        // 회사 매출 검증 (필수, 숫자 확인)
+        const companyRevenue = document.getElementById("companyRevenue");
+        if (!companyRevenue || !companyRevenue.value.trim() || isNaN(companyRevenue.value) || parseFloat(companyRevenue.value) < 0) {
+            alert("회사 매출은 필수이며 0이상의 숫자여야 합니다.");
+            isValid = false;
+        }
+
+        // 기회 세부내용 검증 (필수 입력)
+        const opportunityNotes = document.getElementById("opportunityNotes");
+        if (!opportunityNotes || !opportunityNotes.value.trim()) {
+            alert("기회 세부내용은 필수입니다.");
+            isValid = false;
+        }
+
+        // 🔹 생성 일자 검증 (과거 또는 현재만 가능)
+        const createdDate = document.getElementById("createdDate");
+        const targetCloseDate = document.getElementById("targetCloseDate");
+
+        if (!createdDate?.value.trim()) {
+            alert("생성 일자는 필수입니다.");
+            isValid = false;
+        } else if (new Date(createdDate.value).setHours(0, 0, 0, 0) > new Date().setHours(0, 0, 0, 0)) {
+            alert("생성 일자는 오늘 날짜 또는 과거여야 합니다.");
+            isValid = false;
+        }
+
+        // 🔹 마감 기한 검증 (생성일자와 같거나 이후 날짜여야 함)
+        if (!targetCloseDate || !targetCloseDate.value) {
+            alert("마감 기한은 필수입니다.");
+            isValid = false;
+        } else {
+            const createdDateValue = createdDate.value;
+            const targetCloseDateValue = targetCloseDate.value;
+
+            if (targetCloseDateValue < createdDateValue) {
+                alert("마감 기한은 생성일자와 같거나 이후여야 합니다.");
+                isValid = false;
+            }
+        }
+
+        // 기회 상태 검증 (`Qualification`, `Need Analysis` 등)
+        const opportunityStatus = document.getElementById("opportunityStatus");
+        const validStatuses = [
+            "Qualification", "Needs Analysis", "Proposal",
+            "Negotiation", "Closed(won)", "Closed(loss)", "Pending"
+        ];
+        if (!opportunityStatus || !validStatuses.includes(opportunityStatus.value.trim())) {
+            alert("기회 상태는 'Qualification', 'Needs Analysis', 'Proposal', 'Negotiation', 'Closed(won)', 'Closed(loss)', 'Pending' 중 하나여야 합니다.");
+            isValid = false;
+        }
+
+        return isValid;
+    }
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    console.log("📌 JavaScript 실행됨 - 댓글 유효성 검사 적용");
+
+    const form = document.querySelector(".comment-form");
+    const commentInput = document.getElementById("commentInput");
+    const maxLength = 200; // 최대 글자 수
+
+    if (!form || !commentInput) {
+        console.error("⚠️ 필수 요소가 누락되었습니다.");
+        return;
+    }
+
+    // 🔹 입력 시 실시간 글자 수 제한 (비어 있는 입력 가능)
+    commentInput.addEventListener("input", function () {
+        let currentLength = commentInput.value.length;
+
+        if (currentLength > maxLength) {
+            alert(`댓글은 최대 ${maxLength}자까지 입력 가능합니다.`);
+            commentInput.value = commentInput.value.substring(0, maxLength); // 초과된 부분 제거
+        }
+    });
+
+    // 🔹 폼 제출 시 유효성 검사
+    form.addEventListener("submit", function (event) {
+        if (commentInput.value.length > maxLength) {
+            alert(`댓글은 최대 ${maxLength}자까지 입력 가능합니다.`);
+            event.preventDefault(); // 제출 방지
+        }
+    });
+});
+
+
+
+// AI 제안서 : EXCEL
+document.getElementById('proposalExcelButton').addEventListener('click', function(event) {
+event.preventDefault();
+    try {
+            const employeeSelect = document.querySelector('#employeeId');
+            const productSelect = document.querySelector('#productId');
+            const loader = document.getElementById('loader');
+            const loadingText = document.getElementById('loadingText');
+            const estimatedTime = document.getElementById('estimatedTime');
+
+            const accountSelect = document.querySelector('#accountId');
+            if (!accountSelect.value) {
+                  throw new Error('회사를 선택해주세요.');
+                 }
+            const selectedAccountOption = accountSelect.options[accountSelect.selectedIndex];
+            const accountInfo = selectedAccountOption.textContent.trim();
+            const accountName = accountInfo.split(' (')[0].replace(/^\s+|\s+$/g, '');
+
+            // 기회명
+            const opportunityName = document.getElementById('opportunityName').value.trim();
+
+              if (!employeeSelect.value) {
+                     throw new Error('담당자를 선택해주세요.');
+                    }
+
+              // 기회 담당자 이름
+            const selectedEmployeeOption = employeeSelect.options[employeeSelect.selectedIndex];
+            const employeeInfo = selectedEmployeeOption.textContent.trim();
+            const employeeName = employeeInfo.split(' (')[0].replace(/^\s+|\s+$/g, '');
+
+             // 부서명(파일명때문에 추가)
+             const deptMatch = employeeInfo.match(/Dept: (.+?)\)/);
+             const departmentName = deptMatch ? deptMatch[1].trim() : '미지정';
+
+            // 고객 담당자 이름
+            const customerEmployee = document.getElementById('customerEmployee').value.trim();
+
+             // 고객 요구사항
+            const opportunityInquiries = document.getElementById('opportunityInquiries').value.trim();
+
+             if (!productSelect.value) {
+                     throw new Error('제품을 선택해주세요.');
+                   }
+
+            // 제품 이름
+            const productName = productSelect.options[productSelect.selectedIndex] ?
+            productSelect.options[productSelect.selectedIndex].textContent.split(' (')[0].replace(/^\s+|\s+$/g, '') : '미지정';
+
+            // 수량
+            const quantity = document.getElementById('quantity').value.trim();
+            const quantityFloat = parseFloat(quantity);
+
+            // 매출 (원화 표시 제거 후 변환)
+            const expectedRevenue = document.getElementById('expectedRevenue').value.trim();
+            const expectedRevenueFloat = parseFloat(expectedRevenue.replace(/[^\d.-]/g, ''));
+
+        const dataToSend = {
+              회사명 : accountName,
+              기회명 : opportunityName,
+              기회담당자 : employeeName,
+              고객담당자 : customerEmployee,
+             고객요구사항 : opportunityInquiries || '요구사항 없음',
+             기회제품 : productName,
+             수량 : quantityFloat,
+             기회매출 : expectedRevenueFloat
+        };
+
+        // api 요청 전 전 로딩 스피너 및 예상 시간 표시
+        loader.style.display = 'block';
+        loadingText.style.display = 'block';
+
+        console.log('전송할 데이터:', dataToSend);
+         // 다운로드 진행중 팝업창 생성
+         alert(' 다운로드 중 입니다. . . .  🚀 잠시만 기다려주세요. ');
+
+        // Excel 생성 요청
+        fetch('https://saiescrm.api.jyds.synology.me/generate-excel', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(dataToSend)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+                loader.style.display = 'none'; // 로딩 스피너 숨기기
+                loadingText.style.display = 'none'; // 예상 시간 숨기기
+            }
+            return response.blob();
+        })
+        .then(blob => {
+            // excel 파일을 사용자 PC에 다운로드
+            const url = window.URL.createObjectURL(new Blob([blob]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `${departmentName}_${employeeName}_${productName}_proposal.xlsx`);
+            document.body.appendChild(link);
+            link.click();
+            window.URL.revokeObjectURL(url);
+            link.remove();
+
+            // 다운로드 완료 팝업창 생성
+            alert('제안서 다운로드가  완료되었습니다. ✨');
+            loader.style.display = 'none'; // 로딩 스피너 숨기기
+            loadingText.style.display = 'none'; // 예상 시간 숨기기
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('제안서 생성 중 오류가 발생했습니다. 다시 시도해 주세요.');
+            loader.style.display = 'none'; // 로딩 스피너 숨기기
+            loadingText.style.display = 'none'; // 예상 시간 숨기기
         });
+    } catch (error) {
+        console.error('Error:', error);
+        alert(error.message || '입력 정보를 확인할 수 없습니다. ❗모든 필드가 올바르게 입력되었는지 확인해 주세요.❗');
+        loader.style.display = 'none'; // 로딩 스피너 숨기기
+        loadingText.style.display = 'none'; // 예상 시간 숨기기
+    }
+    });
+
+
+ // AI 제안서 : PPT
+document.getElementById('proposalButton').addEventListener('click', function(event) {
+event.preventDefault();
+    try {
+            const employeeSelect = document.querySelector('#employeeId');
+            const productSelect = document.querySelector('#productId');
+            const loader = document.getElementById('loader');
+           const loadingText = document.getElementById('loadingText');
+           const estimatedTime = document.getElementById('estimatedTime');
+
+           const accountSelect = document.querySelector('#accountId');
+           if (!accountSelect.value) {
+                  throw new Error('회사를 선택해주세요.');
+                 }
+            const selectedAccountOption = accountSelect.options[accountSelect.selectedIndex];
+            const accountInfo = selectedAccountOption.textContent.trim();
+            const accountName = accountInfo.split(' (')[0].replace(/^\s+|\s+$/g, '');
+
+            // 기회명
+            const opportunityName = document.getElementById('opportunityName').value.trim();
+
+              if (!employeeSelect.value) {
+                     throw new Error('담당자를 선택해주세요.');
+                    }
+
+              // 기회 담당자 이름
+            const selectedEmployeeOption = employeeSelect.options[employeeSelect.selectedIndex];
+            const employeeInfo = selectedEmployeeOption.textContent.trim();
+            const employeeName = employeeInfo.split(' (')[0].replace(/^\s+|\s+$/g, '');
+
+             // 부서명(파일명때문에 추가)
+             const deptMatch = employeeInfo.match(/Dept: (.+?)\)/);
+             const departmentName = deptMatch ? deptMatch[1].trim() : '미지정';
+
+            // 고객 담당자 이름
+            const customerEmployee = document.getElementById('customerEmployee').value.trim();
+
+             // 고객 요구사항
+            const opportunityInquiries = document.getElementById('opportunityInquiries').value.trim();
+
+             if (!productSelect.value) {
+                     throw new Error('제품을 선택해주세요.');
+                   }
+
+            // 제품 이름
+            const productName = productSelect.options[productSelect.selectedIndex] ?
+            productSelect.options[productSelect.selectedIndex].textContent.split(' (')[0].replace(/^\s+|\s+$/g, '') : '미지정';
+
+            // 수량
+            const quantity = document.getElementById('quantity').value.trim();
+            const quantityFloat = parseFloat(quantity);
+
+            // 매출 (원화 표시 제거 후 변환)
+            const expectedRevenue = document.getElementById('expectedRevenue').value.trim();
+            const expectedRevenueFloat = parseFloat(expectedRevenue.replace(/[^\d.-]/g, ''));
+
+        const dataToSend = {
+              회사명 : accountName,
+              기회명 : opportunityName,
+              기회담당자 : employeeName,
+              고객담당자 : customerEmployee,
+             고객요구사항 : opportunityInquiries || '요구사항 없음',
+             기회제품 : productName,
+             수량 : quantityFloat,
+             기회매출 : expectedRevenueFloat
+        };
+
+        // api 요청 전 로딩 스피너 및 예상 시간 표시
+        loader.style.display = 'block';
+        loadingText.style.display = 'block';
+
+        console.log('전송할 데이터:', dataToSend);
+         // 다운로드 진행중 팝업창 생성
+         alert(' 다운로드 중 입니다 . . . .  🚀 잠시만 기다려주세요. ');
+        // pptx 생성 요청
+        fetch('https://saiescrm.api.jyds.synology.me/generate-ppt', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(dataToSend)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+                loader.style.display = 'none'; // 로딩 스피너 숨기기
+                loadingText.style.display = 'none'; // 예상 시간 숨기기
+            }
+            return response.blob();
+        })
+        .then(blob => {
+            // ppt 파일을 사용자 PC에 다운로드
+            const url = window.URL.createObjectURL(new Blob([blob]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `${departmentName}_${employeeName}_${productName}_proposal.pptx`);
+            document.body.appendChild(link);
+            link.click();
+            window.URL.revokeObjectURL(url);
+            link.remove();
+
+            // 다운로드 완료 팝업창 생성
+            alert('제안서 다운로드가  완료되었습니다.✨');
+            loader.style.display = 'none'; // 로딩 스피너 숨기기
+            loadingText.style.display = 'none'; // 예상 시간 숨기기
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('제안서 생성 중 오류가 발생했습니다. 다시 시도해 주세요.');
+            loader.style.display = 'none'; // 로딩 스피너 숨기기
+            loadingText.style.display = 'none'; // 예상 시간 숨기기
+        });
+    } catch (error) {
+        console.error('Error:', error);
+        alert(error.message || '입력 정보를 확인할 수 없습니다. ❗모든 필드가 올바르게 입력되었는지 확인해 주세요.❗');
+        loader.style.display = 'none'; // 로딩 스피너 숨기기
+        loadingText.style.display = 'none'; // 예상 시간 숨기기
+    }
+    });
         {{/opportunities}}
     </script>
 
 
-
-    {{>main/footer}}
+{{>main/footer}}

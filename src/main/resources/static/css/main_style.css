@@ -444,14 +444,6 @@ legend + * {
   -webkit-appearance: textfield;
 }
 
-/* rtl:raw:
-[type="tel"],
-[type="url"],
-[type="email"],
-[type="number"] {
-  direction: ltr;
-}
-*/
 ::-webkit-search-decoration {
   -webkit-appearance: none;
 }
@@ -11241,3 +11233,41 @@ body {
   font-size: 0.75rem;
   border-radius: 0.375rem !important;
 }
+
+.pagination button {
+    padding: 5px 10px;
+    margin: 0 2px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    cursor: pointer;
+}
+
+.pagination button:hover {
+    background-color: #ddd;
+}
+
+.pagination button.active {
+    background-color: #007bff; /* 활성화된 페이지 색상 */
+    color: white;
+    border-color: #0056b3;
+    cursor: default; /* 클릭 불가 */
+}
+
+.back-btn {
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+    border: 2px solid #ccc;
+    border-radius: 50%;
+    background-color: white;
+    color: #333;
+    cursor: pointer;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.back-btn:hover {
+    background-color: #f0f0f0;
+    border-color: #bbb;
+}
+
+

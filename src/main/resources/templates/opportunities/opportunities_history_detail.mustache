@@ -1,0 +1,444 @@
+{{>main/header}}
+
+<style>
+
+.progress-container {
+    position: relative;
+    width: 100%;
+    height: 70px; /* 높이를 조금 늘립니다 */
+    margin: 20px 0;
+}
+
+.progress-bar {
+    position: absolute;
+    top: 38%; /* 중앙 정렬 */
+    left: 10%; /* Qualification 원의 중앙에서 시작하도록 조정합니다 */
+    transform: translateY(-50%);
+    width: 0;
+    height: 10px;
+    background-color: green;
+    transition: width 0.4s ease;
+}
+
+.progress-steps {
+    display: flex;
+    justify-content: space-between;
+    position: absolute;
+    top: 50%; /* 중앙 정렬 */
+    width: 100%;
+    transform: translateY(-50%);
+}
+
+.step {
+    width: 20%;
+    text-align: center;
+    position: relative;
+    padding-top: 30px; /* 텍스트를 아래로 내리기 위해 패딩 추가 */
+}
+
+
+.step::before {
+    content: '';
+    position: absolute;
+    top: 16%; /* 원의 위치를 조정합니다 */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: white;
+    border: 2px solid green;
+    transition: background-color 0.4s ease, border-color 0.4s ease;
+}
+
+.step.active::before {
+    background-color: green;
+    border-color: green;
+}
+
+
+
+        .comment-section {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+            width: 100%;
+        }
+        .comment {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 10px;
+            background-color: #f1f1f1;
+            position: relative;
+            width: calc(100% - 20px);
+        }
+        .comment .author {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .comment .timestamp {
+            font-size: 0.8em;
+            color: #888;
+            position: absolute;
+            bottom: 5px;
+            right: 10px;
+        }
+        .comment-form {
+            display: flex;
+            width: 100%;
+            align-items: center;
+            margin-top: 10px;
+            background-color: #f9f9f9;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .comment-form input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-right: 10px;
+            font-size: 16px;
+        }
+        .comment-form button {
+            padding: 10px 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .comment-form button:hover {
+            background-color: #0056b3;
+        }
+
+</style>
+
+
+<div id="layoutSidenav_content">
+    <main>
+        <div class="container-fluid px-4">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h1 class="mt-4">Opportunities History</h1>
+                <button onclick="location.href='/opportunities/detail/{{opportunityId}}'" class="back-btn">🔙</button>
+            </div>
+            <ol class="breadcrumb mb-4">
+                <li class="breadcrumb-item active">Opportunities History</li>
+            </ol>
+
+            <!-- 기회 상세내용 -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-table me-1"></i>
+                    Opportunities History Detail
+                </div>
+
+                <div class="card-body">
+                    {{#history}}
+                        <div class="button-container mb-3">
+                            {{#historyId}}
+                                <button id = "deleteButton" class="btn btn-custom-delete btn-sm">
+                                    <i class="fas fa-trash-alt"></i> 삭제
+                                </button>
+                            {{/historyId}}
+                        </div>
+                        {{#historyId}}
+                        <form id="historyForm" action="/opportunities/detail/{{opportunityId}}/history/{{historyId}}/update" method="POST">
+                        {{/historyId}}
+                        {{^historyId}}
+                        <form id="historyForm" action="/opportunities/detail/{{opportunityId}}/history/create" method="POST">
+                        {{/historyId}}
+                            <div class="mb-3 row">
+                                <label for="historyTitle" class="col-sm-2 col-form-label">제목:</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="historyTitle" name="historyTitle" value="{{historyTitle}}" placeholder="예: 가격 협상 및 조건 협의" required>
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="customerRepresentative" class="col-sm-2 col-form-label">담당자:</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="customerRepresentative" name="customerRepresentative" value="{{customerRepresentative}}" placeholder="예: 홍길동" required>
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="targetCloseDate" class="col-sm-2 col-form-label">미팅날짜:</label>
+                                <div class="col-sm-10">
+                                    <input type="date" class="form-control" id="historyDate" name="historyDate" value="{{historyDate}}" required>
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="historyTime" class="col-sm-2 col-form-label">미팅시간:</label>
+                                <div class="col-sm-10">
+                                    <input type="time" class="form-control" id="historyTime" name="historyTime" value="{{historyTime}}" required>
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="meetingPlace" class="col-sm-2 col-form-label">미팅장소:</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="meetingPlace" name="meetingPlace" value="{{meetingPlace}}" placeholder="예: 서울 강남구 삼성동" required>
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="companySize" class="col-sm-2 col-form-label">회사규모:</label>
+                                <div class="col-sm-10">
+                                    <select class="form-control" id="companySize" name="companySize" required>
+                                        <option value="대기업">대기업</option>
+                                        <option value="중견기업">중견기업</option>
+                                        <option value="중소기업">중소기업</option>
+                                        <option value="기타">기타</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="actionTaken" class="col-sm-2 col-form-label">액션:</label>
+                                <div class="col-sm-10">
+                                    <select class="form-control" id="actionTaken" name="actionTaken" required>
+                                        <option value="후속 미팅 요청">후속 미팅 요청</option>
+                                        <option value="제안서 전달 및 검토">제안서 전달 및 검토</option>
+                                        <option value="계약 조율">계약 조율</option>
+                                        <option value="계약 및 클로징">계약 및 클로징</option>
+                                        <option value="고객 관리 및 대응">고객 관리 및 대응</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="customerRequirements" class="col-sm-2 col-form-label">고객 문의사항:</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="customerRequirements" name="customerRequirements" value="{{customerRequirements}}" placeholder="고객 문의사항을 입력하세요" required>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-end">
+                                <button type="submit" id="updateButton" class="btn btn-custom-update btn-sm">
+                                    <i class="fas fa-save"></i> 저장
+                                </button>
+                            </div>
+                        </form>
+                    {{/history}}
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+<script>
+    // CRUD 메시지
+    {{#message}}
+        alert("{{message}}");
+    {{/message}}
+    // Form 부분 기회상태 초기값 연동 JS (select Form은 html로 초기 value 지정이 안되어서 JS로 처리)
+
+        {{#opportunities}}
+        document.addEventListener("DOMContentLoaded", function() {
+            // Mustache 템플릿에서 서버 데이터를 가져옴
+            var actionTaken = "{{actionTaken}}";
+            var companySize = "{{companySize}}";
+
+            // 폼에 데이터 채우기
+            document.getElementById("actionTaken").value = actionTaken;
+            document.getElementById("companySize").value = companySize;
+        });
+
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById("deleteButton").addEventListener("click", function(event) {
+                event.preventDefault(); // 기본 링크 동작을 막습니다.
+
+                // 사용자 확인 대화 상자 표시
+                var confirmDelete = confirm("정말 삭제하시겠습니까?");
+
+                if (confirmDelete) {
+                    // 사용자가 확인을 클릭한 경우 링크를 따라 갑니다.
+                    window.location.href = this.href;
+                }
+            });
+        });
+
+
+
+        // Form 삭제버튼 클릭 시 현 주소가 create인경우 create로 action주소 변경.
+
+        document.addEventListener("DOMContentLoaded", function() {
+            var form = document.getElementById("historyForm");
+            var currentUrl = window.location.pathname;
+
+            // 현재 URL이 "/opportunities/detail/create"인 경우 폼 액션을 변경
+            if (currentUrl === "/opportunities/detail/{{opportunityId}}/history/create") {
+                form.action = "/opportunities/detail/{{opportunityId}}/history/create";
+            }
+
+            // 저장 버튼 클릭 시 변경사항 저장 여부 확인
+            document.getElementById("updateButton").addEventListener("click", function(event) {
+                var confirmSave = confirm("변경사항을 저장하겠습니까?");
+
+                if (!confirmSave) {
+                    // 사용자가 취소를 클릭한 경우 폼 제출 중단
+                    event.preventDefault();
+                }
+            });
+        });
+        {{/opportunities}}
+
+    document.addEventListener("DOMContentLoaded", function() {
+        var form = document.getElementById("historyForm");
+        var currentUrl = window.location.pathname;
+
+        // 현재 URL이 "/opportunities/detail/create"인 경우 폼 액션을 변경
+        if (currentUrl === "/opportunities/detail/{{opportunityId}}/history/create") {
+            form.action = "/opportunities/detail/{{opportunityId}}/history/create";
+        }
+
+        // 저장 버튼 클릭 시 변경사항 저장 여부 확인
+        document.getElementById("updateButton").addEventListener("click", function(event) {
+            var confirmSave = confirm("변경사항을 저장하겠습니까?");
+
+            if (!confirmSave) {
+                // 사용자가 취소를 클릭한 경우 폼 제출 중단
+                event.preventDefault();
+            }
+        });
+    });
+        document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("historyForm"); // 폼 선택
+    const updateButton = document.getElementById("updateButton");
+
+    updateButton.addEventListener("click", function (event) {
+        event.preventDefault(); // 기본 제출 방지
+
+        if (!validateForm()) {
+            return; // 유효성 검사 실패 시 중단
+        }
+
+        form.submit(); // 유효성 검사 통과 시 폼 제출
+    });
+
+    function validateForm() {
+        // 각 입력 필드 값 가져오기
+        const historyTitle = document.getElementById("historyTitle").value.trim();
+        const customerRepresentative = document.getElementById("customerRepresentative").value.trim();
+        const historyDate = document.getElementById("historyDate").value;
+        const historyTime = document.getElementById("historyTime").value;
+        const meetingPlace = document.getElementById("meetingPlace").value.trim();
+        const companySize = document.getElementById("companySize").value;
+        const actionTaken = document.getElementById("actionTaken").value;
+        const customerRequirements = document.getElementById("customerRequirements").value.trim();
+
+        // 에러 메시지를 저장할 변수
+        let errorMessage = "";
+
+        // 제목 검증 (1~255자)
+        if (historyTitle.length === 0) {
+            errorMessage += "제목을 입력하세요.\n";
+        } else if (historyTitle.length > 255) {
+            errorMessage += "제목은 255자 이내여야 합니다.\n";
+        }
+
+        // 담당자 검증 (비어 있으면 안됨)
+        if (customerRepresentative.length === 0) {
+            errorMessage += "담당자를 입력하세요.\n";
+        }
+
+        // 미팅 날짜 검증 (비어 있으면 안됨)
+        if (!historyDate) {
+            errorMessage += "미팅 날짜를 선택하세요.\n";
+        }
+
+        // 미팅 시간 검증 (비어 있으면 안됨)
+        if (!historyTime) {
+            errorMessage += "미팅 시간을 선택하세요.\n";
+        } else {
+            // 업무 시간(09:00~18:00) 범위 체크
+            const minTime = "09:00";
+            const maxTime = "18:00";
+            if (historyTime < minTime || historyTime > maxTime) {
+                errorMessage += "미팅 시간은 09:00~18:00 사이여야 합니다.\n";
+            }
+        }
+
+        // 미팅 장소 검증 (비어 있으면 안됨)
+        if (meetingPlace.length === 0) {
+            errorMessage += "미팅 장소를 입력하세요.\n";
+        }
+
+        // 회사 규모 검증 (올바른 값인지 확인)
+        const validCompanySizes = ["대기업", "중견기업", "중소기업", "기타"];
+        if (!validCompanySizes.includes(companySize)) {
+            errorMessage += "회사 규모는 '대기업', '중견기업', '중소기업', '기타' 중 하나여야 합니다.\n";
+        }
+
+        // 액션 검증 (올바른 값인지 확인)
+        const validActions = [
+            "후속 미팅 요청",
+            "제안서 전달 및 검토",
+            "계약 조율",
+            "계약 및 클로징",
+            "고객 관리 및 대응"
+        ];
+        if (!validActions.includes(actionTaken)) {
+            errorMessage += "액션은 올바른 값을 선택해야 합니다.\n";
+        }
+
+        // 고객 문의사항 검증 (1~1000자)
+        if (customerRequirements.length === 0) {
+            errorMessage += "고객 문의사항을 입력하세요.\n";
+        } else if (customerRequirements.length > 1000) {
+            errorMessage += "고객 문의사항은 1000자 이내여야 합니다.\n";
+        }
+
+        // 에러 메시지가 있으면 경고창 띄우고 false 반환
+        if (errorMessage) {
+            alert(errorMessage);
+            return false;
+        }
+
+        return true; // 모든 유효성 검사 통과
+    }
+});
+
+    // 삭제버튼
+            document.addEventListener("DOMContentLoaded", function() {
+    {{#historyId}}
+        var deleteButton = document.getElementById("deleteButton");
+        if (deleteButton) {
+            deleteButton.addEventListener("click", function () {
+                // 서버에서 렌더링된 historyId 가져오기
+                var historyId = "{{historyId}}";
+                var opportunityId = "{{opportunityId}}";
+
+                if (historyId) {
+                    var confirmDelete = confirm("현재 항목을 삭제하시겠습니까?");
+                    if (confirmDelete) {
+                        fetch(`/opportunities/detail/${opportunityId}/history/${historyId}/delete`, {
+                            method: "POST", // 서버 엔드포인트가 POST를 지원해야 함
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({ id: historyId }), // 올바른 데이터 전송
+                        })
+                            .then((response) => {
+                                if (response.ok) {
+                                    alert("삭제되었습니다.");
+                                    window.location.href = "/opportunities/detail/{{opportunityId}}"; // 삭제 후 이동
+                                } else {
+                                    alert("삭제 중 오류가 발생했습니다.");
+                                    window.location.href = "/errorPage"; // 삭제 후 이동
+                                }
+                            })
+                            .catch((error) => {
+                                console.error("Error:", error);
+                                alert("삭제 중 오류가 발생했습니다.");
+                                window.location.href = "/errorPage"; // 삭제 후 이동
+                            });
+                    }
+                } else {
+                    alert("삭제할 ID가 없습니다.");
+                }
+            });
+            }
+    {{/historyId}}
+    });
+</script>
+
+{{>main/footer}}

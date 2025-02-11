@@ -1,0 +1,220 @@
+{{>main/header}}
+
+<div id="layoutSidenav_content">
+    <main>
+        <div class="container-fluid px-4">
+            <h1 class="mt-4">Contracts</h1>
+            <ol class="breadcrumb mb-4">
+                <li class="breadcrumb-item active">Contracts</li>
+            </ol>
+            <!-- 상단 데이터 요약 카드 바 -->
+            <div class="row">
+                <div class="col-xl-3 col-md-6">
+                    <div class="card bg-card text-black mb-4">
+                        <div class="card-body">모든 계약</div>
+                        <div class="card-footer d-flex align-items-center justify-content-between">
+                            <h3 id="allCount">{{allCount}} 건</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="card bg-card text-black mb-4">
+                        <div class="card-body">승인 처리 중 계약</div>
+                        <div class="card-footer d-flex align-items-center justify-content-between">
+                            <h3 id="approvalCount">{{inApprovalProcessCount}} 건</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="card bg-card text-black mb-4">
+                        <div class="card-body">활성화된 계약</div>
+                        <div class="card-footer d-flex align-items-center justify-content-between">
+                            <h3 id="activatedCount">{{activatedCount}} 건</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="card bg-card text-black mb-4">
+                        <div class="card-body">초안 계약</div>
+                        <div class="card-footer d-flex align-items-center justify-content-between">
+                            <h3 id="draftCount">{{draftCount}} 건</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 차트 -->
+            <div class="row">
+                <div class="col-xl-6">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-chart-area me-1"></i>
+                            연간 계약 현황
+                        </div>
+                        <div class="card-body"><canvas id="contractsReadChart" width="100%" height="40"></canvas></div>
+                    </div>
+                </div>
+                <div class="col-xl-6">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <i class="fas fa-chart-bar me-1"></i>
+                            연간 계약 누적 현황
+                        </div>
+                        <div class="card-body"><canvas id="contractsReadBar" width="100%" height="40"></canvas></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 계약테이블 -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-table me-1"></i>
+                    Contracts List
+                </div>
+                <div class="card-body">
+                    <div class="button-container mb-3" style="display: flex; align-items: center; gap: 10px;">
+                        <div style="flex: 1; display: flex; align-items: center; gap: 10px; justify-content: flex-end;">
+                            <form method="GET" action="/contracts" style="display: flex; align-items: center; gap: 5px;">
+                                <!-- 검색어 -->
+                                <input type="text" class="form-control" name="search" id="customSearch" placeholder="검색어를 입력하세요"
+                                       style="padding: 5px; width: 200px;" value="{{search}}">
+
+
+                                <!-- 제출 버튼 -->
+                                <button type="submit" class = "btn btn-custom-select btn-sm">검색</button>
+                            </form>
+
+                        </div>
+
+                        <div>
+                            <!-- 신규 및 삭제 버튼 -->
+                            <a href="/contracts/detail/create" class="btn btn-custom-create btn-sm" id="createButton">
+                                <i class="fas fa-plus-circle"></i> 신규
+                            </a>
+                            <button class="btn btn-custom-delete btn-sm" id="deleteButton">
+                                <i class="fas fa-trash-alt"></i> 삭제
+                            </button>
+                        </div>
+                    </div>
+
+                    <table id="datatablesSimple">
+
+                        <thead>
+                        <tr>
+                            <th></th>
+                            <th>ID</th>
+                            <th>계정 이름</th>
+                            <th>계약 시작 날짜</th>
+                            <th>계약 종료 날짜</th>
+                            <th>상태</th>
+                            <th>계약 분류</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {{#pagination.contents}}
+                            <tr data-index="{{contractId}}">
+                                <td><input type="checkbox" class="select-row" value="{{contractId}}"></td>
+                                <td>{{contractId}}</td>
+                                <td>
+                                    <a href="/contracts/detail/{{contractId}}">
+                                    {{accountId.accountName}}
+                                    </a>
+                                </td>
+                                <td>{{startDate}}</td>
+                                <td>{{terminationDate}}</td>
+                                <td>{{contractStatus}}</td>
+                                <td>{{contractClassification}}</td>
+                            </tr>
+                        {{/pagination.contents}}
+                        </tbody>
+
+
+                    </table>
+
+                    <div class="pagination justify-content-center">
+                        <!-- 이전 버튼 -->
+                        {{#pagination.hasPreviousPage}}
+                            <button onclick="window.location.href='/contracts?page={{pagination.previousPage}}&size=10&search={{search}}&sortColumn={{sortColumn}}&sortDirection={{sortDirection}}'">
+                            이전
+                            </button>
+                        {{/pagination.hasPreviousPage}}
+
+                        <!-- 페이지 번호 버튼 -->
+                        {{#pagination.pageNumbers}}
+                            <button
+                                    onclick="window.location.href='/contracts?page={{page}}&size=10&search={{search}}&sortColumn={{sortColumn}}&sortDirection={{sortDirection}}'"
+                            class="{{#isActive}}active{{/isActive}}">
+                            {{displayPage}}
+                            </button>
+                        {{/pagination.pageNumbers}}
+
+                        <!-- 다음 버튼 -->
+                        {{#pagination.hasNextPage}}
+                            <button onclick="window.location.href='/contracts?page={{pagination.nextPage}}&size=10&search={{search}}&sortColumn={{sortColumn}}&sortDirection={{sortDirection}}'">
+                            다음
+                            </button>
+                        {{/pagination.hasNextPage}}
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+
+    <script>
+        // CRUD 메시지
+        {{#message}}
+            alert("{{message}}");
+        {{/message}}
+
+    document.addEventListener("DOMContentLoaded", function() {
+        var deleteButton = document.getElementById("deleteButton");
+        if (deleteButton) {
+            deleteButton.addEventListener("click", function() {
+                var selectedCheckboxes = document.querySelectorAll(".select-row:checked");
+                var selectedIds = [];
+
+                selectedCheckboxes.forEach(function(checkbox) {
+                    var contractId = checkbox.value;
+                    console.log("Contract ID:", contractId); // 로그 추가
+                    selectedIds.push(contractId);
+                });
+
+                if (selectedIds.length > 0) {
+                    var confirmDelete = confirm("선택한 항목들을 삭제하시겠습니까?");
+
+                    if (confirmDelete) {
+                        console.log("Deleting IDs:", selectedIds); // 로그 추가
+                        fetch("/contracts/detail/delete", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({ ids: selectedIds })
+                        }).then(response => {
+                            if (response.ok) {
+                                alert("삭제되었습니다.");
+                                // 서버 응답이 성공적이면 리다이렉트 수행
+                                window.location.href = "/contracts";
+                            } else {
+                                alert("삭제 중 오류가 발생했습니다.");
+                            }
+                        }).catch(error => {
+                            console.error("Error:", error);
+                            alert("삭제 중 오류가 발생했습니다.");
+                        });
+                    }
+                } else {
+                    alert("삭제할 항목을 선택해 주세요.");
+                }
+            });
+        }
+    });
+
+
+    </script>
+    <script src="/assets/demo/contracts-read-chart.js"></script>
+    <script src="/assets/demo/contracts-read-bar.js"></script>
+
+{{>main/footer}}

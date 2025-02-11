@@ -1,0 +1,411 @@
+{{>main/header}}
+
+<style>
+
+/* 진행 상태바 컨테이너 */
+.progress-container {
+    position: relative;
+    width: 100%;
+    height: 70px; /* 높이를 조금 늘립니다 */
+    margin: 20px 0;
+}
+
+.progress-bar {
+    position: absolute;
+    top: 38%; /* 중앙 정렬 */
+    left: 10%; /* Qualification 원의 중앙에서 시작하도록 조정합니다 */
+    transform: translateY(-50%);
+    width: 0;
+    height: 10px;
+    background-color: green;
+    transition: width 0.4s ease;
+}
+
+.progress-steps {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    width: 100%;
+    margin: 10px 0;
+    top: 50%; /* 중앙 정렬 */
+    transform: translateY(-50%);
+}
+
+.step {
+    width: 30px;
+    height: 30px;
+    border: 2px solid #ccc;
+    border-radius: 50%;
+    position: relative;
+    text-align: center;
+    line-height: 30px;
+    font-weight: bold;
+    color: #fff;
+    background-color: #ccc;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+
+/* 텍스트 스타일 */
+.step::after {
+    content: attr(data-step);
+    position: absolute;
+    top: 40px; /* 동그라미 아래에 텍스트 배치 */
+    left: 50%;
+    transform: translateX(-50%);
+    color: #000;
+    font-weight: normal;
+    font-size: 14px;
+}
+
+/* 상태별 동그라미 색상 */
+.step.none.active {
+    background-color: black;
+    border-color: black;
+}
+
+.step.draft.active {
+    background-color: blue;
+    border-color: blue;
+}
+
+.step.activated.active {
+    background-color: green;
+    border-color: green;
+}
+
+.step.completed.active {
+    background-color: yellow;
+    border-color: yellow;
+}
+
+.step.cancelled.active {
+    background-color: red;
+    border-color: red;
+}
+
+</style>
+
+<div id="layoutSidenav_content">
+    <main>
+        <div class="container-fluid px-4">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h1 class="mt-4">Orders</h1>
+                <button onclick="location.href='/orders'" class="back-btn">🔙</button>
+
+            </div>
+
+            <ol class="breadcrumb mb-4">
+                <li class="breadcrumb-item active">Orders</li>
+            </ol>
+
+            <!-- Orders Detail -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-table me-1"></i>
+                    Orders detail
+                </div>
+                <div class="card-body">
+
+                    <table id="orders_detail">
+                    {{#orders}}
+                    <!-- 버튼 컨테이너 -->
+                    <div class="button-container mb-3">
+                        <a href="/orders/detail/create" id="createButton" class="btn btn-custom-create btn-sm">
+                            <i class="fas fa-plus-circle"></i> 신규
+                        </a>
+
+                        {{#orderId}}
+                            <button id = "deleteButton" class="btn btn-custom-delete btn-sm">
+                                <i class="fas fa-trash-alt"></i> 삭제
+                            </button>
+                        {{/orderId}}
+                        <a href="/orders" class="btn btn-custom-select btn-sm" id="selectButton">
+                            <i class="fas fa-list"></i> 목록
+                        </a>
+                    </div>
+
+                    <!-- 폼 시작 -->
+                    {{#orderId}}
+                    <form id="orderForm" action="/orders/detail/{{orderId}}/update" method="POST">
+                    {{/orderId}}
+                    {{^orderId}}
+                    <form id="orderForm" action="/orders/detail/create" method="POST">
+                    {{/orderId}}
+
+                    <div class="mb-3 row">
+                        <label for="orderDate" class="col-sm-2 col-form-label">발주일자:</label>
+                        <div class="col-sm-10">
+                            <input type="date" class="form-control" id="orderDate" name="orderDate" value="{{orderDate}}" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <label for="salesDate" class="col-sm-2 col-form-label">매출일자:</label>
+                        <div class="col-sm-10">
+                            <input type="date" class="form-control" id="salesDate" name="salesDate" value="{{salesDate}}" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <label for="orderStatus" class="col-sm-2 col-form-label">주문상태:</label>
+                        <div class="col-sm-10">
+                            <select class="form-control" id="orderStatus" name="orderStatus" required>
+                                <option value="none">none</option>
+                                <option value="draft">draft</option>
+                                <option value="activated">activated</option>
+                                <option value="completed">completed</option>
+                                <option value="cancelled">cancelled</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <label for="orderAmount" class="col-sm-2 col-form-label">수량:</label>
+                        <div class="col-sm-10">
+                            <input type="number" class="form-control" id="orderAmount" name="orderAmount" value="{{orderAmount}}" placeholder="수량을 입력하세요" required>
+                        </div>
+                    </div>
+
+                        <div class="mb-3 row">
+                            <label for="productId" class="col-sm-2 col-form-label">제품:</label>
+                            <div class="col-sm-10">
+                                <select id="productId" name="productId" required>
+                                    <option value="">-- 제품 선택 --</option>
+                                    {{#products}}
+                                        <option value="{{productId}}" {{#isSelected}}{{productId}}{{/isSelected}}>
+                                            {{productName}} (ID: {{productId}})
+                                        </option>
+                                    {{/products}}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-3 row">
+                            <label for="contractId" class="col-sm-2 col-form-label">계약:</label>
+                            <div class="col-sm-10">
+                                <select id="contractId" name="contractId" required>
+                                    <option value="">-- 계약 선택 --</option>
+                                    {{#contracts}}
+                                        <option value="{{contractId}}" {{#isSelected}}{{contractId}}{{/isSelected}}>
+                                            {{contractId}} (ID: {{contractId}})
+                                        </option>
+                                    {{/contracts}}
+                                </select>
+                            </div>
+                        </div>
+
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" id="updateButton" class="btn btn-custom-update btn-sm">
+                            <i class="fas fa-save"></i> 저장
+                        </button>
+                    </div>
+                </form> <!-- 폼 닫기 -->
+                    {{/orders}}
+                </form>
+                    </table>
+
+                </div>
+            </div>
+        {{#orderId}}
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-table me-1"></i>
+                Orders Status
+            </div>
+            <div class="card-body">
+                <table id="orders_status">
+
+
+                    {{#orders}}
+                        <tbody>
+                        <div class="progress-container">
+                            <div class="progress-steps">
+                                <div class="step none" data-step="none"></div>
+                                <div class="step draft" data-step="draft"></div>
+                                <div class="step completed" data-step="completed"></div>
+                                <div class="step activated" data-step="activated"></div>
+                                <div class="step cancelled" data-step="cancelled"></div>
+                            </div>
+                        </div>
+                        </tbody>
+                    {{/orders}}
+                </table>
+            </div>
+        </div>
+        {{/orderId}}
+        </div>
+</main>
+
+    <script>
+        // CRUD 메시지
+        {{#message}}
+            alert("{{message}}");
+        {{/message}}
+
+        document.addEventListener("DOMContentLoaded", function () {
+{{#orders}}
+
+    {{#orderId}}
+        // Mustache 템플릿에서 서버 데이터를 가져옴
+            var orderStatus = "{{orderStatus}}";
+            var productId = "{{productId.productId}}";
+            var contractId = "{{contractId.contractId}}";
+
+            // 폼에 데이터 채우기
+            document.getElementById("orderStatus").value = orderStatus;
+            document.getElementById("productId").value = productId;
+            document.getElementById("contractId").value = contractId;
+    {{/orderId}}
+
+        // Selectize 초기화
+        $('#contractId').selectize({
+            create: false,
+            sortField: 'text'
+        });
+        $('#productId').selectize({
+            create: false,
+            sortField: 'text'
+        });
+
+        // Form 삭제버튼 클릭 시 현 주소가 create인 경우 create로 action 주소 변경
+        var form = document.getElementById("orderForm");
+        var currentUrl = window.location.pathname;
+        if (form && currentUrl === "/orders/detail/create") {
+            form.action = "/orders/detail/create";
+        }
+
+        // 저장 버튼 클릭 시 변경사항 저장 여부 확인
+        var updateButton = document.getElementById("updateButton");
+        if (updateButton) {
+            updateButton.addEventListener("click", function (event) {
+                var confirmSave = confirm("변경사항을 저장하겠습니까?");
+                if (!confirmSave) {
+                    event.preventDefault();
+                }
+            });
+        }
+
+        // 상태에 따른 진행상황 표시
+        var progressSteps = document.querySelectorAll(".step");
+        var steps = ["none", "draft", "completed", "activated", "cancelled"];
+        var currentIndex = steps.indexOf(orderStatus);
+        if (currentIndex !== -1) {
+            progressSteps[currentIndex].classList.add("active");
+        }
+
+        {{#orderId}}
+            var deleteButton = document.getElementById("deleteButton");
+            if (deleteButton) {
+                deleteButton.addEventListener("click", function () {
+                    // 서버에서 렌더링된 orderId 가져오기
+                    var orderId = "{{orderId}}";
+
+                if (orderId) {
+                    var confirmDelete = confirm("현재 항목을 삭제하시겠습니까?");
+                    if (confirmDelete) {
+                        fetch(`/orders/detail/${orderId}/delete`, {
+                            method: "POST", // 서버 엔드포인트가 POST를 지원해야 함
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({ id: orderId }), // 올바른 데이터 전송
+                        })
+                            .then((response) => {
+                                if (response.ok) {
+                                    alert("삭제되었습니다.");
+                                    window.location.href = "/orders"; // 삭제 후 이동
+                                } else {
+                                    alert("삭제 중 오류가 발생했습니다.");
+                                }
+                            })
+                            .catch((error) => {
+                                console.error("Error:", error);
+                                alert("삭제 중 오류가 발생했습니다.");
+                            });
+                    }
+                } else {
+                    alert("삭제할 ID가 없습니다.");
+                }
+            });
+            }
+        {{/orderId}}
+    });
+{{/orders}}
+
+        document.addEventListener("DOMContentLoaded", function () {
+        const form = document.getElementById("orderForm");
+
+        form.addEventListener("submit", function (event) {
+            event.preventDefault(); // 폼 제출 방지
+
+            if (validateForm()) {
+                form.submit(); // 검증 통과 시 제출
+            }
+        });
+
+        function validateForm() {
+            let isValid = true;
+
+            // 주문 일자 검증 (필수 입력, 과거 또는 현재여야 함)
+            const orderDate = document.getElementById("orderDate");
+            if (!orderDate.value.trim()) {
+                alert("주문 일자는 필수입니다.");
+                isValid = false;
+            } else {
+                const inputDate = new Date(orderDate.value).setHours(0, 0, 0, 0);
+                const today = new Date().setHours(0, 0, 0, 0);
+
+                if (inputDate > today) {
+                    alert("주문 일자는 과거 또는 오늘이어야 합니다.");
+                    isValid = false;
+                }
+            }
+
+
+            // 매출 일자 검증 (필수 입력)
+            const salesDate = document.getElementById("salesDate");
+            if (!salesDate.value.trim()) {
+                alert("매출 일자는 필수입니다.");
+                isValid = false;
+            }
+
+            // 주문 수량 검증 (필수 입력, 숫자 확인)
+            const orderAmount = document.getElementById("orderAmount");
+            if (!orderAmount.value.trim() || isNaN(orderAmount.value)) {
+                alert("주문 수량은 필수이며 숫자여야 합니다.");
+                isValid = false;
+            }
+
+            // 주문 상태 검증 (`none`, `draft`, `activated`, `completed`, `cancelled` 중 하나)
+            const orderStatus = document.getElementById("orderStatus");
+            const validStatuses = ["none", "draft", "activated", "completed", "cancelled"];
+            if (!validStatuses.includes(orderStatus.value)) {
+                alert("주문 상태는 'none', 'draft', 'activated', 'completed', 'cancelled' 중 하나여야 합니다.");
+                isValid = false;
+            }
+
+            // 계약 ID 검증 (필수 입력)
+            const contractId = document.getElementById("contractId");
+            if (!contractId.value.trim()) {
+                alert("계약 ID는 필수입니다.");
+                isValid = false;
+            }
+
+            // 제품 ID 검증 (필수 입력)
+            const productId = document.getElementById("productId");
+            if (!productId.value.trim()) {
+                alert("제품 ID는 필수입니다.");
+                isValid = false;
+            }
+
+            return isValid;
+        }
+    });
+
+    </script>
+
+
+
+
+{{>main/footer}}

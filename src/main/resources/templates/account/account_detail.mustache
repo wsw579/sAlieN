@@ -1,0 +1,421 @@
+{{>main/header}}
+
+<div id="layoutSidenav_content">
+    <main>
+        <div class="container-fluid px-4">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h1 class="mt-4">Accounts</h1>
+                <button onclick="location.href='/account'" class="back-btn">🔙</button>
+            </div>
+            <ol class="breadcrumb mb-4">
+                <li class="breadcrumb-item active">Accounts</li>
+            </ol>
+
+            <!-- 계정 상세내용 부분 -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-table me-1"></i>
+                    Accounts detail
+                </div>
+                <div class="card-body">
+                    <table id="account_detail">
+                        {{#account}}
+                            <div class="button-container mb-3">
+                                <a href="/account/detail/create" class="btn btn-custom-create btn-sm" id="createButton">
+                                    <i class="fas fa-plus-circle"></i> 신규
+                                </a>
+
+                                {{#accountId}}
+                                    <button id="deleteButton" class="btn btn-custom-delete btn-sm">
+                                        <i class="fas fa-trash-alt"></i> 삭제
+                                    </button>
+                                {{/accountId}}
+                                <a href="/account" class="btn btn-custom-select btn-sm" id="selectButton">
+                                    <i class="fas fa-list"></i> 목록
+                                </a>
+                            </div>
+
+                            {{#accountId}}
+                            <form id="accountForm" action="/account/detail/{{accountId}}/update" method="POST">
+                            {{/accountId}}
+                            {{^accountId}}
+                            <form id="accountForm" action="/account/detail/create" method="POST">
+                            {{/accountId}}
+
+                            <div class="mb-3 row">
+                                <label for="accountCreatedDate" class="col-sm-2 col-form-label">생성 일자:</label>
+                                <div class="col-sm-10">
+                                    <input type="date" class="form-control" id="accountCreatedDate"
+                                           name="accountCreatedDate" value="{{accountCreatedDate}}" required>
+                                </div>
+                            </div>
+
+                            <div class="mb-3 row">
+                                <label for="accountStatus" class="col-sm-2 col-form-label">계정 상태:</label>
+                                <div class="col-sm-10">
+                                    <select class="form-control" id="accountStatus" name="accountStatus">
+                                        <option value="">계정 상태 선택</option>
+                                        <option value="Active">Active</option>
+                                        <option value="Closed">Closed</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="mb-3 row">
+                                <label for="accountName" class="col-sm-2 col-form-label">계정 이름:</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="accountName" name="accountName"
+                                           value="{{accountName}}" required>
+                                </div>
+                            </div>
+
+                            <div class="mb-3 row">
+                                <label for="employeeId" class="col-sm-2 col-form-label">계약 소유자:</label>
+                                <div class="col-sm-10">
+                                    <select id="employeeId" name="employeeId" required>
+
+                                        <option value="">-- 담당자 선택 --</option>
+                                        {{#employee}}
+                                            <option value="{{employeeId}}">
+                                                {{employeeName}} (ID: {{employeeId}})
+                                            </option>
+                                        {{/employee}}
+
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="mb-3 row">
+                                <label for="accountType" class="col-sm-2 col-form-label">유형:</label>
+                                <div class="col-sm-10">
+                                    <select class="form-control" id="accountType" name="accountType">
+                                        <option value="">유형 선택</option>
+                                        <option value="고객사">고객사</option>
+                                        <option value="협력사">협력사</option>
+                                        <option value="파트너사">파트너사</option>
+                                        <option value="계열사">계열사</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="mb-3 row">
+                                <label for="parentAccountId" class="col-sm-2 col-form-label">상위 계정:</label>
+                                <div class="col-sm-10">
+                                    <select id="parentAccountId" name="parentAccountId">
+                                        <option value="">-- 계정 선택 --</option>
+                                        {{#parent}}
+                                            <option value="{{accountId}}">
+                                                {{accountName}} (ID: {{accountId}})
+                                            </option>
+                                        {{/parent}}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="website" class="col-sm-2 col-form-label">웹사이트:</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="website" name="website"
+                                           value="{{website}}" placeholder="https://www.example.com">
+                                </div>
+                            </div>
+
+                            <div class="mb-3 row">
+                                <label for="contact" class="col-sm-2 col-form-label">대표 전화:</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="contact" name="contact"
+                                           value="{{contact}}" placeholder="02-123-4567">
+                                </div>
+                            </div>
+
+                            <div class="mb-3 row">
+                                <label for="businessType" class="col-sm-2 col-form-label">사업 유형:</label>
+                                <div class="col-sm-10">
+                                    <select class="form-control" id="businessType" name="businessType">
+                                        <option value="">사업 유형 선택</option>
+                                        <option value="제조업">제조업</option>
+                                        <option value="IT서비스">IT서비스</option>
+                                        <option value="소프트웨어">소프트웨어</option>
+                                        <option value="반도체">반도체</option>
+                                        <option value="전자부품">전자부품</option>
+                                        <option value="통신">통신</option>
+                                        <option value="보안">보안</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="mb-3 row">
+                                <label for="accountManager" class="col-sm-2 col-form-label">직원:</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="accountManager" name="accountManager"
+                                           value="{{accountManager}}" placeholder="예: 홍길동" required>
+                                </div>
+                            </div>
+
+                            <div class="mb-3 row">
+                                <label for="accountDetail" class="col-sm-2 col-form-label">설명:</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="accountDetail" name="accountDetail"
+                                           value="{{accountDetail}}" placeholder="예: 주요 고객사 정보">
+                                </div>
+                            </div>
+
+                            <div class="mb-3 row">
+                                <label for="address" class="col-sm-2 col-form-label">배송지:</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="address" name="address"
+                                           value="{{address}}" placeholder="예: 서울특별시 강남구 테헤란로 123">
+                                </div>
+                            </div>
+
+                            <div class="mb-3 row">
+                                <label for="accountManagerContact" class="col-sm-2 col-form-label">직원 전화번호:</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="accountManagerContact"
+                                           name="accountManagerContact" value="{{accountManagerContact}}"
+                                           placeholder="010-1234-5678" required>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-end">
+                                <button type="submit" id="updateButton"
+                                        class="btn btn-custom-update btn-sm">
+                                    <i class="fas fa-save"></i> 저장
+                                </button>
+
+                            </div>
+                        </form>
+                        {{/account}}
+                    </form>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script>
+
+ // CRUD 메시지
+        {{#message}}
+            alert("{{message}}");
+        {{/message}}
+
+// Form 부분 : 초기값 연동 JS (select Form 은 html 초기 value 지정이 안되어서 JS로 처리)
+        {{#account}}
+            {{#accountId}}
+                document.addEventListener("DOMContentLoaded", function() {
+                    // Mustache 템플릿에서 서버 데이터를 가져옴
+                    var accountStatus = "{{accountStatus}}";
+                    var accountType = "{{accountType}}";
+                    var businessType = "{{businessType}}";
+                    var employeeId = "{{employeeId.employeeId}}";
+                    var parentAccountId = "{{parentAccount.accountId}}";
+
+                    // 폼에 데이터 채우기
+                    document.getElementById("accountStatus").value = accountStatus;
+                    document.getElementById("accountType").value = accountType;
+                    document.getElementById("businessType").value = businessType;
+                    document.getElementById("employeeId").value = employeeId;
+                    document.getElementById("parentAccountId").value = parentAccountId;
+                });
+            {{/accountId}}
+
+            document.addEventListener("DOMContentLoaded", function() {
+                // 직원 검색
+                      $('#employeeId').selectize({
+                           create: false,
+                           sortField: 'text'
+                       });
+                       $('#parentAccountId').selectize({
+                           create: false,
+                           sortField: 'text'
+                       });
+                    });
+
+  // 삭제버튼
+            document.addEventListener("DOMContentLoaded", function() {
+            {{#accountId}}
+                var deleteButton = document.getElementById("deleteButton");
+                if (deleteButton) {
+                    deleteButton.addEventListener("click", function () {
+                        // 서버에서 렌더링된 accountId 가져오기
+                        var accountId = "{{accountId}}";
+
+                if (accountId) {
+                    var confirmDelete = confirm("현재 항목을 삭제하시겠습니까?");
+                    if (confirmDelete) {
+                        fetch(`/account/detail/${accountId}/delete`, {
+                            method: "POST", // 서버 엔드포인트가 POST를 지원해야 함
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({ id: accountId }), // 올바른 데이터 전송
+                        })
+                            .then((response) => {
+                                if (response.ok) {
+                                    alert("삭제되었습니다.");
+                                    window.location.href = "/account"; // 삭제 후 이동
+                                } else {
+                                    alert("삭제 중 오류가 발생했습니다.");
+                                }
+                            })
+                            .catch((error) => {
+                                console.error("Error:", error);
+                                alert("삭제 중 오류가 발생했습니다.");
+                            });
+                    }
+                 } else {
+                        alert("삭제할 ID가 없습니다.");
+                     }
+                });
+            }
+            {{/accountId}}
+            });
+
+ //Form 삭제버튼 클릭 시 현 주소가 create 인경우 create 로 action 주소 변경.
+               document.addEventListener("DOMContentLoaded", function() {
+                        var form = document.getElementById("accountForm");
+                         var currentUrl = window.location.pathname;
+
+                         // 현재 URL "/account/detail/create"인 경우 폼 액션을 변경
+                               if (currentUrl === "/account/detail/create") {
+                                   form.action = "/account/detail/create";
+                               }
+
+                               // 저장 버튼 클릭 시 변경사항 저장 여부 확인
+                               document.getElementById("updateButton").addEventListener("click", function(event) {
+                                   var confirmSave = confirm("변경사항을 저장하겠습니까?");
+
+                                   if (!confirmSave) {
+                                       // 사용자가 취소를 클릭한 경우 폼 제출 중단
+                                       event.preventDefault();
+                                   }
+                               });
+                           });
+
+document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("accountForm");
+    const updateButton = document.getElementById("updateButton");
+
+    updateButton.addEventListener("click", function (event) {
+        event.preventDefault(); // 기본 제출 방지
+
+        if (!validateForm()) {
+            return; // 유효성 검사 실패 시 중단
+        }
+        form.submit(); // 유효성 검사 통과 시 폼 제출
+    });
+
+    function validateForm() {
+        // 필드 값 가져오기
+        const accountName = document.getElementById("accountName").value.trim();
+        const accountType = document.getElementById("accountType").value;
+        const website = document.getElementById("website").value.trim();
+        const contact = document.getElementById("contact").value.trim();
+        const businessType = document.getElementById("businessType").value;
+        const accountManager = document.getElementById("accountManager").value.trim();
+        const accountDetail = document.getElementById("accountDetail").value.trim();
+        const address = document.getElementById("address").value.trim();
+        const accountManagerContact = document.getElementById("accountManagerContact").value.trim();
+        const accountStatus = document.getElementById("accountStatus").value;
+        const accountCreatedDate = document.getElementById("accountCreatedDate").value;
+        const employeeId = document.getElementById("employeeId").value;
+        const parentAccountId = document.getElementById("parentAccountId").value;
+
+        let errorMessage = "";
+
+        // 필수 입력 필드 검증
+        if (!accountName) {
+            errorMessage += "계정 이름을 입력하세요.\n";
+        } else if (accountName.length > 50) {
+            errorMessage += "계정 이름은 50자 이하로 입력해야 합니다.\n";
+        }
+
+        if (!accountType) {
+            errorMessage += "계정 유형을 선택하세요.\n";
+        }
+
+        if (!website) {
+            errorMessage += "웹사이트를 입력하세요.\n";
+        } else if (!validateWebsite(website)) {
+            errorMessage += "유효한 웹사이트 URL을 입력하세요. (예: https://www.example.com)\n";
+        }
+
+        if (!contact) {
+            errorMessage += "대표 전화를 입력하세요.\n";
+        } else if (!validatePhone(contact)) {
+            errorMessage += "유효한 전화번호를 입력하세요. (예: 010-1234-5678, 02-123-4567)\n";
+        }
+
+        if (!businessType) {
+            errorMessage += "사업 유형을 선택하세요.\n";
+        }
+
+        if (!accountManager) {
+            errorMessage += "직원 이름을 입력하세요.\n";
+        } else if (accountManager.length > 50) {
+            errorMessage += "직원 이름은 50자 이하로 입력해야 합니다.\n";
+        }
+
+        if (!accountDetail) {
+            errorMessage += "설명을 입력하세요.\n";
+        } else if (accountDetail.length > 50) {
+            errorMessage += "설명은 50자 이하로 입력해야 합니다.\n";
+        }
+
+        if (!address) {
+            errorMessage += "배송지를 입력하세요.\n";
+        } else if (address.length > 50) {
+            errorMessage += "배송지는 50자 이하로 입력해야 합니다.\n";
+        }
+
+        if (!accountManagerContact) {
+            errorMessage += "직원 전화번호를 입력하세요.\n";
+        } else if (!validatePhone(accountManagerContact)) {
+            errorMessage += "유효한 직원 전화번호를 입력하세요. (예: 010-1234-5678, 02-123-4567)\n";
+        }
+
+        if (!accountStatus) {
+            errorMessage += "계정 상태를 선택하세요.\n";
+        }
+
+        if (!accountCreatedDate) {
+            errorMessage += "계정 생성일을 선택하세요.\n";
+        } else if (!validatePastOrPresent(accountCreatedDate)) {
+            errorMessage += "계정 생성일은 과거 또는 현재여야 합니다.\n";
+        }
+
+        if (!employeeId) {
+            errorMessage += "계약 소유자를 선택하세요.\n";
+        }
+
+        // 에러 메시지가 있으면 알림 표시 후 중단
+        if (errorMessage) {
+            alert(errorMessage);
+            return false;
+        }
+
+        return true;
+    }
+
+    // 웹사이트 URL 검증
+    function validateWebsite(url) {
+        const urlPattern = /^(https?:\/\/)?([\w-]+(\.[\w-]+)+)(\/[\w-]*)*$/;
+        return urlPattern.test(url);
+    }
+
+    // 전화번호 검증 (국내 전화번호 형식)
+    function validatePhone(phone) {
+        const phonePattern = /^(?:\+?\d{1,3}-)?(01[016789]-\d{3,4}-\d{4}|\d{2,3}-\d{3,4}-\d{4})$/;
+        return phonePattern.test(phone);
+    }
+
+    // 계정 생성일이 과거 또는 현재인지 확인
+    function validatePastOrPresent(date) {
+        const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD 형식
+        return date <= today;
+     }
+});
+
+ {{/account}}
+    </script>
+
+{{>main/footer}}

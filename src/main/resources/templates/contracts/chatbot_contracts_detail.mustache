@@ -1,0 +1,687 @@
+{{>main/header}}
+
+<style>
+
+.progress-container {
+    position: relative;
+    width: 100%;
+    height: 70px;
+    margin: 20px 0;
+}
+
+/* 바(—):
+   - 지름 20px 원에 맞춰, 양쪽 10px 띄움
+   - 따라서 "왼쪽 원 중심" ~ "오른쪽 원 중심"까지가 바 */
+.progress-bar {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 10px;
+    right: 10px;
+    height: 10px;
+    background-color: green;
+    border-radius: 5px; /* 둥글려주면 원과 자연스럽게 이어짐 */
+    transition: width 0.4s ease;
+    z-index: 0;
+}
+
+/* 각 스텝(원 + 텍스트) 가로로 균등 분배 */
+.progress-steps {
+    display: flex;
+    justify-content: space-between;
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    transform: translateY(-50%);
+}
+
+/* 스텝 */
+.step {
+    text-align: center;
+    position: relative;
+}
+
+/* 원(●):
+   - "step"의 가로 중앙에 찍되,
+     정확히 -50%만큼만 이동해서 완벽한 중앙 */
+.step::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* -45% 등으로 바꾸면 틀어짐! */
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: white;
+    border: 2px solid green;
+    transition: background-color 0.4s ease, border-color 0.4s ease;
+    z-index: 1; /* 바 위로 표시 */
+}
+
+/* 활성화된(채워진) 원(●) */
+.step.active::before {
+    background-color: green;
+    border-color: green;
+}
+
+/* 텍스트를 원 아래로 내리고 싶다면 */
+.step span {
+    display: block;
+    margin-top: 30px; /* 적당히 조정 */
+}
+
+</style>
+
+
+<div id="layoutSidenav_content">
+    <main>
+        <div class="container-fluid px-4">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h1 class="mt-4">Contracts</h1>
+                <button onclick="location.href='/contracts'" class="back-btn">🔙</button>
+            </div>
+            <ol class="breadcrumb mb-4">
+                <li class="breadcrumb-item active">Contracts</li>
+            </ol>
+            <div class="row">
+            </div>
+            <div class="row">
+            </div>
+
+            <!-- 계약 상태 부분 -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-table me-1"></i>
+                    Contracts Status
+                </div>
+                <div class="card-body">
+                    <table id="contracts_status">
+
+
+                        {{#contracts}}
+                            <div class="progress-container">
+                                <div class="progress-bar" id="progressBar"></div>
+                                <div class="progress-steps">
+                                    <div class="step" data-step="Draft">
+                                        <span>Draft</span>
+                                    </div>
+                                    <div class="step" data-step="In Approval Process">
+                                        <span>In Approval Process</span>
+                                    </div>
+                                    <div class="step" data-step="Activated">
+                                        <span>Activated</span>
+                                    </div>
+                                </div>
+                            </div>
+                        {{/contracts}}
+
+
+                    </table>
+                </div>
+            </div>
+
+
+            <!-- 계약 상세내용 부분 -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-table me-1"></i>
+                    Contracts detail
+                </div>
+                <div class="card-body">
+                    <table id="contracts_detail">
+                        {{#contracts}}
+                            <div class="button-container mb-3">
+                                <a href="/contracts/detail/create" class="btn btn-custom-create btn-sm" id="createButton">
+                                    <i class="fas fa-plus-circle"></i> 신규
+                                </a>
+
+                                {{#contractId}}
+                                    <button class="btn btn-custom-delete btn-sm" id="deleteButton">
+                                        <i class="fas fa-trash"></i> 삭제
+                                    </button>
+                                {{/contractId}}
+                                <a href="/contracts" class="btn btn-custom-select btn-sm" id="selectButton">
+                                    <i class="fas fa-list"></i> 목록
+                                </a>
+                        </div>
+
+                            {{#contractId}}
+                            <form id="contractForm" action="/contracts/detail/{{contractId}}/update" method="POST">
+                            {{/contractId}}
+                            {{^contractId}}
+                            <form id="contractForm" action="/contracts/detail/create" method="POST">
+                            {{/contractId}}
+
+                            <div class="mb-3 row">
+                                <label for="startDate" class="col-sm-2 col-form-label">시작일자:</label>
+                                <div class="col-sm-10">
+                                    <input type="date" class="form-control" id="startDate" name="startDate" value="{{startDate}}" required>
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="terminationDate" class="col-sm-2 col-form-label">마감기한:</label>
+                                <div class="col-sm-10">
+                                    <input type="date" class="form-control" id="terminationDate" name="terminationDate" value="{{terminationDate}}" required>
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="contractStatus" class="col-sm-2 col-form-label">계약 상태:</label>
+                                <div class="col-sm-10">
+                                    <select class="form-control" id="contractStatus" name="contractStatus" required>
+                                        <option value="Draft">Draft</option>
+                                        <option value="In Approval Process">In Approval Process</option>
+                                        <option value="Activated">Activated</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="accountId" class="col-sm-2 col-form-label">계정명:</label>
+                                <div class="col-sm-10">
+                                    <select id="accountId" name="accountId" required>
+
+                                        <option value="">-- 계정 선택 --</option>
+                                        {{#accounts}}
+                                            <option value="{{accountId}}">
+                                                {{accountName}} (ID: {{accountId}})
+                                            </option>
+                                        {{/accounts}}
+
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="mb-3 row">
+                                    <label for="opportunityId" class="col-sm-2 col-form-label">기회명:</label>
+                                    <div class="col-sm-10">
+                                        <select id="opportunityId" name="opportunityId" required>
+                                            <option value="">-- 기회 선택 --</option>
+                                            {{#opportunities}}
+                                                <option value="{{opportunityId}}">
+                                                    {{opportunityName}} (ID: {{opportunityId}})
+                                                </option>
+                                            {{/opportunities}}
+                                        </select>
+                                    </div>
+                                </div>
+
+                            <div class="mb-3 row">
+                                    <label for="productId" class="col-sm-2 col-form-label">계약 제품:</label>
+                                    <div class="col-sm-10">
+                                        <select id="productId" name="productId" required>
+
+                                        <option value="">-- 제품 선택 --</option>
+                                        {{#products}}
+                                            <option value="{{productId}}">
+                                                {{productName}} (ID: {{productId}})
+                                            </option>
+                                        {{/products}}
+
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="contractAmount" class="col-sm-2 col-form-label">계약 수량:</label>
+                                <div class="col-sm-10">
+                                    <input type="number" step="0.01" class="form-control" id="contractAmount" name="contractAmount" value="{{contractAmount}}" required>
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="contractSales" class="col-sm-2 col-form-label">계약 가격:</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="contractSalesDisplay" name="contractSalesDisplay" value="" placeholder="₩0" required>
+                                    <input type="hidden" id="contractSales" name="contractSales" value="{{contractSales}}">
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="contractDetail" class="col-sm-2 col-form-label">계약 세부내용:</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" id="contractDetail" name="contractDetail" value="{{contractDetail}}" required>
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="contractClassification" class="col-sm-2 col-form-label">계약 분류:</label>
+                                <div class="col-sm-10">
+                                    <select class="form-control" id="contractClassification" name="contractClassification" required>
+                                        <option value="None">선택없음</option>
+                                        <option value="완판">완판</option>
+                                        <option value="임대">임대</option>
+                                        <option value="할부">할부</option>
+                                        <option value="재계약">재계약</option>
+                                        <option value="이관">이관</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="employeeId" class="col-sm-2 col-form-label">계약 소유자:</label>
+                                <div class="col-sm-10">
+                                    <select id="employeeId" name="employeeId" required>
+
+                                        <option value="">-- 담당자 선택 --</option>
+                                        {{#employee}}
+                                            <option value="{{employeeId}}">
+                                                {{employeeName}} (ID: {{employeeId}})
+                                            </option>
+                                        {{/employee}}
+
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-end">
+                                <button type="submit" id="updateButton" class="btn btn-custom-update btn-sm">
+                                    <i class="fas fa-save"></i> 저장
+                                </button>
+                            </div>
+                        </form>
+
+                        {{/contracts}}
+                    </form>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-file-upload me-1"></i> 계약서 첨부
+                </div>
+                {{#contractId}}
+                    <div class="card-body" id="fileContainer" data-contract-id="{{contractId}}">
+                        {{#uploadedFileName}}
+                            <p><strong>파일 이름:</strong> {{uploadedFileName}}</p>
+                            <a href="/contracts/detail/{{contractId}}/file" target="_blank" class="btn btn-secondary">다운로드</a>
+                            <button id="deleteFileButton" class="btn btn-danger">파일 삭제</button>
+                        {{/uploadedFileName}}
+                        {{^uploadedFileName}}
+                            <form id="fileUploadForm" data-contract-id="{{contractId}}" action="/contracts/detail/{{contractId}}/upload" method="POST" enctype="multipart/form-data">
+                                <div class="mb-3">
+                                    <label for="file" class="form-label">PDF 파일 업로드:</label>
+                                    <input type="file" id="file" name="file" class="form-control" accept="application/pdf" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">업로드</button>
+                                <div id="uploadMessage" class="mt-3" style="display: none;"></div>
+                            </form>
+                        {{/uploadedFileName}}
+                    </div>
+                {{/contractId}}
+                {{^contractId}}
+                    <div class="card-body" id="fileContainer">
+                        <p>새로운 계약을 생성한 후 계약서를 업로드할 수 있습니다.</p>
+                    </div>
+                {{/contractId}}
+            </div>
+
+
+            <!-- 주문 부분 -->
+            {{#contracts.contractId}}
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <i class="fas fa-table me-1"></i>
+                        Order
+                    </div>
+                    <div class="card-body">
+                        <table id="datatablesSimple">
+                            <div class="button-container mb-3">
+                                <a href="/orders/detail/create?contractId={{contractId}}" class="btn btn-custom-create btn-sm" id="createButton">
+                                <i class="fas fa-plus-circle"></i> 신규
+                                </a>
+                                <button class="btn btn-custom-delete btn-sm" id="deleteButton">
+                                    <i class="fas fa-trash-alt"></i> 삭제
+                                </button>
+                            </div>
+
+                            <thead>
+                            <tr>
+                                <th></th>
+                                <th>ID</th>
+                                <th>발주일자</th>
+                                <th>매출일자</th>
+                                <th>상태</th>
+                                <th>수량</th>
+                                <th>제품ID</th>
+                                <th>계약ID</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {{#orders}}
+                                <tr data-index="{{orderId}}">
+                                    <td><input type="checkbox" class="select-row" value="{{orderId}}"></td>
+                                    <td><a href="/orders/detail/{{orderId}}">{{orderId}}</a></td>
+                                    <td>{{orderDate}}</td>
+                                    <td>{{salesDate}}</td>
+                                    <td>{{orderStatus}}</td>
+                                    <td>{{orderAmount}}</td>
+                                    <td>{{productId.productId}}</td>
+                                    <td>{{contracts.contractId}}</td>
+                                </tr>
+                            {{/orders}}
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            {{/contracts.contractId}}
+
+        </div>
+    </main>
+
+
+    <script>
+        // CRUD 메시지
+        {{#message}}
+            alert("{{message}}");
+        {{/message}}
+        document.addEventListener("DOMContentLoaded", function () {
+            const fileContainer = document.querySelector("#fileContainer");
+
+            // 파일 업로드 처리
+            function addFileUploadListener() {
+                const fileUploadForm = document.getElementById("fileUploadForm");
+                if (fileUploadForm) {
+                    fileUploadForm.addEventListener("submit", function (event) {
+                        event.preventDefault();
+
+                        const fileInput = document.getElementById("file");
+                        const file = fileInput ? fileInput.files[0] : null;
+
+                        if (!file) {
+                            console.warn("파일 입력 요소가 존재하지 않거나 파일이 선택되지 않았습니다.");
+                            return;
+                        }
+
+                        const uploadMessage = document.getElementById("uploadMessage");
+                        const contractId = fileUploadForm.dataset.contractId;
+                        const formData = new FormData(this);
+
+                        // 파일 크기 제한 (5MB)
+                        if (file.size > 5 * 1024 * 1024) {
+                            if (uploadMessage) {
+                                uploadMessage.style.display = "block";
+                                uploadMessage.innerText = "파일 크기는 5MB를 초과할 수 없습니다.";
+                                uploadMessage.className = "alert alert-danger";
+                            }
+                            return;
+                        }
+
+                        // MIME 타입 확인
+                        if (file.type !== "application/pdf") {
+                            if (uploadMessage) {
+                                uploadMessage.style.display = "block";
+                                uploadMessage.innerText = "PDF 파일만 업로드할 수 있습니다.";
+                                uploadMessage.className = "alert alert-danger";
+                            }
+                            return;
+                        }
+
+                        // 서버에 파일 업로드
+                        fetch(this.action, {
+                            method: "POST",
+                            body: formData,
+                        })
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error("파일 업로드에 실패했습니다.");
+                                }
+                                return response.text();
+                            })
+                            .then(data => {
+                                if (uploadMessage) {
+                                    uploadMessage.style.display = "block";
+                                    uploadMessage.innerText = "파일 업로드 성공!";
+                                    uploadMessage.className = "alert alert-success";
+                                }
+
+                                // 업로드된 파일 정보로 UI 업데이트
+                                fileContainer.innerHTML = `
+                                    <p><strong>파일 이름:</strong> ${file.name}</p>
+                                    <a href="/contracts/detail/${contractId}/file" target="_blank" class="btn btn-secondary">다운로드</a>
+                                    <button id="deleteFileButton" class="btn btn-danger">파일 삭제</button>
+                                `;
+
+                                // 삭제 버튼 이벤트 리스너 추가
+                                addDeleteFileListener(contractId);
+                            })
+                            .catch(error => {
+                                if (uploadMessage) {
+                                    uploadMessage.style.display = "block";
+                                    uploadMessage.innerText = "파일 업로드 실패: " + error.message;
+                                    uploadMessage.className = "alert alert-danger";
+                                }
+                            });
+                    });
+                }
+            }
+
+            // 파일 삭제 처리
+            function addDeleteFileListener(contractId) {
+                const deleteFileButton = document.getElementById("deleteFileButton");
+                if (deleteFileButton) {
+                    deleteFileButton.addEventListener("click", function () {
+                        if (!confirm("정말로 이 파일을 삭제하시겠습니까?")) {
+                            return;
+                        }
+
+                        // 서버에 DELETE 요청
+                        fetch(`/contracts/detail/${contractId}/file`, {
+                            method: "DELETE",
+                        })
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error("파일 삭제에 실패했습니다.");
+                                }
+                                return response.text();
+                            })
+                            .then(message => {
+                                alert(message);
+
+                                // 파일 삭제 후 업로드 폼 다시 표시
+                                fileContainer.innerHTML = `
+                                    <form id="fileUploadForm" data-contract-id="${contractId}" action="/contracts/detail/${contractId}/upload" method="POST" enctype="multipart/form-data">
+                                        <div class="mb-3">
+                                            <label for="file" class="form-label">PDF 파일 업로드:</label>
+                                            <input type="file" id="file" name="file" class="form-control" accept="application/pdf" required>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">업로드</button>
+                                        <div id="uploadMessage" class="mt-3" style="display: none;"></div>
+                                    </form>
+                                `;
+
+                                // 새로 추가된 업로드 폼에 이벤트 리스너 추가
+                                addFileUploadListener();
+                            })
+                            .catch(error => {
+                                alert("파일 삭제 실패: " + error.message);
+                            });
+                    });
+                }
+            }
+
+            // 초기화
+            const initialDeleteFileButton = document.getElementById("deleteFileButton");
+            if (initialDeleteFileButton) {
+                const contractId = fileContainer ? fileContainer.dataset.contractId : null;
+                if (contractId) {
+                    addDeleteFileListener(contractId);
+                }
+            }
+
+            addFileUploadListener(); // 초기 업로드 폼에 리스너 추가
+        });
+
+
+                                                        document.addEventListener("DOMContentLoaded", function () {
+                                                    const displayInput = document.getElementById("contractSalesDisplay");
+                                                    const hiddenInput = document.getElementById("contractSales");
+
+                                                    // 초기값 설정: 서버에서 전달된 값을 원화 형식으로 변환
+                                                    if (hiddenInput.value) {
+                                                        displayInput.value = formatCurrency(hiddenInput.value);
+                                                    }
+
+                                                    // 입력 시 원화 형식으로 변환
+                                                    displayInput.addEventListener("input", function () {
+                                                        const rawValue = displayInput.value.replace(/[^\d]/g, ""); // 숫자 이외의 문자 제거
+                                                        const formattedValue = formatCurrency(rawValue); // 원화 형식 변환
+                                                        displayInput.value = formattedValue; // 포맷된 값 표시
+                                                        hiddenInput.value = rawValue; // 실제 숫자 값을 hidden 필드에 저장
+                                                    });
+
+                                                    // 원화 형식으로 변환하는 함수
+                                                    function formatCurrency(value) {
+                                                        if (!value) return "₩0";
+                                                        return `₩${parseInt(value, 10).toLocaleString("ko-KR")}`;
+                                                    }
+                                                });
+
+                                                            // Form 부분 기회상태 초기값 연동 JS (select Form은 html로 초기 value 지정이 안되어서 JS로 처리)
+
+        {{#contracts}}
+            document.addEventListener("DOMContentLoaded", function() {
+                // Mustache 템플릿에서 서버 데이터를 가져옴
+                var contractStatus = "{{contractStatus}}";
+                var contractClassification = "{{contractClassification}}";
+                var productId = "{{productId.productId}}";
+                var accountId = "{{accountId.accountId}}";
+                var employeeId = "{{employeeId.employeeId}}";
+                var opportunityId = "{{opportunityId.opportunityId}}";
+
+                // 폼에 데이터 채우기
+                document.getElementById("contractStatus").value = contractStatus;
+                document.getElementById("contractClassification").value = contractClassification;
+                document.getElementById("productId").value = productId;
+                document.getElementById("accountId").value = accountId;
+                document.getElementById("opportunityId").value = opportunityId;
+                document.getElementById("employeeId").value = employeeId;
+            });
+
+            document.addEventListener("DOMContentLoaded", function() {
+                // 계정 검색
+                $('#accountId').selectize({
+                    create: false,
+                    sortField: 'text'
+                });
+
+                // 직원 검색
+                $('#employeeId').selectize({
+                    create: false,
+                    sortField: 'text'
+                });
+
+                // 기회 검색
+                $('#opportunityId').selectize({
+                    create: false,
+                    sortField: 'text'
+                });
+
+                // 제품 검색
+                $('#productId').selectize({
+                    create: false,
+                    sortField: 'text'
+                });
+            });
+
+
+        document.addEventListener("DOMContentLoaded", function() {
+            {{#contractId}}
+                var deleteButton = document.getElementById("deleteButton");
+                if (deleteButton) {
+                    deleteButton.addEventListener("click", function () {
+                        // 서버에서 렌더링된 contractId 가져오기
+                        var contractId = "{{contractId}}";
+
+                if (contractId) {
+                    var confirmDelete = confirm("현재 항목을 삭제하시겠습니까?");
+                    if (confirmDelete) {
+                        fetch(`/contracts/detail/${contractId}/delete`, {
+                            method: "POST", // 서버 엔드포인트가 POST를 지원해야 함
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({ id: contractId }), // 올바른 데이터 전송
+                        })
+                            .then((response) => {
+                                if (response.ok) {
+                                    alert("삭제되었습니다.");
+                                    window.location.href = "/contracts"; // 삭제 후 이동
+                                } else {
+                                    alert("삭제 중 오류가 발생했습니다.");
+                                }
+                            })
+                            .catch((error) => {
+                                console.error("Error:", error);
+                                alert("삭제 중 오류가 발생했습니다.");
+                            });
+                    }
+                } else {
+                    alert("삭제할 ID가 없습니다.");
+                }
+            });
+            }
+            {{/contractId}}
+    });
+
+
+
+
+    // Form 삭제버튼 클릭 시 현 주소가 create인경우 create로 action주소 변경.
+
+    document.addEventListener("DOMContentLoaded", function() {
+        var form = document.getElementById("contractForm");
+        var currentUrl = window.location.pathname;
+
+        // 현재 URL이 "/contracts/detail/create"인 경우 폼 액션을 변경
+        if (currentUrl === "/contracts/detail/create") {
+            form.action = "/contracts/detail/create";
+        }
+
+        // 저장 버튼 클릭 시 변경사항 저장 여부 확인
+        document.getElementById("updateButton").addEventListener("click", function(event) {
+            var confirmSave = confirm("변경사항을 저장하겠습니까?");
+
+            if (!confirmSave) {
+                // 사용자가 취소를 클릭한 경우 폼 제출 중단
+                event.preventDefault();
+            }
+        });
+    });
+
+
+
+    {{#contractId}}
+    document.addEventListener("DOMContentLoaded", function () {
+        const progressSteps = document.querySelectorAll(".step");
+        const progressBar = document.getElementById("progressBar");
+        const contractStatus = "{{contractStatus}}" || "Draft";
+
+        // 단계 목록 (예: Draft, In Approval Process, Activated)
+        const steps = ["Draft", "In Approval Process", "Activated"];
+        const currentIndex = steps.indexOf(contractStatus);
+        if (currentIndex === -1) return;
+
+        // 스텝 개수가 3개면, 구간이 2개 => currentIndex에 따라 0%, 50%, 100%로 계산
+        const intervals = steps.length - 1; // 3 - 1 = 2
+        const progressPercent = (currentIndex / intervals) * 100;
+        //   currentIndex: 0 => 0%
+        //   currentIndex: 1 => 50%
+        //   currentIndex: 2 => 100%
+
+        // 진행 바 너비 설정 (퍼센트로만!)
+        progressBar.style.width = progressPercent + "%";
+
+        // 활성화된 스텝 표시
+        progressSteps.forEach((step, index) => {
+            if (index <= currentIndex) {
+                step.classList.add("active");
+            } else {
+                step.classList.remove("active");
+            }
+        });
+    });
+    {{/contractId}}
+
+
+        {{/contracts}}
+    </script>
+
+
+
+{{>main/footer}}
