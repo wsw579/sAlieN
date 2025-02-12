@@ -12,10 +12,10 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class HistoryDto {
-    @NotNull(message = "History ID는 필수입니다.")
+    //이부분 제거
     private Long historyId;
 
-    @NotBlank(message = " 이름 입력은 필수입니다.")
+    @NotBlank(message = "히스토리 제목 입력은 필수입니다.")
     @Size(max = 255, message = "제목은 255자 이내로 입력해야 합니다.")
     private String historyTitle;
 
