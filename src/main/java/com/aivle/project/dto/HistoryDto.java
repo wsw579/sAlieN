@@ -12,7 +12,7 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class HistoryDto {
-    //이부분 제거
+    //@NotNull(message = "History ID는 필수입니다.") 이거 오류있음. (히스토리 생성 시 생성안됨)
     private Long historyId;
 
     @NotBlank(message = "히스토리 제목 입력은 필수입니다.")

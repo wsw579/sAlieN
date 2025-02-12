@@ -97,6 +97,25 @@ public class SequenceSynchronizeInitializer {
                 .getSingleResult();
     }
 
+    // opportunities history
+    @PostConstruct
+    @Transactional
+    public void synchronizeHistorySequence() {
+        // id의 최대값을 가져옵니다.
+        Long maxId = (Long) entityManager.createQuery("SELECT COALESCE(MAX(p.historyId), 0) FROM HistoryEntity p")
+                .getSingleResult();
+
+        // maxId가 0이면 시퀀스를 1부터 시작
+        Long nextVal = (maxId == 0) ? 1 : maxId + 1;
+
+        // PostgreSQL 시퀀스를 maxId 값으로 동기화합니다.
+        entityManager.createNativeQuery("SELECT setval('opportunities_history_history_id_seq', :nextVal, false)")
+                .setParameter("nextVal", nextVal)
+                .getSingleResult();
+    }
+
+
+
 
     // orders
     @PostConstruct
