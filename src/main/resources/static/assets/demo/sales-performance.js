@@ -31,14 +31,13 @@ document.addEventListener("DOMContentLoaded", function () {
     const selectedMonthYear = document.getElementById("selectedMonthYear");
 
     let topSalesChart = null;
-    let bottomSalesChart = null;  // 하위 5명 차트 추가
+    let bottomSalesChart = null;
 
     // 📌 최소 연도 설정
     const minYear = 2020;
 
     function updateNavigation() {
         selectedMonthYear.textContent = `${selectedYear}년 ${selectedMonth}월`;
-
         prevMonthBtn.disabled = selectedYear === minYear && selectedMonth === 1;
         nextMonthBtn.disabled = selectedYear === maxYear && selectedMonth >= maxMonth;
     }
@@ -57,18 +56,24 @@ document.addEventListener("DOMContentLoaded", function () {
             const data = await response.json();
             console.log("📢 API 응답 데이터:", data);
 
+            // 📌 데이터가 없는 경우 그래프만 빈 데이터로 유지
             if (!data || data.length === 0) {
                 console.warn(`⚠️ ${year}년 ${month}월 데이터 없음`);
+
+                updateChart("topSalesChart", "상위 5명 영업 실적", [], [], "rgba(54, 162, 235, 0.2)", "rgba(54, 162, 235, 1)");
+                updateChart("bottomSalesChart", "하위 5명 영업 실적", [], [], "rgba(255, 99, 132, 0.2)", "rgba(255, 99, 132, 1)");
+
                 return;
             }
+
             // 데이터 키 확인 (부서/팀/직원 구분)
             const keyName = data[0].departmentName ? "departmentName"
-                 : data[0].teamName ? "teamName"
-                 : "employeeName"; // 기본값은 직원
+                : data[0].teamName ? "teamName"
+                : "employeeName"; // 기본값은 직원
 
             const sortedData = data.sort((a, b) => b.totalSales - a.totalSales);
             const top5Data = sortedData.slice(0, 5);
-            const bottom5Data = sortedData.slice(-5);  // 하위 5명 추가
+            const bottom5Data = sortedData.slice(-5);
 
             const top5Labels = top5Data.map(item => item[keyName]);
             const top5Sales = top5Data.map(item => item.totalSales / 1000);
@@ -90,27 +95,26 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        canvas.style.width = "100%";
-        canvas.style.height = "250px";
-        canvas.style.maxHeight = "250px";
-
         const ctx = canvas.getContext('2d');
 
         if (canvasId === "topSalesChart" && topSalesChart) {
             topSalesChart.destroy();
-            topSalesChart = null;
         } else if (canvasId === "bottomSalesChart" && bottomSalesChart) {
             bottomSalesChart.destroy();
-            bottomSalesChart = null;
         }
+
+        // 📌 빈 데이터일 경우 기본값 설정
+        const hasData = sales.length > 0;
+        const adjustedLabels = hasData ? labels : ["실적이 존재하지 않습니다."];
+        const adjustedSales = hasData ? sales : [0];
 
         const newChart = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: labels,
+                labels: adjustedLabels,
                 datasets: [{
                     label: label,
-                    data: sales,
+                    data: adjustedSales,
                     backgroundColor: bgColor,
                     borderColor: borderColor,
                     borderWidth: 1
@@ -119,14 +123,6 @@ document.addEventListener("DOMContentLoaded", function () {
             options: {
                 responsive: true,
                 maintainAspectRatio: true,
-                tooltips: {
-                    callbacks: {
-                        label: function (tooltipItem, data) {
-                            const value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
-                            return `${value.toFixed(1)} k`;
-                        }
-                    }
-                },
                 scales: {
                     xAxes: [{
                         ticks: { autoSkip: false }
@@ -134,11 +130,22 @@ document.addEventListener("DOMContentLoaded", function () {
                     yAxes: [{
                         ticks: {
                             beginAtZero: true,
+                            min: 0, // **Y축 최소값을 0으로 고정**
+                            suggestedMax: hasData ? Math.max(...sales) * 1.1 : 1, // **최대값 자동 조정 및 10% 여유 추가**
                             callback: function (value) {
-                                return value + " k";
+                                return value.toLocaleString() + " K"; // **Y축 값에 , 및 K 단위 추가**
                             }
                         }
                     }]
+                },
+                tooltips: {
+                    callbacks: {
+                        label: function (tooltipItem, data) {
+                            const dataset = data.datasets[tooltipItem.datasetIndex];
+                            const value = dataset.data[tooltipItem.index];
+                            return `${dataset.label}: ${value.toLocaleString()} K`; // **툴팁 값에도 , 및 K 단위 추가**
+                        }
+                    }
                 }
             }
         });
@@ -151,44 +158,19 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function changeMonth(delta) {
-        let newMonth = selectedMonth + delta;
-        let newYear = selectedYear;
-
-        if (newMonth < 1) {
+        selectedMonth += delta;
+        if (selectedMonth < 1) {
             if (selectedYear > minYear) {
-                newYear--;
-                newMonth = 12;
-            } else {
-                return;
-            }
-        } else if (newMonth > 12) {
+                selectedYear--;
+                selectedMonth = 12;
+            } else return;
+        } else if (selectedMonth > 12) {
             if (selectedYear < maxYear) {
-                newYear++;
-                newMonth = 1;
-            } else if (selectedYear === maxYear && newMonth > maxMonth) {
-                return;
-            }
-        } else if (selectedYear === maxYear && newMonth > maxMonth) {
-            return;
+                selectedYear++;
+                selectedMonth = 1;
+            } else return;
         }
 
-        selectedYear = newYear;
-        selectedMonth = newMonth;
-
-        updateNavigation();
-        fetchAndRenderData(selectedYear, selectedMonth);
-    }
-
-    function changeYear(event) {
-        const newYear = parseInt(event.target.value);
-
-        if (newYear > maxYear) {
-            return;
-        } else if (newYear === maxYear && selectedMonth > maxMonth) {
-            selectedMonth = maxMonth;
-        }
-
-        selectedYear = newYear;
         updateNavigation();
         fetchAndRenderData(selectedYear, selectedMonth);
     }
@@ -198,6 +180,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     async function initialize() {
         updateNavigation();
+        updateChart("topSalesChart", "상위 5명 영업 실적", [], [], "rgba(54, 162, 235, 0.2)", "rgba(54, 162, 235, 1)");
+        updateChart("bottomSalesChart", "하위 5명 영업 실적", [], [], "rgba(255, 99, 132, 0.2)", "rgba(255, 99, 132, 1)");
         await fetchAndRenderData(selectedYear, selectedMonth);
     }
 
