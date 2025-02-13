@@ -637,7 +637,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 180000); // 3분 후 요청 취소
 
-        fetch('https://saiescrm.api.jyds.synology.me/leads/auto', {
+        fetch('https://saiescrmapi.jyds.synology.me/leads/auto', {
             method: 'POST',
             body: formData,
             signal: controller.signal,      // AbortController의 signal 추가

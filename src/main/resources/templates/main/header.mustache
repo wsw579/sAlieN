@@ -819,7 +819,7 @@
                 // API 호출 부분
 
                 // fetch('http://127.0.0.1:8000/chatbot', { // 로컬
-                fetch('https://saiescrm.api.jyds.synology.me/chatbot', { // 서버
+                fetch('https://saiescrmapi.jyds.synology.me/chatbot', { // 서버
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -887,7 +887,7 @@
                         // 다운로드 진행중 팝업창 생성
                         // alert(' 다운로드 중 입니다. . . .  🚀 잠시만 기다려주세요. ');
                         // Excel 생성 요청
-                        fetch('https://saiescrm.api.jyds.synology.me/generate-excel', {
+                        fetch('https://saiescrmapi.jyds.synology.me/generate-excel', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json'
@@ -1243,7 +1243,7 @@
                     var normalizedResponse = data.response.replace(/\\n/g, ' ').replace(/\n/g, ' ').replace(/{[^{}]*}/g, '').replace(/<br>/g, '');
                     //fetch('http://127.0.0.1:8000/tts', {
                     //fetch('https://saiescrm.tts.jyds.synology.me/tts', {
-                    fetch('https://saiescrm.api.jyds.synology.me/tts', {
+                    fetch('https://saiescrmapi.jyds.synology.me/tts', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
