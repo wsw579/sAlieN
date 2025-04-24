@@ -1,2 +1,2 @@
-Salse CRM 프로젝트
+Sales CRM 프로젝트
 
