@@ -21,11 +21,12 @@ KT AIVLE School AI Track 6기 Big Project 🏆Grand Prize : CRM 프로그램의 
 - 발표회
 - 수상
 
-👩🏻‍🦰 역할 
+🧑🏻‍👩🏻‍👦🏻‍👦🏻 역할 
 ---- 
 팀원 : 7명 
-
-My Role 
+----
+👩🏻‍🦰 My Role
+----
 | Backend       | Spring Boot, PostgreSQL, DBever, JPA, RESTful API, Spring Security , Swagger , 
 | Frontend      | JavaScript, Mustache, HTML, CSS, Bootstrap  
 | AI 모델링     | ChatGPT 3.5, KoBERT, KoBART, TensorFlow 
