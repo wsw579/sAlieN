@@ -1,4 +1,4 @@
-<b> 💻 Sales CRM 프로젝트
+💻 Sales CRM 프로젝트
 <br>
 ---- 
 KT AIVLE School AI Track 6기 Big Project 🏆Grand Prize : CRM 프로그램의 Pain Point를 AI를 활용해 개선한 프로젝트 입니다. 
@@ -22,7 +22,7 @@ KT AIVLE School AI Track 6기 Big Project 🏆Grand Prize : CRM 프로그램의 
 - 테스트
 - 배포
 - 발표회
-- 수상
+- 최우수상
 
 🧑🏻‍👩🏻‍👦🏻‍👦🏻 
 <br>
